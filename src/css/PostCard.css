@@ -1,0 +1,88 @@
+.post-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px 0 rgba(60,60,60,0.06);
+  padding: 18px 24px 18px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.post-tags {
+  text-align: left;
+  margin-bottom: 4px;
+}
+
+.post-tag {
+  display: inline-block;
+  color: #555;
+  background: #f3f3f3;
+  border-radius: 4px;
+  font-size: 0.95em;
+  margin-right: 8px;
+  padding: 2px 8px;
+}
+
+.post-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.post-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.post-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid #eee;
+}
+
+.post-username {
+  color: #666;
+  font-size: 0.98em;
+}
+
+.post-summary {
+  flex: 1;
+  text-align: center;
+  font-weight: bold;
+  color: #222;
+  font-size: 1.1em;
+}
+
+.post-like-btn {
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  margin-left: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.post-like-icon {
+  font-size: 1.5em;
+  color: #fa3e5f;
+  border: 1.5px solid #b2f2c9;
+  border-radius: 50%;
+  padding: 3px 6px;
+  background: #fff;
+  transition: background 0.2s;
+}
+
+.post-like-btn:hover .post-like-icon {
+  background: #ffe3e3;
+}
+
+.post-like-btn.liked .post-like-icon {
+  color: #fff;
+  background: #fa3e5f;
+  border-color: #fa3e5f;
+}

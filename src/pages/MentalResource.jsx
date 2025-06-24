@@ -1,9 +1,9 @@
 import React from "react";
 import { Card, Typography } from "antd";
-import MentalCarousel from "../../components/MentalCarousel";
-import ArticleList from "../../components/ArticleList";
-import MusicList from "../../components/MusicList";
-import "../../css/MentalResource.css";
+import MentalCarousel from "../components/MentalCarousel";
+import ArticleList from "../components/ArticleList";
+import MusicList from "../components/MusicList";
+import "../css/MentalResource.css";
 
 const { Title } = Typography;
 

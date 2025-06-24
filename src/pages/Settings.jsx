@@ -1,6 +1,6 @@
-import SettingsForm from "../../components/SettingsForm";
+import SettingsForm from "../components/SettingsForm";
 import { Card, Typography } from "antd";
-import "../../css/Settings.css";
+import "../css/Settings.css";
 
 const { Title, Text } = Typography;
 

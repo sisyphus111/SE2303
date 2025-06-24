@@ -1,7 +1,39 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import '../css/EmotionChart.css';
 
 const EmotionChart = ({ data = [] }) => {
+  const containerRef = useRef(null);
+  const [dimensions, setDimensions] = useState({ width: 300, height: 180 });
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        const { width, height } = containerRef.current.getBoundingClientRect();
+        // 减去padding和边框，获取实际可用空间
+        const actualWidth = width - 40; // 减去左右padding
+        const actualHeight = height - 60; // 减去上下padding和标签空间
+        setDimensions({ width: actualWidth, height: actualHeight });
+      }
+    };
+
+    // 初始化尺寸
+    updateDimensions();
+
+    // 监听窗口大小变化
+    window.addEventListener('resize', updateDimensions);
+    
+    // 使用ResizeObserver监听容器尺寸变化（更精确）
+    const resizeObserver = new ResizeObserver(updateDimensions);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', updateDimensions);
+      resizeObserver.disconnect();
+    };
+  }, []);
+
   if (data.length === 0) {
     return (
       <div className="feature-item chart-container">
@@ -13,8 +45,10 @@ const EmotionChart = ({ data = [] }) => {
 
   const maxValue = 5; // 情绪评分最大值
   const minValue = 1; // 情绪评分最小值
-  const chartWidth = 300; // 增加图表宽度，让它更宽
-  const chartHeight = 180; // 相对较小的高度，形成宽扁的比例
+  
+  // 使用实际容器尺寸作为viewBox尺寸，避免拉伸
+  const chartWidth = dimensions.width;
+  const chartHeight = dimensions.height;
 
   // 计算折线图的点坐标
   const getPointCoordinates = (value, index) => {
@@ -57,21 +91,62 @@ const EmotionChart = ({ data = [] }) => {
     return '#F44336';
   };
 
+  // 根据容器大小动态计算数据点大小
+  const getPointRadius = () => {
+    const baseRadius = 4;
+    const scaleFactor = Math.min(chartWidth / 300, chartHeight / 180);
+    return Math.max(3, baseRadius * scaleFactor);
+  };
+
+  // 根据容器大小动态计算线条粗细
+  const getStrokeWidth = () => {
+    const baseWidth = 2.5;
+    const scaleFactor = Math.min(chartWidth / 300, chartHeight / 180);
+    return Math.max(1.5, baseWidth * scaleFactor);
+  };
+
+  // 根据容器大小动态计算文字大小
+  const getFontSize = () => {
+    const baseFontSize = 12;
+    const scaleFactor = Math.min(chartWidth / 300, chartHeight / 180);
+    return Math.max(10, baseFontSize * scaleFactor);
+  };
+
+  // 动态计算网格密度
+  const getGridSize = () => {
+    const baseGridWidth = Math.max(20, chartWidth / 15);
+    const baseGridHeight = Math.max(10, chartHeight / 18);
+    return { width: baseGridWidth, height: baseGridHeight };
+  };
+
+  const gridSize = getGridSize();
+
   return (
     <div className="feature-item chart-container">
       <span>情绪趋势图</span>
       <div className="emotion-chart">
-        <div className="line-chart-container">
+        <div className="line-chart-container" ref={containerRef}>
           <svg 
             className="line-chart" 
             viewBox={`0 0 ${chartWidth} ${chartHeight}`}
             preserveAspectRatio="xMidYMid meet"
+            style={{ width: '100%', height: 'calc(100% - 40px)' }}
           >
             {/* 定义渐变和滤镜 */}
             <defs>
-              {/* 网格图案 */}
-              <pattern id="grid" width="20" height="8" patternUnits="userSpaceOnUse">
-                <path d="M 20 0 L 0 0 0 8" fill="none" stroke="#f0f0f0" strokeWidth="0.5"/>
+              {/* 动态网格图案 */}
+              <pattern 
+                id="grid" 
+                width={gridSize.width} 
+                height={gridSize.height} 
+                patternUnits="userSpaceOnUse"
+              >
+                <path 
+                  d={`M ${gridSize.width} 0 L 0 0 0 ${gridSize.height}`} 
+                  fill="none" 
+                  stroke="#f0f0f0" 
+                  strokeWidth="0.5"
+                />
               </pattern>
               
               {/* 区域填充渐变 */}
@@ -96,8 +171,8 @@ const EmotionChart = ({ data = [] }) => {
                   x2={chartWidth}
                   y2={y}
                   stroke="#e0e0e0"
-                  strokeWidth="0.3"
-                  strokeDasharray="2,4"
+                  strokeWidth="0.5"
+                  strokeDasharray="3,6"
                   opacity="0.7"
                 />
               );
@@ -114,7 +189,7 @@ const EmotionChart = ({ data = [] }) => {
               d={generatePath()}
               fill="none"
               stroke="#667eea"
-              strokeWidth="2"
+              strokeWidth={getStrokeWidth()}
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -122,28 +197,28 @@ const EmotionChart = ({ data = [] }) => {
             {/* 数据点 */}
             {data.map((item, index) => {
               const point = getPointCoordinates(item.value, index);
+              const radius = getPointRadius();
               return (
                 <g key={index} className="data-point-group">
-                  {/* 主数据点 - 使用椭圆形来在viewBox中保持视觉上的圆形 */}
-                  <ellipse
+                  {/* 主数据点 - 使用圆形，避免拉伸 */}
+                  <circle
                     cx={point.x}
                     cy={point.y}
-                    rx="3"
-                    ry="7.5"
+                    r={radius}
                     fill={getPointColor(item.value)}
                     stroke="#ffffff"
-                    strokeWidth="1.5"
+                    strokeWidth={Math.max(1, radius * 0.4)}
                     className="data-point"
                   />
                   
                   {/* 数值标签 */}
                   <text
                     x={point.x}
-                    y={point.y - 15}
+                    y={point.y - radius - 8}
                     textAnchor="middle"
                     className="point-value"
                     fill="#2c3e50"
-                    fontSize="8"
+                    fontSize={getFontSize()}
                   >
                     {item.value}
                   </text>

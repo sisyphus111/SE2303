@@ -1,0 +1,18 @@
+.user-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding-top: 40px;
+}
+
+.user-tag-filter-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 8px;
+}
+
+.user-posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}

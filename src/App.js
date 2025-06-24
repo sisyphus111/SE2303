@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from 'react';
 // import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
@@ -9,7 +10,7 @@ function App() {
         colorPrimary: "#1DA57A",
         colorInfo: "#1DA57A",
     };
-    // const [user, setUser] = useState(null); // 全局用户状态
+    // const [user, setUser] = useState(null); 
 
     return (
         <ConfigProvider

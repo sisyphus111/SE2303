@@ -1,0 +1,16 @@
+.main-content {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+/* 确保内容区域不被固定头部遮挡 */
+.main-content > *:not(:first-child) {
+    margin-top: 70px; /* 与头部高度一致 */
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .main-content > *:not(:first-child) {
+        margin-top: 60px;
+    }
+} 

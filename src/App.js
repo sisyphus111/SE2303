@@ -7,6 +7,7 @@ import {Diary} from './pages/Diary';
 import './App.css';
 import Settings from './pages/Settings';
 import MentalResource from './pages/MentalResource';
+import AIChat from './pages/AIChat';
 import {AudioProvider} from './lib/GlobalAudioPlayer';
 import ArticleDetail from './pages/ArticleDetail';
 import PostDetailPage from "./pages/CommunityPost";
@@ -29,6 +30,7 @@ function App() {
                         <Route path="/send_community_post" element={<SendPostPage/>}/>
                         <Route path="/community" element={<CommunityHomepage/>}/>
                         <Route path="/community_user_page" element={<CommunityUserPage/>}/>
+                        <Route path="/ai-chat" element={<AIChat/>}/>
                     </Routes>
                 </Layout>
             </Router>

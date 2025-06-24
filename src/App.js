@@ -9,8 +9,8 @@ import Settings from './pages/Settings';
 import MentalResource from './pages/MentalResource';
 import {AudioProvider} from './lib/GlobalAudioPlayer';
 import ArticleDetail from './pages/ArticleDetail';
-import PostDetailPage from "./pages/post";
-import SendPostPage from "./pages/send_post";
+import PostDetailPage from "./pages/CommunityPost";
+import SendPostPage from "./pages/SendCommunityPost";
 import CommunityUserPage from "./pages/CommunityUserPage";
 
 function App() {
@@ -26,8 +26,8 @@ function App() {
                         <Route path="/article/:id" element={<ArticleDetail/>}/>
                         <Route path="/diary" element={<Diary/>}/>
                         <Route path="/post/:id" element={<PostDetailPage/>}/>
-                        <Route path="/send_post" element={<SendPostPage/>}/>
-                        <Route path="/community_home_page" element={<CommunityHomepage/>}/>
+                        <Route path="/send_community_post" element={<SendPostPage/>}/>
+                        <Route path="/community" element={<CommunityHomepage/>}/>
                         <Route path="/community_user_page" element={<CommunityUserPage/>}/>
                     </Routes>
                 </Layout>

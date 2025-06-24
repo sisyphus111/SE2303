@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
-import PostDetail from '../components/post_detail';
-import CommentInput from '../components/comment_input';
-import PostCommentList from '../components/post_comment_list';
+import PostDetail from '../components/PostDetail';
+import CommentInput from '../components/CommentIinput';
+import PostCommentList from '../components/PostCommentList';
 import {postData as initialPostData} from '../data/post_data';
 import {Card, Divider, Space} from "antd";
 import "../css/post.css"
 import CommunityHeader from "../components/CommunityHeader";
+import Layout from "../components/Layout";
 
 const PostPage = () => {
     const [postData, setPostData] = useState(initialPostData);

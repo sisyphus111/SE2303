@@ -3,6 +3,7 @@ import {Button, Form, Input, Select, Space, Row, Col, Card, Typography} from 'an
 import {tagOptions} from '../data/post_data';
 import "../css/post.css"
 import CommunityHeader from "../components/CommunityHeader";
+import Layout from "../components/Layout";
 
 const {TextArea} = Input;
 const {Title} = Typography;

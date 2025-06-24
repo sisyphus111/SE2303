@@ -7,7 +7,7 @@ function CreatePosts() {
     return (
         <button
             className="floating-create-post-btn"
-            onClick={() => navigate('/send_post')}
+            onClick={() => navigate('/send_community_post')}
         >
             发个帖子吧
         </button>

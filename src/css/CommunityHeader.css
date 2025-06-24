@@ -1,5 +1,4 @@
 .community-header {
-    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -191,29 +190,29 @@
         padding: 0 15px;
         height: 60px;
     }
-    
+
     .left-section {
         gap: 10px;
     }
-    
+
     .right-section {
         gap: 15px;
     }
-    
+
     .community-name h1 {
         font-size: 1.5rem;
     }
-    
+
     .logo-icon {
         font-size: 2rem;
     }
-    
+
     .search-toggle-btn,
     .avatar-img {
         width: 40px;
         height: 40px;
     }
-    
+
     .search-container {
         min-width: 250px;
     }
@@ -223,12 +222,18 @@
     .community-name h1 {
         font-size: 1.3rem;
     }
-    
+
     .logo-icon {
         font-size: 1.8rem;
     }
-    
+
     .search-container {
         min-width: 200px;
     }
-} 
+}
+
+@media (max-width: 768px) {
+    .community-header {
+        /* 移动端不需要额外调整 */
+    }
+}

@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import '../css/CommunityHeader.css';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 
 function CommunityHeader() {
     const [showSearch, setShowSearch] = useState(false);
@@ -15,9 +15,9 @@ function CommunityHeader() {
         // 模拟搜索结果
         if (query.trim()) {
             setSearchResults([
-                { id: 1, title: '关于树洞社区的使用指南', content: '欢迎来到树洞社区...' },
-                { id: 2, title: '分享你的故事', content: '在这里分享你的想法...' },
-                { id: 3, title: '社区规则', content: '请遵守社区规则...' }
+                {id: 1, title: '关于树洞社区的使用指南', content: '欢迎来到树洞社区...'},
+                {id: 2, title: '分享你的故事', content: '在这里分享你的想法...'},
+                {id: 3, title: '社区规则', content: '请遵守社区规则...'}
             ]);
         } else {
             setSearchResults([]);
@@ -59,7 +59,8 @@ function CommunityHeader() {
         <header className="community-header">
             <div className="header-content">
                 {/* 左侧区域：社区标志和名称 */}
-                <div className="left-section" onClick={() => navigate('/CommunityHomepage')} style={{cursor: 'pointer'}}>
+                <div className="left-section" onClick={() => navigate('/community')}
+                     style={{cursor: 'pointer'}}>
                     <div className="logo">
                         <div className="logo-icon">🌳</div>
                     </div>
@@ -71,13 +72,13 @@ function CommunityHeader() {
                 {/* 右侧区域：搜索和头像 */}
                 <div className="right-section">
                     <div className="search-section" ref={searchRef}>
-                        <button 
+                        <button
                             className="search-toggle-btn"
                             onClick={toggleSearch}
                         >
                             🔍
                         </button>
-                        
+
                         {showSearch && (
                             <div className="search-container">
                                 <input
@@ -87,7 +88,7 @@ function CommunityHeader() {
                                     onChange={(e) => handleSearch(e.target.value)}
                                     className="search-input"
                                 />
-                                
+
                                 {searchResults.length > 0 && (
                                     <div className="search-results">
                                         {searchResults.map((result) => (
@@ -102,7 +103,7 @@ function CommunityHeader() {
                         )}
                     </div>
 
-                    <div className="avatar" onClick={() => navigate('/CommunityUserpage')} style={{cursor: 'pointer'}}>
+                    <div className="avatar" onClick={() => navigate('/community_user_page')} style={{cursor: 'pointer'}}>
                         <div className="avatar-img">👤</div>
                     </div>
                 </div>

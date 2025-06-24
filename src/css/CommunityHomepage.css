@@ -4,8 +4,8 @@
 }
 
 /* 确保内容区域不被固定头部遮挡 */
-.main-content > *:not(:first-child) {
-    margin-top: 70px; /* 与头部高度一致 */
+.community-content {
+    padding-top: 20px;
 }
 
 /* 响应式设计 */
@@ -13,4 +13,9 @@
     .main-content > *:not(:first-child) {
         margin-top: 60px;
     }
-} 
+}
+
+.card-container {
+    margin: 20px 0;
+    padding: 50px;
+}

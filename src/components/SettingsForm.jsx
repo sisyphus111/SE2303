@@ -10,18 +10,31 @@ const tagOptions = [
   { label: '善解人意', value: '善解人意' },
 ];
 
+// 自定义一个用户对象
+const user = {
+  username: '张三',
+  telephone: '10000000000',
+  email: 'zhangsan@example.com',
+  gender: '男',
+  tags: ['积极', '乐观'],
+  avatar: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=120&q=80', // 可以放头像URL
+};
+
 function SettingsForm() {
   const [form] = Form.useForm();
-  const [avatarUrl, setAvatarUrl] = useState('');
-  // 假设虚拟ID由后端生成，这里写死
+  const [avatarUrl, setAvatarUrl] = useState(user.avatar);
+  // 假设虚拟ID由后端生成，这里先写死
   const virtualId = 'MH123456';
 
   // 头像上传处理
   const handleAvatarChange = info => {
     if (info.file.status === 'done' || info.file.status === 'uploading') {
-      // 这里只做本地预览，不上传服务器
       const reader = new FileReader();
-      reader.onload = e => setAvatarUrl(e.target.result);
+      reader.onload = e => {
+        setAvatarUrl(e.target.result);
+        // 同步设置表单字段
+        form.setFieldsValue({ avatar: e.target.result });
+      };
       reader.readAsDataURL(info.file.originFileObj);
     }
   };
@@ -38,8 +51,10 @@ return (
       onFinish={onFinish}
       className="settings-form"
       initialValues={{
-        gender: '保密',
-        tags: [],
+        ...user,
+        gender: user.gender || '保密',
+        tags: user.tags || [],
+        avatar: user.avatar,
       }}
     >
       <Form.Item label="头像">
@@ -59,6 +74,9 @@ return (
             <Button icon={<UploadOutlined />}>上传头像</Button>
           </Upload>
         </div>
+        <Form.Item name="avatar" noStyle>
+          <Input type="hidden" />
+        </Form.Item>
       </Form.Item>
       <Form.Item label="虚拟ID">
         <Input value={virtualId} disabled />

@@ -1,0 +1,82 @@
+/* 日记卡片特殊样式 */
+.diary-card {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.diary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.diary-card:hover::before {
+  opacity: 1;
+}
+
+.diary-card .card-content {
+  position: relative;
+  z-index: 1;
+}
+
+.diary-card .card-content h2 {
+  color: white;
+  font-size: 28px;
+  margin-bottom: 15px;
+}
+
+.diary-card p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  margin: 10px 0 20px 0;
+  line-height: 1.4;
+}
+
+.diary-icon {
+  font-size: 48px;
+  margin: 20px 0 15px 0;
+  opacity: 0.9;
+  transition: transform 0.3s ease;
+}
+
+.diary-card:hover .diary-icon {
+  transform: scale(1.1);
+}
+
+.diary-arrow {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.8);
+  transition: transform 0.3s ease;
+}
+
+.diary-card:hover .diary-arrow {
+  transform: translateX(5px);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .diary-card .card-content h2 {
+    font-size: 24px;
+  }
+  
+  .diary-icon {
+    font-size: 40px;
+  }
+  
+  .diary-arrow {
+    font-size: 20px;
+    bottom: 15px;
+    right: 15px;
+  }
+} 

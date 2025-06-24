@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/Diary.css';
 
+
 export const Diary = () => {
   const navigate = useNavigate();
   const [diaryEntries, setDiaryEntries] = useState([]);

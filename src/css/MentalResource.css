@@ -84,3 +84,25 @@
 .global-audio-player-audio {
   height: 32px;
 }
+
+.mental-resource-img-cover {
+  border-radius: 8px;
+  object-fit: cover;
+  width: 160px;
+  cursor: pointer;
+}
+
+.mental-resource-article-title {
+  cursor: pointer;
+  color: #1677ff;
+}
+
+.mental-resource-detail-cover {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.mental-resource-detail-back-btn {
+  margin-bottom: 16px;
+}

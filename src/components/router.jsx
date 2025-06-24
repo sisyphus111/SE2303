@@ -8,7 +8,7 @@ export default function AppRouter() {
             <Routes>
                 <Route index element={<PostDetailPage />} />
                 <Route path="/post_details" element={<PostDetailPage />} />
-                {/*<Route path="/send_post" element={<PostDetailPage />} />*/}
+                <Route path="/send_post" element={<SendPostPage />} />
             </Routes>
         </BrowserRouter>
     );

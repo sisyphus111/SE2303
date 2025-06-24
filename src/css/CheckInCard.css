@@ -1,0 +1,105 @@
+/* 打卡卡片特殊样式 */
+.checkin-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.checkin-card .card-content h2 {
+  color: white;
+}
+
+.rating-section {
+  margin-bottom: 20px;
+}
+
+.rating-section p {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+}
+
+.stars {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+.star {
+  font-size: 30px;
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.star.selected,
+.star:hover {
+  color: #ffd700;
+  transform: scale(1.1);
+}
+
+.tags-section {
+  margin-bottom: 20px;
+}
+
+.tags-section p {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+}
+
+.tags-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.tag {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.tag.selected {
+  background: rgba(255,255,255,0.4);
+  transform: scale(1.05);
+}
+
+.tag:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.checkin-btn {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 2px solid rgba(255,255,255,0.3);
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 15px;
+}
+
+.checkin-btn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.3);
+  transform: translateY(-2px);
+}
+
+.checkin-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.checkin-btn.submitting {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}

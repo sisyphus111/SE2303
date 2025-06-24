@@ -1,0 +1,50 @@
+/* 智能分析面板样式 */
+.analysis {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.analysis-header {
+  padding: 0;
+  margin-bottom: 0;
+}
+
+.analysis-content {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  line-height: 1.6;
+  color: #555;
+  font-size: 15px;
+  margin-top: 15px;
+}
+
+.analysis-preview {
+  background: #f0f0f0;
+  padding: 15px;
+  border-radius: 6px;
+  margin-top: 15px;
+  color: #666;
+  font-size: 14px;
+  font-style: italic;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.analysis-preview:hover {
+  background-color: #e8e8e8;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .analysis-content {
+    font-size: 14px;
+    padding: 15px;
+  }
+  
+  .analysis-preview {
+    padding: 12px;
+    font-size: 13px;
+  }
+} 

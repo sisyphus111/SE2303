@@ -8,11 +8,12 @@ const Layout = ({ children }) => {
   const navigate = useNavigate();
   const { current } = useAudio();
 
-  // 导航菜单项 - 更新为您需要的四个页面
+  // 导航菜单项 - 添加心理资源项
   const navItems = [
     { path: '/', label: '个人主页', icon: '🏠' },
     { path: '/community', label: '社区首页', icon: '👥' },
     { path: '/ai-chat', label: 'AI对话', icon: '🤖' },
+    { path: '/mentalresource', label: '心理资源', icon: '🎵' },
     { path: '/settings', label: '设置', icon: '⚙️' }
   ];
 
@@ -67,6 +68,7 @@ const Layout = ({ children }) => {
                 <li>个人情绪管理</li>
                 <li>社区互助支持</li>
                 <li>AI智能对话</li>
+                <li>心理健康资源</li>
                 <li>个性化设置</li>
               </ul>
             </div>

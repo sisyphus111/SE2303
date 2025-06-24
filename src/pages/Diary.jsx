@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Diary.css';
+import '../css/Diary.css';
 
 const Diary = () => {
   const [diaries, setDiaries] = useState([

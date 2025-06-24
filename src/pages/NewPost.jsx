@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './NewPost.css';
+import '../css/NewPost.css';
 
 const NewPost = () => {
   const [postData, setPostData] = useState({

@@ -5,9 +5,40 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f5f5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* 移除链接的默认样式 */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 确保按钮没有默认样式 */
+button {
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+/* 确保输入框没有默认样式 */
+input, textarea {
+  border: none;
+  outline: none;
+  font-family: inherit;
 }

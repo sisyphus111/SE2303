@@ -6,6 +6,11 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  text-decoration: none;
+}
+
+.post-card a {
+  text-decoration: none;
 }
 
 .post-tags {

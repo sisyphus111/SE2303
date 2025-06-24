@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import '../css/PostCard.css';
+import {Link} from "react-router-dom";
 
-function PostCard({ post }) {
+function PostCard({post}) {
     const [liked, setLiked] = useState(false);
 
     return (
+
         <div className="post-card">
             <div className="post-tags">
                 {post.tags.map(tag => (
@@ -13,10 +15,12 @@ function PostCard({ post }) {
             </div>
             <div className="post-main">
                 <div className="post-user">
-                    <img className="post-avatar" src={post.avatar} alt="avatar" />
+                    <img className="post-avatar" src={post.avatar} alt="avatar"/>
                     <span className="post-username">{post.username}</span>
                 </div>
-                <div className="post-summary">{post.summary}</div>
+                <Link to={`/post/${post.id}`} className={`post-card a`}>
+                    <div className="post-summary">{post.summary}</div>
+                </Link>
                 <button
                     className={`post-like-btn${liked ? ' liked' : ''}`}
                     onClick={() => setLiked(l => !l)}
@@ -34,6 +38,8 @@ function PostCard({ post }) {
                 </button>
             </div>
         </div>
+
+
     );
 }
 

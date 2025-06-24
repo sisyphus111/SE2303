@@ -33,13 +33,13 @@ const musics = [
     title: "轻松冥想",
     artist: "Calm Artist",
     cover: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=120&q=80",
-    url: "#",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", 
   },
   {
     title: "舒缓钢琴",
     artist: "Peaceful Piano",
     cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=120&q=80",    
-    url: "#",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
   },
 ];
 

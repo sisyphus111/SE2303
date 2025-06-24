@@ -1,0 +1,45 @@
+.mental-resource-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0fdfa 0%, #e0e7ff 100%);
+  padding: 40px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mental-resource-card {
+  width: 800px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(60,60,120,0.10);
+  margin-bottom: 32px;
+  background: rgba(255,255,255,0.95);
+}
+
+.mental-resource-card-body {
+  padding: 32px;
+}
+
+.mental-resource-carousel-card .ant-card-body {
+  padding: 0;
+}
+
+.mental-resource-title {
+  margin-bottom: 24px;
+  font-weight: 700;
+}
+
+.mental-resource-img-cover {
+  border-radius: 8px;
+  object-fit: cover;
+  width: 160px;
+}
+
+.mental-resource-carousel-img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+}
+
+.mental-resource-music-link {
+  font-weight: 600;
+}

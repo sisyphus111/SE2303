@@ -2,7 +2,7 @@ import React from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {useAudio} from '../lib/GlobalAudioPlayer';
 import '../css/Layout.css';
-import CommunityHeader from "./CommunityHeader";
+// import CommunityHeader from "./CommunityHeader";
 
 const Layout = ({children}) => {
     const location = useLocation();

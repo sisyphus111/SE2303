@@ -13,9 +13,9 @@ export const postData = {
     ]
 };
 export const tagOptions = [
-    { value: 'sad', label: '伤心' },
-    { value: 'happy', label: '开心' },
-    { value: 'angry', label: '生气' },
-    { value: 'find_help', label: '寻求帮助' },
-    { value: 'teach', label: '生活技巧' },
+    { value: '情感', label: '情感' },
+    { value: '学习', label: '学习' },
+    { value: '生活', label: '生活' },
+    { value: '健康', label: '健康' },
+    { value: '成长', label: '成长' },
 ];

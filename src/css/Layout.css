@@ -34,6 +34,7 @@
     font-size: 20px;
     font-weight: 700;
     letter-spacing: 1px;
+    margin-right: auto;
 }
 
 .logo-icon {
@@ -65,8 +66,10 @@
 }
 
 .header-nav {
+    margin-left: auto;
     display: flex;
-    gap: 10px;
+    align-items: center;
+    gap: 18px;
 }
 
 .nav-item {

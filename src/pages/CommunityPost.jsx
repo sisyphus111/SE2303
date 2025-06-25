@@ -5,7 +5,7 @@ import PostCommentList from '../components/CommunityPostCommentList';
 import {postData as initialPostData} from '../data/post_data';
 import {Card, Divider, Space} from "antd";
 import "../css/post.css"
-import CommunityHeader from "../components/CommunityHeader";
+// import CommunityHeader from "../components/CommunityHeader";
 import Layout from "../components/Layout";
 
 const CommunityPostPage = () => {
@@ -23,7 +23,7 @@ const CommunityPostPage = () => {
 
     return (
         <div>
-            <CommunityHeader />
+            {/* <CommunityHeader /> */}
             <Card className="card-container">
                 <Space direction="vertical" style={{width: "100%"}}>
                     <PostDetail postData={postData}/>

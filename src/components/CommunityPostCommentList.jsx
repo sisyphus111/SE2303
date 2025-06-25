@@ -1,6 +1,6 @@
 import React from 'react';
 import { List, Space } from 'antd';
-import PostComment from './PostComment';
+import PostComment from './CommunityPostComment';
 
 const PostCommentList = ({ comments }) => {
     return (

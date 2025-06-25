@@ -1,14 +1,14 @@
 import React, {useState} from 'react';
-import PostDetail from '../components/PostDetail';
+import PostDetail from '../components/CommunityPostDetail';
 import CommentInput from '../components/CommentIinput';
-import PostCommentList from '../components/PostCommentList';
+import PostCommentList from '../components/CommunityPostCommentList';
 import {postData as initialPostData} from '../data/post_data';
 import {Card, Divider, Space} from "antd";
 import "../css/post.css"
 import CommunityHeader from "../components/CommunityHeader";
 import Layout from "../components/Layout";
 
-const PostPage = () => {
+const CommunityPostPage = () => {
     const [postData, setPostData] = useState(initialPostData);
 
     const handleNewComment = (newComment) => {
@@ -38,4 +38,4 @@ const PostPage = () => {
     );
 };
 
-export default PostPage;
+export default CommunityPostPage;

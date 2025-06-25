@@ -15,7 +15,7 @@ const Layout = ({children}) => {
     const navItems = [
         {path: '/', label: '个人主页', icon: '🏠'},
         {path: '/community', label: '社区首页', icon: '👥'},
-        {path: '/ai-chat', label: 'AI对话', icon: '🤖'},
+        {path: '/ai_chat', label: 'AI对话', icon: '🤖'},
         {path: '/mental_resource', label: '心理资源', icon: '🎵'},
         {path: '/settings', label: '设置', icon: '⚙️'}
     ];

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../css/CommunityUserContent.css';
-import PostCard from './PostCard.jsx';
+import PostCard from './CommunityPostCard.jsx';
 
 // 假数据：个人帖子
 const userPosts = [

@@ -8,7 +8,7 @@ import Layout from "../components/Layout";
 const {TextArea} = Input;
 const {Title} = Typography;
 
-const SendPostPage = () => {
+const SendCommunityPostPage = () => {
     const [form] = Form.useForm();
     const [tags, setTags] = useState([]);
 
@@ -70,4 +70,4 @@ const SendPostPage = () => {
     );
 };
 
-export default SendPostPage;
+export default SendCommunityPostPage;

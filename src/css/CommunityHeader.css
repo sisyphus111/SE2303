@@ -234,8 +234,10 @@
     }
 }
 
-@media (max-width: 768px) {
+/* 移动端不需要额外调整 */
+/* @media (max-width: 768px) {
     .community-header {
-        /* 移动端不需要额外调整 */
     }
-}
+            
+
+} */

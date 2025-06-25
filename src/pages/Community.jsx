@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/Community.css';
 
+// API服务导入注释
+// import { getPostList, togglePostLike, createPost } from '../service/communityService';
+
 const Community = () => {
   const [posts, setPosts] = useState([
     {
@@ -77,7 +80,30 @@ const Community = () => {
     if (loginStatus === 'true') {
       setIsLoggedIn(true);
     }
+    
+    // 加载帖子列表
+    loadPosts();
   }, []);
+
+  // 加载帖子列表的函数
+  const loadPosts = async () => {
+    // API调用注释：获取帖子列表
+    // try {
+    //   const params = {
+    //     page: 1,
+    //     size: 20,
+    //     category: selectedCategory !== '全部' ? selectedCategory : undefined,
+    //     keyword: searchTerm || undefined,
+    //     sortBy: sortBy
+    //   };
+    //   const response = await getPostList(params);
+    //   setPosts(response.data);
+    //   setFilteredPosts(response.data);
+    // } catch (error) {
+    //   console.error('获取帖子列表失败:', error);
+    //   // 使用模拟数据作为备选
+    // }
+  };
 
   useEffect(() => {
     let filtered = posts;
@@ -117,12 +143,31 @@ const Community = () => {
     setFilteredPosts(filtered);
   }, [posts, selectedCategory, searchTerm, sortBy]);
 
-  const handleLike = (postId) => {
+  const handleLike = async (postId) => {
     if (!isLoggedIn) {
       alert('请先登录');
       navigate('/login');
       return;
     }
+
+    // API调用注释：点赞/取消点赞帖子
+    // try {
+    //   await togglePostLike(postId);
+    //   // 更新本地状态
+    //   setPosts(prev => prev.map(post => {
+    //     if (post.id === postId) {
+    //       return {
+    //         ...post,
+    //         likes: post.isLiked ? post.likes - 1 : post.likes + 1,
+    //         isLiked: !post.isLiked
+    //       };
+    //     }
+    //     return post;
+    //   }));
+    // } catch (error) {
+    //   console.error('点赞操作失败:', error);
+    //   alert('操作失败，请重试');
+    // }
 
     setPosts(prev => prev.map(post => {
       if (post.id === postId) {
@@ -134,6 +179,20 @@ const Community = () => {
       }
       return post;
     }));
+  };
+
+  // 创建新帖子的函数
+  const handleCreatePost = async (postData) => {
+    // API调用注释：创建帖子
+    // try {
+    //   const newPost = await createPost(postData);
+    //   setPosts(prev => [newPost.data, ...prev]);
+    //   alert('帖子发布成功！');
+    //   navigate('/community');
+    // } catch (error) {
+    //   console.error('发布帖子失败:', error);
+    //   alert('发布失败，请重试');
+    // }
   };
 
   const formatTime = (timeString) => {

@@ -3,15 +3,17 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background: linear-gradient(135deg, #f8f9fa 0%, #b2e2d1 100%);
 }
 
 /* Header Styles */
 .layout-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 2px 12px rgba(102, 126, 234, 0.15);
+    background: linear-gradient(90deg, #b2e2d1 0%, #a7c7e7 100%);
+    box-shadow: 0 2px 12px rgba(167, 199, 231, 0.10);
     position: sticky;
     top: 0;
     z-index: 1000;
+    border-bottom: 1.5px solid #e6ecf3;
 }
 
 .header-content {
@@ -28,52 +30,76 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    color: white;
-    font-size: 18px;
+    color: #4e9a9a;
+    font-size: 20px;
     font-weight: 700;
+    letter-spacing: 1px;
 }
 
 .logo-icon {
-    font-size: 24px;
+    font-size: 26px;
+    background: linear-gradient(135deg, #a7c7e7 0%, #b2e2d1 100%);
+    border-radius: 50%;
+    padding: 4px 8px;
+    color: #fff;
+    box-shadow: 0 2px 8px #b2e2d133;
 }
 
 .logo-text {
     white-space: nowrap;
+    color: #252625;
+}
+
+.artistic-logo {
+    font-family: 'ZCOOL XiaoWei', 'FZShuTi', 'STKaiti', 'KaiTi', 'Microsoft YaHei', serif;
+    font-size: 38px;
+    letter-spacing: 8px;
+    background: linear-gradient(90deg, #3a4a5a 10%, #6bb7b7 60%, #4e9a9a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    /* text-fill-color: transparent; */
+    font-weight: bold;
+    text-shadow: 2px 2px 8px #b2e2d155, 0 1px 0 #fff, 0 0 2px #3a4a5a;
+    padding-left: 6px;
 }
 
 .header-nav {
     display: flex;
-    gap: 8px;
+    gap: 10px;
 }
 
 .nav-item {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 16px;
-    background: rgba(255, 255, 255, 0.1);
+    padding: 10px 18px;
+    background: rgba(255, 255, 255, 0.7);
     border: none;
-    border-radius: 25px;
-    color: white;
-    font-size: 14px;
+    border-radius: 22px;
+    color: #4e9a9a;
+    font-size: 15px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(.4,2,.6,1);
+    box-shadow: 0 2px 8px #b2e2d133;
+    outline: none;
 }
 
 .nav-item:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-1px);
+    background: #e6ecf3;
+    color: #6bb7b7;
+    transform: translateY(-2px) scale(1.04);
 }
 
 .nav-item.active {
-    background: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(90deg, #a7c7e7 0%, #b2e2d1 100%);
+    color: #fff;
+    box-shadow: 0 4px 16px #b2e2d144;
 }
 
 .nav-icon {
-    font-size: 16px;
+    font-size: 18px;
 }
 
 .nav-label {
@@ -92,21 +118,25 @@
     max-width: 1200px;
     width: 100%;
     margin: 0 auto;
-    padding: 20px;
+    padding: 24px;
+    background: rgba(255,255,255,0.85);
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(167,199,231,0.08);
+    margin-top: 24px;
+    margin-bottom: 24px;
 }
 
 /* Footer Styles */
 .layout-footer {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-    color: white;
+    background: linear-gradient(90deg, #b2e2d1 0%, #a7c7e7 100%);
+    color: #4e9a9a;
     margin-top: auto;
-    /* 为AudioPlayer留出空间 */
     padding-bottom: 0;
     transition: padding-bottom 0.3s ease;
+    border-top: 1.5px solid #e6ecf3;
 }
 
 .layout-footer.with-audio-player {
-    /* 当有AudioPlayer时，底部留出空间 */
     padding-bottom: 64px;
 }
 
@@ -124,14 +154,15 @@
 }
 
 .footer-section h4 {
-    color: #3498db;
+    color: #030303;
     margin-bottom: 15px;
     font-size: 16px;
     font-weight: 600;
 }
 
-.footer-section p {
-    color: #bdc3c7;
+.footer-section p,
+.footer-section li {
+    color: #000000;
     line-height: 1.6;
     margin-bottom: 10px;
 }
@@ -143,7 +174,6 @@
 }
 
 .footer-section li {
-    color: #bdc3c7;
     margin-bottom: 8px;
     padding-left: 16px;
     position: relative;
@@ -151,7 +181,7 @@
 
 .footer-section li:before {
     content: '•';
-    color: #3498db;
+    color: #a7c7e7;
     position: absolute;
     left: 0;
 }
@@ -163,20 +193,22 @@
 }
 
 .footer-link {
-    color: #3498db;
+    color: #000000;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .footer-link:hover {
-    color: #2980b9;
+    color: #323838;
 }
 
 .footer-bottom {
-    border-top: 1px solid #34495e;
+    border-top: 1px solid #e6ecf3;
     padding-top: 20px;
     text-align: center;
-    color: #95a5a6;
+    color: #000000;
+    font-size: 14px;
+    background: none;
 }
 
 .footer-bottom p {
@@ -214,6 +246,8 @@
 
     .layout-content {
         padding: 15px;
+        margin-top: 12px;
+        margin-bottom: 12px;
     }
 
     .footer-info {
@@ -247,17 +281,15 @@
 
 /* AudioPlayer与Footer的协调 */
 .global-audio-player-bar {
-    /* 确保AudioPlayer在Footer之上 */
     z-index: 9999;
 }
 
-/* 确保内容不会被AudioPlayer遮挡 */
 .layout-main {
     margin-bottom: 0;
 }
 
 .layout-main.community-layout {
-    padding-top: 70px; /* 为社区头部留出空间 */
+    padding-top: 70px;
 }
 
 @media (max-width: 768px) {

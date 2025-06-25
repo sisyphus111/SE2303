@@ -30,8 +30,8 @@ const Layout = ({children}) => {
             <header className="layout-header">
                 <div className="header-content">
                     <div className="header-logo">
-                        <span className="logo-icon">🧠</span>
-                        <span className="logo-text">心理健康助手</span>
+                        <span className="logo-icon">☀️</span>
+                        <span className="logo-text artistic-logo">心晴校园</span>
                     </div>
 
                     <nav className="header-nav">

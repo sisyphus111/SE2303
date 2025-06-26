@@ -1,6 +1,16 @@
 import React from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {useAudio} from '../lib/GlobalAudioPlayer';
+import { 
+  HomeOutlined, 
+  TeamOutlined, 
+  RobotOutlined, 
+  HeartOutlined, 
+  SettingOutlined,
+  SunOutlined,
+  MailOutlined,
+  PhoneOutlined
+} from '@ant-design/icons';
 import '../css/Layout.css';
 // import CommunityHeader from "./CommunityHeader";
 
@@ -11,13 +21,13 @@ const Layout = ({children}) => {
 
     const isCommunityPage = location.pathname.startsWith('/community');
 
-    // 导航菜单项 - 添加心理资源项
+    // 导航菜单项 - 使用 Ant Design 图标
     const navItems = [
-        {path: '/', label: '个人主页', icon: '🏠'},
-        {path: '/community', label: '社区首页', icon: '👥'},
-        {path: '/ai_chat', label: 'AI对话', icon: '🤖'},
-        {path: '/mental_resource', label: '心理资源', icon: '🎵'},
-        {path: '/settings', label: '设置', icon: '⚙️'}
+        {path: '/', label: '个人主页', icon: <HomeOutlined />},
+        {path: '/community', label: '社区首页', icon: <TeamOutlined />},
+        {path: '/ai_chat', label: 'AI对话', icon: <RobotOutlined />},
+        {path: '/mental_resource', label: '心理资源', icon: <HeartOutlined />},
+        {path: '/settings', label: '设置', icon: <SettingOutlined />}
     ];
 
     const handleNavigation = (path) => {
@@ -30,7 +40,9 @@ const Layout = ({children}) => {
             <header className="layout-header">
                 <div className="header-content">
                     <div className="header-logo">
-                        <span className="logo-icon">☀️</span>
+                        <span className="logo-icon">
+                            <SunOutlined />
+                        </span>
                         <span className="logo-text artistic-logo">心晴校园</span>
                     </div>
 
@@ -55,7 +67,7 @@ const Layout = ({children}) => {
 
             {/* Main Content Area */}
             <main className="layout-main">
-                <div className="layout-content">
+                <div className="layout-content leaf-decoration">
                     {children}
                 </div>
             </main>
@@ -64,7 +76,7 @@ const Layout = ({children}) => {
             <footer className={`layout-footer ${current ? 'with-audio-player' : ''}`}>
                 <div className="footer-content">
                     <div className="footer-info">
-                        <div className="footer-section">
+                        <div className="footer-section flower-decoration">
                             <h4>心理健康助手</h4>
                             <p>关注您的心理健康，提供专业的情绪管理和心理支持服务</p>
                         </div>
@@ -94,8 +106,12 @@ const Layout = ({children}) => {
                             <h4>联系我们</h4>
                             <p>如有问题或建议，请联系开发团队</p>
                             <div className="footer-links">
-                                <a href="#" className="footer-link">📧 redacted@example.invalid</a>
-                                <a href="#" className="footer-link">📱 400-123-4567</a>
+                                <a href="#" className="footer-link">
+                                    <MailOutlined /> redacted@example.invalid
+                                </a>
+                                <a href="#" className="footer-link">
+                                    <PhoneOutlined /> 400-123-4567
+                                </a>
                             </div>
                         </div>
                     </div>

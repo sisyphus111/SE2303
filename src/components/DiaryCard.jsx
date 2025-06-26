@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FileTextOutlined } from '@ant-design/icons';
 import '../css/DiaryCard.css';
 
 const DiaryCard = () => {
@@ -14,7 +15,9 @@ const DiaryCard = () => {
       <div className="card-content">
         <h2>文字日记</h2>
         <p>记录你的心情和想法</p>
-        <div className="diary-icon">📝</div>
+        <div className="diary-icon">
+          <FileTextOutlined />
+        </div>
         <div className="diary-arrow">→</div>
       </div>
     </div>

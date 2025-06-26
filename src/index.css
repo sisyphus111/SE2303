@@ -1,3 +1,36 @@
+/* 自定义CSS变量 - 校园心理社区配色方案 */
+:root {
+  /* 主色调 - 暗绿色系 */
+  --primary-green: #2d5016;
+  --primary-green-light: #4a7c59;
+  --primary-green-lighter: #689061;
+  --accent-green: #8fbc8f;
+  --soft-green: #a8d8a8;
+  --background-green: #f0f8f0;
+  
+  /* 中性色 */
+  --white: #ffffff;
+  --off-white: #fefefe;
+  --light-gray: #f5f7f5;
+  --medium-gray: #e8ede8;
+  --text-gray: #5a6c57;
+  --border-color: #d4e5d4;
+  
+  /* 功能色 */
+  --success: #52c41a;
+  --warning: #faad14;
+  --error: #ff4d4f;
+  --info: #1890ff;
+  
+  /* 阴影和圆角 */
+  --shadow-light: 0 2px 8px rgba(45, 80, 22, 0.05);
+  --shadow-medium: 0 4px 16px rgba(45, 80, 22, 0.08);
+  --shadow-heavy: 0 8px 24px rgba(45, 80, 22, 0.12);
+  --radius-small: 8px;
+  --radius-medium: 12px;
+  --radius-large: 16px;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,12 +38,23 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f5f5;
-  /* margin: 0;
-  font-family: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', 'Roboto', Arial, sans-serif;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e6ecf3 100%);
-  color: #3a4a5a;
-  min-height: 100vh; */
+  background: var(--background-green);
+  color: var(--text-gray);
+  position: relative;
+}
+
+/* 添加自然装饰背景 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-opacity='0.02'%3E%3Cpath d='M20 20c0-16.569 13.431-30 30-30s30 13.431 30 30-13.431 30-30 30-30-13.431-30-30z' fill='%234a7c59'/%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: -1;
 }
 
 * {
@@ -28,70 +72,158 @@ code {
     monospace;
 }
 
-/* 移除链接的默认样式 */
+/* 链接样式 */
 a {
-  /* text-decoration: none;
-  color: inherit; */
-  color: #6bb7b7;
+  color: var(--primary-green);
   text-decoration: none;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
 }
+
 a:hover {
-  color: #4e9a9a;
+  color: var(--primary-green-light);
 }
 
-
-/* 确保按钮没有默认样式 */
+/* 按钮样式重设计 */
 button {
   border: none;
   outline: none;
   cursor: pointer;
+  font-family: inherit;
 }
 
-/* 确保输入框没有默认样式 */
+/* 输入框样式重设计 */
 input, textarea {
   border: none;
   outline: none;
   font-family: inherit;
 }
 
+/* Ant Design 组件自定义样式 */
 .ant-btn-primary {
-  background: linear-gradient(90deg, #a7c7e7 0%, #b2e2d1 100%);
-  border: none;
-  color: #fff;
-  font-weight: 600;
-  border-radius: 8px;
-  transition: background 0.3s;
+  background: var(--primary-green) !important;
+  border-color: var(--primary-green) !important;
+  color: var(--white) !important;
+  font-weight: 500;
+  border-radius: var(--radius-small) !important;
+  box-shadow: var(--shadow-light);
+  transition: all 0.3s ease;
 }
 
-.ant-btn-primary:hover, .ant-btn-primary:focus {
-  background: linear-gradient(90deg, #b2e2d1 0%, #a7c7e7 100%);
+.ant-btn-primary:hover, 
+.ant-btn-primary:focus {
+  background: var(--primary-green-light) !important;
+  border-color: var(--primary-green-light) !important;
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-1px);
 }
 
+.ant-btn {
+  border-radius: var(--radius-small) !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
 
+.ant-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* 输入组件样式 */
 input, textarea, .ant-input, .ant-select-selector {
-  background: #f8f9fa !important;
-  border-radius: 8px !important;
-  border: 1px solid #e6ecf3 !important;
-  transition: border-color 0.2s;
-}
-input:focus, textarea:focus, .ant-input:focus, .ant-select-focused .ant-select-selector {
-  border-color: #a7c7e7 !important;
-  box-shadow: 0 0 0 2px #a7c7e733;
+  background: var(--white) !important;
+  border-radius: var(--radius-small) !important;
+  border: 1px solid var(--border-color) !important;
+  transition: all 0.2s ease;
+  color: var(--text-gray) !important;
 }
 
+input:focus, 
+textarea:focus, 
+.ant-input:focus, 
+.ant-input:hover,
+.ant-select-focused .ant-select-selector,
+.ant-select:hover .ant-select-selector {
+  border-color: var(--primary-green) !important;
+  box-shadow: 0 0 0 2px rgba(45, 80, 22, 0.1) !important;
+}
+
+/* 卡片样式 */
 .ant-card {
-  background: rgba(255,255,255,0.95) !important;
-  border-radius: 16px !important;
-  box-shadow: 0 4px 24px rgba(167,199,231,0.08);
-  border: none !important;
+  background: var(--white) !important;
+  border-radius: var(--radius-large) !important;
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--border-color) !important;
+  transition: all 0.3s ease;
 }
 
-::-webkit-scrollbar {
-  width: 8px;
-  background: #f0f4f8;
+.ant-card:hover {
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-2px);
 }
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  background: var(--light-gray);
+}
+
 ::-webkit-scrollbar-thumb {
-  background: #e6ecf3;
-  border-radius: 4px;
+  background: var(--accent-green);
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-green-light);
+}
+
+/* 选择器样式 */
+.ant-select-selector {
+  background: var(--white) !important;
+}
+
+.ant-select-dropdown {
+  border-radius: var(--radius-medium) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-medium);
+}
+
+/* 自然元素装饰类 */
+.leaf-decoration {
+  position: relative;
+}
+
+.leaf-decoration::before {
+  content: '🌿';
+  position: absolute;
+  opacity: 0.1;
+  font-size: 24px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.flower-decoration {
+  position: relative;
+}
+
+.flower-decoration::after {
+  content: '🌸';
+  position: absolute;
+  opacity: 0.1;
+  font-size: 20px;
+  animation: float 4s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+  
+  .ant-btn {
+    padding: 8px 16px !important;
+  }
 }

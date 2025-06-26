@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import '../css/AIChat.css';
+import { RobotOutlined } from '@ant-design/icons';
 
 // 生成唯一ID的函数
 let messageIdCounter = 0;
@@ -293,13 +294,11 @@ const AIChat = () => {
     <div className="ai-chat-container">
       <div className="chat-header">
         <div className="ai-avatar">
-          <span>🤖</span>
+          <RobotOutlined />
         </div>
         <div className="header-info">
-          <h2>AI陪伴助手</h2>
-          <p style={{ color: getConnectionStatusColor() }}>
-            {getConnectionStatusText()}
-          </p>
+          <h2>心理健康助手</h2>
+          <p>我是您的专属AI心理助手，随时为您提供支持</p>
         </div>
         {/* 新会话按钮 */}
         {/* <button onClick={createNewSession} className="new-session-btn">

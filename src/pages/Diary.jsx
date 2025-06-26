@@ -160,11 +160,11 @@ export const Diary = () => {
             value={moodRating} 
             onChange={(e) => setMoodRating(Number(e.target.value))}
           >
-            <option value={1}>😢 很差</option>
-            <option value={2}>😔 不好</option>
-            <option value={3}>😐 一般</option>
-            <option value={4}>😊 不错</option>
-            <option value={5}>😄 很好</option>
+            <option value={1}>很差</option>
+            <option value={2}>不好</option>
+            <option value={3}>一般</option>
+            <option value={4}>不错</option>
+            <option value={5}>很好</option>
           </select>
         </div>
         <button onClick={handleSave} className="save-btn">

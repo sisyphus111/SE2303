@@ -1,72 +1,116 @@
 /* 日记卡片特殊样式 */
 .diary-card {
-  background: 
-    linear-gradient(135deg, rgba(192, 222, 224, 0.85) 0%, rgba(212, 186, 220, 0.85) 100%),
-    url('https://images.unsplash.com/photo-1643148636637-58b3eb95cdad?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') center/cover no-repeat;
-  color: white;
+  background: linear-gradient(135deg, var(--white) 0%, rgba(168, 216, 168, 0.08) 100%);
+  border: 1px solid var(--border-color);
+  color: var(--text-gray);
   position: relative;
   overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.diary-card::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 100px;
+  height: 100px;
+  background: var(--soft-green);
+  border-radius: 50%;
+  opacity: 0.1;
+  transition: all 0.3s ease;
+}
+
+.diary-card:hover {
+  border-color: var(--accent-green);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-4px);
 }
 
 .diary-card:hover::before {
-  opacity: 1;
+  opacity: 0.2;
+  transform: scale(1.1);
 }
 
 .diary-card .card-content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .diary-card .card-content h2 {
-  color: white;
-  font-size: 28px;
-  margin-bottom: 15px;
+  color: var(--primary-green);
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
 }
 
 .diary-card p {
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: var(--text-gray) !important;
   font-size: 16px;
-  margin: 10px 0 20px 0;
-  line-height: 1.4;
+  margin: 8px 0 16px 0;
+  line-height: 1.6;
 }
 
 .diary-icon {
-  font-size: 48px;
-  margin: 20px 0 15px 0;
-  opacity: 0.9;
-  transition: transform 0.3s ease;
+  font-size: 40px;
+  color: var(--accent-green);
+  margin: 16px 0 12px 0;
+  opacity: 0.8;
+  transition: all 0.3s ease;
 }
 
 .diary-card:hover .diary-icon {
   transform: scale(1.1);
+  opacity: 1;
+  color: var(--primary-green-light);
 }
 
 .diary-arrow {
   position: absolute;
   bottom: 20px;
   right: 20px;
-  font-size: 24px;
-  color: rgba(255, 255, 255, 0.8);
-  transition: transform 0.3s ease;
+  font-size: 20px;
+  color: var(--accent-green);
+  transition: all 0.3s ease;
+  opacity: 0.7;
 }
 
 .diary-card:hover .diary-arrow {
-  transform: translateX(5px);
+  transform: translateX(4px);
+  opacity: 1;
+  color: var(--primary-green);
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
   .diary-card .card-content h2 {
-    font-size: 24px;
+    font-size: 20px;
   }
   
   .diary-icon {
-    font-size: 40px;
+    font-size: 32px;
   }
   
   .diary-arrow {
-    font-size: 20px;
-    bottom: 15px;
-    right: 15px;
+    font-size: 18px;
+    bottom: 16px;
+    right: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .diary-card .card-content h2 {
+    font-size: 18px;
+  }
+  
+  .diary-icon {
+    font-size: 28px;
+  }
+  
+  .diary-arrow {
+    font-size: 16px;
+    bottom: 14px;
+    right: 14px;
   }
 } 

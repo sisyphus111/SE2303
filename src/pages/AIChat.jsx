@@ -1,18 +1,25 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import '../css/AIChat.css';
 
+// 生成唯一ID的函数
+let messageIdCounter = 0;
+const generateUniqueId = () => {
+  return `msg_${Date.now()}_${++messageIdCounter}`;
+};
+
 const AIChat = () => {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      text: "你好！我是你的AI陪伴助手，很高兴认识你！有什么想聊的吗？",
-      sender: 'ai',
-      timestamp: new Date()
-    }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState('connecting'); // 'connecting', 'connected', 'disconnected'
+  const [currentStreamingMessage, setCurrentStreamingMessage] = useState('');
+  const [isStreaming, setIsStreaming] = useState(false);
+  
   const messagesEndRef = useRef(null);
+  const webSocketRef = useRef(null);
+  const reconnectTimeoutRef = useRef(null);
+  const reconnectAttempts = useRef(0);
+  const maxReconnectAttempts = 5;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -20,62 +27,159 @@ const AIChat = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, currentStreamingMessage]);
 
-  // 模拟AI回复
-  const generateAIResponse = (userMessage) => {
-    const responses = [
-      "我理解你的感受，能具体说说吗？",
-      "这确实是一个值得思考的问题。",
-      "听起来很有趣，请继续分享。",
-      "我在这里陪伴着你，随时可以聊天。",
-      "你的想法很有见地，我很想听听更多。",
-      "生活中总会有起起落落，重要的是保持积极的心态。",
-      "每个人都有自己的节奏，不用着急。",
-      "你的感受是正常的，我完全理解。",
-      "让我们一起面对这个挑战吧。",
-      "你的坚持让我很感动。"
-    ];
+  // WebSocket连接函数
+  const connectWebSocket = useCallback(() => {
+    if (webSocketRef.current?.readyState === WebSocket.OPEN) {
+      return;
+    }
+
+    try {
+      setConnectionStatus('connecting');
+      const ws = new WebSocket('ws://localhost:8081/ws/chat');
+      
+      ws.onopen = () => {
+        console.log('WebSocket连接成功');
+        setConnectionStatus('connected');
+        reconnectAttempts.current = 0;
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          handleWebSocketMessage(message);
+        } catch (error) {
+          console.error('解析消息失败:', error);
+        }
+      };
+
+      ws.onclose = (event) => {
+        console.log('WebSocket连接关闭:', event.code, event.reason);
+        setConnectionStatus('disconnected');
+        setIsStreaming(false);
+        setCurrentStreamingMessage('');
+        
+        // 自动重连
+        if (reconnectAttempts.current < maxReconnectAttempts) {
+          reconnectAttempts.current++;
+          const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 30000);
+          console.log(`${delay/1000}秒后尝试重连 (第${reconnectAttempts.current}次)`);
+          
+          reconnectTimeoutRef.current = setTimeout(() => {
+            connectWebSocket();
+          }, delay);
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket错误:', error);
+        setConnectionStatus('disconnected');
+      };
+
+      webSocketRef.current = ws;
+    } catch (error) {
+      console.error('创建WebSocket连接失败:', error);
+      setConnectionStatus('disconnected');
+    }
+  }, []);
+
+  // 处理WebSocket消息
+  const handleWebSocketMessage = (message) => {
+    const { type, content, timestamp } = message;
     
-    // 根据用户消息内容选择更合适的回复
-    if (userMessage.includes('难过') || userMessage.includes('伤心') || userMessage.includes('不开心')) {
-      return "我感受到你现在的心情不太好。记住，每个人都会有情绪低落的时候，这是完全正常的。你想聊聊具体发生了什么吗？我在这里倾听。";
-    } else if (userMessage.includes('开心') || userMessage.includes('高兴') || userMessage.includes('快乐')) {
-      return "太好了！看到你心情不错我也很开心。能分享是什么让你这么开心吗？";
-    } else if (userMessage.includes('压力') || userMessage.includes('焦虑') || userMessage.includes('紧张')) {
-      return "压力确实会让人感到困扰。试着深呼吸，一步一步来。你愿意和我分享是什么让你感到压力吗？";
-    } else if (userMessage.includes('谢谢') || userMessage.includes('感谢')) {
-      return "不用谢！能陪伴你是我的荣幸。希望我们的对话能给你带来一些温暖和力量。";
-    } else {
-      return responses[Math.floor(Math.random() * responses.length)];
+    switch (type) {
+      case 'ai':
+        // 完整的AI消息（比如欢迎消息）
+        setMessages(prev => [...prev, {
+          id: generateUniqueId(),
+          text: content,
+          sender: 'ai',
+          timestamp: new Date(timestamp)
+        }]);
+        break;
+        
+      case 'ai_chunk':
+        // 流式消息片段
+        setIsStreaming(true);
+        setCurrentStreamingMessage(prev => prev + content);
+        break;
+        
+      case 'ai_end':
+        // 流式消息结束
+        setIsStreaming(false);
+        setCurrentStreamingMessage(prevMessage => {
+          if (prevMessage) {
+            setMessages(prev => [...prev, {
+              id: generateUniqueId(),
+              text: prevMessage,
+              sender: 'ai',
+              timestamp: new Date()
+            }]);
+          }
+          return '';
+        });
+        setIsLoading(false);
+        break;
+        
+      case 'error':
+        // 错误消息
+        setMessages(prev => [...prev, {
+          id: generateUniqueId(),
+          text: content,
+          sender: 'ai',
+          timestamp: new Date(),
+          isError: true
+        }]);
+        setIsLoading(false);
+        setIsStreaming(false);
+        setCurrentStreamingMessage('');
+        break;
+        
+      default:
+        console.log('未知消息类型:', type);
     }
   };
 
+  // 发送消息
   const handleSendMessage = async () => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim() || connectionStatus !== 'connected' || isLoading) {
+      return;
+    }
 
     const userMessage = {
-      id: messages.length + 1,
+      id: generateUniqueId(),
       text: inputText,
       sender: 'user',
       timestamp: new Date()
     };
 
+    // 添加用户消息到界面
     setMessages(prev => [...prev, userMessage]);
-    setInputText('');
-    setIsLoading(true);
-
-    // 模拟AI思考时间
-    setTimeout(() => {
-      const aiResponse = {
-        id: messages.length + 2,
-        text: generateAIResponse(inputText),
-        sender: 'ai',
-        timestamp: new Date()
+    
+    // 发送到WebSocket
+    try {
+      const messageToSend = {
+        type: 'user',
+        content: inputText,
+        timestamp: Date.now()
       };
-      setMessages(prev => [...prev, aiResponse]);
+      
+      webSocketRef.current.send(JSON.stringify(messageToSend));
+      setInputText('');
+      setIsLoading(true);
+      setCurrentStreamingMessage('');
+    } catch (error) {
+      console.error('发送消息失败:', error);
+      setMessages(prev => [...prev, {
+        id: generateUniqueId(),
+        text: '发送消息失败，请检查网络连接',
+        sender: 'ai',
+        timestamp: new Date(),
+        isError: true
+      }]);
       setIsLoading(false);
-    }, 1000 + Math.random() * 2000); // 1-3秒的随机延迟
+    }
   };
 
   const handleKeyPress = (e) => {
@@ -92,6 +196,48 @@ const AIChat = () => {
     });
   };
 
+  // 连接状态显示
+  const getConnectionStatusText = () => {
+    switch (connectionStatus) {
+      case 'connecting':
+        return '连接中...';
+      case 'connected':
+        return '在线 • 随时陪伴';
+      case 'disconnected':
+        return '连接断开 • 尝试重连中...';
+      default:
+        return '未知状态';
+    }
+  };
+
+  const getConnectionStatusColor = () => {
+    switch (connectionStatus) {
+      case 'connected':
+        return '#4CAF50';
+      case 'connecting':
+        return '#FF9800';
+      case 'disconnected':
+        return '#F44336';
+      default:
+        return '#9E9E9E';
+    }
+  };
+
+  // 组件挂载时连接WebSocket
+  useEffect(() => {
+    connectWebSocket();
+    
+    // 组件卸载时清理连接
+    return () => {
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      if (webSocketRef.current) {
+        webSocketRef.current.close();
+      }
+    };
+  }, [connectWebSocket]);
+
   return (
     <div className="ai-chat-container">
       <div className="chat-header">
@@ -100,7 +246,9 @@ const AIChat = () => {
         </div>
         <div className="header-info">
           <h2>AI陪伴助手</h2>
-          <p>在线 • 随时陪伴</p>
+          <p style={{ color: getConnectionStatusColor() }}>
+            {getConnectionStatusText()}
+          </p>
         </div>
       </div>
 
@@ -108,7 +256,7 @@ const AIChat = () => {
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`message ${message.sender === 'user' ? 'user-message' : 'ai-message'}`}
+            className={`message ${message.sender === 'user' ? 'user-message' : 'ai-message'} ${message.isError ? 'error-message' : ''}`}
           >
             <div className="message-content">
               <div className="message-text">{message.text}</div>
@@ -117,8 +265,21 @@ const AIChat = () => {
           </div>
         ))}
         
-        {isLoading && (
-          <div className="message ai-message">
+        {/* 流式消息显示 */}
+        {isStreaming && currentStreamingMessage && (
+          <div key="streaming-message" className="message ai-message streaming-message">
+            <div className="message-content">
+              <div className="message-text">
+                {currentStreamingMessage}
+                <span className="cursor">|</span>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* 加载指示器 */}
+        {isLoading && !isStreaming && (
+          <div key="loading-indicator" className="message ai-message">
             <div className="message-content">
               <div className="typing-indicator">
                 <span></span>
@@ -138,18 +299,27 @@ const AIChat = () => {
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="输入你的消息..."
-            disabled={isLoading}
+            placeholder={connectionStatus === 'connected' ? "输入你的消息..." : "等待连接..."}
+            disabled={connectionStatus !== 'connected' || isLoading}
             rows="1"
           />
           <button
             onClick={handleSendMessage}
-            disabled={!inputText.trim() || isLoading}
-            className="send-button"
+            disabled={!inputText.trim() || connectionStatus !== 'connected' || isLoading}
+            className={`send-button ${connectionStatus !== 'connected' ? 'disabled' : ''}`}
           >
             <span>发送</span>
           </button>
         </div>
+        
+        {connectionStatus === 'disconnected' && (
+          <div className="connection-status">
+            <span>连接已断开，正在尝试重连...</span>
+            <button onClick={connectWebSocket} className="reconnect-button">
+              手动重连
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -14,3 +14,24 @@
         margin-top: 60px;
     }
 }
+
+.community-homepage-layout {
+    display: flex;
+    gap: 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 0;
+}
+
+.sidebar.custom-sidebar {
+    width: 220px;
+    background: linear-gradient(135deg, #e6ecf3 0%, #b2e2d1 100%);
+    border-radius: 22px;
+    box-shadow: 0 8px 32px rgba(167,199,231,0.13);
+    padding: 36px 0 24px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: fit-content;
+    transition: box-shadow 0.3s;
+}

@@ -1,6 +1,10 @@
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, Typography, Button } from "antd";
 import "../css/MentalResource.css"
+
+// API服务导入注释
+// import { getArticleDetail } from '../service/mentalResourceService';
 
 const { Title, Paragraph } = Typography;
 
@@ -25,7 +29,39 @@ const articles = [
 function ArticleDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const article = articles.find(a => a.id === id);
+  const [article, setArticle] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadArticleDetail();
+  }, [id]);
+
+  // 加载文章详情的函数
+  const loadArticleDetail = async () => {
+    try {
+      setLoading(true);
+      
+      // API调用注释：获取文章详情
+      // const response = await getArticleDetail(id);
+      // setArticle(response.data);
+      
+      // 使用模拟数据作为备选
+      const foundArticle = articles.find(a => a.id === id);
+      setArticle(foundArticle);
+      
+    } catch (error) {
+      console.error('获取文章详情失败:', error);
+      // 使用模拟数据作为备选
+      const foundArticle = articles.find(a => a.id === id);
+      setArticle(foundArticle);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="loading">加载中...</div>;
+  }
 
   if (!article) {
     return <div>文章不存在</div>;

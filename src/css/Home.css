@@ -11,8 +11,8 @@
   justify-content: center;
   align-items: center;
   height: 50vh;
-  font-size: 18px;
-  color: #666;
+  font-size: 20px;
+  color: #6bb7b7;
 }
 
 .cards-section {
@@ -31,26 +31,6 @@
   margin: 0 auto;
 }
 
-.feature-item {
-  padding: 25px;
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-  transition: transform 0.2s;
-}
-
-.feature-item:hover {
-  transform: translateY(-2px);
-}
-
-.feature-item > span {
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
-  display: block;
-  margin-bottom: 15px;
-}
-
 /* 卡片通用样式 */
 .card {
   background-color: #e0e0e0;
@@ -66,22 +46,66 @@
 }
 
 .card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+  /* transform: translateY(-3px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15); */
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 12px 36px rgba(167,199,231,0.18);
+  border-image: linear-gradient(135deg, #6bb7b7 0%, #a7c7e7 100%) 1;
 }
 
 .card-content {
   text-align: center;
-  padding: 20px;
+  padding: 28px;
   width: 100%;
+  z-index: 1;
+  position: relative;
 }
 
 .card-content h2 {
-  font-size: 24px;
+  font-size: 28px;
+  font-family: 'Microsoft YaHei', Arial, sans-serif;
+  color: #4e9a9a;
   font-weight: bold;
-  color: #333;
-  margin: 0 0 20px 0;
+  margin-bottom: 18px;
+  letter-spacing: 2px;
 }
+
+.card-content p {
+  color: #76bfbf;
+  font-size: 18px;
+  margin: 10px 0 20px 0;
+  line-height: 1.5;
+}
+
+.feature-item {
+  padding: 32px;
+  background: rgba(255,255,255,0.98);
+  border-radius: 20px;
+  box-shadow: 0 4px 18px rgba(167,199,231,0.10);
+  border: 2.5px solid;
+  border-image: linear-gradient(90deg, #b2e2d1 0%, #a7c7e7 100%) 1;
+  margin-bottom: 24px;
+  transition: box-shadow 0.3s, border-color 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-item:hover {
+  box-shadow: 0 8px 32px rgba(167,199,231,0.18);
+  border-image: linear-gradient(90deg, #6bb7b7 0%, #a7c7e7 100%) 1;
+}
+
+.feature-item > span {
+  font-size: 22px;
+  font-weight: 700;
+  color: #6bb7b7;
+  display: block;
+  margin-bottom: 18px;
+  letter-spacing: 2px;
+  font-family: 'Microsoft YaHei', Arial, sans-serif;
+}
+
+
 
 /* 响应式设计 */
 @media (max-width: 768px) {

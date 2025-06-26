@@ -1,0 +1,41 @@
+.comment-input-area {
+  background: #f8fafc;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #b2e2d144;
+  padding: 18px 20px 12px 20px;
+  margin-bottom: 10px;
+  border: 1.5px solid #b2e2d1;
+  transition: border 0.2s;
+}
+.comment-input-area:focus-within {
+  border: 1.5px solid #6bb7b7;
+}
+
+.comment-input-textarea .ant-input {
+  background: #f8fafc;
+  border-radius: 8px;
+  font-size: 1.08rem;
+  min-height: 60px;
+  border: none;
+  box-shadow: none;
+  resize: vertical;
+}
+
+.comment-input-btn {
+  background: linear-gradient(90deg, #b2e2d1 60%, #6bb7b7 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px #b2e2d144;
+  transition: background 0.2s, transform 0.2s;
+}
+.comment-input-btn:disabled {
+  background: #e6ecf3;
+  color: #aaa;
+}
+.comment-input-btn:hover:not(:disabled) {
+  background: linear-gradient(90deg, #6bb7b7 60%, #b2e2d1 100%);
+  color: #fff;
+  transform: translateY(-2px) scale(1.05);
+}

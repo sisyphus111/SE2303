@@ -301,6 +301,10 @@ const AIChat = () => {
             {getConnectionStatusText()}
           </p>
         </div>
+        {/* 新会话按钮 */}
+        {/* <button onClick={createNewSession} className="new-session-btn">
+          新会话
+        </button> */}
       </div>
 
       <div className="messages-container">

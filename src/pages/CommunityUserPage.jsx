@@ -1,28 +1,65 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import CommunityUserContent from '../components/CommunityUserContent.jsx';
 import CreatePosts from '../components/CreatePosts.jsx';
 import '../css/CommunityUserPage.css';
-import Layout from "../components/Layout";
-import { Button } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { Button, Card } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
+import { useNavigate, useLocation } from 'react-router-dom';
+
+const allTags = ['全部', '情感', '学习', '生活', '健康', '成长'];
 
 function CommunityUserPage() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const [selectedTag, setSelectedTag] = useState('全部');
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const tag = params.get('tag');
+        if (tag && allTags.includes(tag)) {
+            setSelectedTag(tag);
+        } else {
+            setSelectedTag('全部');
+        }
+    }, [location.search]);
+
     return (
-        <div className="main-content">
-            <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        <div className="community-homepage-layout">
+            <aside className="sidebar custom-sidebar">
                 <Button
-                    type="link"
-                    icon={<ArrowLeftOutlined />}
+                    type="text"
+                    style={{ width: '100%', marginBottom: 18, borderRadius: 12, fontWeight: 700, fontSize: 20, color: '#4e9a9a', background: 'none', letterSpacing: 2 }}
                     onClick={() => navigate('/community')}
-                    style={{ margin: '16px 0' }}
                 >
-                    返回首页
+                    广场
                 </Button>
-                <CommunityUserContent />
+                <Button
+                    icon={<UserOutlined />}
+                    type="primary"
+                    style={{ width: '100%', marginBottom: 24, borderRadius: 12 }}
+                    onClick={() => navigate('/community_user_page')}
+                >
+                    我的帖子
+                </Button>
+                <div className="sidebar-title">按标签筛选</div>
+                <ul className="sidebar-tag-list">
+                    {allTags.map(tag => (
+                        <li
+                            key={tag}
+                            className={`sidebar-tag-item${selectedTag === tag ? ' active' : ''}`}
+                            onClick={() => {
+                                navigate(`/community?tag=${encodeURIComponent(tag)}`);
+                            }}
+                        >
+                            {tag}
+                        </li>
+                    ))}
+                </ul>
+            </aside>
+            <Card className="card-container">
+                <CommunityUserContent selectedTag={selectedTag} />
                 <CreatePosts />
-            </div>
+            </Card>
         </div>
     );
 }

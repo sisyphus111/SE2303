@@ -1,0 +1,44 @@
+.post-comment-card {
+  background: #f8fafc;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px #b2e2d144;
+  padding: 16px 20px 12px 20px;
+  margin-bottom: 10px;
+  border: 1.2px solid #e6ecf3;
+  transition: border 0.2s;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.post-comment-card:hover {
+  border: 1.2px solid #b2e2d1;
+}
+
+.post-comment-avatar {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 50%;
+  border: 2px solid #b2e2d1;
+  box-shadow: 0 2px 8px #b2e2d144;
+  background: #fff;
+}
+
+.post-comment-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.post-comment-username {
+  color: #4e9a9a;
+  font-weight: 600;
+  font-size: 1.08rem;
+  margin-bottom: 2px;
+}
+.post-comment-text {
+  font-size: 1.08rem;
+  color: #333;
+  background: #f8fafc;
+  border-radius: 6px;
+  padding: 2px 0 0 0;
+  line-height: 1.7;
+}

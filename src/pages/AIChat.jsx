@@ -33,11 +33,14 @@ const AIChat = () => {
   const [showQuickReplies, setShowQuickReplies] = useState(true);
   
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
   const webSocketRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
   const streamingEndProcessed = useRef(false);
+  const lastScrollTop = useRef(0);
+  const isUserScrolling = useRef(false);
 
   // 快捷回复建议 - 分类
   const quickRepliesCategories = [
@@ -76,13 +79,55 @@ const AIChat = () => {
     }
   ];
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToBottom = (force = false) => {
+    if (!messagesContainerRef.current) return;
+    
+    const container = messagesContainerRef.current;
+    const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 50;
+    
+    // 只有在用户在底部或强制滚动时才自动滚动
+    if (force || isAtBottom || !isUserScrolling.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
+  // 检测用户是否在滚动
+  const handleScroll = () => {
+    if (!messagesContainerRef.current) return;
+    
+    const container = messagesContainerRef.current;
+    const currentScrollTop = container.scrollTop;
+    
+    // 检测用户是否主动向上滚动
+    if (currentScrollTop < lastScrollTop.current) {
+      isUserScrolling.current = true;
+    } else {
+      // 如果用户滚动到底部附近，重置滚动状态
+      const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+      if (isNearBottom) {
+        isUserScrolling.current = false;
+      }
+    }
+    
+    lastScrollTop.current = currentScrollTop;
+  };
+
+  // 只在新消息添加时滚动，流式消息更新时不频繁滚动
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, currentStreamingMessage]);
+    scrollToBottom(true); // 新消息强制滚动
+  }, [messages]);
+
+  // 流式消息的滚动控制 - 降低频率
+  useEffect(() => {
+    if (isStreaming && currentStreamingMessage) {
+      // 使用防抖，减少滚动频率
+      const timeoutId = setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [currentStreamingMessage, isStreaming]);
 
   // WebSocket连接函数
   const connectWebSocket = useCallback(() => {
@@ -252,6 +297,9 @@ const AIChat = () => {
     setMessages(prev => [...prev, userMessage]);
     setShowQuickReplies(false);
     
+    // 用户发送消息时重置滚动状态，确保能看到回复
+    isUserScrolling.current = false;
+    
     try {
       const messageToSend = {
         type: 'user',
@@ -292,6 +340,7 @@ const AIChat = () => {
     setMessages([]);
     setCurrentStreamingMessage('');
     setShowQuickReplies(true);
+    isUserScrolling.current = false;
   };
 
   const formatTime = (timestamp) => {
@@ -383,7 +432,11 @@ const AIChat = () => {
       {/* 主要内容区域 */}
       <div className="chat-main">
         {/* 消息容器 */}
-        <div className="messages-container">
+        <div 
+          className="messages-container"
+          ref={messagesContainerRef}
+          onScroll={handleScroll}
+        >
           {/* 欢迎消息 */}
           {messages.length === 0 && !isLoading && (
             <div className="welcome-section">

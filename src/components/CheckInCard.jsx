@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { submitCheckIn } from '../service/homeService';
+import TagSelector from './TagSelector';
 import '../css/CheckInCard.css';
 
 const CheckInCard = ({ onCheckInSuccess }) => {
@@ -79,18 +80,14 @@ const CheckInCard = ({ onCheckInSuccess }) => {
 
         {/* 标签选择 */}
         <div className="tags-section">
-          <p>选择标签：</p>
-          <div className="tags-grid">
-            {availableTags.map(tag => (
-              <span
-                key={tag}
-                className={`tag ${selectedTags.includes(tag) ? 'selected' : ''}`}
-                onClick={() => handleTagToggle(tag)}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+          <TagSelector
+            tags={availableTags}
+            selectedTags={selectedTags}
+            onTagToggle={handleTagToggle}
+            title="选择标签："
+            variant="mood"
+            maxSelection={5}
+          />
         </div>
 
         <button 

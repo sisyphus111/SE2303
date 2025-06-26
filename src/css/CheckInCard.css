@@ -81,46 +81,7 @@
   margin-bottom: 24px;
 }
 
-.tags-section p {
-  margin: 0 0 12px 0;
-  font-size: 15px;
-  color: var(--text-gray) !important;
-  font-weight: 500;
-}
-
-.tags-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-}
-
-.tag {
-  background: var(--light-gray);
-  color: var(--text-gray);
-  padding: 8px 14px;
-  border-radius: 16px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid var(--border-color);
-  font-weight: 500;
-  user-select: none;
-}
-
-.tag.selected {
-  background: var(--primary-green);
-  color: var(--white);
-  border-color: var(--primary-green);
-  box-shadow: var(--shadow-light);
-  transform: scale(1.05);
-}
-
-.tag:hover:not(.selected) {
-  background: var(--medium-gray);
-  border-color: var(--accent-green);
-  color: var(--primary-green);
-}
+/* 标签选择区域 - 使用通用TagSelector组件 */
 
 .checkin-btn {
   background: var(--primary-green);
@@ -174,14 +135,7 @@
     font-size: 24px;
   }
   
-  .tags-grid {
-    gap: 6px;
-  }
-  
-  .tag {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
+  /* 标签样式由TagSelector组件处理 */
 }
 
 @media (max-width: 480px) {
@@ -198,10 +152,7 @@
     font-size: 20px;
   }
   
-  .tag {
-    padding: 5px 10px;
-    font-size: 11px;
-  }
+  /* 标签样式由TagSelector组件处理 */
   
   .checkin-btn {
     padding: 10px 20px;

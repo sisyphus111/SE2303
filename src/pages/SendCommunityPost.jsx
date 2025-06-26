@@ -12,6 +12,7 @@ import {
   ThunderboltOutlined
 } from '@ant-design/icons';
 import { tagOptions } from '../data/post_data';
+import TagSelector from '../components/TagSelector';
 import '../css/SendCommunityPost.css';
 
 const SendCommunityPostPage = () => {
@@ -161,28 +162,16 @@ const SendCommunityPostPage = () => {
                                 <span>选择标签</span>
                                 <span className="required">*</span>
                             </label>
-                            <div className="tags-selection">
-                                {tagOptions.map(tag => (
-                                    <button
-                                        key={tag.value}
-                                        type="button"
-                                        className={`tag-option ${formData.tags.includes(tag.value) ? 'selected' : ''}`}
-                                        onClick={() => handleTagToggle(tag.value)}
-                                    >
-                                        {tagIcons[tag.value]}
-                                        <span>{tag.label}</span>
-                                    </button>
-                                ))}
-                            </div>
+                            <TagSelector
+                                tags={tagOptions}
+                                selectedTags={formData.tags}
+                                onTagToggle={handleTagToggle}
+                                variant="post"
+                                maxSelection={3}
+                                tagIcons={tagIcons}
+                                title=""
+                            />
                             {errors.tags && <span className="error-message">{errors.tags}</span>}
-                            <div className="selected-tags">
-                                {formData.tags.map(tag => (
-                                    <span key={tag} className="selected-tag">
-                                        {tagIcons[tag]}
-                                        {tag}
-                                    </span>
-                                ))}
-                            </div>
                         </div>
 
                         {/* 内容输入 */}

@@ -7,19 +7,22 @@
   flex-direction: column;
   background: var(--background-green);
   font-family: Inter, 'Microsoft YaHei', 'Segoe UI', 'Roboto', Arial, sans-serif;
+  position: relative;
 }
 
-/* 聊天头部 */
+/* 聊天头部 - 固定在顶部 */
 .chat-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 30px;
+  padding: 16px 24px;
   background: var(--white);
   border-bottom: 1px solid var(--border-color);
   box-shadow: 0 2px 12px rgba(45, 80, 22, 0.08);
-  position: relative;
-  z-index: 10;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-shrink: 0;
 }
 
 .chat-header::before {
@@ -38,17 +41,17 @@
 }
 
 .ai-avatar {
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 16px;
+  margin-right: 14px;
   box-shadow: 0 4px 16px rgba(45, 80, 22, 0.2);
   color: var(--white);
-  font-size: 26px;
+  font-size: 22px;
   position: relative;
 }
 
@@ -57,17 +60,17 @@
   position: absolute;
   bottom: 2px;
   right: 2px;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   background: var(--success);
   border-radius: 50%;
-  border: 3px solid var(--white);
+  border: 2px solid var(--white);
 }
 
 .header-info h2 {
   margin: 0;
   color: var(--primary-green);
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   letter-spacing: 0.5px;
 }
@@ -88,7 +91,7 @@
 
 .status-text {
   color: var(--text-gray);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
 }
 
@@ -104,9 +107,9 @@
 }
 
 .action-button {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   border: none;
   background: var(--light-gray);
   color: var(--text-gray);
@@ -115,7 +118,7 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .action-button:hover {
@@ -125,22 +128,25 @@
   box-shadow: 0 4px 12px rgba(45, 80, 22, 0.2);
 }
 
-/* 主要内容区域 */
+/* 主要内容区域 - 占据剩余空间 */
 .chat-main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  min-height: 0; /* 重要：允许子元素正确收缩 */
+  position: relative;
 }
 
+/* 消息容器 - 可滚动区域 */
 .messages-container {
   flex: 1;
   overflow-y: auto;
-  padding: 20px 30px;
+  padding: 20px 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   background: var(--background-green);
+  min-height: 0; /* 重要：允许滚动 */
 }
 
 .messages-container::-webkit-scrollbar {
@@ -164,67 +170,67 @@
   justify-content: center;
   text-align: center;
   padding: 40px 20px;
-  margin: auto 0;
+  min-height: 400px;
 }
 
 .welcome-avatar {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   box-shadow: 0 8px 32px rgba(45, 80, 22, 0.2);
   color: var(--white);
-  font-size: 48px;
+  font-size: 36px;
   position: relative;
 }
 
 .welcome-avatar::after {
   content: '';
   position: absolute;
-  bottom: 8px;
-  right: 8px;
-  width: 20px;
-  height: 20px;
+  bottom: 6px;
+  right: 6px;
+  width: 16px;
+  height: 16px;
   background: var(--success);
   border-radius: 50%;
-  border: 4px solid var(--white);
+  border: 3px solid var(--white);
 }
 
 .welcome-content h3 {
   color: var(--primary-green);
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
-  margin: 0 0 16px 0;
+  margin: 0 0 12px 0;
   letter-spacing: 0.5px;
 }
 
 .welcome-content p {
   color: var(--text-gray);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.6;
-  margin: 0 0 32px 0;
-  max-width: 500px;
+  margin: 0 0 24px 0;
+  max-width: 450px;
 }
 
 .welcome-features {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 16px;
-  max-width: 600px;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  max-width: 500px;
 }
 
 .feature-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 20px 16px;
+  gap: 6px;
+  padding: 16px 12px;
   background: var(--white);
-  border-radius: 16px;
+  border-radius: 12px;
   border: 1px solid var(--border-color);
   transition: all 0.3s ease;
   cursor: pointer;
@@ -232,17 +238,17 @@
 
 .feature-item:hover {
   border-color: var(--accent-green);
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(45, 80, 22, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(45, 80, 22, 0.12);
 }
 
 .feature-item .anticon {
-  font-size: 24px;
+  font-size: 20px;
   color: var(--primary-green);
 }
 
 .feature-item span {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-dark);
 }
@@ -272,15 +278,15 @@
 }
 
 .message-avatar {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: var(--primary-green);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--white);
-  font-size: 16px;
+  font-size: 14px;
   flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(45, 80, 22, 0.15);
 }
@@ -290,9 +296,9 @@
 }
 
 .message-content {
-  max-width: 70%;
-  padding: 16px 20px;
-  border-radius: 20px;
+  max-width: 75%;
+  padding: 14px 18px;
+  border-radius: 18px;
   position: relative;
   word-wrap: break-word;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
@@ -301,24 +307,24 @@
 .user-message .message-content {
   background: var(--primary-green);
   color: var(--white);
-  border-bottom-right-radius: 8px;
+  border-bottom-right-radius: 6px;
 }
 
 .ai-message .message-content {
   background: var(--white);
   color: var(--text-dark);
-  border-bottom-left-radius: 8px;
+  border-bottom-left-radius: 6px;
   border: 1px solid var(--border-color);
 }
 
 .message-text {
   font-size: 15px;
   line-height: 1.6;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .message-time {
-  font-size: 12px;
+  font-size: 11px;
   opacity: 0.7;
   text-align: right;
   font-weight: 500;
@@ -382,44 +388,44 @@
   color: #d32f2f !important;
 }
 
-/* 快捷回复面板 */
+/* 快捷回复面板 - 在消息容器内 */
 .quick-replies-panel {
-  padding: 30px;
+  padding: 24px;
   background: var(--white);
-  border-top: 1px solid var(--border-color);
-  margin: 0 30px;
-  border-radius: 20px 20px 0 0;
-  box-shadow: 0 -4px 16px rgba(45, 80, 22, 0.05);
+  border-radius: 16px;
+  margin: 20px 0;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 16px rgba(45, 80, 22, 0.05);
 }
 
 .quick-replies-header {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .quick-replies-header h4 {
-  margin: 0 0 8px 0;
-  font-size: 20px;
+  margin: 0 0 6px 0;
+  font-size: 18px;
   font-weight: 600;
   color: var(--primary-green);
 }
 
 .quick-replies-header p {
   margin: 0;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-gray);
 }
 
 .quick-replies-categories {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
 }
 
 .quick-reply-category {
   background: var(--light-gray);
-  border-radius: 16px;
-  padding: 20px;
+  border-radius: 12px;
+  padding: 16px;
   border: 1px solid var(--border-color);
   transition: all 0.3s ease;
 }
@@ -432,32 +438,32 @@
 .category-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-  font-size: 16px;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 15px;
   font-weight: 600;
 }
 
 .category-header .anticon {
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .category-replies {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .quick-reply-button {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 16px;
+  padding: 10px 14px;
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 10px;
   background: var(--white);
   color: var(--text-gray);
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
@@ -465,20 +471,23 @@
 
 .quick-reply-button:hover {
   background: var(--background-green);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(45, 80, 22, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(45, 80, 22, 0.12);
 }
 
 .quick-reply-button .anticon {
-  font-size: 14px;
+  font-size: 13px;
 }
 
-/* 输入区域 */
+/* 输入区域 - 固定在底部 */
 .input-container {
-  padding: 20px 30px;
+  padding: 16px 24px 20px 24px;
   background: var(--white);
   border-top: 1px solid var(--border-color);
   box-shadow: 0 -2px 12px rgba(45, 80, 22, 0.05);
+  flex-shrink: 0; /* 防止被压缩 */
+  position: relative;
+  z-index: 50;
 }
 
 .input-wrapper {
@@ -492,18 +501,19 @@
 .input-wrapper textarea {
   flex: 1;
   border: 2px solid var(--border-color);
-  border-radius: 24px;
-  padding: 14px 20px;
-  font-size: 15px;
+  border-radius: 20px;
+  padding: 12px 18px;
+  font-size: 14px;
   resize: none;
   outline: none;
   background: var(--white);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   max-height: 120px;
-  min-height: 52px;
+  min-height: 44px;
   color: var(--text-dark);
   font-family: inherit;
+  line-height: 1.4;
 }
 
 .input-wrapper textarea:focus {
@@ -518,13 +528,13 @@
 }
 
 .send-button {
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   background: var(--primary-green);
   color: var(--white);
   border: none;
   border-radius: 50%;
-  font-size: 18px;
+  font-size: 16px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 16px rgba(45, 80, 22, 0.2);
@@ -557,11 +567,11 @@
   align-items: center;
   justify-content: space-between;
   margin-top: 12px;
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: rgba(244, 67, 54, 0.1);
   border: 1px solid rgba(244, 67, 54, 0.2);
-  border-radius: 12px;
-  font-size: 14px;
+  border-radius: 10px;
+  font-size: 13px;
   color: #d32f2f;
 }
 
@@ -572,9 +582,9 @@
   background: rgba(244, 67, 54, 0.1);
   color: #d32f2f;
   border: 1px solid rgba(244, 67, 54, 0.3);
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 13px;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -601,20 +611,20 @@
   }
   
   .chat-header {
-    padding: 16px 20px;
+    padding: 12px 16px;
   }
   
   .messages-container {
-    padding: 16px 20px;
+    padding: 16px;
   }
   
   .input-container {
-    padding: 16px 20px;
+    padding: 12px 16px 16px 16px;
   }
   
   .quick-replies-panel {
-    padding: 20px;
-    margin: 0 20px;
+    padding: 16px;
+    margin: 16px 0;
   }
   
   .message-content {
@@ -622,17 +632,18 @@
   }
   
   .welcome-section {
-    padding: 30px 20px;
+    padding: 30px 16px;
+    min-height: 300px;
   }
   
   .welcome-avatar {
-    width: 80px;
-    height: 80px;
-    font-size: 36px;
+    width: 64px;
+    height: 64px;
+    font-size: 28px;
   }
   
   .welcome-content h3 {
-    font-size: 24px;
+    font-size: 20px;
   }
   
   .welcome-content p {
@@ -648,26 +659,26 @@
   }
   
   .quick-reply-category {
-    padding: 16px;
+    padding: 12px;
   }
 }
 
 @media (max-width: 480px) {
   .chat-header {
-    padding: 12px 16px;
+    padding: 10px 12px;
   }
   
   .messages-container {
-    padding: 12px 16px;
+    padding: 12px;
   }
   
   .input-container {
-    padding: 12px 16px;
+    padding: 10px 12px 14px 12px;
   }
   
   .quick-replies-panel {
-    padding: 16px;
-    margin: 0 16px;
+    padding: 12px;
+    margin: 12px 0;
   }
   
   .welcome-features {
@@ -675,17 +686,28 @@
   }
   
   .feature-item {
-    padding: 16px 12px;
+    padding: 12px 10px;
   }
   
   .input-wrapper textarea {
-    padding: 12px 16px;
-    min-height: 48px;
+    padding: 10px 14px;
+    min-height: 40px;
+    font-size: 14px;
   }
   
   .send-button {
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+  
+  .ai-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  
+  .header-info h2 {
     font-size: 16px;
   }
 }

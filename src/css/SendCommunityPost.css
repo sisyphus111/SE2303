@@ -168,68 +168,9 @@
   font-weight: 500;
 }
 
-/* 标签选择 */
-.tags-selection {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
-}
+/* 标签选择 - 使用通用TagSelector组件 */
 
-.tag-option {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
-  background: var(--white);
-  color: var(--text-gray);
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.tag-option:hover {
-  border-color: var(--accent-green);
-  background: rgba(45, 80, 22, 0.05);
-  color: var(--primary-green);
-}
-
-.tag-option.selected {
-  background: var(--primary-green);
-  border-color: var(--primary-green);
-  color: var(--white);
-}
-
-.tag-option .anticon {
-  font-size: 14px;
-}
-
-/* 已选标签显示 */
-.selected-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.selected-tag {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: var(--accent-green);
-  color: var(--white);
-  border-radius: 16px;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.selected-tag .anticon {
-  font-size: 12px;
-}
+/* 已选标签显示已移除，TagSelector组件内部处理选中状态 */
 
 /* 表单操作按钮 */
 .form-actions {
@@ -493,14 +434,7 @@
     padding: 16px;
   }
   
-  .tags-selection {
-    gap: 6px;
-  }
-  
-  .tag-option {
-    padding: 6px 10px;
-    font-size: 13px;
-  }
+  /* 标签选择样式由TagSelector组件处理 */
   
   .stats-content {
     grid-template-columns: 1fr 1fr;

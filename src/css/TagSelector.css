@@ -1,0 +1,100 @@
+/* 通用标签选择器样式 */
+.tag-selector {
+  margin-bottom: 16px;
+}
+
+.tag-selector-title {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  color: var(--text-gray);
+  font-weight: 500;
+}
+
+.tags-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.tag {
+  background: var(--light-gray);
+  color: var(--text-gray);
+  padding: 8px 14px;
+  border-radius: 16px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+  font-weight: 500;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tag-icon {
+  font-size: 14px;
+}
+
+.tag-text {
+  flex: 1;
+}
+
+.tag.selected {
+  background: var(--primary-green);
+  color: var(--white);
+  border-color: var(--primary-green);
+  box-shadow: var(--shadow-light);
+  transform: scale(1.05);
+}
+
+.tag:hover:not(.selected) {
+  background: var(--medium-gray);
+  border-color: var(--accent-green);
+  color: var(--primary-green);
+}
+
+.tag-limit-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-gray);
+  opacity: 0.8;
+}
+
+/* 心情打卡变体样式 */
+.tag-selector.mood .tags-grid {
+  justify-content: center;
+}
+
+.tag-selector.mood .tag-selector-title {
+  text-align: center;
+}
+
+/* 发帖页面变体样式 */
+.tag-selector.post .tags-grid {
+  justify-content: flex-start;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .tags-grid {
+    gap: 6px;
+  }
+  
+  .tag {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tag {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+  
+  .tag-selector-title {
+    font-size: 14px;
+  }
+} 

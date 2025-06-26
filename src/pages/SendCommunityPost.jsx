@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Button, Form, Input, Select, Space, Row, Col, Card, Typography} from 'antd';
 import {tagOptions} from '../data/post_data';
 import "../css/post.css"
-import CommunityHeader from "../components/CommunityHeader";
+import CommunityHeader from "../pages/CommunityHeader.jsx";
 import Layout from "../components/Layout";
 import { useNavigate } from 'react-router-dom';
 

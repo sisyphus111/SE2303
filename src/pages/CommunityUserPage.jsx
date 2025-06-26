@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import CommunityHeader from '../components/CommunityHeader.jsx';
+import CommunityHeader from '../pages/CommunityHeader.jsx';
 import CommunityUserContent from '../components/CommunityUserContent.jsx';
 import CreatePosts from '../components/CreatePosts.jsx';
 import '../css/CommunityUserPage.css';
@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 // import { getPostList, createPost } from '../service/communityService';
 
 function CommunityUserPage() {
+    const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState(null);
     const [userPosts, setUserPosts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -63,7 +64,6 @@ function CommunityUserPage() {
         return <div className="loading">加载中...</div>;
     }
 
-    const navigate = useNavigate();
     return (
         <div className="main-content">
             <div style={{ maxWidth: 900, margin: '0 auto' }}>

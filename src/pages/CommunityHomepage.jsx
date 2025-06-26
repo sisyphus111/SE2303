@@ -1,12 +1,23 @@
-import React from 'react';
-import CommunityHeader from '../components/CommunityHeader.jsx';
+import React, { useState } from 'react';
+import { Card, Button } from "antd";
+import { UserOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+import CommunityHeader from '../pages/CommunityHeader.jsx';
 import CommunityContent from '../components/CommunityContent.jsx';
 import CreatePosts from '../components/CreatePosts.jsx';
 import '../css/CommunityHomepage.css';
 import Layout from "../components/Layout";
-import {Card} from "antd";
+
+// API服务导入注释
+// import { getPostList, createPost } from '../service/communityService';
 
 function CommunityHomepage() {
+    const navigate = useNavigate();
+    const [selectedTag, setSelectedTag] = useState('全部');
+    
+    // 标签列表
+    const allTags = ['全部', '心情分享', '压力管理', '心理健康', '资源推荐', '互助交流'];
+
     return (
         <div className="community-homepage-layout">
             {/* 侧边栏：tag筛选+我的帖子 */}

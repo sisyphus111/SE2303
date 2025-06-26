@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../css/AIChat.css';
 
+// API服务导入注释
+// import { sendMessageToAI, getChatHistory, createChatSession } from '../service/aiChatService';
+
 const AIChat = () => {
   const [messages, setMessages] = useState([
     {
@@ -21,6 +24,20 @@ const AIChat = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // 组件加载时获取聊天历史
+  useEffect(() => {
+    // API调用注释：获取聊天历史
+    // const loadChatHistory = async () => {
+    //   try {
+    //     const history = await getChatHistory(sessionId, 1, 20);
+    //     setMessages(history.data);
+    //   } catch (error) {
+    //     console.error('获取聊天历史失败:', error);
+    //   }
+    // };
+    // loadChatHistory();
+  }, []);
 
   // 模拟AI回复
   const generateAIResponse = (userMessage) => {
@@ -65,6 +82,33 @@ const AIChat = () => {
     setInputText('');
     setIsLoading(true);
 
+    // API调用注释：发送消息给AI
+    // try {
+    //   const response = await sendMessageToAI({
+    //     text: inputText,
+    //     sessionId: currentSessionId
+    //   });
+    //   const aiResponse = {
+    //     id: messages.length + 2,
+    //     text: response.data.reply,
+    //     sender: 'ai',
+    //     timestamp: new Date()
+    //   };
+    //   setMessages(prev => [...prev, aiResponse]);
+    // } catch (error) {
+    //   console.error('发送消息失败:', error);
+    //   // 使用模拟回复作为备选
+    //   const aiResponse = {
+    //     id: messages.length + 2,
+    //     text: generateAIResponse(inputText),
+    //     sender: 'ai',
+    //     timestamp: new Date()
+    //   };
+    //   setMessages(prev => [...prev, aiResponse]);
+    // } finally {
+    //   setIsLoading(false);
+    // }
+
     // 模拟AI思考时间
     setTimeout(() => {
       const aiResponse = {
@@ -76,6 +120,23 @@ const AIChat = () => {
       setMessages(prev => [...prev, aiResponse]);
       setIsLoading(false);
     }, 1000 + Math.random() * 2000); // 1-3秒的随机延迟
+  };
+
+  // 创建新聊天会话的函数
+  const createNewSession = async () => {
+    // API调用注释：创建新的聊天会话
+    // try {
+    //   const session = await createChatSession();
+    //   setCurrentSessionId(session.data.sessionId);
+    //   setMessages([{
+    //     id: 1,
+    //     text: "你好！我是你的AI陪伴助手，很高兴认识你！有什么想聊的吗？",
+    //     sender: 'ai',
+    //     timestamp: new Date()
+    //   }]);
+    // } catch (error) {
+    //   console.error('创建会话失败:', error);
+    // }
   };
 
   const handleKeyPress = (e) => {
@@ -102,6 +163,10 @@ const AIChat = () => {
           <h2>AI陪伴助手</h2>
           <p>在线 • 随时陪伴</p>
         </div>
+        {/* 新会话按钮 */}
+        {/* <button onClick={createNewSession} className="new-session-btn">
+          新会话
+        </button> */}
       </div>
 
       <div className="messages-container">

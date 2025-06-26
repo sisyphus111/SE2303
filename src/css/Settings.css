@@ -87,6 +87,25 @@
   position: relative;
 }
 
+/* 确保选中项及其所有子元素都是白色字体 */
+.settings-tabs .ant-tabs-tab-active,
+.settings-tabs .ant-tabs-tab-active *,
+.settings-tabs .ant-tabs-tab-active:hover,
+.settings-tabs .ant-tabs-tab-active:hover *,
+.settings-tabs .ant-tabs-tab-active:focus,
+.settings-tabs .ant-tabs-tab-active:focus *,
+.settings-tabs .ant-tabs-tab-active:active,
+.settings-tabs .ant-tabs-tab-active:active * {
+  color: var(--white) !important;
+}
+
+/* 针对可能的特定类名 */
+.settings-tabs .ant-tabs-tab-active .ant-tabs-tab-btn,
+.settings-tabs .ant-tabs-tab-active .anticon,
+.settings-tabs .ant-tabs-tab-active span {
+  color: var(--white) !important;
+}
+
 .settings-tabs .ant-tabs-tab-active::after {
   content: '';
   position: absolute;
@@ -518,6 +537,16 @@
 .privacy-switch-item {
   background: var(--white) !important;
   color: var(--text-dark) !important;
+}
+
+/* 额外的选中项白色字体强制规则 */
+.ant-tabs-left .ant-tabs-tab-active,
+.ant-tabs-left .ant-tabs-tab-active .ant-tabs-tab-btn,
+div[role="tab"][aria-selected="true"],
+div[role="tab"][aria-selected="true"] *,
+.settings-tabs div[role="tab"][aria-selected="true"],
+.settings-tabs div[role="tab"][aria-selected="true"] * {
+  color: var(--white) !important;
 }
 
 .settings-page {

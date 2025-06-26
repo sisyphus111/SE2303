@@ -2,12 +2,21 @@
 .ai-chat-container {
   max-width: 1200px;
   margin: 0 auto;
-  height: 100vh;
+  height: 85vh;
+  max-height: 800px;
+  min-height: 600px;
   display: flex;
   flex-direction: column;
   background: var(--background-green);
   font-family: Inter, 'Microsoft YaHei', 'Segoe UI', 'Roboto', Arial, sans-serif;
   position: relative;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(45, 80, 22, 0.12);
+  margin-top: 20px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  /* 确保容器不会引起页面滚动 */
+  contain: layout style paint;
 }
 
 /* 聊天头部 - 固定在顶部 */
@@ -598,6 +607,10 @@
 @media (max-width: 1024px) {
   .ai-chat-container {
     max-width: 100%;
+    margin: 10px 16px;
+    height: 90vh;
+    max-height: 700px;
+    min-height: 500px;
   }
   
   .quick-replies-categories {
@@ -607,7 +620,11 @@
 
 @media (max-width: 768px) {
   .ai-chat-container {
-    height: 100vh;
+    height: 95vh;
+    max-height: 600px;
+    min-height: 450px;
+    margin: 5px 8px;
+    border-radius: 8px;
   }
   
   .chat-header {

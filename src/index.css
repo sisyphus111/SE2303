@@ -72,6 +72,12 @@ html, body, #root {
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow-x: hidden; /* 防止水平滚动 */
+}
+
+/* 为AIChat页面特别防止垂直滚动 */
+body.ai-chat-page {
+  overflow: hidden;
 }
 
 code {

@@ -41,6 +41,7 @@ const AIChat = () => {
   const streamingEndProcessed = useRef(false);
   const lastScrollTop = useRef(0);
   const isUserScrolling = useRef(false);
+  const isComponentMounted = useRef(false);
 
   // 快捷回复建议 - 分类
   const quickRepliesCategories = [
@@ -83,11 +84,24 @@ const AIChat = () => {
     if (!messagesContainerRef.current) return;
     
     const container = messagesContainerRef.current;
-    const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 50;
     
-    // 只有在用户在底部或强制滚动时才自动滚动
-    if (force || isAtBottom || !isUserScrolling.current) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // 确保容器存在且有内容
+    if (container.scrollHeight <= container.clientHeight) return;
+    
+    const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+    
+    // 只有在强制滚动或用户在底部且没有主动向上滚动时才自动滚动
+    if (force || (isAtBottom && !isUserScrolling.current)) {
+      // 使用容器的scrollTop属性，只滚动对话框内部，不影响页面滚动
+      try {
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior: 'smooth'
+        });
+      } catch (e) {
+        // 降级处理：直接设置scrollTop
+        container.scrollTop = container.scrollHeight;
+      }
     }
   };
 
@@ -97,13 +111,14 @@ const AIChat = () => {
     
     const container = messagesContainerRef.current;
     const currentScrollTop = container.scrollTop;
+    const scrollDifference = lastScrollTop.current - currentScrollTop;
     
-    // 检测用户是否主动向上滚动
-    if (currentScrollTop < lastScrollTop.current) {
+    // 只有当用户明显向上滚动超过20px时，才认为是主动滚动
+    if (scrollDifference > 20) {
       isUserScrolling.current = true;
-    } else {
-      // 如果用户滚动到底部附近，重置滚动状态
-      const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+    } else if (scrollDifference < -10) {
+      // 如果用户向下滚动，检查是否接近底部
+      const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 150;
       if (isNearBottom) {
         isUserScrolling.current = false;
       }
@@ -112,20 +127,49 @@ const AIChat = () => {
     lastScrollTop.current = currentScrollTop;
   };
 
-  // 只在新消息添加时滚动，流式消息更新时不频繁滚动
+  // 智能滚动：只有在用户在底部附近或刚发送消息时才滚动
   useEffect(() => {
-    scrollToBottom(true); // 新消息强制滚动
+    // 组件首次加载时不自动滚动，避免页面刷新时的意外滚动
+    if (!isComponentMounted.current) {
+      isComponentMounted.current = true;
+      return;
+    }
+    
+    if (messages.length === 0) return;
+    
+    // 使用延迟确保DOM已更新
+    const timeoutId = setTimeout(() => {
+      const lastMessage = messages[messages.length - 1];
+      // 如果是用户发送的消息，重置滚动状态并滚动到底部
+      if (lastMessage.sender === 'user') {
+        isUserScrolling.current = false;
+        scrollToBottom(true);
+      } else {
+        // 如果是AI消息，只有在用户没有向上滚动时才滚动
+        scrollToBottom();
+      }
+    }, 50); // 短暂延迟确保DOM更新完成
+
+    return () => clearTimeout(timeoutId);
   }, [messages]);
 
-  // 流式消息的滚动控制 - 降低频率
+  // 流式消息的滚动控制 - 只有用户在底部时才滚动
   useEffect(() => {
     if (isStreaming && currentStreamingMessage) {
-      // 使用防抖，减少滚动频率
-      const timeoutId = setTimeout(() => {
-        scrollToBottom();
-      }, 100);
-      
-      return () => clearTimeout(timeoutId);
+      // 只有在用户没有主动向上滚动且在底部附近时才自动滚动
+      if (!isUserScrolling.current && messagesContainerRef.current) {
+        const container = messagesContainerRef.current;
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 150;
+        
+        if (isNearBottom) {
+          // 使用防抖，减少滚动频率
+          const timeoutId = setTimeout(() => {
+            scrollToBottom();
+          }, 200);
+          
+          return () => clearTimeout(timeoutId);
+        }
+      }
     }
   }, [currentStreamingMessage, isStreaming]);
 
@@ -379,6 +423,9 @@ const AIChat = () => {
   useEffect(() => {
     connectWebSocket();
     
+    // 添加body类来防止页面滚动
+    document.body.classList.add('ai-chat-page');
+    
     return () => {
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
@@ -386,6 +433,8 @@ const AIChat = () => {
       if (webSocketRef.current) {
         webSocketRef.current.close();
       }
+      // 移除body类，恢复页面滚动
+      document.body.classList.remove('ai-chat-page');
     };
   }, [connectWebSocket]);
 

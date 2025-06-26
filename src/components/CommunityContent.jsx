@@ -1,71 +1,69 @@
-import React, { useState } from 'react';
+import React from 'react';
 import '../css/CommunityContent.css';
 import PostCard from './CommunityPostCard.jsx';
 
-// 假数据
+// 假数据（标签与侧边栏一致）
 const allPosts = [
     {
         id: 1,
-        tags: ['Tag1', 'Tag2'],
+        tags: ['情感', '学习'],
         avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
         username: 'user1',
-        summary: '帖子简介',
+        summary: '情感与学习的成长故事',
         top: true,
     },
     {
         id: 2,
-        tags: ['Tag2'],
+        tags: ['学习', '健康'],
         avatar: 'https://randomuser.me/api/portraits/men/2.jpg',
         username: 'user2',
-        summary: '另一个帖子简介',
+        summary: '学习与健康的平衡',
         top: false,
     },
     {
         id: 3,
-        tags: ['Tag3'],
+        tags: ['生活', '成长'],
         avatar: 'https://randomuser.me/api/portraits/women/3.jpg',
         username: 'user3',
-        summary: '更多内容...',
+        summary: '生活中的成长点滴',
+        top: false,
+    },
+    {
+        id: 4,
+        tags: ['健康'],
+        avatar: 'https://randomuser.me/api/portraits/men/4.jpg',
+        username: 'user4',
+        summary: '健康生活分享',
+        top: false,
+    },
+    {
+        id: 5,
+        tags: ['情感', '成长'],
+        avatar: 'https://randomuser.me/api/portraits/women/5.jpg',
+        username: 'user5',
+        summary: '情感成长的心路历程',
         top: false,
     },
 ];
 
-const allTags = ['全部', ...Array.from(new Set(allPosts.flatMap(p => p.tags)))];
+function CommunityContent({ selectedTag, searchValue = '' }) {
+    // 所有帖子都参与筛选
+    let filteredPosts = selectedTag === '全部'
+        ? allPosts
+        : allPosts.filter(post => post.tags.includes(selectedTag));
 
-function CommunityContent() {
-    const [selectedTag, setSelectedTag] = useState('全部');
-
-    // 推荐置顶帖子
-    const topPosts = allPosts.filter(post => post.top);
-    // 标签筛选
-    const filteredPosts = selectedTag === '全部'
-        ? allPosts.filter(post => !post.top)
-        : allPosts.filter(post => post.tags.includes(selectedTag) && !post.top);
+    // 搜索过滤
+    if (searchValue && searchValue.trim() !== '') {
+        filteredPosts = filteredPosts.filter(post =>
+            post.summary.includes(searchValue) ||
+            post.username.includes(searchValue) ||
+            post.tags.some(tag => tag.includes(searchValue))
+        );
+    }
 
     return (
         <div className="community-content">
-            {/* 推荐置顶帖子模块 */}
-            <section className="top-posts-section">
-                <h1>今日心有灵犀</h1>
-                {topPosts.length === 0 ? <div>暂无推荐</div> : topPosts.map(post => (
-                    <PostCard post={post} key={post.id} />
-                ))}
-            </section>
-
-            {/* 按标签浏览帖子模块 */}
             <section className="tag-posts-section">
-                <div className="tag-filter-bar">
-                    <label htmlFor="tag-select">按标签浏览：</label>
-                    <select
-                        id="tag-select"
-                        value={selectedTag}
-                        onChange={e => setSelectedTag(e.target.value)}
-                    >
-                        {allTags.map(tag => (
-                            <option value={tag} key={tag}>{tag}</option>
-                        ))}
-                    </select>
-                </div>
                 <div className="tag-posts-list">
                     {filteredPosts.length === 0 ? <div>暂无帖子</div> : filteredPosts.map(post => (
                         <PostCard post={post} key={post.id} />

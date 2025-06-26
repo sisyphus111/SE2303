@@ -1,7 +1,11 @@
 /* 打卡卡片特殊样式 */
 .checkin-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: 
+    linear-gradient(135deg, rgba(171,175,198,0.85) 0%, rgba(111,139,171,0.85) 100%),
+    url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80') center/cover no-repeat;
   color: white;
+  position: relative;
+  overflow: hidden;
 }
 
 .checkin-card .card-content h2 {
@@ -15,6 +19,7 @@
 .rating-section p {
   margin: 0 0 10px 0;
   font-size: 16px;
+  color: #fff !important;
 }
 
 .stars {
@@ -43,6 +48,7 @@
 .tags-section p {
   margin: 0 0 10px 0;
   font-size: 16px;
+  color: #fff !important;
 }
 
 .tags-grid {
@@ -64,8 +70,12 @@
 }
 
 .tag.selected {
-  background: rgba(255,255,255,0.4);
-  transform: scale(1.05);
+  background: rgba(255,255,255,0.85);
+  color: #6bb7b7;
+  font-weight: bold;
+  border: 2px solid #6bb7b7;
+  box-shadow: 0 2px 8px #b2e2d155;
+  transform: scale(1.08);
 }
 
 .tag:hover {

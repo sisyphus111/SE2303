@@ -1,22 +1,33 @@
 import React from 'react';
 import { Avatar, Tag, Typography, Row, Col, Button, Space, Divider } from 'antd';
-import { HeartOutlined, ShareAltOutlined } from "@ant-design/icons";
+import { HeartOutlined, ShareAltOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import { useNavigate } from 'react-router-dom';
+import '../css/CommunityPostDetail.css';
 const { Title, Text, Paragraph } = Typography;
 
 const PostDetail = ({ postData }) => {
+    const navigate = useNavigate();
     return (
-        <div style={{ padding: '20px' }}>
-            <Row justify="space-between" align="middle" style={{ background: '#f0f0f0', padding: '10px', borderRadius: '4px' }}>
+        <div className="community-post-detail-container">
+            <Button
+                type="link"
+                icon={<ArrowLeftOutlined />}
+                onClick={() => navigate(-1)}
+                className="community-post-detail-back"
+            >
+                返回
+            </Button>
+            <Row justify="space-between" align="middle" className="community-post-detail-header">
                 <Col>
-                    <Title level={2}>{postData.title}</Title>
-                    <Space size="small">
+                    <Title level={2} className="community-post-detail-title">{postData.title}</Title>
+                    <Space size="small" className="community-post-detail-tags">
                         {postData.tags.map(tag => <Tag color="blue" key={tag}>{tag}</Tag>)}
                     </Space>
                 </Col>
-                <Col><Text type="secondary">{postData.time}</Text></Col>
+                <Col><Text type="secondary" className="community-post-detail-time">{postData.time}</Text></Col>
             </Row>
             <Divider />
-            <Row style={{ marginTop: '20px' }}>
+            <Row className="community-post-detail-user">
                 <Col>
                     <Space>
                         <Avatar src={postData.user.avatar} />
@@ -24,20 +35,20 @@ const PostDetail = ({ postData }) => {
                     </Space>
                 </Col>
             </Row>
-            <Row style={{ marginTop: '20px' }}>
+            <Row className="community-post-detail-content">
                 <Col>
-                    <Paragraph style={{ fontSize: '16px', color: 'black' }}>{postData.content}</Paragraph>
+                    <Paragraph>{postData.content}</Paragraph>
                 </Col>
             </Row>
             <Divider />
-            <Row justify="space-between" align="middle" style={{ marginTop: '20px' }}>
+            <Row justify="space-between" align="middle" className="community-post-detail-footer">
                 <Col>
                     <Text type="secondary">(浏览量: {postData.views}) 点赞数: {postData.likes}</Text>
                 </Col>
                 <Col>
                     <Space>
-                        <Button icon={<HeartOutlined />} style={{ marginRight: '10px', background: '#fff0f6', color: '#eb2f96' }}>点赞</Button>
-                        <Button icon={<ShareAltOutlined />} style={{ background: '#eb2f96', borderColor: '#eb2f96', color: 'white' }}>分享</Button>
+                        <Button icon={<HeartOutlined />} className="community-post-detail-like">点赞</Button>
+                        <Button icon={<ShareAltOutlined />} className="community-post-detail-share">分享</Button>
                     </Space>
                 </Col>
             </Row>

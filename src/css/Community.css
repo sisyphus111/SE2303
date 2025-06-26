@@ -1,34 +1,50 @@
 .community-container {
-  max-width: 1200px;
+  /* max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e6ecf3 100%);
+  min-height: 100vh;
 }
 
 .community-header {
-  background: rgba(255, 255, 255, 0.95);
+  /* background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 20px;
   padding: 30px;
   margin-bottom: 30px;
   text-align: center;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2); */
+  background: rgba(255,255,255,0.97);
+  border-radius: 20px;
+  padding: 36px 30px 24px 30px;
+  margin-bottom: 32px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(167,199,231,0.10);
+  border: none;
 }
 
 .community-header h1 {
   margin: 0 0 10px 0;
-  color: #333;
-  font-size: 28px;
-  font-weight: 600;
+  color: #6bb7b7;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 3px;
 }
 
 .community-header p {
-  margin: 0 0 25px 0;
+  /* margin: 0 0 25px 0;
   color: #666;
-  font-size: 16px;
+  font-size: 16px; */
+  color: #4e9a9a;
+  font-size: 18px;
+  margin-bottom: 20px;
 }
 
 .new-post-btn {

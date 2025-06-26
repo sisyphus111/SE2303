@@ -1,0 +1,39 @@
+.community-post-detail-container {
+  padding: 20px;
+}
+
+.community-post-detail-back {
+  margin-bottom: 16px;
+}
+
+.community-post-detail-header {
+  background: #f0f0f0;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.community-post-detail-user {
+  margin-top: 20px;
+}
+
+.community-post-detail-content {
+  margin-top: 20px;
+  font-size: 16px;
+  color: black;
+}
+
+.community-post-detail-footer {
+  margin-top: 20px;
+}
+
+.community-post-detail-like {
+  margin-right: 10px;
+  background: #fff0f6;
+  color: #eb2f96;
+}
+
+.community-post-detail-share {
+  background: #eb2f96;
+  border-color: #eb2f96;
+  color: white;
+}

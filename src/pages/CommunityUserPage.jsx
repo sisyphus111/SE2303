@@ -4,6 +4,9 @@ import CommunityUserContent from '../components/CommunityUserContent.jsx';
 import CreatePosts from '../components/CreatePosts.jsx';
 import '../css/CommunityUserPage.css';
 import Layout from "../components/Layout";
+import { Button } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 
 // API服务导入注释
 // import { getUserInfo } from '../service/userService';
@@ -60,11 +63,21 @@ function CommunityUserPage() {
         return <div className="loading">加载中...</div>;
     }
 
+    const navigate = useNavigate();
     return (
         <div className="main-content">
-            <CommunityHeader />
-            <CommunityUserContent userInfo={userInfo} userPosts={userPosts} onRefresh={loadUserData} />
-            <CreatePosts onCreatePost={handleCreatePost} />
+            <div style={{ maxWidth: 900, margin: '0 auto' }}>
+                <Button
+                    type="link"
+                    icon={<ArrowLeftOutlined />}
+                    onClick={() => navigate('/community')}
+                    style={{ margin: '16px 0' }}
+                >
+                    返回首页
+                </Button>
+                <CommunityUserContent />
+                <CreatePosts />
+            </div>
         </div>
     );
 }

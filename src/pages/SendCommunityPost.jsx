@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 // API服务导入注释
 // import { createPost } from '../service/communityService';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 
 const {TextArea} = Input;
 const {Title} = Typography;
@@ -52,10 +53,19 @@ const SendCommunityPostPage = () => {
     };
 
     return (
-        <div>
-            <CommunityHeader/>
+        <div className="send-post-center-wrapper">
+            <div style={{ maxWidth: 900, margin: '0 auto', width: '100%' }}>
+                <Button
+                    type="link"
+                    icon={<ArrowLeftOutlined />}
+                    onClick={() => navigate('/community')}
+                    style={{ margin: '16px 0' }}
+                >
+                    返回主页
+                </Button>
+            </div>
             <Card className="card-container">
-                <div style={{padding: '50px'}}>
+                <div className="send-post-inner-box">
                     <Title level={3} style={{textAlign: 'center', marginBottom: '50px'}}>
                         分享一下你的心情吧
                     </Title>

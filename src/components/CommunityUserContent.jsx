@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import '../css/CommunityUserContent.css';
 import PostCard from './CommunityPostCard.jsx';
 
@@ -27,29 +27,14 @@ const userPosts = [
     },
 ];
 
-const allTags = ['全部', '情感', '学习', '生活', '健康', '成长'];
-
-function CommunityUserContent() {
-    const [selectedTag, setSelectedTag] = useState('全部');
-    const filteredPosts = selectedTag === '全部'
+function CommunityUserContent({ selectedTag }) {
+    const filteredPosts = !selectedTag || selectedTag === '全部'
         ? userPosts
         : userPosts.filter(post => post.tags.includes(selectedTag));
 
     return (
         <div className="user-content">
             <h1>我的帖子</h1>
-            <div className="user-tag-filter-bar">
-                <label htmlFor="user-tag-select">按标签筛选：</label>
-                <select
-                    id="user-tag-select"
-                    value={selectedTag}
-                    onChange={e => setSelectedTag(e.target.value)}
-                >
-                    {allTags.map(tag => (
-                        <option value={tag} key={tag}>{tag}</option>
-                    ))}
-                </select>
-            </div>
             <div className="user-posts-list">
                 {filteredPosts.length === 0 ? <div>暂无帖子</div> : filteredPosts.map(post => (
                     <PostCard post={post} key={post.id} />

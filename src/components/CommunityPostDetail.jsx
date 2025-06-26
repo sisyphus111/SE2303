@@ -35,9 +35,9 @@ const PostDetail = ({ postData }) => {
                 <h1 className="post-title">{postData.title}</h1>
                 <div className="post-meta">
                     <div className="post-tags">
-                        {postData.tags.map(tag => (
+                            {postData.tags.map(tag => (
                             <span key={tag} className="post-tag">
-                                {tag}
+                                        {tag}
                             </span>
                         ))}
                     </div>
@@ -76,14 +76,14 @@ const PostDetail = ({ postData }) => {
             {/* 帖子内容 */}
             <div className="post-content">
                 <p>{postData.content}</p>
-            </div>
+                      </div>
 
             {/* 互动区域 */}
             <div className="post-actions">
                 <button 
                     className={`action-btn like-btn ${liked ? 'liked' : ''}`}
-                    onClick={handleLike}
-                >
+                                onClick={handleLike}
+                            >
                     {liked ? <HeartFilled /> : <HeartOutlined />}
                     <span>{liked ? '已点赞' : '点赞'}</span>
                     <span className="like-count">({postData.likes + (liked ? 1 : 0)})</span>

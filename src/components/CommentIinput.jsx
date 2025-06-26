@@ -28,8 +28,8 @@ const CommentInput = ({ onSubmit }) => {
                 <textarea
                     className="comment-textarea"
                     placeholder="分享你的想法..."
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
                     onKeyDown={handleKeyPress}
                     rows={4}
                 />

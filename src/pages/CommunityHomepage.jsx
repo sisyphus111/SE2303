@@ -16,10 +16,10 @@ import {
 import '../css/CommunityHomepage.css';
 
 const CommunityHomepage = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [selectedTag, setSelectedTag] = useState('全部');
-  const [searchValue, setSearchValue] = useState('');
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [selectedTag, setSelectedTag] = useState('全部');
+    const [searchValue, setSearchValue] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // 热门标签
@@ -47,7 +47,7 @@ const CommunityHomepage = () => {
     { id: 6, title: '关于时间管理的一些思考', author: '时间管理师', time: '25分钟前' }
   ];
 
-  useEffect(() => {
+    useEffect(() => {
     // 检查登录状态
     const loginStatus = localStorage.getItem('isLoggedIn');
     if (loginStatus === 'true') {
@@ -55,23 +55,23 @@ const CommunityHomepage = () => {
     }
 
     // 从URL获取标签参数
-    const params = new URLSearchParams(location.search);
-    const tag = params.get('tag');
+        const params = new URLSearchParams(location.search);
+        const tag = params.get('tag');
     if (tag) {
-      setSelectedTag(tag);
-    }
-  }, [location.search]);
+            setSelectedTag(tag);
+        }
+    }, [location.search]);
 
-  const handleSearch = (e) => {
-    setSearchValue(e.target.value);
-  };
+    const handleSearch = (e) => {
+        setSearchValue(e.target.value);
+    };
 
   const handleTagClick = (tag) => {
     setSelectedTag(tag);
     navigate(`/community?tag=${encodeURIComponent(tag)}`);
   };
 
-  return (
+    return (
     <div className="community-homepage">
       {/* 顶部欢迎区域 */}
       <div className="welcome-section">
@@ -99,7 +99,7 @@ const CommunityHomepage = () => {
             <div className="search-container">
               <SearchOutlined className="search-icon" />
               <input
-                type="text"
+                    type="text"
                 placeholder="搜索感兴趣的话题..."
                 value={searchValue}
                 onChange={handleSearch}
@@ -122,13 +122,13 @@ const CommunityHomepage = () => {
             <div className="tags-grid">
               {hotTags.map(tag => (
                 <button
-                  key={tag}
+                            key={tag}
                   className={`tag-btn ${selectedTag === tag ? 'active' : ''}`}
                   onClick={() => handleTagClick(tag)}
-                >
-                  {tag}
+                        >
+                            {tag}
                 </button>
-              ))}
+                    ))}
             </div>
           </div>
 
@@ -265,8 +265,8 @@ const CommunityHomepage = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default CommunityHomepage;

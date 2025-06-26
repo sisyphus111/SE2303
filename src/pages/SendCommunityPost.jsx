@@ -108,7 +108,7 @@ const SendCommunityPostPage = () => {
             console.error('Failed to submit post:', error);
             // TODO: 显示错误提示
         } finally {
-            setLoading(false);
+        setLoading(false);
         }
     };
 
@@ -246,28 +246,36 @@ const SendCommunityPostPage = () => {
                         </div>
                         <div className="tips-content">
                             <div className="tip-item">
-                                <div className="tip-icon">💡</div>
+                                <div className="tip-icon">
+                                    <EditOutlined />
+                                </div>
                                 <div className="tip-text">
                                     <strong>写一个吸引人的标题</strong>
                                     <p>简洁明了地表达你的主题</p>
                                 </div>
                             </div>
                             <div className="tip-item">
-                                <div className="tip-icon">🏷️</div>
+                                <div className="tip-icon">
+                                    <TagOutlined />
+                                </div>
                                 <div className="tip-text">
                                     <strong>选择合适的标签</strong>
                                     <p>帮助其他用户找到你的帖子</p>
                                 </div>
                             </div>
                             <div className="tip-item">
-                                <div className="tip-icon">📝</div>
+                                <div className="tip-icon">
+                                    <BookOutlined />
+                                </div>
                                 <div className="tip-text">
                                     <strong>详细描述你的想法</strong>
                                     <p>分享更多细节会获得更好的回应</p>
                                 </div>
                             </div>
                             <div className="tip-item">
-                                <div className="tip-icon">🤝</div>
+                                <div className="tip-icon">
+                                    <HeartOutlined />
+                                </div>
                                 <div className="tip-text">
                                     <strong>保持友善和尊重</strong>
                                     <p>营造积极的社区氛围</p>

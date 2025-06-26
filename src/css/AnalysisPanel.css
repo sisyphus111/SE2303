@@ -8,6 +8,10 @@
 .analysis-header {
   padding: 0;
   margin-bottom: 0;
+  color: #6bb7b7;
+  font-size: 22px;
+  font-weight: 700;
+
 }
 
 .analysis-content {

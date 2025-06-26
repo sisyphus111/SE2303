@@ -6,28 +6,28 @@ import PostCard from './CommunityPostCard.jsx';
 const userPosts = [
     {
         id: 1,
-        tags: ['生活', '感悟'],
+        tags: ['生活', '成长'],
         avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
         username: 'user1',
         summary: '今天的心情不错！',
     },
     {
         id: 2,
-        tags: ['学习'],
+        tags: ['学习', '健康'],
         avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
         username: 'user1',
         summary: 'React真的很有趣。',
     },
     {
         id: 3,
-        tags: ['生活'],
+        tags: ['情感', '生活'],
         avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
         username: 'user1',
         summary: '周末去爬山啦！',
     },
 ];
 
-const allTags = ['全部', ...Array.from(new Set(userPosts.flatMap(p => p.tags)))];
+const allTags = ['全部', '情感', '学习', '生活', '健康', '成长'];
 
 function CommunityUserContent() {
     const [selectedTag, setSelectedTag] = useState('全部');

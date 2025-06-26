@@ -1,30 +1,91 @@
 .community-content {
-    padding: 30px 0;
+    padding: 36px 0;
     max-width: 800px;
     margin: 0 auto;
-  }
-  
-  .top-posts-section,
-  .tag-posts-section {
-    margin-bottom: 32px;
-  }
-  
-  .top-posts-section h2 {
-    font-size: 1.2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(167,199,231,0.10);
+}
+
+.top-posts-section,
+.tag-posts-section {
+    margin-bottom: 36px;
+}
+
+.top-posts-section h1 {
+    font-size: 1.5rem;
     font-weight: bold;
-    margin-bottom: 12px;
-  }
-  
-  .tag-filter-bar {
+    color: #6bb7b7;
+    letter-spacing: 2px;
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+.tag-filter-bar {
     display: flex;
     align-items: center;
-    margin-bottom: 16px;
-    gap: 8px;
-  }
-  
-  .tag-posts-list,
-  .top-posts-section {
+    margin-bottom: 18px;
+    gap: 12px;
+    background: #f8f9fa;
+    border-radius: 16px;
+    padding: 10px 18px;
+    box-shadow: 0 2px 8px #b2e2d122;
+}
+
+.tag-filter-bar label {
+    color: #4e9a9a;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+#tag-select {
+    border-radius: 14px;
+    border: 1.5px solid #b2e2d1;
+    padding: 7px 18px;
+    background: #f8f9fa;
+    color: #4e9a9a;
+    font-size: 15px;
+    transition: border-color 0.2s;
+}
+
+#tag-select:focus {
+    border-color: #a7c7e7;
+    outline: none;
+}
+
+.tag-posts-list,
+.top-posts-section {
     display: flex;
     flex-direction: column;
     gap: 18px;
-  }
+}
+
+@media (max-width: 768px) {
+    .community-content {
+        padding: 12px 0;
+        border-radius: 12px;
+    }
+    .top-posts-section,
+    .tag-posts-section {
+        margin-bottom: 18px;
+    }
+    .tag-filter-bar {
+        padding: 6px 8px;
+        border-radius: 10px;
+    }
+}
+
+.post-card {
+    background: #f8f9fa;
+    border-radius: 16px;
+    border: 2px solid #b2e2d1;
+    box-shadow: 0 2px 12px #b2e2d122;
+    padding: 20px 18px;
+    margin-bottom: 8px;
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.post-card:hover {
+    box-shadow: 0 8px 32px #b2e2d144;
+    border-color: #6bb7b7;
+}

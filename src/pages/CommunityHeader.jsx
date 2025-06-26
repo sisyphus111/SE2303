@@ -58,18 +58,7 @@ function CommunityHeader() {
     return (
         <header className="community-header">
             <div className="header-content">
-                {/* 左侧区域：社区标志和名称 */}
-                <div className="left-section" onClick={() => navigate('/community')}
-                     style={{cursor: 'pointer'}}>
-                    <div className="logo">
-                        <div className="logo-icon">🌳</div>
-                    </div>
-                    <div className="community-name">
-                        <h1>树洞社区</h1>
-                    </div>
-                </div>
-
-                {/* 右侧区域：搜索和头像 */}
+                {/* 只保留右侧区域：搜索和头像 */}
                 <div className="right-section">
                     <div className="search-section" ref={searchRef}>
                         <button

@@ -6,7 +6,8 @@ import { Card, Button, Input } from "antd";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SearchOutlined, UserOutlined } from '@ant-design/icons';
 
-const allTags = ['全部', '情感', '学习', '生活', '健康', '成长'];
+// API服务导入注释
+// import { getPostList, createPost } from '../service/communityService';
 
 function CommunityHomepage() {
     const navigate = useNavigate();
@@ -66,20 +67,7 @@ function CommunityHomepage() {
             </aside>
             {/* 主内容区 */}
             <Card className="card-container">
-                <div className="main-content-header">
-                    <h1 className="main-content-title">今日心有灵犀</h1>
-                </div>
-                <div className="main-content-search-bar">
-                    <Input
-                        placeholder="搜索帖子..."
-                        prefix={<SearchOutlined />}
-                        value={searchValue}
-                        onChange={handleSearch}
-                        style={{ borderRadius: 12, margin: '0 auto 24px auto', width: 320, display: 'block' }}
-                        allowClear
-                    />
-                </div>
-                <CommunityContent selectedTag={selectedTag} searchValue={searchValue} />
+                <CommunityContent />
                 <CreatePosts />
             </Card>
         </div>

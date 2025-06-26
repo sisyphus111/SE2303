@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Typography } from "antd";
 import MentalCarousel from "../components/MentalCarousel";
 import ArticleList from "../components/ArticleList";
@@ -6,6 +6,9 @@ import MusicList from "../components/MusicList";
 import { useNavigate } from "react-router-dom";
 
 import "../css/MentalResource.css";
+
+// API服务导入注释
+// import { getCarouselImages, getRecommendedArticles, getMusicList, recordMusicPlay } from '../service/mentalResourceService';
 
 const { Title } = Typography;
 
@@ -48,31 +51,85 @@ const musics = [
 ];
 
 function MentalResource() {
-
   const navigate = useNavigate();
+  const [carouselData, setCarouselData] = useState(carouselImages);
+  const [articlesData, setArticlesData] = useState(articles);
+  const [musicData, setMusicData] = useState(musics);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadResourceData();
+  }, []);
+
+  // 加载资源数据的函数
+  const loadResourceData = async () => {
+    try {
+      setLoading(true);
+      
+      // API调用注释：获取轮播图数据
+      // const carouselRes = await getCarouselImages('resource');
+      // setCarouselData(carouselRes.data);
+      
+      // API调用注释：获取推荐文章列表
+      // const articlesRes = await getRecommendedArticles({
+      //   page: 1,
+      //   size: 10,
+      //   category: 'mental-health'
+      // });
+      // setArticlesData(articlesRes.data);
+      
+      // API调用注释：获取音乐列表
+      // const musicRes = await getMusicList({
+      //   page: 1,
+      //   size: 20
+      // });
+      // setMusicData(musicRes.data);
+      
+    } catch (error) {
+      console.error('加载资源数据失败:', error);
+      // 使用默认数据作为备选
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 记录音乐播放的函数
+  const handleMusicPlay = async (musicId, duration) => {
+    // API调用注释：记录音乐播放
+    // try {
+    //   await recordMusicPlay(musicId, duration);
+    //   console.log('音乐播放记录成功');
+    // } catch (error) {
+    //   console.error('记录音乐播放失败:', error);
+    // }
+  };
 
   const handleArticleClick = (id) => {
     navigate(`/article/${id}`);
   };
 
+  if (loading) {
+    return <div className="loading">加载中...</div>;
+  }
+
   return (
     <div className="mental-resource-bg">
       <Card className="mental-resource-card mental-resource-carousel-card">
-        <MentalCarousel images={carouselImages} />
+        <MentalCarousel images={carouselData} />
       </Card>
 
       <Card className="mental-resource-card mental-resource-card-body">
         <Title level={3} className="mental-resource-title">
           文章推荐
         </Title>
-        <ArticleList articles={articles} onArticleClick={handleArticleClick}/>
+        <ArticleList articles={articlesData} onArticleClick={handleArticleClick}/>
       </Card>
 
       <Card className="mental-resource-card mental-resource-card-body">
         <Title level={3} className="mental-resource-title">
           音乐推荐
         </Title>
-        <MusicList musics={musics} />
+        <MusicList musics={musicData} onMusicPlay={handleMusicPlay} />
       </Card>
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import CommunityHeader from '../pages/CommunityHeader.jsx';
 import CommunityUserContent from '../components/CommunityUserContent.jsx';
 import CreatePosts from '../components/CreatePosts.jsx';
 import '../css/CommunityUserPage.css';
@@ -7,6 +8,10 @@ import { UserOutlined } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const allTags = ['全部', '情感', '学习', '生活', '健康', '成长'];
+
+// API服务导入注释
+// import { getUserInfo } from '../service/userService';
+// import { getPostList, createPost } from '../service/communityService';
 
 function CommunityUserPage() {
     const navigate = useNavigate();

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import CommunityHeader from '../pages/CommunityHeader.jsx';
 import CommunityUserContent from '../components/CommunityUserContent.jsx';
 import CreatePosts from '../components/CreatePosts.jsx';
 import '../css/CommunityUserPage.css';

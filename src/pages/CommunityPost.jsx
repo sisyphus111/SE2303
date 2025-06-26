@@ -80,8 +80,7 @@ const CommunityPostPage = () => {
     const post = allPosts.find(p => String(p.id) === String(id));
     const [postData, setPostData] = useState(post);
 
-
-        // 使用本地状态更新作为备选
+    const handleNewComment = (newComment) => {
         setPostData(prevData => ({
             ...prevData,
             comments: [...(prevData.comments || []), {
@@ -90,8 +89,8 @@ const CommunityPostPage = () => {
             }]
         }));
     };
-    // 保证侧边栏和主页一致
 
+    // 保证侧边栏和主页一致
     return (
         <div className="community-homepage-layout">
             <aside className="sidebar custom-sidebar">

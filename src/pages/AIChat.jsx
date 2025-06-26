@@ -20,6 +20,7 @@ const AIChat = () => {
   const reconnectTimeoutRef = useRef(null);
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
+  const streamingEndProcessed = useRef(false); // 标志：是否已处理流式消息结束
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -31,12 +32,21 @@ const AIChat = () => {
 
   // WebSocket连接函数
   const connectWebSocket = useCallback(() => {
+    console.log('=== 尝试连接WebSocket ===');
     if (webSocketRef.current?.readyState === WebSocket.OPEN) {
+      console.log('WebSocket已连接，跳过重复连接');
       return;
+    }
+
+    // 先关闭现有连接（如果存在）
+    if (webSocketRef.current && webSocketRef.current.readyState !== WebSocket.CLOSED) {
+      console.log('关闭现有WebSocket连接');
+      webSocketRef.current.close();
     }
 
     try {
       setConnectionStatus('connecting');
+      console.log('创建新的WebSocket连接');
       const ws = new WebSocket('ws://localhost:8081/ws/chat');
       
       ws.onopen = () => {
@@ -48,6 +58,7 @@ const AIChat = () => {
       ws.onmessage = (event) => {
         try {
           const message = JSON.parse(event.data);
+          console.log('WebSocket收到原始消息:', message);
           handleWebSocketMessage(message);
         } catch (error) {
           console.error('解析消息失败:', error);
@@ -85,41 +96,80 @@ const AIChat = () => {
   }, []);
 
   // 处理WebSocket消息
-  const handleWebSocketMessage = (message) => {
+  const handleWebSocketMessage = useCallback((message) => {
     const { type, content, timestamp } = message;
+    console.log('=== 处理WebSocket消息 ===', { type, content: content?.substring(0, 50), timestamp });
     
     switch (type) {
       case 'ai':
         // 完整的AI消息（比如欢迎消息）
-        setMessages(prev => [...prev, {
-          id: generateUniqueId(),
-          text: content,
-          sender: 'ai',
-          timestamp: new Date(timestamp)
-        }]);
+        console.log('处理完整AI消息:', content?.substring(0, 50));
+        setMessages(prev => {
+          console.log('添加完整AI消息到列表，当前消息数:', prev.length);
+          return [...prev, {
+            id: generateUniqueId(),
+            text: content,
+            sender: 'ai',
+            timestamp: new Date(timestamp)
+          }];
+        });
         break;
         
       case 'ai_chunk':
         // 流式消息片段
+        console.log('处理AI流式片段:', content, '当前流式状态:', isStreaming);
         setIsStreaming(true);
-        setCurrentStreamingMessage(prev => prev + content);
+        setCurrentStreamingMessage(prev => {
+          const newMessage = prev + content;
+          console.log('更新流式消息，长度从', prev.length, '到', newMessage.length);
+          return newMessage;
+        });
+        streamingEndProcessed.current = false; // 重置结束处理标志
         break;
         
       case 'ai_end':
-        // 流式消息结束
+        // 流式消息结束：将流式内容转为完整消息
+        console.log('收到AI_END消息，防重复处理标志:', streamingEndProcessed.current);
+        
+        // 防止重复处理结束消息
+        if (streamingEndProcessed.current) {
+          console.log('ai_end已处理过，跳过重复处理');
+          break;
+        }
+        streamingEndProcessed.current = true;
+        
         setIsStreaming(false);
-        setCurrentStreamingMessage(prevMessage => {
-          if (prevMessage) {
-            setMessages(prev => [...prev, {
-              id: generateUniqueId(),
-              text: prevMessage,
-              sender: 'ai',
-              timestamp: new Date()
-            }]);
-          }
-          return '';
-        });
         setIsLoading(false);
+        
+        // 使用函数式更新确保获取到最新的流式消息内容并同步清空
+        setCurrentStreamingMessage(prevMessage => {
+          console.log('处理ai_end，流式消息内容长度:', prevMessage.length);
+          if (prevMessage.trim()) {
+            console.log('将流式消息添加到列表:', prevMessage.substring(0, 50) + '...');
+            setMessages(prev => {
+              console.log('ai_end添加消息前，当前消息数:', prev.length);
+              
+              // 检查是否已经存在相同内容的AI消息（防止重复添加）
+              const lastMessage = prev[prev.length - 1];
+              if (lastMessage && lastMessage.sender === 'ai' && lastMessage.text === prevMessage) {
+                console.log('检测到重复消息，跳过添加');
+                return prev;
+              }
+              
+              const newMessages = [...prev, {
+                id: generateUniqueId(),
+                text: prevMessage,
+                sender: 'ai',
+                timestamp: new Date()
+              }];
+              console.log('ai_end添加消息后，新消息数:', newMessages.length);
+              return newMessages;
+            });
+          } else {
+            console.log('流式消息为空，不添加到列表');
+          }
+          return ''; // 立即清空流式消息
+        });
         break;
         
       case 'error':
@@ -139,7 +189,7 @@ const AIChat = () => {
       default:
         console.log('未知消息类型:', type);
     }
-  };
+  }, []);
 
   // 发送消息
   const handleSendMessage = async () => {
@@ -153,7 +203,7 @@ const AIChat = () => {
       sender: 'user',
       timestamp: new Date()
     };
-
+    
     // 添加用户消息到界面
     setMessages(prev => [...prev, userMessage]);
     
@@ -169,6 +219,7 @@ const AIChat = () => {
       setInputText('');
       setIsLoading(true);
       setCurrentStreamingMessage('');
+      streamingEndProcessed.current = false; // 重置结束处理标志
     } catch (error) {
       console.error('发送消息失败:', error);
       setMessages(prev => [...prev, {

@@ -39,6 +39,7 @@ const Layout = ({children}) => {
             {/* Header - 顶部导航栏 */}
             <header className="layout-header">
                 <div className="header-content">
+                    
                     <div className="header-logo">
                         <span className="logo-icon">
                             <SunOutlined />

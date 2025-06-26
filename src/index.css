@@ -1,3 +1,6 @@
+/* 导入Inter字体 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 /* 自定义CSS变量 - 校园心理社区配色方案 */
 :root {
   /* 主色调 - 暗绿色系 */

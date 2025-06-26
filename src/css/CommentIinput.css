@@ -1,41 +1,138 @@
-.comment-input-area {
-  background: #f8fafc;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px #b2e2d144;
-  padding: 18px 20px 12px 20px;
-  margin-bottom: 10px;
-  border: 1.5px solid #b2e2d1;
-  transition: border 0.2s;
-}
-.comment-input-area:focus-within {
-  border: 1.5px solid #6bb7b7;
+/* 评论输入容器 */
+.comment-input-container {
+  margin-bottom: 24px;
 }
 
-.comment-input-textarea .ant-input {
-  background: #f8fafc;
-  border-radius: 8px;
-  font-size: 1.08rem;
-  min-height: 60px;
-  border: none;
-  box-shadow: none;
-  resize: vertical;
+/* 输入框头部 */
+.input-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
-.comment-input-btn {
-  background: linear-gradient(90deg, #b2e2d1 60%, #6bb7b7 100%);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
+.input-header h4 {
+  color: var(--primary-green);
+  font-size: 16px;
   font-weight: 600;
-  box-shadow: 0 2px 8px #b2e2d144;
-  transition: background 0.2s, transform 0.2s;
+  margin: 0;
 }
-.comment-input-btn:disabled {
-  background: #e6ecf3;
-  color: #aaa;
+
+.input-tip {
+  color: var(--text-gray);
+  font-size: 12px;
+  opacity: 0.7;
 }
-.comment-input-btn:hover:not(:disabled) {
-  background: linear-gradient(90deg, #6bb7b7 60%, #b2e2d1 100%);
-  color: #fff;
-  transform: translateY(-2px) scale(1.05);
+
+/* 输入框包装器 */
+.input-wrapper {
+  background: var(--white);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-medium);
+  padding: 16px;
+  transition: all 0.3s ease;
+}
+
+.input-wrapper:focus-within {
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 3px rgba(143, 188, 143, 0.1);
+}
+
+/* 文本域 */
+.comment-textarea {
+  width: 100%;
+  min-height: 80px;
+  border: none;
+  outline: none;
+  resize: vertical;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-dark);
+  background: transparent;
+  font-family: inherit;
+  padding: 0;
+  margin-bottom: 12px;
+}
+
+.comment-textarea::placeholder {
+  color: var(--text-gray);
+  opacity: 0.6;
+}
+
+.comment-textarea:focus {
+  outline: none;
+}
+
+/* 输入框底部 */
+.input-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* 字符计数 */
+.char-count {
+  color: var(--text-gray);
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* 提交按钮 */
+.submit-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--primary-green);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-small);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: var(--primary-green-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-light);
+}
+
+.submit-btn:disabled {
+  background: var(--medium-gray);
+  color: var(--text-gray);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.submit-btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .input-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .input-wrapper {
+    padding: 12px;
+  }
+
+  .input-footer {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+  }
+
+  .submit-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }

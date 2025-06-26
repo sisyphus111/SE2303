@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { 
+  ArrowLeftOutlined,
+  UserOutlined,
+  TagOutlined,
+  FireOutlined,
+  ClockCircleOutlined
+} from '@ant-design/icons';
 import PostDetail from '../components/CommunityPostDetail';
 import CommentInput from '../components/CommentIinput';
 import PostCommentList from '../components/CommunityPostCommentList';
-import { Card, Divider, Space, Button, Input } from "antd";
-import "../css/post.css"
-import Layout from "../components/Layout";
-import { useParams, useNavigate } from 'react-router-dom';
-import { SearchOutlined, UserOutlined } from '@ant-design/icons';
-
-const allTags = ['全部', '情感', '学习', '生活', '健康', '成长'];
+import "../css/CommunityPostDetail.css";
 
 // 假数据提升到这里，后续可独立到 data 文件
 const allPosts = [
@@ -74,11 +76,18 @@ const allPosts = [
 const CommunityPostPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [selectedTag, setSelectedTag] = useState('全部');
-    const [searchValue, setSearchValue] = useState('');
+    
     // 查找对应帖子
     const post = allPosts.find(p => String(p.id) === String(id));
     const [postData, setPostData] = useState(post);
+
+    // 获取相关帖子（同标签或同作者）
+    const relatedPosts = allPosts
+        .filter(p => p.id !== parseInt(id) && (
+            p.tags.some(tag => postData?.tags.includes(tag)) || 
+            p.user.name === postData?.user.name
+        ))
+        .slice(0, 3);
 
     const handleNewComment = (newComment) => {
         setPostData(prevData => ({
@@ -90,50 +99,119 @@ const CommunityPostPage = () => {
         }));
     };
 
-    // 保证侧边栏和主页一致
+    if (!postData) {
+        return (
+            <div className="post-not-found">
+                <h2>帖子不存在</h2>
+                <button onClick={() => navigate('/community')}>返回社区</button>
+            </div>
+        );
+    }
+
     return (
-        <div className="community-homepage-layout">
-            <aside className="sidebar custom-sidebar">
-                <Button
-                    type="text"
-                    style={{ width: '100%', marginBottom: 18, borderRadius: 12, fontWeight: 700, fontSize: 20, color: '#4e9a9a', background: 'none', letterSpacing: 2 }}
-                    onClick={() => navigate('/community')}
+        <div className="community-post-page">
+            {/* 返回按钮 */}
+            <div className="post-back-section">
+                <button 
+                    className="back-btn"
+                    onClick={() => navigate(-1)}
                 >
-                    广场
-                </Button>
-                <Button
-                    icon={<UserOutlined />}
-                    type="primary"
-                    style={{ width: '100%', marginBottom: 24, borderRadius: 12 }}
-                    onClick={() => navigate('/community_user_page')}
-                >
-                    我的帖子
-                </Button>
-                <div className="sidebar-title">按标签筛选</div>
-                <ul className="sidebar-tag-list">
-                    {allTags.map(tag => (
-                        <li
-                            key={tag}
-                            className={`sidebar-tag-item${selectedTag === tag ? ' active' : ''}`}
-                            onClick={() => {
-                                navigate(`/community?tag=${encodeURIComponent(tag)}`);
-                            }}
-                        >
-                            {tag}
-                        </li>
-                    ))}
-                </ul>
-            </aside>
-            <Card className="card-container">
-                <Space direction="vertical" style={{ width: "100%" }}>
+                    <ArrowLeftOutlined /> 返回
+                </button>
+            </div>
+
+            <div className="post-layout">
+                {/* 主内容区 */}
+                <div className="post-main-content">
                     <PostDetail postData={postData} />
-                    <div style={{ margin: 20 }}>
-                        <Divider>评论</Divider>
+                    
+                    {/* 评论区域 */}
+                    <div className="comments-section">
+                        <div className="comments-header">
+                            <h3>评论区</h3>
+                            <span className="comments-count">
+                              {postData.comments?.length || 0} 条评论
+                            </span>
+                        </div>
                         <CommentInput onSubmit={handleNewComment} />
                         <PostCommentList comments={postData.comments || []} />
                     </div>
-                </Space>
-            </Card>
+                </div>
+
+                {/* 右侧边栏 */}
+                <div className="post-sidebar">
+                    {/* 作者信息 */}
+                    <div className="sidebar-card author-card">
+                        <div className="sidebar-header">
+                            <UserOutlined className="sidebar-icon" />
+                            <h4>作者信息</h4>
+                        </div>
+                        <div className="author-info">
+                            <img 
+                                src={postData.user.avatar} 
+                                alt={postData.user.name}
+                                className="author-avatar"
+                            />
+                            <div className="author-details">
+                                <div className="author-name">{postData.user.name}</div>
+                                <div className="author-stats">
+                                    <span>帖子: 12</span>
+                                    <span>获赞: 89</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 相关帖子 */}
+                    {relatedPosts.length > 0 && (
+                        <div className="sidebar-card related-posts">
+                            <div className="sidebar-header">
+                                <FireOutlined className="sidebar-icon" />
+                                <h4>相关帖子</h4>
+                            </div>
+                            <div className="related-posts-list">
+                                {relatedPosts.map(relatedPost => (
+                                    <div 
+                                        key={relatedPost.id}
+                                        className="related-post-item"
+                                        onClick={() => navigate(`/post/${relatedPost.id}`)}
+                                    >
+                                        <h5 className="related-post-title">
+                                            {relatedPost.title}
+                                        </h5>
+                                        <div className="related-post-meta">
+                                            <span>@{relatedPost.user.name}</span>
+                                            <span>{relatedPost.views} 浏览</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 快捷操作 */}
+                    <div className="sidebar-card quick-actions">
+                        <div className="sidebar-header">
+                            <TagOutlined className="sidebar-icon" />
+                            <h4>快捷操作</h4>
+                        </div>
+                        <div className="action-buttons">
+                            <button 
+                                className="action-btn"
+                                onClick={() => navigate('/community')}
+                            >
+                                浏览更多帖子
+                            </button>
+                            <button 
+                                className="action-btn primary"
+                                onClick={() => navigate('/send_community_post')}
+                            >
+                                发布新帖子
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

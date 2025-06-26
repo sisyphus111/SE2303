@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Avatar, Typography, Row, Col, Button, Space, Divider, Tag } from 'antd';
-import { HeartOutlined, HeartFilled, ShareAltOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { useNavigate } from 'react-router-dom';
+import { 
+  HeartOutlined, 
+  HeartFilled, 
+  ShareAltOutlined,
+  EyeOutlined,
+  ClockCircleOutlined
+} from "@ant-design/icons";
 import '../css/CommunityPostDetail.css';
-const { Title, Text, Paragraph } = Typography;
-
-// 侧边栏所有标签
-const allTags = ['全部', '情感', '学习', '生活', '健康', '成长'];
 
 const PostDetail = ({ postData }) => {
     const navigate = useNavigate();
@@ -16,98 +17,81 @@ const PostDetail = ({ postData }) => {
         setLiked(l => !l);
     };
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('zh-CN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
     return (
-        <div style={{ position: 'relative', width: '100%' }}>
-            {/* <div className="community-post-detail-backhome-wrapper">
-                <Button
-                    type="link"
-                    className="community-post-detail-backhome-btn"
-                    onClick={() => navigate('/community')}
+        <div className="post-detail-container">
+            {/* 帖子头部 */}
+            <div className="post-header">
+                <h1 className="post-title">{postData.title}</h1>
+                <div className="post-meta">
+                    <div className="post-tags">
+                        {postData.tags.map(tag => (
+                            <span key={tag} className="post-tag">
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
+                    <div className="post-time">
+                        <ClockCircleOutlined />
+                        <span>{formatDate(postData.time)}</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* 作者信息 */}
+            <div className="post-author-section">
+                <div className="author-info">
+                    <img 
+                        src={postData.user.avatar} 
+                        alt={postData.user.name}
+                        className="author-avatar"
+                    />
+                    <div className="author-details">
+                        <div className="author-name">{postData.user.name}</div>
+                        <div className="author-badge">活跃作者</div>
+                    </div>
+                </div>
+                <div className="post-stats">
+                    <div className="stat-item">
+                        <EyeOutlined />
+                        <span>{postData.views}</span>
+                    </div>
+                    <div className="stat-item">
+                        <HeartOutlined />
+                        <span>{postData.likes + (liked ? 1 : 0)}</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* 帖子内容 */}
+            <div className="post-content">
+                <p>{postData.content}</p>
+            </div>
+
+            {/* 互动区域 */}
+            <div className="post-actions">
+                <button 
+                    className={`action-btn like-btn ${liked ? 'liked' : ''}`}
+                    onClick={handleLike}
                 >
-                    返回社区主页
-                </Button>
-            </div> */}
-            <div className="community-post-detail-container">
-                <Button
-                    type="link"
-                    icon={<ArrowLeftOutlined />}
-                    onClick={() => navigate(-1)}
-                    className="community-post-detail-back"
-                >
-                    返回
-                </Button>
-                <Row justify="space-between" align="middle" className="community-post-detail-header">
-                    <Col>
-                        <Title level={2} className="community-post-detail-title">{postData.title}</Title>
-                        <Space size="small" className="community-post-detail-tags">
-                            {postData.tags.map(tag => (
-                                allTags.includes(tag) ? (
-                                    <Tag
-                                        key={tag}
-                                        style={{ cursor: 'pointer' }}
-                                        // onClick={() => {
-                                        //     navigate(`/community?tag=${encodeURIComponent(tag)}`);
-                                        // }}
-                                    >
-                                        {tag}
-                                    </Tag>
-                                ) : (
-                                    <Tag key={tag}>{tag}</Tag>
-                                )
-                            ))}
-                        </Space>
-                    </Col>
-                    <Col>
-                      <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4}}>
-                        <svg className="community-post-detail-banner-illu" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <circle cx="40" cy="40" r="18" fill="#FFD93B"/>
-                          <g stroke="#FFD93B" strokeWidth="4" strokeLinecap="round">
-                            <line x1="40" y1="8" x2="40" y2="22"/>
-                            <line x1="40" y1="58" x2="40" y2="72"/>
-                            <line x1="8" y1="40" x2="22" y2="40"/>
-                            <line x1="58" y1="40" x2="72" y2="40"/>
-                            <line x1="17.6" y1="17.6" x2="27.7" y2="27.7"/>
-                            <line x1="52.3" y1="52.3" x2="62.4" y2="62.4"/>
-                            <line x1="17.6" y1="62.4" x2="27.7" y2="52.3"/>
-                            <line x1="52.3" y1="27.7" x2="62.4" y2="17.6"/>
-                          </g>
-                        </svg>
-                        <Text type="secondary" className="community-post-detail-time">{postData.time}</Text>
-                      </div>
-                    </Col>
-                </Row>
-                <Divider />
-                <Row className="community-post-detail-user">
-                    <Col>
-                        <Space>
-                            <Avatar src={postData.user.avatar} />
-                            <span className="community-post-detail-user-name">{postData.user.name}</span>
-                        </Space>
-                    </Col>
-                </Row>
-                <Row className="community-post-detail-content">
-                    <Col>
-                        <Paragraph>{postData.content}</Paragraph>
-                    </Col>
-                </Row>
-                <Divider />
-                <Row justify="space-between" align="middle" className="community-post-detail-footer">
-                    <Col>
-                        <Text type="secondary">(浏览量: {postData.views}) 点赞数: {postData.likes + (liked ? 1 : 0)}</Text>
-                    </Col>
-                    <Col>
-                        <Space>
-                            <Button
-                                icon={liked ? <HeartFilled /> : <HeartOutlined />} 
-                                className={`community-post-detail-like${liked ? ' liked' : ''}`}
-                                onClick={handleLike}
-                            >
-                                {liked ? '已点赞' : '点赞'}
-                            </Button>
-                            <Button icon={<ShareAltOutlined />} className="community-post-detail-share">分享</Button>
-                        </Space>
-                    </Col>
-                </Row>
+                    {liked ? <HeartFilled /> : <HeartOutlined />}
+                    <span>{liked ? '已点赞' : '点赞'}</span>
+                    <span className="like-count">({postData.likes + (liked ? 1 : 0)})</span>
+                </button>
+                <button className="action-btn share-btn">
+                    <ShareAltOutlined />
+                    <span>分享</span>
+                </button>
             </div>
         </div>
     );

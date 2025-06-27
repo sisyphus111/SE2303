@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Card, Typography } from "antd";
+import { Card, Typography, Space, Row, Col, Divider } from "antd";
+import { HeartOutlined, BookOutlined, SoundOutlined, BulbOutlined } from "@ant-design/icons";
 import MentalCarousel from "../components/MentalCarousel";
 import ArticleList from "../components/ArticleList";
 import MusicList from "../components/MusicList";
@@ -10,7 +11,7 @@ import "../css/MentalResource.css";
 // API服务导入注释
 // import { getCarouselImages, getRecommendedArticles, getMusicList, recordMusicPlay } from '../service/mentalResourceService';
 
-const { Title } = Typography;
+const { Title, Paragraph } = Typography;
 
 const carouselImages = [
   "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
@@ -109,28 +110,76 @@ function MentalResource() {
   };
 
   if (loading) {
-    return <div className="loading">加载中...</div>;
+    return <div className="mental-resource-loading">
+      <div className="loading-spinner"></div>
+      <p>加载中...</p>
+    </div>;
   }
 
   return (
-    <div className="mental-resource-bg">
-      <Card className="mental-resource-card mental-resource-carousel-card">
-        <MentalCarousel images={carouselData} />
-      </Card>
+    <div className="mental-resource-container">
+      {/* 页面头部 */}
+      <div className="mental-resource-header">
+        <div className="mental-resource-header-content">
+          <div className="mental-resource-title-section">
+            <HeartOutlined className="mental-resource-main-icon" />
+            <Title level={1} className="mental-resource-main-title">
+              心理健康资源
+            </Title>
+            <Paragraph className="mental-resource-subtitle">
+              发现有助于心理健康的文章、音乐和专业指导，让心灵得到滋养与成长
+            </Paragraph>
+          </div>
+        </div>
+      </div>
 
-      <Card className="mental-resource-card mental-resource-card-body">
-        <Title level={3} className="mental-resource-title">
-          文章推荐
-        </Title>
-        <ArticleList articles={articlesData} onArticleClick={handleArticleClick}/>
-      </Card>
+      {/* 主要内容区域 */}
+      <div className="mental-resource-content">
+        <Row gutter={[24, 24]}>
+          <Col xs={24}>
+            {/* 轮播图区域 */}
+            <Card className="mental-resource-card carousel-card">
+              <div className="mental-resource-card-header">
+                <BulbOutlined className="section-icon" />
+                <Title level={3} className="section-title">每日心理小贴士</Title>
+              </div>
+              <MentalCarousel images={carouselData} />
+            </Card>
+          </Col>
+        </Row>
 
-      <Card className="mental-resource-card mental-resource-card-body">
-        <Title level={3} className="mental-resource-title">
-          音乐推荐
-        </Title>
-        <MusicList musics={musicData} onMusicPlay={handleMusicPlay} />
-      </Card>
+        <Row gutter={[24, 24]}>
+          <Col xs={24} lg={12}>
+            {/* 文章推荐区域 */}
+            <Card className="mental-resource-card article-card">
+              <div className="mental-resource-card-header">
+                <BookOutlined className="section-icon" />
+                <Title level={3} className="section-title">精选文章</Title>
+                <Paragraph className="section-description">
+                  专业心理健康知识，助你更好地了解自己
+                </Paragraph>
+              </div>
+              <Divider className="section-divider" />
+              <ArticleList articles={articlesData} onArticleClick={handleArticleClick}/>
+            </Card>
+          </Col>
+
+          <Col xs={24} lg={12}>
+            {/* 音乐推荐区域 */}
+            <Card className="mental-resource-card music-card">
+              <div className="mental-resource-card-header">
+                <SoundOutlined className="section-icon" />
+                <Title level={3} className="section-title">舒缓音乐</Title>
+                <Paragraph className="section-description">
+                  放松心情，让音乐治愈你的心灵
+                </Paragraph>
+              </div>
+              <Divider className="section-divider" />
+              <MusicList musics={musicData} onMusicPlay={handleMusicPlay} />
+            </Card>
+          </Col>
+        </Row>
+      </div>
     </div>
   );
 }

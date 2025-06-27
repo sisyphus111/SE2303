@@ -10,8 +10,8 @@
 .welcome-section {
     background: var(--white);
     border-radius: var(--radius-large);
-    padding: 32px;
-    margin-bottom: 32px;
+    padding: 20px;
+    margin-bottom: 24px;
     box-shadow: var(--shadow-light);
     border: 1px solid var(--border-color);
     position: relative;
@@ -34,22 +34,22 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 32px;
+    gap: 24px;
     position: relative;
     z-index: 2;
 }
 
 .welcome-text h1 {
     color: var(--primary-green);
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 600;
-    margin: 0 0 8px 0;
+    margin: 0 0 6px 0;
     letter-spacing: 1px;
 }
 
 .welcome-text p {
     color: var(--text-gray);
-    font-size: 16px;
+    font-size: 15px;
     margin: 0;
     opacity: 0.8;
 }
@@ -422,12 +422,12 @@
 
     .welcome-content {
         flex-direction: column;
-        gap: 20px;
+        gap: 16px;
         text-align: center;
     }
 
     .welcome-text h1 {
-        font-size: 24px;
+        font-size: 22px;
 }
 
     .quick-actions {
@@ -478,8 +478,8 @@
     }
 
     .welcome-section {
-        padding: 20px;
-        margin-bottom: 20px;
+        padding: 16px;
+        margin-bottom: 16px;
     }
 
     .section-card,

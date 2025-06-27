@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import '../css/AIChat.css';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 import { 
   RobotOutlined, 
   SendOutlined, 
@@ -529,7 +530,13 @@ const AIChat = () => {
                 </div>
               )}
               <div className="message-content">
-                <div className="message-text">{message.text}</div>
+                <div className="message-text">
+                  {message.sender === 'ai' ? (
+                    <MarkdownRenderer content={message.text} />
+                  ) : (
+                    message.text
+                  )}
+                </div>
                 <div className="message-time">{formatTime(message.timestamp)}</div>
               </div>
               {message.sender === 'user' && (
@@ -548,7 +555,7 @@ const AIChat = () => {
               </div>
               <div className="message-content">
                 <div className="message-text">
-                  {currentStreamingMessage}
+                  <MarkdownRenderer content={currentStreamingMessage} />
                   <span className="cursor">|</span>
                 </div>
               </div>

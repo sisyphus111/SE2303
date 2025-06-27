@@ -1,7 +1,10 @@
 import { handleApiResponse } from '../lib/ErrorHandler';
 
 export async function get(url) {
-    let res = await fetch(url, { method: "GET", credentials: "include" });
+    let res = await fetch(url, { 
+        method: "GET", 
+        // credentials: "include" 
+    });
     const response = await res.json(); // 反序列化
     return handleApiResponse(response);
 }
@@ -13,7 +16,7 @@ export async function put(url, data) {
         headers: {
             'Content-Type': 'application/json'
         },
-        credentials: "include"
+        // credentials: "include"
     };
     let res = await fetch(url, opts);
     const response = await res.json();
@@ -23,7 +26,7 @@ export async function put(url, data) {
 export async function del(url, data) {
     let opts = {
         method: "DELETE",
-        credentials: "include"
+        // credentials: "include"
     };
     
     if (data) {
@@ -45,7 +48,7 @@ export async function post(url, data) {
         headers: {
             'Content-Type': 'application/json'
         },
-        credentials: "include"
+        // credentials: "include"
     };
     let res = await fetch(url, opts);
     const response = await res.json();

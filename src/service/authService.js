@@ -1,6 +1,6 @@
 // 认证相关API服务
 import { request } from './apiUtils';
-
+import { post, PREFIX } from './common';
 /**
  * 用户登录
  * @param {string} email - 邮箱
@@ -85,62 +85,78 @@ export const loginUser = async (email, password) => {
  * @returns {Promise<Object>} 注册结果
  */
 export const registerUser = async (userData) => {
+
+//—————————————————————————————————真实访问后端注册api———————————————————————————————————//
   try {
-    // 在实际项目中，这里应该调用真实的API
-    // const response = await request('/auth/register', {
-    //   method: 'POST',
-    //   body: JSON.stringify(userData),
-    // });
+    // 使用统一的post方法，PREFIX已包含http://localhost:8080/api
+    const response = await post(`${PREFIX}/user/register`, userData);
 
-    // 模拟API调用延迟
-    await new Promise(resolve => setTimeout(resolve, 1200));
-
-    // 模拟注册验证
-    const existingEmails = ['demo@example.com', 'test@example.com'];
-    const existingUsernames = ['demo_user', 'test_user'];
-
-    if (existingEmails.includes(userData.email)) {
-      return {
-        success: false,
-        error: '该邮箱已被注册'
-      };
-    }
-
-    if (existingUsernames.includes(userData.username)) {
-      return {
-        success: false,
-        error: '该用户名已被占用'
-      };
-    }
-
-    // 模拟成功注册
-    const newUser = {
-      id: `user-${Date.now()}`,
-      email: userData.email,
-      username: userData.username,
-      nickname: userData.nickname,
-      avatar: null,
-      createdAt: new Date().toISOString(),
-    };
-
-    return {
-      success: true,
-      user: newUser,
-      preferences: {
-        theme: 'light',
-        language: 'zh-CN',
-        notifications: true,
-        soundEnabled: true,
-      },
-      token: 'REDACTED'
-    };
+    // handleApiResponse 已在 common.js 处理了 response 的 success/error
+    return response;
   } catch (error) {
-    console.error('注册请求失败:', error);
     return {
       success: false,
       error: '注册请求失败，请稍后重试'
     };
   }
+
+//——————————————————————————————————模拟注册——————————————————————————————————————//
+  // try {
+  //   //在实际项目中，这里应该调用真实的API
+  //   const response = await request('/auth/register', {
+  //     method: 'POST',
+  //     body: JSON.stringify(userData),
+  //   });
+
+  //   // 模拟API调用延迟
+  //   await new Promise(resolve => setTimeout(resolve, 1200));
+
+  //   // 模拟注册验证
+  //   const existingEmails = ['demo@example.com', 'test@example.com'];
+  //   const existingUsernames = ['demo_user', 'test_user'];
+
+  //   if (existingEmails.includes(userData.email)) {
+  //     return {
+  //       success: false,
+  //       error: '该邮箱已被注册'
+  //     };
+  //   }
+
+  //   if (existingUsernames.includes(userData.username)) {
+  //     return {
+  //       success: false,
+  //       error: '该用户名已被占用'
+  //     };
+  //   }
+
+  //   // 模拟成功注册
+  //   const newUser = {
+  //     id: `user-${Date.now()}`,
+  //     email: userData.email,
+  //     username: userData.username,
+  //     nickname: userData.nickname,
+  //     avatar: null,
+  //     createdAt: new Date().toISOString(),
+  //   };
+
+  //   return {
+  //     success: true,
+  //     user: newUser,
+  //     preferences: {
+  //       theme: 'light',
+  //       language: 'zh-CN',
+  //       notifications: true,
+  //       soundEnabled: true,
+  //     },
+  //     token: 'REDACTED'
+  //   };
+  // } catch (error) {
+  //   console.error('注册请求失败:', error);
+  //   return {
+  //     success: false,
+  //     error: '注册请求失败，请稍后重试'
+  //   };
+  // }
 };
 
 /**

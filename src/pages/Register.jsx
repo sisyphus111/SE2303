@@ -128,10 +128,13 @@ const Register = () => {
     try {
       // 调用注册API
       const result = await registerUser({
+        virtualId: formData.email,
         username: formData.username,
         email: formData.email,
         password: formData.password,
-        nickname: formData.nickname || formData.username,
+        telephone: "138000000",
+        avatar: "1a32d13213"
+        // nickname: formData.nickname || formData.username,
       });
       
       if (result.success) {

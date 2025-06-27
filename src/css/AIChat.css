@@ -178,8 +178,8 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 40px 20px;
-  min-height: 400px;
+  padding: 24px 20px;
+  min-height: 280px;
 }
 
 .welcome-avatar {
@@ -211,35 +211,35 @@
 
 .welcome-content h3 {
   color: var(--primary-green);
-  font-size: 24px;
-  font-weight: 700;
-  margin: 0 0 12px 0;
-  letter-spacing: 0.5px;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  letter-spacing: 0.3px;
 }
 
 .welcome-content p {
   color: var(--text-gray);
-  font-size: 15px;
-  line-height: 1.6;
-  margin: 0 0 24px 0;
-  max-width: 450px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+  max-width: 380px;
 }
 
 .welcome-features {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 12px;
-  max-width: 500px;
+  grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
+  gap: 8px;
+  max-width: 360px;
 }
 
 .feature-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 16px 12px;
+  gap: 4px;
+  padding: 12px 8px;
   background: var(--white);
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid var(--border-color);
   transition: all 0.3s ease;
   cursor: pointer;
@@ -252,12 +252,12 @@
 }
 
 .feature-item .anticon {
-  font-size: 20px;
+  font-size: 16px;
   color: var(--primary-green);
 }
 
 .feature-item span {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--text-dark);
 }
@@ -648,27 +648,23 @@
     max-width: 85%;
   }
   
-  .welcome-section {
-    padding: 30px 16px;
-    min-height: 300px;
+    .welcome-section {
+    padding: 16px 12px;
+    min-height: 220px;
   }
-  
-  .welcome-avatar {
-    width: 64px;
-    height: 64px;
-    font-size: 28px;
-  }
-  
+
   .welcome-content h3 {
-    font-size: 20px;
+    font-size: 16px;
   }
-  
+
   .welcome-content p {
-    font-size: 14px;
+    font-size: 12px;
+    max-width: 300px;
   }
-  
+
   .welcome-features {
     grid-template-columns: repeat(2, 1fr);
+    max-width: 280px;
   }
   
   .quick-replies-categories {
@@ -700,10 +696,20 @@
   
   .welcome-features {
     grid-template-columns: 1fr;
+    max-width: 200px;
+    gap: 6px;
   }
   
   .feature-item {
-    padding: 12px 10px;
+    padding: 10px 8px;
+  }
+
+  .feature-item .anticon {
+    font-size: 14px;
+  }
+
+  .feature-item span {
+    font-size: 10px;
   }
   
   .input-wrapper textarea {
@@ -726,5 +732,155 @@
   
   .header-info h2 {
     font-size: 16px;
+  }
+}
+
+/* Markdown内容在聊天消息中的适配样式 */
+.message-text .markdown-renderer {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* AI消息中的markdown样式调整 */
+.ai-message .message-text .markdown-renderer {
+  color: var(--text-dark);
+}
+
+.ai-message .message-text .markdown-renderer .markdown-paragraph {
+  margin: 0.5em 0;
+}
+
+.ai-message .message-text .markdown-renderer .markdown-paragraph:first-child {
+  margin-top: 0;
+}
+
+.ai-message .message-text .markdown-renderer .markdown-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+/* 代码块在聊天消息中的样式 */
+.ai-message .message-text .code-block-container {
+  margin: 0.8em 0;
+  max-width: 100%;
+  font-size: 0.9em;
+}
+
+.ai-message .message-text .code-block {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* 内联代码在聊天消息中的样式 */
+.ai-message .message-text .inline-code {
+  font-size: 0.85em;
+  background-color: rgba(45, 80, 22, 0.1);
+  color: var(--primary-green);
+  padding: 0.1em 0.3em;
+}
+
+/* 引用块在聊天消息中的样式 */
+.ai-message .message-text .markdown-blockquote {
+  margin: 0.8em 0;
+  border-left-color: var(--accent-green);
+  background: rgba(45, 80, 22, 0.05);
+  font-size: 0.95em;
+}
+
+/* 列表在聊天消息中的样式 */
+.ai-message .message-text .markdown-list {
+  margin: 0.6em 0;
+  padding-left: 1.5em;
+}
+
+.ai-message .message-text .markdown-list li {
+  margin: 0.2em 0;
+}
+
+/* 标题在聊天消息中的样式 */
+.ai-message .message-text .markdown-heading {
+  margin: 0.8em 0 0.4em 0;
+  font-size: 1em;
+}
+
+.ai-message .message-text .markdown-heading.h1 {
+  font-size: 1.3em;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ai-message .message-text .markdown-heading.h2 {
+  font-size: 1.2em;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ai-message .message-text .markdown-heading.h3 {
+  font-size: 1.1em;
+}
+
+.ai-message .message-text .markdown-heading.h4,
+.ai-message .message-text .markdown-heading.h5,
+.ai-message .message-text .markdown-heading.h6 {
+  font-size: 1em;
+}
+
+/* 表格在聊天消息中的样式 */
+.ai-message .message-text .table-container {
+  margin: 0.8em 0;
+  overflow-x: auto;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.ai-message .message-text .markdown-table {
+  font-size: 0.85em;
+}
+
+.ai-message .message-text .markdown-table th {
+  background-color: var(--light-gray);
+  font-size: 0.9em;
+}
+
+/* 链接在聊天消息中的样式 */
+.ai-message .message-text .markdown-link {
+  color: var(--primary-green);
+}
+
+.ai-message .message-text .markdown-link:hover {
+  color: var(--accent-green);
+  border-bottom-color: var(--accent-green);
+}
+
+/* 分割线在聊天消息中的样式 */
+.ai-message .message-text .markdown-divider {
+  background-color: var(--border-color);
+  margin: 1em 0;
+}
+
+/* 流式消息中的markdown样式 */
+.streaming-message .message-text .markdown-renderer {
+  position: relative;
+}
+
+.streaming-message .cursor {
+  display: inline-block;
+  margin-left: 3px;
+  vertical-align: text-bottom;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .ai-message .message-text .code-block-container {
+    margin: 0.8em -0.5em;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .ai-message .message-text .markdown-blockquote {
+    margin: 0.8em -0.5em;
+    border-radius: 0;
+  }
+  
+  .ai-message .message-text .table-container {
+    margin: 0.8em -0.5em;
   }
 }

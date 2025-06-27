@@ -11,8 +11,11 @@ import {
   TeamOutlined,
   TagOutlined,
   ArrowRightOutlined,
-  PlusOutlined
+  PlusOutlined,
+  EyeOutlined,
+  CommentOutlined
 } from '@ant-design/icons';
+import { getCommunityPosts } from '../service/communityService';
 import '../css/CommunityHomepage.css';
 
 const CommunityHomepage = () => {
@@ -20,10 +23,13 @@ const CommunityHomepage = () => {
     const location = useLocation();
     const [selectedTag, setSelectedTag] = useState('全部');
     const [searchValue, setSearchValue] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [allPosts, setAllPosts] = useState([]);
+    const [filteredPosts, setFilteredPosts] = useState([]);
+    const [sortBy, setSortBy] = useState('latest'); // latest, hot, comments
 
   // 热门标签
-  const hotTags = ['心情分享', '压力管理', '学习交流', '生活感悟', '健康心理', '人际关系'];
+  const hotTags = ['全部', '心情分享', '压力管理', '学习交流', '生活感悟', '健康心理', '人际关系'];
   
   // 社区统计数据（模拟）
   const communityStats = {
@@ -33,43 +39,105 @@ const CommunityHomepage = () => {
     onlineUsers: 28
   };
 
-  // 热门帖子（模拟数据）
-  const hotPosts = [
-    { id: 1, title: '如何缓解考试焦虑？分享我的经验', author: '小明', likes: 89, comments: 34 },
-    { id: 2, title: '大学生活压力大，我是这样调节的', author: '小红', likes: 67, comments: 28 },
-    { id: 3, title: '推荐几本治愈系书籍', author: '小李', likes: 45, comments: 19 }
-  ];
-
-  // 最新帖子（模拟数据）
-  const recentPosts = [
-    { id: 4, title: '今天心情不错，分享一下好消息', author: '阳光女孩', time: '5分钟前' },
-    { id: 5, title: '有没有一起学习的小伙伴？', author: '努力学习', time: '12分钟前' },
-    { id: 6, title: '关于时间管理的一些思考', author: '时间管理师', time: '25分钟前' }
-  ];
-
     useEffect(() => {
-    // 检查登录状态
-    const loginStatus = localStorage.getItem('isLoggedIn');
-    if (loginStatus === 'true') {
-      setIsLoggedIn(true);
-    }
+        // 检查登录状态
+        const loginStatus = localStorage.getItem('isLoggedIn');
+        if (loginStatus === 'true') {
+            setIsLoggedIn(true);
+        }
 
-    // 从URL获取标签参数
+        // 从URL获取标签参数
         const params = new URLSearchParams(location.search);
         const tag = params.get('tag');
-    if (tag) {
+        if (tag) {
             setSelectedTag(tag);
         }
+
+        // 获取所有帖子数据
+        const posts = getCommunityPosts();
+        setAllPosts(posts);
     }, [location.search]);
+
+    // 过滤和排序帖子
+    useEffect(() => {
+        let filtered = allPosts;
+
+        // 标签筛选
+        if (selectedTag !== '全部') {
+            filtered = filtered.filter(post => 
+                post.tags.some(tag => tag.includes(selectedTag)) || 
+                post.category === selectedTag
+            );
+        }
+
+        // 搜索筛选
+        if (searchValue.trim()) {
+            filtered = filtered.filter(post =>
+                post.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+                post.content.toLowerCase().includes(searchValue.toLowerCase()) ||
+                post.author.toLowerCase().includes(searchValue.toLowerCase()) ||
+                post.tags.some(tag => tag.toLowerCase().includes(searchValue.toLowerCase()))
+            );
+        }
+
+        // 排序
+        switch (sortBy) {
+            case 'hot':
+                filtered.sort((a, b) => b.likes - a.likes);
+                break;
+            case 'comments':
+                filtered.sort((a, b) => b.comments - a.comments);
+                break;
+            case 'latest':
+            default:
+                filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                break;
+        }
+
+        setFilteredPosts(filtered);
+    }, [allPosts, selectedTag, searchValue, sortBy]);
 
     const handleSearch = (e) => {
         setSearchValue(e.target.value);
     };
 
-  const handleTagClick = (tag) => {
-    setSelectedTag(tag);
-    navigate(`/community?tag=${encodeURIComponent(tag)}`);
-  };
+    const handleTagClick = (tag) => {
+        setSelectedTag(tag);
+        // 更新URL参数
+        if (tag === '全部') {
+            navigate('/community');
+        } else {
+            navigate(`/community?tag=${encodeURIComponent(tag)}`);
+        }
+    };
+
+    const handleSortChange = (sort) => {
+        setSortBy(sort);
+    };
+
+    // 获取热门帖子（点赞数最多的前3个）
+    const getHotPosts = () => {
+        return [...allPosts]
+            .sort((a, b) => b.likes - a.likes)
+            .slice(0, 3);
+    };
+
+    // 获取最新帖子（最新的前3个）
+    const getRecentPosts = () => {
+        return [...allPosts]
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, 3);
+    };
+
+    const formatTime = (timeStr) => {
+        const now = new Date();
+        const postTime = new Date(timeStr);
+        const diffInHours = Math.floor((now - postTime) / (1000 * 60 * 60));
+        
+        if (diffInHours < 1) return '刚刚';
+        if (diffInHours < 24) return `${diffInHours}小时前`;
+        return `${Math.floor(diffInHours / 24)}天前`;
+    };
 
     return (
     <div className="community-homepage">
@@ -111,81 +179,161 @@ const CommunityHomepage = () => {
       </div>
 
       <div className="main-content">
-        {/* 左侧内容区 */}
-        <div className="content-left">
-          {/* 热门话题标签 */}
-          <div className="section-card">
-            <div className="section-header">
-              <TagOutlined className="section-icon" />
-              <h3>热门话题</h3>
+        {/* 主要内容区 - 帖子列表 */}
+        <div className="content-main">
+          {/* 标签筛选器 */}
+          <div className="section-card filter-section">
+            <div className="filter-header">
+              <div className="filter-left">
+                <TagOutlined className="section-icon" />
+                <h3>话题筛选</h3>
+              </div>
+              <div className="sort-controls">
+                <button 
+                  className={`sort-btn ${sortBy === 'latest' ? 'active' : ''}`}
+                  onClick={() => handleSortChange('latest')}
+                >
+                  <ClockCircleOutlined /> 最新
+                </button>
+                <button 
+                  className={`sort-btn ${sortBy === 'hot' ? 'active' : ''}`}
+                  onClick={() => handleSortChange('hot')}
+                >
+                  <FireOutlined /> 最热
+                </button>
+                <button 
+                  className={`sort-btn ${sortBy === 'comments' ? 'active' : ''}`}
+                  onClick={() => handleSortChange('comments')}
+                >
+                  <CommentOutlined /> 评论最多
+                </button>
+              </div>
             </div>
             <div className="tags-grid">
               {hotTags.map(tag => (
                 <button
-                            key={tag}
+                  key={tag}
                   className={`tag-btn ${selectedTag === tag ? 'active' : ''}`}
                   onClick={() => handleTagClick(tag)}
-                        >
-                            {tag}
+                >
+                  {tag}
                 </button>
-                    ))}
+              ))}
             </div>
           </div>
 
-          {/* 热门帖子 */}
-          <div className="section-card">
-            <div className="section-header">
-              <FireOutlined className="section-icon" />
-              <h3>热门帖子</h3>
-              <button className="more-btn" onClick={() => navigate('/community?sort=hot')}>
-                更多 <ArrowRightOutlined />
-              </button>
+          {/* 帖子列表 */}
+          <div className="posts-section">
+            <div className="posts-header">
+              <h3>
+                {selectedTag === '全部' ? '所有帖子' : `${selectedTag} 相关帖子`} 
+                <span className="posts-count">（{filteredPosts.length}条）</span>
+              </h3>
             </div>
-            <div className="posts-list">
-              {hotPosts.map(post => (
-                <div key={post.id} className="post-item hot-post" onClick={() => navigate(`/post/${post.id}`)}>
-                  <div className="post-content">
-                    <h4 className="post-title">{post.title}</h4>
-                    <div className="post-meta">
-                      <span className="author">@{post.author}</span>
-                      <div className="stats">
-                        <span><HeartOutlined /> {post.likes}</span>
-                        <span>💬 {post.comments}</span>
+            <div className="posts-list-main">
+              {filteredPosts.length === 0 ? (
+                <div className="no-posts">
+                  <p>暂无匹配的帖子</p>
+                  <p>试试调整筛选条件或搜索关键词</p>
+                </div>
+              ) : (
+                filteredPosts.map(post => (
+                  <div key={post.id} className="post-card" onClick={() => navigate(`/post/${post.id}`)}>
+                    <div className="post-header">
+                      <div className="author-info">
+                        <span className="author-avatar">{post.authorAvatar}</span>
+                        <div className="author-details">
+                          <span className="author-name">{post.author}</span>
+                          <span className="post-time">{formatTime(post.createdAt)}</span>
+                        </div>
+                      </div>
+                      <div className="post-category">{post.category}</div>
+                    </div>
+                    <div className="post-content">
+                      <h4 className="post-title">{post.title}</h4>
+                      <p className="post-summary">{post.content}</p>
+                      <div className="post-tags">
+                        {post.tags.map(tag => (
+                          <span key={tag} className="post-tag">#{tag}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="post-footer">
+                      <div className="post-stats">
+                        <span className="stat-item">
+                          <HeartOutlined className={post.isLiked ? 'liked' : ''} />
+                          {post.likes}
+                        </span>
+                        <span className="stat-item">
+                          <CommentOutlined />
+                          {post.comments}
+                        </span>
+                        <span className="stat-item">
+                          <EyeOutlined />
+                          {post.views}
+                        </span>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 最新帖子 */}
-          <div className="section-card">
-            <div className="section-header">
-              <ClockCircleOutlined className="section-icon" />
-              <h3>最新动态</h3>
-              <button className="more-btn" onClick={() => navigate('/community?sort=latest')}>
-                更多 <ArrowRightOutlined />
-              </button>
-            </div>
-            <div className="posts-list">
-              {recentPosts.map(post => (
-                <div key={post.id} className="post-item recent-post" onClick={() => navigate(`/post/${post.id}`)}>
-                  <div className="post-content">
-                    <h4 className="post-title">{post.title}</h4>
-                    <div className="post-meta">
-                      <span className="author">@{post.author}</span>
-                      <span className="time">{post.time}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>
 
-        {/* 右侧侧边栏 */}
+        {/* 右侧边栏 */}
         <div className="sidebar">
+          {/* 热门帖子 */}
+          <div className="sidebar-card">
+            <div className="sidebar-header">
+              <FireOutlined className="sidebar-icon" />
+              <h3>热门帖子</h3>
+              <button className="more-btn" onClick={() => handleSortChange('hot')}>
+                更多 <ArrowRightOutlined />
+              </button>
+            </div>
+            <div className="hot-posts-list">
+              {getHotPosts().map((post, index) => (
+                <div key={post.id} className="hot-post-item" onClick={() => navigate(`/post/${post.id}`)}>
+                  <div className="hot-post-rank">{index + 1}</div>
+                  <div className="hot-post-content">
+                    <h4 className="hot-post-title">{post.title}</h4>
+                    <div className="hot-post-meta">
+                      <span className="author">@{post.author}</span>
+                      <span className="likes">
+                        <HeartOutlined /> {post.likes}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 最新动态 */}
+          <div className="sidebar-card">
+            <div className="sidebar-header">
+              <ClockCircleOutlined className="sidebar-icon" />
+              <h3>最新动态</h3>
+              <button className="more-btn" onClick={() => handleSortChange('latest')}>
+                更多 <ArrowRightOutlined />
+              </button>
+            </div>
+            <div className="recent-posts-list">
+              {getRecentPosts().map(post => (
+                <div key={post.id} className="recent-post-item" onClick={() => navigate(`/post/${post.id}`)}>
+                  <div className="recent-post-content">
+                    <h4 className="recent-post-title">{post.title}</h4>
+                    <div className="recent-post-meta">
+                      <span className="author">@{post.author}</span>
+                      <span className="time">{formatTime(post.createdAt)}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* 社区统计 */}
           <div className="sidebar-card">
             <div className="sidebar-header">

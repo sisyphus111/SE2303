@@ -343,6 +343,206 @@
   background-color: var(--primary-green);
 }
 
+/* 通知设置 */
+.notification-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.notification-group {
+  background: var(--light-gray);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.notification-group h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-green);
+}
+
+.notification-switches {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.notification-switch-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--white);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.notification-switch-item:hover {
+  border-color: var(--accent-green);
+  box-shadow: 0 2px 8px rgba(45, 80, 22, 0.08);
+}
+
+.notification-info {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.notification-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.notification-title strong {
+  font-size: 14px;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.notification-info span {
+  font-size: 12px;
+  color: var(--text-gray);
+  line-height: 1.4;
+}
+
+.notification-switch-item .ant-switch {
+  background-color: var(--medium-gray);
+  margin-top: 2px;
+}
+
+.notification-switch-item .ant-switch-checked {
+  background-color: var(--primary-green);
+}
+
+/* 个人偏好设置 */
+.preference-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.preference-group {
+  background: var(--light-gray);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.preference-group h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-green);
+}
+
+.preference-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--white);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+}
+
+.preference-item:hover {
+  border-color: var(--accent-green);
+  box-shadow: 0 2px 8px rgba(45, 80, 22, 0.08);
+}
+
+.preference-item:last-child {
+  margin-bottom: 0;
+}
+
+.preference-info {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.preference-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 4px;
+}
+
+.preference-desc {
+  font-size: 12px;
+  color: var(--text-gray);
+  line-height: 1.4;
+}
+
+.preference-switches {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.preference-switch-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--white);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.preference-switch-item:hover {
+  border-color: var(--accent-green);
+  box-shadow: 0 2px 8px rgba(45, 80, 22, 0.08);
+}
+
+.preference-switch-item .preference-info {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.preference-switch-item .preference-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.preference-switch-item .preference-title strong {
+  font-size: 14px;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.preference-switch-item .preference-info span {
+  font-size: 12px;
+  color: var(--text-gray);
+  line-height: 1.4;
+}
+
+.preference-switch-item .ant-switch {
+  background-color: var(--medium-gray);
+  margin-top: 2px;
+}
+
+.preference-switch-item .ant-switch-checked {
+  background-color: var(--primary-green);
+}
+
+.preference-item .ant-radio-group {
+  display: flex;
+  gap: 12px;
+}
+
+.preference-item .ant-select {
+  min-width: 120px;
+}
+
 /* 数据管理 */
 .data-management-actions {
   display: flex;

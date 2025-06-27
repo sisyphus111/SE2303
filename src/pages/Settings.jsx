@@ -3,66 +3,39 @@ import {
   Typography, 
   Tabs, 
   Form, 
-  Input, 
   Button, 
   Switch, 
   Radio, 
   Select, 
-  Upload, 
-  Avatar, 
   Divider,
-  Row,
-  Col,
   Alert,
   Modal,
   message
 } from "antd";
 import {
-  UserOutlined,
-  SafetyOutlined,
-  EyeInvisibleOutlined,
   SettingOutlined,
   HeartOutlined,
-  TeamOutlined,
   DatabaseOutlined,
-  UploadOutlined,
   DeleteOutlined,
   ExclamationCircleOutlined,
   CheckCircleOutlined,
   BellOutlined,
-  LockOutlined,
   GlobalOutlined,
-  MobileOutlined
+  SoundOutlined,
+  EyeOutlined
 } from '@ant-design/icons';
+import { useUser } from '../lib/UserContext';
 import "../css/Settings.css";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
-const { TextArea } = Input;
 const { confirm } = Modal;
 
 function Settings() {
-  const [activeTab, setActiveTab] = useState('profile');
+  const { user, updatePreferences } = useUser();
+  const [activeTab, setActiveTab] = useState('notifications');
   const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState({
-    username: '张三',
-    email: 'zhangsan@example.com',
-    phone: '10000000000',
-    gender: '男',
-    birthday: '1998-05-15',
-    location: '北京市',
-    bio: '在校园心理社区寻找内心的平静与成长',
-    avatar: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=120&q=80',
-    tags: ['积极', '乐观', '善于倾听'],
-    
-    // 隐私设置
-    profileVisibility: 'public',
-    showOnlineStatus: true,
-    allowDirectMessage: true,
-    showEmail: false,
-    showPhone: false,
-    postVisibility: 'public',
-    
+  const [settings, setSettings] = useState({
     // 通知设置
     emailNotifications: true,
     pushNotifications: true,
@@ -76,6 +49,7 @@ function Settings() {
     language: 'zh-CN',
     fontSize: 'medium',
     autoPlayMedia: false,
+    soundEnabled: true,
     
     // 心理健康设置
     crisisInterventionEnabled: true,
@@ -90,22 +64,18 @@ function Settings() {
     blockSensitiveContent: true
   });
 
-  const tagOptions = [
-    { label: '积极', value: '积极' },
-    { label: '乐观', value: '乐观' },
-    { label: '耐心', value: '耐心' },
-    { label: '细心', value: '细心' },
-    { label: '善解人意', value: '善解人意' },
-    { label: '善于倾听', value: '善于倾听' },
-    { label: '热心助人', value: '热心助人' },
-    { label: '温暖', value: '温暖' }
-  ];
-
   const handleSave = async (section, values) => {
     setLoading(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      setUserData(prev => ({ ...prev, ...values }));
+      const updatedSettings = { ...settings, ...values };
+      setSettings(updatedSettings);
+      
+      // 更新用户偏好到上下文
+      if (section === 'preferences') {
+        await updatePreferences(values);
+      }
+      
       message.success('设置保存成功！');
     } catch (error) {
       message.error('保存失败，请重试');
@@ -114,14 +84,16 @@ function Settings() {
     }
   };
 
-  const handleAvatarChange = (info) => {
-    if (info.file.status === 'done' || info.file.status === 'uploading') {
-      const reader = new FileReader();
-      reader.onload = e => {
-        setUserData(prev => ({ ...prev, avatar: e.target.result }));
-      };
-      reader.readAsDataURL(info.file.originFileObj);
+  const handleSettingChange = async (key, value) => {
+    const updatedSettings = { ...settings, [key]: value };
+    setSettings(updatedSettings);
+    
+    // 实时保存特定设置
+    if (['theme', 'language', 'soundEnabled'].includes(key)) {
+      await updatePreferences({ [key]: value });
     }
+    
+    message.success('设置已更新');
   };
 
   const handleDeleteAccount = () => {
@@ -138,147 +110,267 @@ function Settings() {
     });
   };
 
-  // 个人信息设置
-  const ProfileSettings = () => (
+  // 通知设置
+  const NotificationSettings = () => (
     <div className="settings-section">
       <div className="section-header">
-        <UserOutlined className="section-icon" />
+        <BellOutlined className="section-icon" />
         <div>
-          <h3>个人信息</h3>
-          <p>管理您的个人资料和基本信息</p>
+          <h3>通知设置</h3>
+          <p>管理您接收通知的方式和类型</p>
         </div>
       </div>
-      
-      <Form layout="vertical" initialValues={userData} onFinish={(values) => handleSave('profile', values)}>
-        <Row gutter={24}>
-          <Col span={24}>
-            <Form.Item label="头像">
-              <div className="avatar-upload-section">
-                <Avatar size={80} src={userData.avatar} icon={<UserOutlined />} />
-                <div className="avatar-upload-info">
-                  <Upload showUploadList={false} beforeUpload={() => false} onChange={handleAvatarChange} accept="image/*">
-                    <Button icon={<UploadOutlined />}>更换头像</Button>
-                  </Upload>
-                  <Text type="secondary">支持 JPG、PNG 格式，不超过 2MB</Text>
+
+      <div className="notification-groups">
+        <div className="notification-group">
+          <h4>通知方式</h4>
+          <div className="notification-switches">
+            <div className="notification-switch-item">
+              <div className="notification-info">
+                <div className="notification-title">
+                  <BellOutlined style={{ color: 'var(--primary-green)' }} />
+                  <strong>推送通知</strong>
                 </div>
+                <span>在浏览器中接收实时推送通知</span>
               </div>
-            </Form.Item>
-          </Col>
-        </Row>
+              <Switch 
+                checked={settings.pushNotifications} 
+                onChange={(checked) => handleSettingChange('pushNotifications', checked)} 
+              />
+            </div>
 
-        <Row gutter={24}>
-          <Col span={12}>
-            <Form.Item label="用户名" name="username" rules={[{ required: true, message: '请输入用户名' }]}>
-              <Input prefix={<UserOutlined />} />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label="性别" name="gender">
-              <Radio.Group>
-                <Radio value="男">男</Radio>
-                <Radio value="女">女</Radio>
-                <Radio value="保密">保密</Radio>
-              </Radio.Group>
-            </Form.Item>
-          </Col>
-        </Row>
+            <div className="notification-switch-item">
+              <div className="notification-info">
+                <div className="notification-title">
+                  <GlobalOutlined style={{ color: 'var(--primary-green)' }} />
+                  <strong>邮件通知</strong>
+                </div>
+                <span>通过邮件接收重要通知</span>
+              </div>
+              <Switch 
+                checked={settings.emailNotifications} 
+                onChange={(checked) => handleSettingChange('emailNotifications', checked)} 
+              />
+            </div>
+          </div>
+        </div>
 
-        <Row gutter={24}>
-          <Col span={12}>
-            <Form.Item label="邮箱" name="email" rules={[{ required: true, message: '请输入邮箱' }, { type: 'email', message: '邮箱格式不正确' }]}>
-              <Input prefix={<GlobalOutlined />} />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label="手机号" name="phone" rules={[{ required: true, message: '请输入手机号' }]}>
-              <Input prefix={<MobileOutlined />} />
-            </Form.Item>
-          </Col>
-        </Row>
+        <div className="notification-group">
+          <h4>通知类型</h4>
+          <div className="notification-switches">
+            <div className="notification-switch-item">
+              <div className="notification-info">
+                <div className="notification-title">
+                  <strong>评论通知</strong>
+                </div>
+                <span>有人评论您的帖子时通知您</span>
+              </div>
+              <Switch 
+                checked={settings.commentNotifications} 
+                onChange={(checked) => handleSettingChange('commentNotifications', checked)} 
+              />
+            </div>
 
-        <Row gutter={24}>
-          <Col span={12}>
-            <Form.Item label="生日" name="birthday">
-              <Input type="date" />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label="所在地" name="location">
-              <Input />
-            </Form.Item>
-          </Col>
-        </Row>
+            <div className="notification-switch-item">
+              <div className="notification-info">
+                <div className="notification-title">
+                  <strong>点赞通知</strong>
+                </div>
+                <span>有人点赞您的内容时通知您</span>
+              </div>
+              <Switch 
+                checked={settings.likeNotifications} 
+                onChange={(checked) => handleSettingChange('likeNotifications', checked)} 
+              />
+            </div>
 
-        <Form.Item label="个人简介" name="bio">
-          <TextArea rows={4} placeholder="介绍一下自己，让其他用户更好地了解你" maxLength={200} showCount />
-        </Form.Item>
+            <div className="notification-switch-item">
+              <div className="notification-info">
+                <div className="notification-title">
+                  <strong>提及通知</strong>
+                </div>
+                <span>有人在帖子中提及您时通知您</span>
+              </div>
+              <Switch 
+                checked={settings.mentionNotifications} 
+                onChange={(checked) => handleSettingChange('mentionNotifications', checked)} 
+              />
+            </div>
 
-        <Form.Item label="个人标签" name="tags">
-          <Select mode="multiple" allowClear placeholder="选择符合你的标签" options={tagOptions} maxTagCount={5} />
-        </Form.Item>
+            <div className="notification-switch-item">
+              <div className="notification-info">
+                <div className="notification-title">
+                  <strong>系统通知</strong>
+                </div>
+                <span>接收系统公告和重要更新</span>
+              </div>
+              <Switch 
+                checked={settings.systemNotifications} 
+                onChange={(checked) => handleSettingChange('systemNotifications', checked)} 
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading}>保存个人信息</Button>
-        </Form.Item>
-      </Form>
+      <Button 
+        type="primary" 
+        onClick={() => handleSave('notifications', settings)} 
+        loading={loading}
+        style={{ marginTop: 24 }}
+      >
+        保存通知设置
+      </Button>
     </div>
   );
 
-  // 隐私设置
-  const PrivacySettings = () => (
+  // 个人偏好设置
+  const PreferenceSettings = () => (
     <div className="settings-section">
       <div className="section-header">
-        <EyeInvisibleOutlined className="section-icon" />
+        <SettingOutlined className="section-icon" />
         <div>
-          <h3>隐私设置</h3>
-          <p>控制您的信息对其他用户的可见性</p>
+          <h3>个人偏好</h3>
+          <p>自定义您的使用体验</p>
         </div>
       </div>
 
-      <Form layout="vertical" initialValues={userData} onFinish={(values) => handleSave('privacy', values)}>
-        <div className="privacy-group">
-          <h4>个人资料可见性</h4>
-          <Form.Item name="profileVisibility">
-            <Radio.Group>
-              <Radio value="public">公开 - 所有人可见</Radio>
-              <Radio value="friends">好友 - 仅好友可见</Radio>
-              <Radio value="private">私密 - 仅自己可见</Radio>
+      <div className="preference-groups">
+        <div className="preference-group">
+          <h4>界面设置</h4>
+          <div className="preference-item">
+            <div className="preference-info">
+              <div className="preference-title">主题模式</div>
+              <div className="preference-desc">选择您喜欢的界面主题</div>
+            </div>
+            <Radio.Group 
+              value={settings.theme} 
+              onChange={(e) => handleSettingChange('theme', e.target.value)}
+            >
+              <Radio value="light">浅色模式</Radio>
+              <Radio value="dark">深色模式</Radio>
+              <Radio value="auto">跟随系统</Radio>
             </Radio.Group>
-          </Form.Item>
+          </div>
+
+          <div className="preference-item">
+            <div className="preference-info">
+              <div className="preference-title">语言</div>
+              <div className="preference-desc">选择界面显示语言</div>
+            </div>
+            <Select 
+              value={settings.language}
+              onChange={(value) => handleSettingChange('language', value)}
+              style={{ width: 150 }}
+            >
+              <Option value="zh-CN">简体中文</Option>
+              <Option value="zh-TW">繁體中文</Option>
+              <Option value="en-US">English</Option>
+            </Select>
+          </div>
+
+          <div className="preference-item">
+            <div className="preference-info">
+              <div className="preference-title">字体大小</div>
+              <div className="preference-desc">调整界面文字显示大小</div>
+            </div>
+            <Radio.Group 
+              value={settings.fontSize} 
+              onChange={(e) => handleSettingChange('fontSize', e.target.value)}
+            >
+              <Radio value="small">小</Radio>
+              <Radio value="medium">中</Radio>
+              <Radio value="large">大</Radio>
+            </Radio.Group>
+          </div>
         </div>
 
-        <div className="privacy-group">
-          <h4>联系方式可见性</h4>
-          <div className="privacy-switches">
-            <div className="privacy-switch-item">
-              <span>显示邮箱地址</span>
-              <Switch checked={userData.showEmail} onChange={(checked) => setUserData(prev => ({...prev, showEmail: checked}))} />
+        <div className="preference-group">
+          <h4>媒体设置</h4>
+          <div className="preference-switches">
+            <div className="preference-switch-item">
+              <div className="preference-info">
+                <div className="preference-title">
+                  <SoundOutlined style={{ color: 'var(--primary-green)' }} />
+                  <strong>音效</strong>
+                </div>
+                <span>开启界面操作音效和提示音</span>
+              </div>
+              <Switch 
+                checked={settings.soundEnabled} 
+                onChange={(checked) => handleSettingChange('soundEnabled', checked)} 
+              />
             </div>
-            <div className="privacy-switch-item">
-              <span>显示手机号码</span>
-              <Switch checked={userData.showPhone} onChange={(checked) => setUserData(prev => ({...prev, showPhone: checked}))} />
-            </div>
-            <div className="privacy-switch-item">
-              <span>显示在线状态</span>
-              <Switch checked={userData.showOnlineStatus} onChange={(checked) => setUserData(prev => ({...prev, showOnlineStatus: checked}))} />
+
+            <div className="preference-switch-item">
+              <div className="preference-info">
+                <div className="preference-title">
+                  <EyeOutlined style={{ color: 'var(--primary-green)' }} />
+                  <strong>自动播放媒体</strong>
+                </div>
+                <span>自动播放帖子中的视频和音频内容</span>
+              </div>
+              <Switch 
+                checked={settings.autoPlayMedia} 
+                onChange={(checked) => handleSettingChange('autoPlayMedia', checked)} 
+              />
             </div>
           </div>
         </div>
 
-        <div className="privacy-group">
-          <h4>社交互动</h4>
-          <div className="privacy-switches">
-            <div className="privacy-switch-item">
-              <span>允许陌生人私信</span>
-              <Switch checked={userData.allowDirectMessage} onChange={(checked) => setUserData(prev => ({...prev, allowDirectMessage: checked}))} />
+        <div className="preference-group">
+          <h4>社区交互</h4>
+          <div className="preference-switches">
+            <div className="preference-switch-item">
+              <div className="preference-info">
+                <div className="preference-title">
+                  <strong>显示帖子统计</strong>
+                </div>
+                <span>显示帖子的点赞数、评论数等统计信息</span>
+              </div>
+              <Switch 
+                checked={settings.showPostStats} 
+                onChange={(checked) => handleSettingChange('showPostStats', checked)} 
+              />
+            </div>
+
+            <div className="preference-switch-item">
+              <div className="preference-info">
+                <div className="preference-title">
+                  <strong>智能推荐</strong>
+                </div>
+                <span>根据您的兴趣推荐相关帖子和用户</span>
+              </div>
+              <Switch 
+                checked={settings.enablePostRecommendation} 
+                onChange={(checked) => handleSettingChange('enablePostRecommendation', checked)} 
+              />
+            </div>
+
+            <div className="preference-switch-item">
+              <div className="preference-info">
+                <div className="preference-title">
+                  <strong>过滤敏感内容</strong>
+                </div>
+                <span>自动隐藏可能包含敏感信息的内容</span>
+              </div>
+              <Switch 
+                checked={settings.blockSensitiveContent} 
+                onChange={(checked) => handleSettingChange('blockSensitiveContent', checked)} 
+              />
             </div>
           </div>
         </div>
+      </div>
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading}>保存隐私设置</Button>
-        </Form.Item>
-      </Form>
+      <Button 
+        type="primary" 
+        onClick={() => handleSave('preferences', settings)} 
+        loading={loading}
+        style={{ marginTop: 24 }}
+      >
+        保存偏好设置
+      </Button>
     </div>
   );
 
@@ -310,7 +402,10 @@ function Settings() {
             </div>
             <span>当检测到心理危机信号时，系统将主动提供帮助资源</span>
           </div>
-          <Switch checked={userData.crisisInterventionEnabled} onChange={(checked) => setUserData(prev => ({...prev, crisisInterventionEnabled: checked}))} />
+          <Switch 
+            checked={settings.crisisInterventionEnabled} 
+            onChange={(checked) => handleSettingChange('crisisInterventionEnabled', checked)} 
+          />
         </div>
 
         <div className="mental-health-switch-item">
@@ -321,22 +416,47 @@ function Settings() {
             </div>
             <span>允许系统记录和分析您的情绪数据，提供个性化建议</span>
           </div>
-          <Switch checked={userData.moodTrackingEnabled} onChange={(checked) => setUserData(prev => ({...prev, moodTrackingEnabled: checked}))} />
+          <Switch 
+            checked={settings.moodTrackingEnabled} 
+            onChange={(checked) => handleSettingChange('moodTrackingEnabled', checked)} 
+          />
         </div>
 
         <div className="mental-health-switch-item">
           <div className="mental-health-info">
             <div className="mental-health-title">
-              <EyeInvisibleOutlined style={{ color: 'var(--primary-green)' }} />
+              <CheckCircleOutlined style={{ color: 'var(--primary-green)' }} />
               <strong>匿名发帖</strong>
             </div>
             <span>允许您匿名发布敏感的心理健康相关内容</span>
           </div>
-          <Switch checked={userData.anonymousPosting} onChange={(checked) => setUserData(prev => ({...prev, anonymousPosting: checked}))} />
+          <Switch 
+            checked={settings.anonymousPosting} 
+            onChange={(checked) => handleSettingChange('anonymousPosting', checked)} 
+          />
+        </div>
+
+        <div className="mental-health-switch-item">
+          <div className="mental-health-info">
+            <div className="mental-health-title">
+              <HeartOutlined style={{ color: 'var(--primary-green)' }} />
+              <strong>心理健康数据分享</strong>
+            </div>
+            <span>允许与专业心理健康机构分享匿名统计数据，帮助改善服务</span>
+          </div>
+          <Switch 
+            checked={settings.mentalHealthDataSharing} 
+            onChange={(checked) => handleSettingChange('mentalHealthDataSharing', checked)} 
+          />
         </div>
       </div>
 
-      <Button type="primary" onClick={() => handleSave('mentalHealth', userData)} loading={loading} style={{ marginTop: 24 }}>
+      <Button 
+        type="primary" 
+        onClick={() => handleSave('mentalHealth', settings)} 
+        loading={loading} 
+        style={{ marginTop: 24 }}
+      >
         保存心理健康设置
       </Button>
     </div>
@@ -383,14 +503,14 @@ function Settings() {
 
   const tabItems = [
     {
-      key: 'profile',
-      label: (<span><UserOutlined />个人信息</span>),
-      children: <ProfileSettings />
+      key: 'notifications',
+      label: (<span><BellOutlined />通知设置</span>),
+      children: <NotificationSettings />
     },
     {
-      key: 'privacy',
-      label: (<span><EyeInvisibleOutlined />隐私设置</span>),
-      children: <PrivacySettings />
+      key: 'preferences',
+      label: (<span><SettingOutlined />个人偏好</span>),
+      children: <PreferenceSettings />
     },
     {
       key: 'mental-health',
@@ -408,8 +528,8 @@ function Settings() {
     <div className="settings-page">
       <div className="settings-container">
         <div className="settings-header">
-          <Title level={2} className="settings-title">设置中心</Title>
-          <Text type="secondary" className="settings-subtitle">管理您的账户设置和个人偏好</Text>
+          <Title level={2} className="settings-title">系统设置</Title>
+          <Text type="secondary" className="settings-subtitle">自定义您的使用体验和功能偏好</Text>
         </div>
 
         <div className="settings-content">

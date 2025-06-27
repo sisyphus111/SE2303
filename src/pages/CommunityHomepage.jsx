@@ -145,7 +145,7 @@ const CommunityHomepage = () => {
       <div className="welcome-section">
         <div className="welcome-content">
           <div className="welcome-text">
-            <h1>心理健康社区</h1>
+            <h1>心晴社区</h1>
             <p>分享心情，互相支持，一起成长</p>
           </div>
           <div className="quick-actions">

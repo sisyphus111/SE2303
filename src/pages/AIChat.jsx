@@ -487,36 +487,7 @@ const AIChat = () => {
           ref={messagesContainerRef}
           onScroll={handleScroll}
         >
-          {/* 欢迎消息 */}
-          {messages.length === 0 && !isLoading && (
-            <div className="welcome-section">
-              <div className="welcome-avatar">
-                <RobotOutlined />
-              </div>
-              <div className="welcome-content">
-                <h3>你好！我是你的专属心理健康助手</h3>
-                <p>我是一个专业的AI心理咨询助手，可以为你提供情绪支持、学习指导和生活建议。无论你遇到什么困扰，都可以与我分享。</p>
-                <div className="welcome-features">
-                  <div className="feature-item">
-                    <HeartOutlined />
-                    <span>情绪疏导</span>
-                  </div>
-                  <div className="feature-item">
-                    <BookOutlined />
-                    <span>学习指导</span>
-                  </div>
-                  <div className="feature-item">
-                    <UserOutlined />
-                    <span>人际关系</span>
-                  </div>
-                  <div className="feature-item">
-                    <StarOutlined />
-                    <span>个人成长</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+
 
           {/* 消息列表 */}
           {messages.map((message) => (

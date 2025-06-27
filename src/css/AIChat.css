@@ -178,8 +178,8 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 40px 20px;
-  min-height: 400px;
+  padding: 24px 20px;
+  min-height: 280px;
 }
 
 .welcome-avatar {
@@ -211,35 +211,35 @@
 
 .welcome-content h3 {
   color: var(--primary-green);
-  font-size: 24px;
-  font-weight: 700;
-  margin: 0 0 12px 0;
-  letter-spacing: 0.5px;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  letter-spacing: 0.3px;
 }
 
 .welcome-content p {
   color: var(--text-gray);
-  font-size: 15px;
-  line-height: 1.6;
-  margin: 0 0 24px 0;
-  max-width: 450px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+  max-width: 380px;
 }
 
 .welcome-features {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 12px;
-  max-width: 500px;
+  grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
+  gap: 8px;
+  max-width: 360px;
 }
 
 .feature-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 16px 12px;
+  gap: 4px;
+  padding: 12px 8px;
   background: var(--white);
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid var(--border-color);
   transition: all 0.3s ease;
   cursor: pointer;
@@ -252,12 +252,12 @@
 }
 
 .feature-item .anticon {
-  font-size: 20px;
+  font-size: 16px;
   color: var(--primary-green);
 }
 
 .feature-item span {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--text-dark);
 }
@@ -648,27 +648,23 @@
     max-width: 85%;
   }
   
-  .welcome-section {
-    padding: 30px 16px;
-    min-height: 300px;
+    .welcome-section {
+    padding: 16px 12px;
+    min-height: 220px;
   }
-  
-  .welcome-avatar {
-    width: 64px;
-    height: 64px;
-    font-size: 28px;
-  }
-  
+
   .welcome-content h3 {
-    font-size: 20px;
+    font-size: 16px;
   }
-  
+
   .welcome-content p {
-    font-size: 14px;
+    font-size: 12px;
+    max-width: 300px;
   }
-  
+
   .welcome-features {
     grid-template-columns: repeat(2, 1fr);
+    max-width: 280px;
   }
   
   .quick-replies-categories {
@@ -700,10 +696,20 @@
   
   .welcome-features {
     grid-template-columns: 1fr;
+    max-width: 200px;
+    gap: 6px;
   }
   
   .feature-item {
-    padding: 12px 10px;
+    padding: 10px 8px;
+  }
+
+  .feature-item .anticon {
+    font-size: 14px;
+  }
+
+  .feature-item span {
+    font-size: 10px;
   }
   
   .input-wrapper textarea {

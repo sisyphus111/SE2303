@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Input, Button, Space, Row, Col } from 'antd';
+import { SendOutlined } from '@ant-design/icons';
 import '../css/CommentIinput.css';
-const { TextArea } = Input;
 
 const CommentInput = ({ onSubmit }) => {
     const [comment, setComment] = useState('');
@@ -13,27 +12,41 @@ const CommentInput = ({ onSubmit }) => {
         }
     };
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+            handleSubmit();
+        }
+    };
+
     return (
-        <div className="comment-input-area">
-            <Space direction="vertical" style={{ width: '100%' }}>
-                <div className="comment-input-textarea">
-                    <TextArea
-                        placeholder="写下你的评论..."
+        <div className="comment-input-container">
+            <div className="input-header">
+                <h4>发表评论</h4>
+                <span className="input-tip">Ctrl + Enter 快速发送</span>
+            </div>
+            <div className="input-wrapper">
+                <textarea
+                    className="comment-textarea"
+                    placeholder="分享你的想法..."
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
-                        onPressEnter={handleSubmit}
-                        style={{ width: '100%', marginBottom: '10px', border: 'none', boxShadow: 'none' }}
-                        autoSize={{ minRows: 3, maxRows: 6 }}
-                    />
+                    onKeyDown={handleKeyPress}
+                    rows={4}
+                />
+                <div className="input-footer">
+                    <div className="char-count">
+                        {comment.length}/500
+                    </div>
+                    <button 
+                        className="submit-btn"
+                        onClick={handleSubmit} 
+                        disabled={!comment.trim() || comment.length > 500}
+                    >
+                        <SendOutlined />
+                        <span>发布评论</span>
+                    </button>
                 </div>
-                <Row justify="end">
-                    <Col>
-                        <Button className="comment-input-btn" onClick={handleSubmit} disabled={!comment.trim()}>
-                            发送
-                        </Button>
-                    </Col>
-                </Row>
-            </Space>
+            </div>
         </div>
     );
 };

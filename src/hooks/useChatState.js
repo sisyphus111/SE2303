@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import chatWebSocketService from '../services/chatWebSocketService';
+import chatWebSocketService from '../service/chatWebSocketService';
 import { createUserMessage, createAIMessage, createWebSocketMessage } from '../utils/messageUtils';
 
 /**

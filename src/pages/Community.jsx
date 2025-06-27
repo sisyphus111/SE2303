@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { 
+  EditOutlined, 
+  SearchOutlined,
+  FileTextOutlined,
+  HeartOutlined,
+  HeartFilled,
+  MessageOutlined,
+  EyeOutlined,
+  UserOutlined
+} from '@ant-design/icons';
 import '../css/Community.css';
 
 // API服务导入注释
@@ -12,7 +22,7 @@ const Community = () => {
       title: '如何缓解工作压力？',
       content: '最近工作压力很大，想和大家分享一下我的减压方法，也希望能听到大家的建议...',
       author: '小明',
-      authorAvatar: '👨',
+      authorAvatar: 'M',
       category: '压力管理',
       tags: ['工作压力', '减压方法', '心理健康'],
       likes: 24,
@@ -26,7 +36,7 @@ const Community = () => {
       title: '分享一个让我心情变好的小习惯',
       content: '每天早上起床后，我会花5分钟时间做深呼吸和简单的伸展运动，这让我一整天都感觉很好...',
       author: '小红',
-      authorAvatar: '👩',
+      authorAvatar: 'H',
       category: '心情分享',
       tags: ['好习惯', '晨间routine', '积极心态'],
       likes: 42,
@@ -40,7 +50,7 @@ const Community = () => {
       title: '关于焦虑症的一些思考',
       content: '想和大家讨论一下焦虑症这个话题，希望能帮助到有类似经历的朋友...',
       author: '小李',
-      authorAvatar: '👨‍🦱',
+      authorAvatar: 'L',
       category: '心理健康',
       tags: ['焦虑症', '心理治疗', '互助'],
       likes: 18,
@@ -54,7 +64,7 @@ const Community = () => {
       title: '推荐几本治愈系书籍',
       content: '最近读了几本很棒的心理学书籍，想推荐给大家，希望能帮助到需要的人...',
       author: '小王',
-      authorAvatar: '👩‍🦰',
+      authorAvatar: 'W',
       category: '资源推荐',
       tags: ['书籍推荐', '心理学', '治愈系'],
       likes: 31,
@@ -216,7 +226,7 @@ const Community = () => {
             className="new-post-btn"
             onClick={() => navigate('/new-post')}
           >
-            ✏️ 发布新帖子
+            <EditOutlined /> 发布新帖子
           </button>
         )}
       </div>
@@ -229,7 +239,7 @@ const Community = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <span className="search-icon">🔍</span>
+          <span className="search-icon"><SearchOutlined /></span>
         </div>
 
         <div className="filter-controls">
@@ -262,7 +272,7 @@ const Community = () => {
       <div className="posts-container">
         {filteredPosts.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">📝</div>
+            <div className="empty-icon"><FileTextOutlined /></div>
             <p>没有找到相关帖子</p>
             <button 
               className="start-post-btn"
@@ -306,15 +316,15 @@ const Community = () => {
                       className={`like-btn ${post.isLiked ? 'liked' : ''}`}
                       onClick={() => handleLike(post.id)}
                     >
-                      <span>❤️</span>
+                      {post.isLiked ? <HeartFilled /> : <HeartOutlined />}
                       <span>{post.likes}</span>
                     </button>
                     <div className="stat-item">
-                      <span>💬</span>
+                      <MessageOutlined />
                       <span>{post.comments}</span>
                     </div>
                     <div className="stat-item">
-                      <span>👁️</span>
+                      <EyeOutlined />
                       <span>{post.views}</span>
                     </div>
                   </div>

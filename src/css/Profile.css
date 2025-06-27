@@ -409,8 +409,23 @@
 }
 
 .profile-card .ant-select-multiple .ant-select-selection-item {
-  background: var(--primary-green);
-  border-color: var(--primary-green);
-  color: white;
-  border-radius: 12px;
+  background: var(--primary-green) !important;
+  border-color: var(--primary-green) !important;
+  color: white !important;
+  border-radius: 12px !important;
+}
+
+/* 确保禁用状态下的tag样式也正确 */
+.profile-card .ant-select-disabled .ant-select-multiple .ant-select-selection-item {
+  background: var(--primary-green) !important;
+  border-color: var(--primary-green) !important;
+  color: white !important;
+  opacity: 0.8;
+}
+
+/* 只针对表单中的多选Select组件，排除隐私设置 */
+.profile-card .ant-form .ant-select-multiple .ant-select-selection-item {
+  background: var(--primary-green) !important;
+  border-color: var(--primary-green) !important;
+  color: white !important;
 } 

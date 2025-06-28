@@ -51,6 +51,15 @@ export const handleApiError = (error, defaultMessage = '操作失败', callback)
 };
 
 /**
+ * 检查是否为认证相关页面（登录/注册）
+ * @returns {boolean} 是否为认证页面
+ */
+const isAuthPage = () => {
+  const pathname = window.location.pathname;
+  return pathname === '/login' || pathname === '/register';
+};
+
+/**
  * 处理API响应结果
  * @param {Object} response - API响应对象
  * @returns {Object} 响应数据
@@ -62,21 +71,26 @@ export const handleApiResponse = (response) => {
   }
   
   if (response.errorCode === 401) {
-    console.log('🔒 检测到401未授权错误，重定向到登录页面');
+    console.log('🔒 检测到401未授权错误');
+    
+    // 检查当前是否在认证页面
+    if (isAuthPage()) {
+      console.log('📝 当前在登录/注册页面，不进行重定向');
+      // 在登录/注册页面，401错误是正常的，不进行重定向
+      return Promise.reject(new ApiError('未授权访问', 401));
+    }
+    
+    // 不在认证页面，需要重定向到登录页面
+    console.log('🔄 重定向到登录页面');
     
     // 保存当前完整路径（包括查询参数）用于登录后重定向
     const currentPath = window.location.pathname + window.location.search;
+    const loginUrl = `/login?redirect=${encodeURIComponent(currentPath)}`;
     
-    // 避免在登录和注册页面重复重定向
-    if (!currentPath.startsWith('/login') && !currentPath.startsWith('/register')) {
-      // 将当前路径作为查询参数传递给登录页面
-      const loginUrl = `/login?redirect=${encodeURIComponent(currentPath)}`;
-      
-      // 使用replace避免在浏览器历史中留下401错误页面
-      window.location.replace(loginUrl);
-    }
+    // 使用replace避免在浏览器历史中留下401错误页面
+    window.location.replace(loginUrl);
     
-    return Promise.reject(new Error('未授权访问'));
+    return Promise.reject(new ApiError('未授权访问，正在重定向到登录页面', 401));
   }
   
   throw new ApiError(

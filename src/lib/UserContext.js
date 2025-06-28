@@ -1,114 +1,66 @@
-import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { getUserProfile, updateUserProfile, updateUserPreferences } from '../service/userService';
-
-// 初始状态 - 仅关注用户信息
-const initialState = {
-  user: null,
-  preferences: {
-    theme: 'light',
-    language: 'zh-CN',
-    notifications: true,
-    soundEnabled: true,
-  },
-  loading: true,
-  error: null,
-};
-
-// Action types - 移除登录相关actions
-const actionTypes = {
-  SET_LOADING: 'SET_LOADING',
-  SET_ERROR: 'SET_ERROR',
-  SET_USER: 'SET_USER',
-  CLEAR_USER: 'CLEAR_USER',
-  UPDATE_USER: 'UPDATE_USER',
-  UPDATE_PREFERENCES: 'UPDATE_PREFERENCES',
-  CLEAR_ERROR: 'CLEAR_ERROR',
-};
-
-// Reducer - 简化状态管理
-const userReducer = (state, action) => {
-  switch (action.type) {
-    case actionTypes.SET_LOADING:
-      return {
-        ...state,
-        loading: action.payload,
-      };
-    case actionTypes.SET_ERROR:
-      return {
-        ...state,
-        error: action.payload,
-        loading: false,
-      };
-    case actionTypes.SET_USER:
-      return {
-        ...state,
-        user: action.payload.user,
-        preferences: { ...state.preferences, ...action.payload.preferences },
-        loading: false,
-        error: null,
-      };
-    case actionTypes.CLEAR_USER:
-      return {
-        ...initialState,
-        loading: false,
-      };
-    case actionTypes.UPDATE_USER:
-      return {
-        ...state,
-        user: { ...state.user, ...action.payload },
-      };
-    case actionTypes.UPDATE_PREFERENCES:
-      return {
-        ...state,
-        preferences: { ...state.preferences, ...action.payload },
-      };
-    case actionTypes.CLEAR_ERROR:
-      return {
-        ...state,
-        error: null,
-      };
-    default:
-      return state;
-  }
-};
 
 // Context
 const UserContext = createContext();
 
+// 检查是否为登录/注册页面
+const isAuthPage = () => {
+  const pathname = window.location.pathname;
+  return pathname === '/login' || pathname === '/register';
+};
+
 // Provider Component
 export const UserProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(userReducer, initialState);
+  // 使用简单的useState管理状态
+  const [user, setUser] = useState(null);
+  const [preferences, setPreferences] = useState({
+    theme: 'light',
+    language: 'zh-CN',
+    notifications: true,
+    soundEnabled: true,
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // 初始化用户信息 - 通过API获取，不依赖localStorage
+  // 计算是否已登录
+  const isAuthenticated = !!user;
+
+  // 初始化用户信息
   useEffect(() => {
     const initializeUser = async () => {
       try {
-        dispatch({ type: actionTypes.SET_LOADING, payload: true });
+        setLoading(true);
         
         // 尝试从后端获取用户信息
-        // 如果cookie中有有效token，后端会返回用户信息
         const userProfile = await getUserProfile();
         
         if (userProfile) {
-          dispatch({
-            type: actionTypes.SET_USER,
-            payload: { 
-              user: userProfile.user, 
-              preferences: userProfile.preferences || {} 
-            },
-          });
-        } else {
-          // 没有用户信息，设置为未登录状态
-          dispatch({ type: actionTypes.SET_LOADING, payload: false });
+          // 有用户信息，设置登录状态
+          setUser(userProfile.user);
+          setPreferences(prev => ({ ...prev, ...userProfile.preferences }));
+          setError(null);
         }
+        
+        setLoading(false);
       } catch (error) {
-        console.error('获取用户信息失败:', error);
-        // 如果是401错误，说明未登录，这是正常情况
-        if (error.status === 401) {
-          dispatch({ type: actionTypes.SET_LOADING, payload: false });
+        console.error('初始化用户信息时出错:', error);
+        
+        // 🔑 简化错误处理：让ErrorHandler统一处理401重定向
+        // 只有在非401错误且非登录/注册页面时才显示错误信息
+        const isAuth401Error = error.status === 401 || 
+                               error.message?.includes('401') || 
+                               error.message?.includes('未授权');
+        
+        if (!isAuth401Error && !isAuthPage()) {
+          // 非401错误且不在登录页面，显示错误信息
+          setError('获取用户信息失败');
         } else {
-          dispatch({ type: actionTypes.SET_ERROR, payload: '获取用户信息失败' });
+          // 401错误或在登录页面，静默处理
+          console.log('📝 401错误或登录页面，由ErrorHandler统一处理');
         }
+        
+        setLoading(false);
       }
     };
 
@@ -116,16 +68,24 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   // 设置用户信息（登录成功后调用）
-  const setUser = useCallback((userData, preferences = {}) => {
-    dispatch({
-      type: actionTypes.SET_USER,
-      payload: { user: userData, preferences },
-    });
+  const setUserInfo = useCallback((userData, userPreferences = {}) => {
+    setUser(userData);
+    setPreferences(prev => ({ ...prev, ...userPreferences }));
+    setError(null);
+    setLoading(false);
   }, []);
 
   // 清除用户信息（登出后调用）
   const clearUser = useCallback(() => {
-    dispatch({ type: actionTypes.CLEAR_USER });
+    setUser(null);
+    setPreferences({
+      theme: 'light',
+      language: 'zh-CN',
+      notifications: true,
+      soundEnabled: true,
+    });
+    setError(null);
+    setLoading(false);
   }, []);
 
   // 更新用户信息
@@ -134,68 +94,68 @@ export const UserProvider = ({ children }) => {
       // 调用API更新用户信息
       const updatedUser = await updateUserProfile(updates);
       
-      dispatch({ type: actionTypes.UPDATE_USER, payload: updatedUser });
+      // 更新本地状态
+      setUser(prev => ({ ...prev, ...updatedUser }));
       
       return { success: true };
     } catch (error) {
-      dispatch({ type: actionTypes.SET_ERROR, payload: '更新用户信息失败' });
+      setError('更新用户信息失败');
       return { success: false, error: error.message };
     }
   }, []);
 
   // 更新用户偏好
-  const updatePreferences = useCallback(async (preferences) => {
+  const updateUserPrefs = useCallback(async (newPreferences) => {
     try {
       // 调用API更新偏好设置
-      const updatedPreferences = await updateUserPreferences(preferences);
+      const updatedPreferences = await updateUserPreferences(newPreferences);
       
-      dispatch({ type: actionTypes.UPDATE_PREFERENCES, payload: updatedPreferences });
+      // 更新本地状态
+      setPreferences(prev => ({ ...prev, ...updatedPreferences }));
       
       return { success: true };
     } catch (error) {
-      dispatch({ type: actionTypes.SET_ERROR, payload: '更新偏好设置失败' });
+      setError('更新偏好设置失败');
       return { success: false, error: error.message };
     }
   }, []);
 
-  // 清除错误 - 使用useCallback优化
+  // 清除错误
   const clearError = useCallback(() => {
-    dispatch({ type: actionTypes.CLEAR_ERROR });
+    setError(null);
   }, []);
 
   // 获取用户头像
   const getUserAvatar = useCallback(() => {
-    if (state.user?.avatar) {
-      return state.user.avatar;
+    if (user?.avatar) {
+      return user.avatar;
     }
     
     // 默认头像 - 基于用户名生成
-    const username = state.user?.username || state.user?.email || 'User';
+    const username = user?.username || user?.email || 'User';
     const avatarChar = username.charAt(0).toUpperCase();
     return avatarChar;
-  }, [state.user]);
+  }, [user]);
 
   // 获取用户显示名称
   const getUserDisplayName = useCallback(() => {
-    return state.user?.nickname || state.user?.username || state.user?.email || '用户';
-  }, [state.user]);
+    return user?.nickname || user?.username || user?.email || '用户';
+  }, [user]);
 
-  // 检查是否已登录 - 基于是否有用户信息
-  const isAuthenticated = !!state.user;
-
+  // 提供给子组件的值
   const value = {
     // 状态
-    user: state.user,
-    preferences: state.preferences,
-    loading: state.loading,
-    error: state.error,
+    user,
+    preferences,
+    loading,
+    error,
     isAuthenticated,
     
-    // 方法 - 仅保留用户信息管理相关方法
-    setUser,
+    // 方法
+    setUser: setUserInfo,
     clearUser,
     updateUser,
-    updatePreferences,
+    updatePreferences: updateUserPrefs,
     clearError,
     getUserAvatar,
     getUserDisplayName,

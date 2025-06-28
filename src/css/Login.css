@@ -203,6 +203,17 @@
   opacity: 0.7;
 }
 
+/* 隐藏浏览器原生的密码显示/隐藏按钮 */
+input[type="password"]::-webkit-textfield-decoration-container,
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-reveal {
+  display: none;
+}
+
+input[type="password"]::-ms-reveal {
+  display: none;
+}
+
 /* 密码切换按钮 */
 .password-toggle {
   position: absolute;
@@ -214,6 +225,7 @@
   padding: 4px;
   border-radius: 4px;
   transition: all 0.3s ease;
+  z-index: 3;
 }
 
 .password-toggle:hover {

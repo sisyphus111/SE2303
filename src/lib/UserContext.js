@@ -1,9 +1,8 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { checkLoginStatus } from '../service/authService';
+import { getUserProfile, updateUserProfile, updateUserPreferences } from '../service/userService';
 
-// 初始状态
+// 初始状态 - 仅关注用户信息
 const initialState = {
-  isAuthenticated: false,
   user: null,
   preferences: {
     theme: 'light',
@@ -15,18 +14,18 @@ const initialState = {
   error: null,
 };
 
-// Action types
+// Action types - 移除登录相关actions
 const actionTypes = {
   SET_LOADING: 'SET_LOADING',
   SET_ERROR: 'SET_ERROR',
-  LOGIN_SUCCESS: 'LOGIN_SUCCESS',
-  LOGOUT: 'LOGOUT',
+  SET_USER: 'SET_USER',
+  CLEAR_USER: 'CLEAR_USER',
   UPDATE_USER: 'UPDATE_USER',
   UPDATE_PREFERENCES: 'UPDATE_PREFERENCES',
   CLEAR_ERROR: 'CLEAR_ERROR',
 };
 
-// Reducer
+// Reducer - 简化状态管理
 const userReducer = (state, action) => {
   switch (action.type) {
     case actionTypes.SET_LOADING:
@@ -40,16 +39,15 @@ const userReducer = (state, action) => {
         error: action.payload,
         loading: false,
       };
-    case actionTypes.LOGIN_SUCCESS:
+    case actionTypes.SET_USER:
       return {
         ...state,
-        isAuthenticated: true,
         user: action.payload.user,
         preferences: { ...state.preferences, ...action.payload.preferences },
         loading: false,
         error: null,
       };
-    case actionTypes.LOGOUT:
+    case actionTypes.CLEAR_USER:
       return {
         ...initialState,
         loading: false,
@@ -81,93 +79,62 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [state, dispatch] = useReducer(userReducer, initialState);
 
-  // 初始化用户状态
+  // 初始化用户信息 - 通过API获取，不依赖localStorage
   useEffect(() => {
     const initializeUser = async () => {
       try {
         dispatch({ type: actionTypes.SET_LOADING, payload: true });
         
-        // 检查本地存储的登录状态
-        const isLoggedIn = checkLoginStatus();
+        // 尝试从后端获取用户信息
+        // 如果cookie中有有效token，后端会返回用户信息
+        const userProfile = await getUserProfile();
         
-        if (isLoggedIn) {
-          // 从本地存储获取用户信息
-          const userData = localStorage.getItem('userData');
-          const userPreferences = localStorage.getItem('userPreferences');
-          
-          if (userData) {
-            const user = JSON.parse(userData);
-            const preferences = userPreferences ? JSON.parse(userPreferences) : {};
-            
-            dispatch({
-              type: actionTypes.LOGIN_SUCCESS,
-              payload: { user, preferences },
-            });
-          } else {
-            // 如果没有用户数据但有登录状态，清除登录状态
-            localStorage.removeItem('isLoggedIn');
-            dispatch({ type: actionTypes.LOGOUT });
-          }
+        if (userProfile) {
+          dispatch({
+            type: actionTypes.SET_USER,
+            payload: { 
+              user: userProfile.user, 
+              preferences: userProfile.preferences || {} 
+            },
+          });
         } else {
+          // 没有用户信息，设置为未登录状态
           dispatch({ type: actionTypes.SET_LOADING, payload: false });
         }
       } catch (error) {
-        console.error('初始化用户状态失败:', error);
-        dispatch({ type: actionTypes.SET_ERROR, payload: '初始化用户状态失败' });
+        console.error('获取用户信息失败:', error);
+        // 如果是401错误，说明未登录，这是正常情况
+        if (error.status === 401) {
+          dispatch({ type: actionTypes.SET_LOADING, payload: false });
+        } else {
+          dispatch({ type: actionTypes.SET_ERROR, payload: '获取用户信息失败' });
+        }
       }
     };
 
     initializeUser();
   }, []);
 
-  // 登录
-  const login = async (userData, preferences = {}) => {
-    try {
-      dispatch({ type: actionTypes.SET_LOADING, payload: true });
-      
-      // 保存到本地存储
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('userData', JSON.stringify(userData));
-      localStorage.setItem('userPreferences', JSON.stringify(preferences));
-      
-      dispatch({
-        type: actionTypes.LOGIN_SUCCESS,
-        payload: { user: userData, preferences },
-      });
-      
-      return { success: true };
-    } catch (error) {
-      dispatch({ type: actionTypes.SET_ERROR, payload: '登录失败' });
-      return { success: false, error: error.message };
-    }
+  // 设置用户信息（登录成功后调用）
+  const setUser = (userData, preferences = {}) => {
+    dispatch({
+      type: actionTypes.SET_USER,
+      payload: { user: userData, preferences },
+    });
   };
 
-  // 登出
-  const logout = async () => {
-    try {
-      // 清除本地存储
-      localStorage.removeItem('isLoggedIn');
-      localStorage.removeItem('userData');
-      localStorage.removeItem('userPreferences');
-      
-      dispatch({ type: actionTypes.LOGOUT });
-      
-      return { success: true };
-    } catch (error) {
-      dispatch({ type: actionTypes.SET_ERROR, payload: '登出失败' });
-      return { success: false, error: error.message };
-    }
+  // 清除用户信息（登出后调用）
+  const clearUser = () => {
+    dispatch({ type: actionTypes.CLEAR_USER });
   };
 
   // 更新用户信息
   const updateUser = async (updates) => {
     try {
-      const updatedUser = { ...state.user, ...updates };
+      // 调用API更新用户信息
+      const updatedUser = await updateUserProfile(updates);
       
-      // 更新本地存储
-      localStorage.setItem('userData', JSON.stringify(updatedUser));
-      
-      dispatch({ type: actionTypes.UPDATE_USER, payload: updates });
+      dispatch({ type: actionTypes.UPDATE_USER, payload: updatedUser });
       
       return { success: true };
     } catch (error) {
@@ -179,12 +146,10 @@ export const UserProvider = ({ children }) => {
   // 更新用户偏好
   const updatePreferences = async (preferences) => {
     try {
-      const updatedPreferences = { ...state.preferences, ...preferences };
+      // 调用API更新偏好设置
+      const updatedPreferences = await updateUserPreferences(preferences);
       
-      // 更新本地存储
-      localStorage.setItem('userPreferences', JSON.stringify(updatedPreferences));
-      
-      dispatch({ type: actionTypes.UPDATE_PREFERENCES, payload: preferences });
+      dispatch({ type: actionTypes.UPDATE_PREFERENCES, payload: updatedPreferences });
       
       return { success: true };
     } catch (error) {
@@ -215,13 +180,20 @@ export const UserProvider = ({ children }) => {
     return state.user?.nickname || state.user?.username || state.user?.email || '用户';
   };
 
+  // 检查是否已登录 - 基于是否有用户信息
+  const isAuthenticated = !!state.user;
+
   const value = {
     // 状态
-    ...state,
+    user: state.user,
+    preferences: state.preferences,
+    loading: state.loading,
+    error: state.error,
+    isAuthenticated,
     
-    // 方法
-    login,
-    logout,
+    // 方法 - 仅保留用户信息管理相关方法
+    setUser,
+    clearUser,
     updateUser,
     updatePreferences,
     clearError,

@@ -1,9 +1,9 @@
 import { handleApiResponse } from '../lib/ErrorHandler';
 
 export async function get(url) {
-    let res = await fetch(url, { 
+    let res = await fetch(`${PREFIX}${url}`, { 
         method: "GET", 
-        // credentials: "include" 
+        credentials: "include" // 包含cookie进行认证
     });
     const response = await res.json(); // 反序列化
     return handleApiResponse(response);
@@ -16,9 +16,9 @@ export async function put(url, data) {
         headers: {
             'Content-Type': 'application/json'
         },
-        // credentials: "include"
+        credentials: "include" // 包含cookie进行认证
     };
-    let res = await fetch(url, opts);
+    let res = await fetch(`${PREFIX}${url}`, opts);
     const response = await res.json();
     return handleApiResponse(response);
 }
@@ -26,7 +26,7 @@ export async function put(url, data) {
 export async function del(url, data) {
     let opts = {
         method: "DELETE",
-        // credentials: "include"
+        credentials: "include" // 包含cookie进行认证
     };
     
     if (data) {
@@ -36,7 +36,7 @@ export async function del(url, data) {
         };
     }
     
-    let res = await fetch(url, opts);
+    let res = await fetch(`${PREFIX}${url}`, opts);
     const response = await res.json();
     return handleApiResponse(response);
 }
@@ -48,9 +48,9 @@ export async function post(url, data) {
         headers: {
             'Content-Type': 'application/json'
         },
-        // credentials: "include"
+        credentials: "include" // 包含cookie进行认证
     };
-    let res = await fetch(url, opts);
+    let res = await fetch(`${PREFIX}${url}`, opts);
     const response = await res.json();
     return handleApiResponse(response);
 }

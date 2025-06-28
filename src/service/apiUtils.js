@@ -1,4 +1,4 @@
-// API工具函数
+// API工具函数 - 基于Cookie认证，不处理token
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
 
 /**
@@ -14,14 +14,9 @@ export const request = async (endpoint, options = {}) => {
       'Content-Type': 'application/json',
       ...options.headers,
     },
+    credentials: 'include', // 包含cookie进行认证
     ...options,
   };
-
-  // 添加认证token
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
 
   try {
     const response = await fetch(url, config);
@@ -44,9 +39,8 @@ export const request = async (endpoint, options = {}) => {
  */
 export const handleApiError = (error) => {
   if (error.message.includes('401')) {
-    // 未授权，跳转到登录页
-    localStorage.removeItem('authToken');
-    window.location.href = '/login';
+    // 未授权，跳转到登录页（由ErrorHandler统一处理）
+    console.log('检测到401错误，将由ErrorHandler处理重定向');
   }
   
   return {

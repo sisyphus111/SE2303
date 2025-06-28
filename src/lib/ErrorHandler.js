@@ -60,11 +60,25 @@ export const handleApiResponse = (response) => {
   if (response.success) {
     return response.data;
   }
-  if (response.errorCode === 401) { // 401状态码表示未登录
-    // 清除本地认证状态
-    window.location.href = '/login';
+  
+  if (response.errorCode === 401) {
+    console.log('🔒 检测到401未授权错误，重定向到登录页面');
+    
+    // 保存当前完整路径（包括查询参数）用于登录后重定向
+    const currentPath = window.location.pathname + window.location.search;
+    
+    // 避免在登录和注册页面重复重定向
+    if (!currentPath.startsWith('/login') && !currentPath.startsWith('/register')) {
+      // 将当前路径作为查询参数传递给登录页面
+      const loginUrl = `/login?redirect=${encodeURIComponent(currentPath)}`;
+      
+      // 使用replace避免在浏览器历史中留下401错误页面
+      window.location.replace(loginUrl);
+    }
+    
     return Promise.reject(new Error('未授权访问'));
   }
+  
   throw new ApiError(
     response.message || '请求失败', 
     response.errorCode

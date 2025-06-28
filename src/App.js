@@ -2,7 +2,6 @@ import CommunityHomepage from "./pages/CommunityHomepage";
 import React from 'react';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import Layout from './components/Layout';
-import ProtectedRoute from './components/ProtectedRoute';
 import {Home} from './pages/Home';
 import {Diary} from './pages/Diary';
 import Login from './pages/Login';
@@ -29,70 +28,22 @@ function App() {
                         <Route path="/login" element={<Login/>}/>
                         <Route path="/register" element={<Register/>}/>
                         
-                        {/* 受保护的路由 - 需要登录才能访问 */}
+                        {/* 应用路由 - 依赖401状态码进行认证控制 */}
                         <Route path="/*" element={
                             <Layout>
                                 <Routes>
-                                    <Route path="/" element={
-                                        <ProtectedRoute>
-                                            <Home/>
-                                        </ProtectedRoute>
-                                    }/>
-                                    <Route path="/home" element={
-                                        <ProtectedRoute>
-                                            <Home/>
-                                        </ProtectedRoute>
-                                    }/>
-                                    <Route path="/profile" element={
-                                        <ProtectedRoute>
-                                            <Profile/>
-                                        </ProtectedRoute>
-                                    }/>
-                                    <Route path="/settings" element={
-                                        <ProtectedRoute>
-                                            <Settings/>
-                                        </ProtectedRoute>
-                                    }/>
-                                    <Route path="/mental_resource" element={
-                                        <ProtectedRoute>
-                                            <MentalResource/>
-                                        </ProtectedRoute>
-                                    }/>
-                                    <Route path="/article/:id" element={
-                                        <ProtectedRoute>
-                                            <ArticleDetail/>
-                                        </ProtectedRoute>
-                                    }/>
-                                    <Route path="/diary" element={
-                                        <ProtectedRoute>
-                                            <Diary/>
-                                        </ProtectedRoute>
-                                    }/>
-                                    <Route path="/post/:id" element={
-                                        <ProtectedRoute>
-                                            <PostDetailPage/>
-                                        </ProtectedRoute>
-                                    }/>
-                                    <Route path="/send_community_post" element={
-                                        <ProtectedRoute>
-                                            <SendCommunityPostPage/>
-                                        </ProtectedRoute>
-                                    }/>
-                                    <Route path="/community" element={
-                                        <ProtectedRoute>
-                                            <CommunityHomepage/>
-                                        </ProtectedRoute>
-                                    }/>
-                                    <Route path="/community_user_page" element={
-                                        <ProtectedRoute>
-                                            <CommunityUserPage/>
-                                        </ProtectedRoute>
-                                    }/>
-                                    <Route path="/ai_chat" element={
-                                        <ProtectedRoute>
-                                            <AIChat/>
-                                        </ProtectedRoute>
-                                    }/>
+                                    <Route path="/" element={<Home/>}/>
+                                    <Route path="/home" element={<Home/>}/>
+                                    <Route path="/profile" element={<Profile/>}/>
+                                    <Route path="/settings" element={<Settings/>}/>
+                                    <Route path="/mental_resource" element={<MentalResource/>}/>
+                                    <Route path="/article/:id" element={<ArticleDetail/>}/>
+                                    <Route path="/diary" element={<Diary/>}/>
+                                    <Route path="/post/:id" element={<PostDetailPage/>}/>
+                                    <Route path="/send_community_post" element={<SendCommunityPostPage/>}/>
+                                    <Route path="/community" element={<CommunityHomepage/>}/>
+                                    <Route path="/community_user_page" element={<CommunityUserPage/>}/>
+                                    <Route path="/ai_chat" element={<AIChat/>}/>
                                 </Routes>
                             </Layout>
                         }/>
@@ -103,4 +54,4 @@ function App() {
     );
 }
 
-    export default App;
+export default App;

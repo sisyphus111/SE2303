@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import { getUserProfile, updateUserProfile, updateUserPreferences } from '../service/userService';
 
 // 初始状态 - 仅关注用户信息
@@ -116,20 +116,20 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   // 设置用户信息（登录成功后调用）
-  const setUser = (userData, preferences = {}) => {
+  const setUser = useCallback((userData, preferences = {}) => {
     dispatch({
       type: actionTypes.SET_USER,
       payload: { user: userData, preferences },
     });
-  };
+  }, []);
 
   // 清除用户信息（登出后调用）
-  const clearUser = () => {
+  const clearUser = useCallback(() => {
     dispatch({ type: actionTypes.CLEAR_USER });
-  };
+  }, []);
 
   // 更新用户信息
-  const updateUser = async (updates) => {
+  const updateUser = useCallback(async (updates) => {
     try {
       // 调用API更新用户信息
       const updatedUser = await updateUserProfile(updates);
@@ -141,10 +141,10 @@ export const UserProvider = ({ children }) => {
       dispatch({ type: actionTypes.SET_ERROR, payload: '更新用户信息失败' });
       return { success: false, error: error.message };
     }
-  };
+  }, []);
 
   // 更新用户偏好
-  const updatePreferences = async (preferences) => {
+  const updatePreferences = useCallback(async (preferences) => {
     try {
       // 调用API更新偏好设置
       const updatedPreferences = await updateUserPreferences(preferences);
@@ -156,15 +156,15 @@ export const UserProvider = ({ children }) => {
       dispatch({ type: actionTypes.SET_ERROR, payload: '更新偏好设置失败' });
       return { success: false, error: error.message };
     }
-  };
+  }, []);
 
-  // 清除错误
-  const clearError = () => {
+  // 清除错误 - 使用useCallback优化
+  const clearError = useCallback(() => {
     dispatch({ type: actionTypes.CLEAR_ERROR });
-  };
+  }, []);
 
   // 获取用户头像
-  const getUserAvatar = () => {
+  const getUserAvatar = useCallback(() => {
     if (state.user?.avatar) {
       return state.user.avatar;
     }
@@ -173,12 +173,12 @@ export const UserProvider = ({ children }) => {
     const username = state.user?.username || state.user?.email || 'User';
     const avatarChar = username.charAt(0).toUpperCase();
     return avatarChar;
-  };
+  }, [state.user]);
 
   // 获取用户显示名称
-  const getUserDisplayName = () => {
+  const getUserDisplayName = useCallback(() => {
     return state.user?.nickname || state.user?.username || state.user?.email || '用户';
-  };
+  }, [state.user]);
 
   // 检查是否已登录 - 基于是否有用户信息
   const isAuthenticated = !!state.user;

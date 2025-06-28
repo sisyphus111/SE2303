@@ -16,7 +16,7 @@ import '../css/Login.css';
 
 const Register = () => {
   const navigate = useNavigate();
-  const { login, isAuthenticated, loading, error, clearError } = useUser();
+  const { setUser, isAuthenticated, loading, error, clearError } = useUser();
 
   const [formData, setFormData] = useState({
     username: '',
@@ -138,8 +138,8 @@ const Register = () => {
       });
       
       if (result.success) {
-        // 注册成功，自动登录
-        await login(result.user, result.preferences);
+        // 注册成功，设置用户信息到UserContext
+        setUser(result.user, result.preferences);
         
         // 重定向到首页
         navigate('/', { replace: true });

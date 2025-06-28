@@ -85,12 +85,6 @@ const Community = () => {
   const categories = ['全部', '心情分享', '压力管理', '心理健康', '资源推荐', '互助交流'];
 
   useEffect(() => {
-    // 检查登录状态
-    const loginStatus = localStorage.getItem('isLoggedIn');
-    if (loginStatus === 'true') {
-      setIsLoggedIn(true);
-    }
-    
     // 加载帖子列表
     loadPosts();
   }, []);

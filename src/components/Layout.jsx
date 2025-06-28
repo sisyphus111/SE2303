@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {useAudio} from '../lib/GlobalAudioPlayer';
 import { useUser } from '../lib/UserContext';
+import { logout as authLogout } from '../service/authService';
 import { 
   HomeOutlined, 
   TeamOutlined, 
@@ -23,7 +24,7 @@ const Layout = ({children}) => {
     const location = useLocation();
     const navigate = useNavigate();
     const {current} = useAudio();
-    const { isAuthenticated, user, getUserAvatar, getUserDisplayName, logout } = useUser();
+    const { isAuthenticated, user, getUserAvatar, getUserDisplayName, clearUser } = useUser();
     const [showUserMenu, setShowUserMenu] = useState(false);
     const userMenuRef = useRef(null);
 
@@ -60,11 +61,23 @@ const Layout = ({children}) => {
 
     const handleLogout = async () => {
         try {
-            await logout();
-            setShowUserMenu(false);
-            navigate('/login');
+            // 调用认证服务的登出API
+            const result = await authLogout();
+            
+            if (result.success) {
+                // 清除UserContext中的用户信息
+                clearUser();
+                setShowUserMenu(false);
+                navigate('/login');
+            } else {
+                console.error('登出失败:', result.error);
+            }
         } catch (error) {
             console.error('登出失败:', error);
+            // 即使API调用失败，也要清除本地状态
+            clearUser();
+            setShowUserMenu(false);
+            navigate('/login');
         }
     };
 

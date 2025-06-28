@@ -1,5 +1,5 @@
-// 认证相关API服务
-import { request } from './apiUtils';
+// 认证相关API服务 - 基于Cookie认证，前端不处理token
+import { post } from './common';
 
 /**
  * 用户登录
@@ -8,139 +8,149 @@ import { request } from './apiUtils';
  * @returns {Promise<Object>} 登录结果
  */
 export const loginUser = async (email, password) => {
+  // 临时前端开发模式 - 直接返回本地用户数据
+  // TODO: 后端实现后，取消注释下面的代码，删除临时代码
+  
   try {
-    // 在实际项目中，这里应该调用真实的API
-    // const response = await request('/auth/login', {
-    //   method: 'POST',
-    //   body: JSON.stringify({ email, password }),
-    // });
-
-    // 模拟API调用延迟
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // 模拟登录验证
-    const mockUsers = [
-      {
-        email: 'demo@example.com',
-        password: '123456',
-        userData: {
-          id: 'demo-user',
-          email: 'demo@example.com',
-          username: 'demo_user',
-          nickname: '演示用户',
-          avatar: null,
-          createdAt: new Date().toISOString(),
-        }
-      },
-      {
-        email: 'test@example.com',
-        password: '123456',
-        userData: {
-          id: 'test-user',
-          email: 'test@example.com',
-          username: 'test_user',
-          nickname: '测试用户',
-          avatar: null,
-          createdAt: new Date().toISOString(),
-        }
-      }
-    ];
-
-    const user = mockUsers.find(u => u.email === email && u.password === password);
+    // 模拟API延迟
+    await new Promise(resolve => setTimeout(resolve, 500));
     
-    if (user) {
-      return {
-        success: true,
-        user: user.userData,
-        preferences: {
-          theme: 'light',
-          language: 'zh-CN',
-          notifications: true,
-          soundEnabled: true,
-        },
-        token: 'REDACTED'
-      };
-    } else {
-      return {
-        success: false,
-        error: '邮箱或密码错误'
-      };
-    }
+    // 临时验证逻辑 - 任何邮箱和密码都能登录
+    const mockUser = {
+      id: 'user_123',
+      username: 'testuser',
+      email: email,
+      nickname: '测试用户',
+      avatar: 'https://via.placeholder.com/100',
+      bio: '这是一个测试用户的个人简介',
+      createdAt: '2024-01-01T00:00:00Z',
+      lastLoginAt: new Date().toISOString()
+    };
+    
+    const mockPreferences = {
+      theme: 'light',
+      language: 'zh-CN',
+      notifications: {
+        email: true,
+        push: false,
+        dailyReminder: true
+      },
+      privacy: {
+        profileVisible: true,
+        diaryVisible: false
+      }
+    };
+    
+    // 设置本地存储标识（模拟登录状态）
+    localStorage.setItem('dev_user_logged_in', 'true');
+    
+    return {
+      success: true,
+      user: mockUser,
+      preferences: mockPreferences
+    };
   } catch (error) {
     console.error('登录请求失败:', error);
     return {
       success: false,
-      error: '登录请求失败，请稍后重试'
+      error: error.message || '登录失败，请检查邮箱和密码'
     };
   }
+  
+  /* 原始后端API调用代码 - 后端实现后恢复
+  try {
+    // 调用后端登录API
+    // 后端会在登录成功后自动设置HttpOnly Cookie
+    const response = await post('/auth/login', { email, password });
+    
+    return {
+      success: true,
+      user: response.user,
+      preferences: response.preferences || {}
+    };
+  } catch (error) {
+    console.error('登录请求失败:', error);
+    return {
+      success: false,
+      error: error.message || '登录失败，请检查邮箱和密码'
+    };
+  }
+  */
 };
 
 /**
  * 用户注册
  * @param {Object} userData - 用户数据
- * @param {string} userData.username - 用户名
- * @param {string} userData.email - 邮箱
- * @param {string} userData.password - 密码
- * @param {string} userData.nickname - 昵称
  * @returns {Promise<Object>} 注册结果
  */
 export const registerUser = async (userData) => {
+  // 临时前端开发模式 - 直接返回本地用户数据
+  // TODO: 后端实现后，取消注释下面的代码，删除临时代码
+  
   try {
-    // 在实际项目中，这里应该调用真实的API
-    // const response = await request('/auth/register', {
-    //   method: 'POST',
-    //   body: JSON.stringify(userData),
-    // });
-
-    // 模拟API调用延迟
-    await new Promise(resolve => setTimeout(resolve, 1200));
-
-    // 模拟注册验证
-    const existingEmails = ['demo@example.com', 'test@example.com'];
-    const existingUsernames = ['demo_user', 'test_user'];
-
-    if (existingEmails.includes(userData.email)) {
-      return {
-        success: false,
-        error: '该邮箱已被注册'
-      };
-    }
-
-    if (existingUsernames.includes(userData.username)) {
-      return {
-        success: false,
-        error: '该用户名已被占用'
-      };
-    }
-
-    // 模拟成功注册
-    const newUser = {
-      id: `user-${Date.now()}`,
-      email: userData.email,
+    // 模拟API延迟
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    // 创建模拟用户数据
+    const mockUser = {
+      id: 'user_' + Date.now(),
       username: userData.username,
-      nickname: userData.nickname,
-      avatar: null,
+      email: userData.email,
+      nickname: userData.nickname || userData.username,
+      avatar: 'https://via.placeholder.com/100',
+      bio: '',
       createdAt: new Date().toISOString(),
+      lastLoginAt: new Date().toISOString()
     };
-
+    
+    const mockPreferences = {
+      theme: 'light',
+      language: 'zh-CN',
+      notifications: {
+        email: true,
+        push: false,
+        dailyReminder: true
+      },
+      privacy: {
+        profileVisible: true,
+        diaryVisible: false
+      }
+    };
+    
+    // 设置本地存储标识（模拟注册后自动登录）
+    localStorage.setItem('dev_user_logged_in', 'true');
+    
     return {
       success: true,
-      user: newUser,
-      preferences: {
-        theme: 'light',
-        language: 'zh-CN',
-        notifications: true,
-        soundEnabled: true,
-      },
-      token: 'REDACTED'
+      user: mockUser,
+      preferences: mockPreferences
     };
   } catch (error) {
     console.error('注册请求失败:', error);
     return {
       success: false,
-      error: '注册请求失败，请稍后重试'
+      error: error.message || '注册失败，请稍后重试'
     };
   }
+  
+  /* 原始后端API调用代码 - 后端实现后恢复
+  try {
+    // 调用后端注册API
+    const response = await post('/auth/register', userData);
+    
+    return {
+      success: true,
+      user: response.user,
+      preferences: response.preferences || {}
+    };
+  } catch (error) {
+    console.error('注册请求失败:', error);
+    return {
+      success: false,
+      error: error.message || '注册失败，请稍后重试'
+    };
+  }
+  */
 };
 
 /**
@@ -148,15 +158,16 @@ export const registerUser = async (userData) => {
  * @returns {Promise<Object>} 登出结果
  */
 export const logout = async () => {
+  // 临时前端开发模式 - 清除本地存储
+  // TODO: 后端实现后，取消注释下面的代码，删除临时代码
+  
   try {
-    // 在实际项目中，这里应该调用真实的API
-    // return request('/auth/logout', {
-    //   method: 'POST',
-    // });
-
-    // 模拟API调用延迟
-    await new Promise(resolve => setTimeout(resolve, 500));
-
+    // 模拟API延迟
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    // 清除本地存储标识
+    localStorage.removeItem('dev_user_logged_in');
+    
     return {
       success: true,
       message: '登出成功'
@@ -168,41 +179,25 @@ export const logout = async () => {
       error: '登出失败'
     };
   }
-};
-
-/**
- * 刷新token
- * @returns {Promise<Object>} 新的token
- */
-export const refreshToken = async () => {
+  
+  /* 原始后端API调用代码 - 后端实现后恢复
   try {
-    // 在实际项目中，这里应该调用真实的API
-    // return request('/auth/refresh', {
-    //   method: 'POST',
-    // });
-
-    // 模拟API调用延迟
-    await new Promise(resolve => setTimeout(resolve, 300));
-
+    // 调用后端登出API
+    // 后端会清除HttpOnly Cookie
+    await post('/auth/logout', {});
+    
     return {
       success: true,
-      token: 'REDACTED'
+      message: '登出成功'
     };
   } catch (error) {
-    console.error('刷新token失败:', error);
+    console.error('登出请求失败:', error);
     return {
       success: false,
-      error: '刷新token失败'
+      error: '登出失败'
     };
   }
-};
-
-/**
- * 检查登录状态（模拟函数，用于前端测试）
- * @returns {boolean} 是否已登录
- */
-export const checkLoginStatus = () => {
-  return localStorage.getItem('isLoggedIn') === 'true';
+  */
 };
 
 /**
@@ -211,22 +206,39 @@ export const checkLoginStatus = () => {
  * @returns {Promise<Object>} 验证结果
  */
 export const checkEmailAvailability = async (email) => {
+  // 临时前端开发模式 - 模拟验证
+  // TODO: 后端实现后，取消注释下面的代码，删除临时代码
+  
   try {
-    // 模拟API调用延迟
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    const existingEmails = ['demo@example.com', 'test@example.com'];
+    // 模拟API延迟
+    await new Promise(resolve => setTimeout(resolve, 300));
     
+    // 临时逻辑：所有邮箱都视为可用
     return {
       success: true,
-      available: !existingEmails.includes(email)
+      available: true
     };
   } catch (error) {
     return {
       success: false,
-      error: '验证失败'
+      error: error.message || '验证失败'
     };
   }
+  
+  /* 原始后端API调用代码 - 后端实现后恢复
+  try {
+    const response = await post('/auth/check-email', { email });
+    return {
+      success: true,
+      available: response.available
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message || '验证失败'
+    };
+  }
+  */
 };
 
 /**
@@ -235,20 +247,37 @@ export const checkEmailAvailability = async (email) => {
  * @returns {Promise<Object>} 验证结果
  */
 export const checkUsernameAvailability = async (username) => {
+  // 临时前端开发模式 - 模拟验证
+  // TODO: 后端实现后，取消注释下面的代码，删除临时代码
+  
   try {
-    // 模拟API调用延迟
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    const existingUsernames = ['demo_user', 'test_user'];
+    // 模拟API延迟
+    await new Promise(resolve => setTimeout(resolve, 300));
     
+    // 临时逻辑：所有用户名都视为可用
     return {
       success: true,
-      available: !existingUsernames.includes(username)
+      available: true
     };
   } catch (error) {
     return {
       success: false,
-      error: '验证失败'
+      error: error.message || '验证失败'
     };
   }
+  
+  /* 原始后端API调用代码 - 后端实现后恢复
+  try {
+    const response = await post('/auth/check-username', { username });
+    return {
+      success: true,
+      available: response.available
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message || '验证失败'
+    };
+  }
+  */
 }; 

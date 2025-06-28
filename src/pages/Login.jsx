@@ -15,7 +15,7 @@ import '../css/Login.css';
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, isAuthenticated, loading, error, clearError } = useUser();
+  const { setUser, isAuthenticated, loading, error, clearError } = useUser();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -26,13 +26,27 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
+  // 获取重定向路径 - 支持三种来源
+  const getRedirectPath = () => {
+    // 1. URL查询参数 ?redirect=/profile
+    const urlParams = new URLSearchParams(location.search);
+    const redirectParam = urlParams.get('redirect');
+    
+    // 2. React Router state (从ProtectedRoute或其他地方传来)
+    const stateFrom = location.state?.from;
+    
+    // 3. 默认首页
+    return redirectParam || stateFrom || '/';
+  };
+
   // 如果已经登录，重定向到目标页面
   useEffect(() => {
     if (isAuthenticated && !loading) {
-      const from = location.state?.from || '/';
-      navigate(from, { replace: true });
+      const redirectPath = getRedirectPath();
+      console.log('🔄 用户已登录，重定向到:', redirectPath);
+      navigate(redirectPath, { replace: true });
     }
-  }, [isAuthenticated, loading, navigate, location.state]);
+  }, [isAuthenticated, loading, navigate, location]);
 
   // 清除错误当组件挂载时
   useEffect(() => {
@@ -90,21 +104,17 @@ const Login = () => {
     clearError();
 
     try {
-      // 调用登录API
+      // 调用认证服务进行登录
       const result = await loginUser(formData.email, formData.password);
       
       if (result.success) {
-        // 登录成功，更新用户状态
-        await login(result.user, result.preferences);
-        
-        // 如果选择记住我，设置更长的本地存储
-        if (rememberMe) {
-          localStorage.setItem('rememberMe', 'true');
-        }
+        // 登录成功，设置用户信息到UserContext
+        setUser(result.user, result.preferences);
         
         // 重定向到目标页面
-        const from = location.state?.from || '/';
-        navigate(from, { replace: true });
+        const redirectPath = getRedirectPath();
+        console.log('✅ 登录成功，重定向到:', redirectPath);
+        navigate(redirectPath, { replace: true });
       } else {
         // 登录失败，显示错误信息
         setFormErrors({ submit: result.error || '登录失败，请检查邮箱和密码' });
@@ -112,39 +122,6 @@ const Login = () => {
     } catch (error) {
       console.error('登录出错:', error);
       setFormErrors({ submit: '登录出错，请稍后重试' });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // 演示登录功能
-  const handleDemoLogin = async () => {
-    const demoUser = {
-      email: 'demo@example.com',
-      password: '123456'
-    };
-    
-    setFormData(demoUser);
-    setIsSubmitting(true);
-    
-    try {
-      // 模拟演示用户数据
-      const demoUserData = {
-        id: 'demo-user',
-        email: 'demo@example.com',
-        username: 'demo_user',
-        nickname: '演示用户',
-        avatar: null,
-        createdAt: new Date().toISOString(),
-      };
-      
-      await login(demoUserData);
-      
-      const from = location.state?.from || '/';
-      navigate(from, { replace: true });
-    } catch (error) {
-      console.error('演示登录出错:', error);
-      setFormErrors({ submit: '演示登录失败' });
     } finally {
       setIsSubmitting(false);
     }
@@ -250,16 +227,6 @@ const Login = () => {
                 登录
               </>
             )}
-          </button>
-
-          {/* 演示登录按钮 */}
-          <button
-            type="button"
-            className="demo-button"
-            onClick={handleDemoLogin}
-            disabled={isSubmitting}
-          >
-            演示登录
           </button>
         </form>
 

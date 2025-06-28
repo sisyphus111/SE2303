@@ -40,12 +40,6 @@ const CommunityHomepage = () => {
   };
 
     useEffect(() => {
-        // 检查登录状态
-        const loginStatus = localStorage.getItem('isLoggedIn');
-        if (loginStatus === 'true') {
-            setIsLoggedIn(true);
-        }
-
         // 从URL获取标签参数
         const params = new URLSearchParams(location.search);
         const tag = params.get('tag');

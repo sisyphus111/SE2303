@@ -16,7 +16,7 @@ import '../css/Login.css';
 
 const Register = () => {
   const navigate = useNavigate();
-  const { login, isAuthenticated, loading, error, clearError } = useUser();
+  const { setUser, isAuthenticated, loading, error, clearError } = useUser();
 
   const [formData, setFormData] = useState({
     username: '',
@@ -31,10 +31,22 @@ const Register = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [agreementChecked, setAgreementChecked] = useState(false);
 
+  // 获取重定向路径 - 与Login组件保持一致
+  const getRedirectPath = () => {
+    // 1. URL查询参数 ?redirect=/profile
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectParam = urlParams.get('redirect');
+    
+    // 2. 默认首页
+    return redirectParam || '/';
+  };
+
   // 如果已经登录，重定向到首页
   useEffect(() => {
     if (isAuthenticated && !loading) {
-      navigate('/', { replace: true });
+      const redirectPath = getRedirectPath();
+      console.log('🔄 用户已登录，重定向到:', redirectPath);
+      navigate(redirectPath, { replace: true });
     }
   }, [isAuthenticated, loading, navigate]);
 
@@ -128,18 +140,23 @@ const Register = () => {
     try {
       // 调用注册API
       const result = await registerUser({
+        virtualId: formData.email,
         username: formData.username,
         email: formData.email,
         password: formData.password,
-        nickname: formData.nickname || formData.username,
+        telephone: "138000000",
+        avatar: "1a32d13213"
+        // nickname: formData.nickname || formData.username,
       });
       
       if (result.success) {
-        // 注册成功，自动登录
-        await login(result.user, result.preferences);
+        // 注册成功，设置用户信息到UserContext
+        setUser(result.user, result.preferences);
         
-        // 重定向到首页
-        navigate('/', { replace: true });
+        // 重定向到目标页面
+        const redirectPath = getRedirectPath();
+        console.log('✅ 注册成功，重定向到:', redirectPath);
+        navigate(redirectPath, { replace: true });
       } else {
         // 注册失败，显示错误信息
         setFormErrors({ submit: result.error || '注册失败，请稍后重试' });

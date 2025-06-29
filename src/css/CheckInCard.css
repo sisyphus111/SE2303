@@ -121,6 +121,133 @@
   100% { opacity: 1; transform: scale(1); }
 }
 
+/* 打卡成功状态样式 */
+.checkin-card.checked-in {
+  background: linear-gradient(135deg, #f0f9ff 0%, rgba(34, 197, 94, 0.08) 100%);
+  border-color: var(--primary-green);
+}
+
+.checkin-card.checked-in::before {
+  background: var(--primary-green);
+  opacity: 0.1;
+}
+
+.checkin-success {
+  text-align: center;
+}
+
+.success-icon {
+  font-size: 48px;
+  color: var(--primary-green);
+  margin-bottom: 16px;
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.1);
+  line-height: 80px;
+  font-weight: bold;
+  animation: successBounce 0.6s ease-out;
+}
+
+@keyframes successBounce {
+  0% { transform: scale(0) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1.2) rotate(180deg); opacity: 0.8; }
+  100% { transform: scale(1) rotate(360deg); opacity: 1; }
+}
+
+.checkin-success h2 {
+  color: var(--primary-green);
+  margin-bottom: 16px;
+}
+
+.success-message {
+  margin-bottom: 24px;
+}
+
+.success-message p {
+  margin: 4px 0;
+  color: var(--text-gray);
+}
+
+.check-date {
+  font-size: 14px;
+  color: var(--text-secondary) !important;
+  font-weight: 500;
+}
+
+.checkin-result {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.result-rating {
+  margin-bottom: 16px;
+}
+
+.result-rating p {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: var(--text-gray);
+  font-weight: 500;
+}
+
+.stars.display-only {
+  justify-content: center;
+  gap: 4px;
+}
+
+.stars.display-only .star {
+  cursor: default;
+  font-size: 20px;
+}
+
+.result-tags p {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: var(--text-gray);
+  font-weight: 500;
+}
+
+.tags-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.tags-display .tag-item {
+  padding: 6px 12px;
+  background: var(--primary-green);
+  color: white;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+}
+
+.restart-btn {
+  background: transparent;
+  color: var(--primary-green);
+  border: 2px solid var(--primary-green);
+  padding: 10px 24px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.restart-btn:hover {
+  background: var(--primary-green);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .checkin-card .card-content h2 {
@@ -133,6 +260,22 @@
   
   .star {
     font-size: 24px;
+  }
+  
+  /* 打卡成功状态响应式 */
+  .success-icon {
+    font-size: 40px;
+    width: 70px;
+    height: 70px;
+    line-height: 70px;
+  }
+  
+  .checkin-result {
+    padding: 16px;
+  }
+  
+  .stars.display-only .star {
+    font-size: 18px;
   }
   
   /* 标签样式由TagSelector组件处理 */
@@ -152,10 +295,41 @@
     font-size: 20px;
   }
   
-  /* 标签样式由TagSelector组件处理 */
-  
   .checkin-btn {
     padding: 10px 20px;
     font-size: 14px;
   }
+  
+  /* 打卡成功状态响应式 */
+  .success-icon {
+    font-size: 36px;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+  }
+  
+  .checkin-result {
+    padding: 12px;
+  }
+  
+  .result-rating p,
+  .result-tags p {
+    font-size: 13px;
+  }
+  
+  .stars.display-only .star {
+    font-size: 16px;
+  }
+  
+  .tags-display .tag-item {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  
+  .restart-btn {
+    padding: 8px 20px;
+    font-size: 13px;
+  }
+  
+  /* 标签样式由TagSelector组件处理 */
 }

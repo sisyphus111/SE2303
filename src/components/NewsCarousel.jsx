@@ -79,7 +79,7 @@ const NewsCarousel = ({ articles = [] }) => {
                     alt={article.title} 
                     className="cover-image"
                     onError={(e) => {
-                      e.target.src = "https://via.placeholder.com/600x300/667eea/white?text=Article+Cover";
+                      e.target.src = "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=800&q=80";
                     }}
                   />
                   <div className="article-title-overlay">

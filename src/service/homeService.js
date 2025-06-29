@@ -6,37 +6,37 @@ const mockArticles = [
     id: 1,
     title: "如何保持良好的心理健康",
     summary: "分享一些日常保持心理健康的小技巧，包括规律作息、适度运动、保持社交联系等实用方法。",
-    thumbnail: "https://via.placeholder.com/800x400/4CAF50/white?text=心理健康"
+    thumbnail: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=800&q=80"
   },
   {
     id: 2,
     title: "压力管理的有效方法",
     summary: "学会管理生活和工作中的压力，通过时间管理、放松技巧和心态调整来应对挑战。",
-    thumbnail: "https://via.placeholder.com/800x400/2196F3/white?text=压力管理"
+    thumbnail: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=80"
   },
   {
     id: 3,
     title: "冥想与放松技巧",
     summary: "通过冥想和放松练习改善心情，每天10分钟的正念练习就能带来显著的心理健康改善。",
-    thumbnail: "https://via.placeholder.com/800x400/FF9800/white?text=冥想放松"
+    thumbnail: "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?auto=format&fit=crop&w=800&q=80"
   },
   {
     id: 4,
     title: "建立健康的睡眠习惯",
     summary: "良好的睡眠对心理健康至关重要，了解如何改善睡眠质量和建立规律的睡眠模式。",
-    thumbnail: "https://via.placeholder.com/800x400/9C27B0/white?text=健康睡眠"
+    thumbnail: "https://images.unsplash.com/photo-1540206395-68808572332f?auto=format&fit=crop&w=800&q=80"
   },
   {
     id: 5,
     title: "情绪调节与自我关怀",
     summary: "学习识别和管理自己的情绪，培养自我关怀的习惯，建立更健康的心理状态。",
-    thumbnail: "https://via.placeholder.com/800x400/E91E63/white?text=情绪调节"
+    thumbnail: "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?auto=format&fit=crop&w=800&q=80"
   },
   {
     id: 6,
     title: "社交焦虑的克服方法",
     summary: "如何逐步克服社交焦虑，建立自信，改善人际关系，享受更丰富的社交生活。",
-    thumbnail: "https://via.placeholder.com/800x400/00BCD4/white?text=社交焦虑"
+    thumbnail: "https://images.unsplash.com/photo-1556745757-8d76bdb6984b?auto=format&fit=crop&w=800&q=80"
   }
 ];
 

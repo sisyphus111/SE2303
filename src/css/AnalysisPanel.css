@@ -9,9 +9,20 @@
   padding: 0;
   margin-bottom: 0;
   color: #6bb7b7;
-  font-size: 22px;
+  font-size: 26px !important;
   font-weight: 700;
+}
 
+.feature-item.analysis .analysis-header span {
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  color: var(--primary-green) !important;
+}
+
+.analysis-header span {
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  color: var(--primary-green) !important;
 }
 
 .analysis-content {
@@ -42,6 +53,11 @@
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+  .analysis-header span,
+  .feature-item.analysis .analysis-header span {
+    font-size: 22px !important;
+  }
+  
   .analysis-content {
     font-size: 14px;
     padding: 15px;
@@ -50,5 +66,12 @@
   .analysis-preview {
     padding: 12px;
     font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .analysis-header span,
+  .feature-item.analysis .analysis-header span {
+    font-size: 20px !important;
   }
 } 

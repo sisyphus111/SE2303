@@ -167,7 +167,7 @@
 }
 
 .feature-item > span {
-  font-size: 20px;
+  font-size: 24px !important;
   font-weight: 600;
   color: var(--primary-green);
   display: block;
@@ -241,7 +241,7 @@
   }
 
   .feature-item > span {
-    font-size: 18px;
+    font-size: 22px !important;
   }
 }
 
@@ -269,7 +269,7 @@
   }
 
   .feature-item > span {
-    font-size: 16px;
+    font-size: 20px !important;
     margin-bottom: 12px;
   }
 }

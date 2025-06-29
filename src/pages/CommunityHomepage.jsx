@@ -16,14 +16,15 @@ import {
   CommentOutlined
 } from '@ant-design/icons';
 import { getCommunityPosts } from '../service/communityService';
+import { useUser } from '../lib/UserContext';
 import '../css/CommunityHomepage.css';
 
 const CommunityHomepage = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { isAuthenticated } = useUser();
     const [selectedTag, setSelectedTag] = useState('全部');
     const [searchValue, setSearchValue] = useState('');
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [allPosts, setAllPosts] = useState([]);
     const [filteredPosts, setFilteredPosts] = useState([]);
     const [sortBy, setSortBy] = useState('latest'); // latest, hot, comments
@@ -143,7 +144,7 @@ const CommunityHomepage = () => {
             <p>分享心情，互相支持，一起成长</p>
           </div>
           <div className="quick-actions">
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <button 
                 className="action-btn primary"
                 onClick={() => navigate('/send_community_post')}
@@ -355,7 +356,7 @@ const CommunityHomepage = () => {
           </div>
 
           {/* 用户快捷操作 */}
-          {isLoggedIn && (
+          {isAuthenticated && (
             <div className="sidebar-card">
               <div className="sidebar-header">
                 <UserOutlined className="sidebar-icon" />

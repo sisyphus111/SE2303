@@ -86,8 +86,11 @@ const CheckInCard = ({ onCheckInSuccess }) => {
         {isCheckedIn ? (
           // 打卡成功状态
           <div className="checkin-success">
-            <div className="success-icon">✓</div>
-            <h2>打卡成功！</h2>
+            <div className="success-header">
+              <div className="success-icon">✓</div>
+              <h2>打卡成功！</h2>
+            </div>
+            
             <div className="success-message">
               <p>今日打卡已完成</p>
               <p className="check-date">{checkedInData?.date}</p>
@@ -95,7 +98,7 @@ const CheckInCard = ({ onCheckInSuccess }) => {
             
             <div className="checkin-result">
               <div className="result-rating">
-                <p>心情评分：</p>
+                <p>心情评分</p>
                 <div className="stars display-only">
                   {[1, 2, 3, 4, 5].map(star => (
                     <span
@@ -110,7 +113,7 @@ const CheckInCard = ({ onCheckInSuccess }) => {
               
               {checkedInData?.tags && checkedInData.tags.length > 0 && (
                 <div className="result-tags">
-                  <p>选择的标签：</p>
+                  <p>选择标签</p>
                   <div className="tags-display">
                     {checkedInData.tags.map((tag, index) => (
                       <span key={index} className="tag-item selected">

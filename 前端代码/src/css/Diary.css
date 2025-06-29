@@ -1,0 +1,272 @@
+/* 日记页面样式 */
+.diary-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: transparent;
+  min-height: 100vh;
+}
+
+.diary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.diary-header h1 {
+  color: var(--primary-green);
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.back-btn {
+  background: var(--light-gray);
+  border: 1px solid var(--border-color);
+  padding: 10px 20px;
+  border-radius: var(--radius-small);
+  color: var(--text-gray);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.back-btn:hover {
+  background: var(--medium-gray);
+  color: var(--primary-green);
+  border-color: var(--accent-green);
+}
+
+.diary-editor {
+  background: var(--white);
+  border-radius: var(--radius-large);
+  padding: 28px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--border-color);
+}
+
+.diary-editor h2 {
+  color: var(--primary-green);
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+.diary-textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-medium);
+  font-size: 15px;
+  line-height: 1.6;
+  resize: vertical;
+  font-family: inherit;
+  background: var(--white);
+  color: var(--text-gray);
+  transition: all 0.3s ease;
+}
+
+.diary-textarea:focus {
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 2px rgba(45, 80, 22, 0.1);
+  outline: none;
+}
+
+.diary-textarea::placeholder {
+  color: var(--text-gray);
+  opacity: 0.6;
+}
+
+.mood-rating {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  padding: 16px;
+  background: var(--light-gray);
+  border-radius: var(--radius-medium);
+  border: 1px solid var(--border-color);
+}
+
+.mood-rating label {
+  color: var(--primary-green);
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.mood-rating select {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  background: var(--white);
+  color: var(--text-gray);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mood-rating select:focus {
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 2px rgba(45, 80, 22, 0.1);
+  outline: none;
+}
+
+.save-btn {
+  background: var(--primary-green);
+  color: var(--white);
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-medium);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-light);
+  width: 100%;
+  margin-top: 16px;
+}
+
+.save-btn:hover {
+  background: var(--primary-green-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
+
+.diary-list {
+  background: var(--white);
+  border-radius: var(--radius-large);
+  padding: 28px;
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--border-color);
+}
+
+.diary-list h2 {
+  color: var(--primary-green);
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+.diary-entry {
+  background: var(--light-gray);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-medium);
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.diary-entry::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--accent-green);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+  transform-origin: bottom;
+}
+
+.diary-entry:hover {
+  background: var(--white);
+  border-color: var(--accent-green);
+  box-shadow: var(--shadow-light);
+  transform: translateY(-1px);
+}
+
+.diary-entry:hover::before {
+  transform: scaleY(1);
+}
+
+.entry-date {
+  color: var(--primary-green);
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.entry-content {
+  color: var(--text-gray);
+  line-height: 1.6;
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+.entry-mood {
+  color: var(--accent-green);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* 空状态 */
+.diary-empty {
+  text-align: center;
+  color: #999;
+  padding: 40px;
+  font-style: italic;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .diary-container {
+    padding: 16px;
+  }
+  
+  .diary-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .diary-header h1 {
+    font-size: 24px;
+  }
+  
+  .diary-editor,
+  .diary-list {
+    padding: 20px;
+    border-radius: var(--radius-medium);
+  }
+  
+  .diary-textarea {
+    min-height: 120px;
+    padding: 12px;
+  }
+  
+  .mood-rating {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .diary-container {
+    padding: 12px;
+  }
+  
+  .diary-header h1 {
+    font-size: 20px;
+  }
+  
+  .diary-editor,
+  .diary-list {
+    padding: 16px;
+  }
+  
+  .diary-entry {
+    padding: 16px;
+  }
+} 

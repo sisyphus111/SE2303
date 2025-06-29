@@ -1,0 +1,116 @@
+/* 日记卡片特殊样式 */
+.diary-card {
+  background: linear-gradient(135deg, var(--white) 0%, rgba(168, 216, 168, 0.08) 100%);
+  border: 1px solid var(--border-color);
+  color: var(--text-gray);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.diary-card::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 100px;
+  height: 100px;
+  background: var(--soft-green);
+  border-radius: 50%;
+  opacity: 0.1;
+  transition: all 0.3s ease;
+}
+
+.diary-card:hover {
+  border-color: var(--accent-green);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-4px);
+}
+
+.diary-card:hover::before {
+  opacity: 0.2;
+  transform: scale(1.1);
+}
+
+.diary-card .card-content {
+  position: relative;
+  z-index: 2;
+}
+
+.diary-card .card-content h2 {
+  color: var(--primary-green);
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+}
+
+.diary-card p {
+  color: var(--text-gray) !important;
+  font-size: 16px;
+  margin: 8px 0 16px 0;
+  line-height: 1.6;
+}
+
+.diary-icon {
+  font-size: 40px;
+  color: var(--accent-green);
+  margin: 16px 0 12px 0;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.diary-card:hover .diary-icon {
+  transform: scale(1.1);
+  opacity: 1;
+  color: var(--primary-green-light);
+}
+
+.diary-arrow {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  font-size: 20px;
+  color: var(--accent-green);
+  transition: all 0.3s ease;
+  opacity: 0.7;
+}
+
+.diary-card:hover .diary-arrow {
+  transform: translateX(4px);
+  opacity: 1;
+  color: var(--primary-green);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .diary-card .card-content h2 {
+    font-size: 20px;
+  }
+  
+  .diary-icon {
+    font-size: 32px;
+  }
+  
+  .diary-arrow {
+    font-size: 18px;
+    bottom: 16px;
+    right: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .diary-card .card-content h2 {
+    font-size: 18px;
+  }
+  
+  .diary-icon {
+    font-size: 28px;
+  }
+  
+  .diary-arrow {
+    font-size: 16px;
+    bottom: 14px;
+    right: 14px;
+  }
+} 

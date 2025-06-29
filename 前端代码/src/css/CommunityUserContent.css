@@ -1,0 +1,265 @@
+/* 我的帖子内容样式 */
+
+.user-content {
+    padding: 0;
+}
+
+/* 内容头部 */
+.user-content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    gap: 24px;
+}
+
+.title-section {
+    flex: 1;
+}
+
+.content-title {
+    color: var(--primary-green) !important;
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 8px !important;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.title-icon {
+    color: var(--accent-green);
+    font-size: 1.3rem;
+}
+
+.post-count-badge {
+    margin-left: 8px;
+}
+
+.post-count-badge .ant-badge-count {
+    background: var(--primary-green) !important;
+    color: white !important;
+    font-size: 0.75rem !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    line-height: 18px !important;
+    padding: 0 6px !important;
+    border-radius: 9px !important;
+}
+
+.content-description {
+    color: var(--text-secondary) !important;
+    font-size: 0.9rem !important;
+    margin: 0 !important;
+}
+
+.search-section {
+    flex-shrink: 0;
+    width: 280px;
+}
+
+.post-search-input {
+    border-radius: var(--radius-large) !important;
+    border: 2px solid var(--border-color) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 8px rgba(45, 80, 22, 0.06) !important;
+    height: 44px !important;
+}
+
+.post-search-input:focus,
+.post-search-input:hover {
+    border-color: var(--primary-green) !important;
+    box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1), 0 4px 12px rgba(45, 80, 22, 0.12) !important;
+    transform: translateY(-1px) !important;
+    background: white !important;
+}
+
+.post-search-input .ant-input {
+    font-size: 0.95rem !important;
+    color: var(--text-primary) !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 16px !important;
+    height: 40px !important;
+    line-height: 40px !important;
+}
+
+.post-search-input .ant-input::placeholder {
+    color: var(--text-secondary) !important;
+    opacity: 0.7 !important;
+    font-weight: 400 !important;
+}
+
+.post-search-input .ant-input:focus {
+    box-shadow: none !important;
+}
+
+.post-search-input .anticon {
+    color: var(--primary-green) !important;
+    font-size: 1.1rem !important;
+    margin-left: 4px !important;
+    transition: all 0.3s ease !important;
+}
+
+.post-search-input:hover .anticon,
+.post-search-input:focus-within .anticon {
+    color: var(--accent-green) !important;
+    transform: scale(1.1) !important;
+}
+
+/* 统计信息区域 */
+.stats-section {
+    margin-bottom: 32px;
+    padding: 20px;
+    background: rgba(45, 80, 22, 0.02);
+    border-radius: var(--radius-large);
+    border: 1px solid rgba(45, 80, 22, 0.1);
+}
+
+.stat-card {
+    text-align: center;
+    padding: 16px 12px;
+    background: white;
+    border-radius: var(--radius-medium);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(45, 80, 22, 0.1);
+}
+
+.stat-card .ant-statistic-title {
+    color: var(--text-secondary) !important;
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
+    margin-bottom: 4px !important;
+}
+
+.stat-card .ant-statistic-content {
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+}
+
+/* 帖子区域 */
+.posts-section {
+    margin-top: 24px;
+}
+
+.user-posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* 空状态 */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(45, 80, 22, 0.02);
+    border-radius: var(--radius-large);
+    border: 2px dashed rgba(45, 80, 22, 0.1);
+}
+
+.empty-state .ant-empty {
+    margin: 0;
+}
+
+.empty-state .ant-empty-description {
+    color: var(--text-secondary) !important;
+    font-size: 1rem !important;
+}
+
+.empty-tip {
+    color: var(--text-secondary) !important;
+    font-size: 0.9rem !important;
+    margin-top: 12px !important;
+}
+
+.empty-tip a {
+    color: var(--primary-green) !important;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.empty-tip a:hover {
+    color: var(--accent-green) !important;
+    text-decoration: underline;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .user-content-header {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .search-section {
+        width: 100%;
+    }
+    
+    .post-search-input {
+        height: 40px !important;
+    }
+    
+    .post-search-input .ant-input {
+        height: 36px !important;
+        line-height: 36px !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .stats-section {
+        padding: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .stat-card {
+        padding: 12px 8px;
+    }
+    
+    .stat-card .ant-statistic-content {
+        font-size: 1.2rem !important;
+    }
+    
+    .content-title {
+        font-size: 1.3rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .content-title {
+        font-size: 1.2rem !important;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .post-count-badge {
+        margin-left: 0;
+        align-self: flex-start;
+    }
+    
+    .stats-section {
+        padding: 12px;
+    }
+    
+    .stat-card {
+        padding: 8px 6px;
+    }
+    
+    .stat-card .ant-statistic-content {
+        font-size: 1rem !important;
+    }
+    
+    .stat-card .ant-statistic-title {
+        font-size: 0.75rem !important;
+    }
+    
+    .empty-state {
+        padding: 40px 16px;
+    }
+}

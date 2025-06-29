@@ -1,0 +1,161 @@
+/* 打卡卡片特殊样式 */
+.checkin-card {
+  background: linear-gradient(135deg, var(--white) 0%, rgba(143, 188, 143, 0.08) 100%);
+  border: 1px solid var(--border-color);
+  color: var(--text-gray);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.checkin-card::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: 80px;
+  height: 80px;
+  background: var(--accent-green);
+  border-radius: 50%;
+  opacity: 0.06;
+  transition: all 0.3s ease;
+}
+
+.checkin-card:hover {
+  border-color: var(--accent-green);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-4px);
+}
+
+.checkin-card:hover::before {
+  opacity: 0.12;
+  transform: scale(1.2);
+}
+
+.checkin-card .card-content {
+  position: relative;
+  z-index: 2;
+}
+
+.checkin-card .card-content h2 {
+  color: var(--primary-green);
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+.rating-section {
+  margin-bottom: 24px;
+}
+
+.rating-section p {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  color: var(--text-gray) !important;
+  font-weight: 500;
+}
+
+.stars {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.star {
+  font-size: 28px;
+  color: var(--medium-gray);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.star.selected,
+.star:hover {
+  color: #ffa500;
+  transform: scale(1.15);
+  text-shadow: 0 2px 4px rgba(255, 165, 0, 0.3);
+}
+
+.tags-section {
+  margin-bottom: 24px;
+}
+
+/* 标签选择区域 - 使用通用TagSelector组件 */
+
+.checkin-btn {
+  background: var(--primary-green);
+  color: var(--white);
+  border: none;
+  padding: 12px 28px;
+  border-radius: 20px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 16px;
+  box-shadow: var(--shadow-light);
+  width: 100%;
+}
+
+.checkin-btn:hover:not(:disabled) {
+  background: var(--primary-green-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+.checkin-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  background: var(--medium-gray);
+}
+
+.checkin-btn.submitting {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(0.98); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .checkin-card .card-content h2 {
+    font-size: 20px;
+  }
+  
+  .stars {
+    gap: 6px;
+  }
+  
+  .star {
+    font-size: 24px;
+  }
+  
+  /* 标签样式由TagSelector组件处理 */
+}
+
+@media (max-width: 480px) {
+  .checkin-card .card-content h2 {
+    font-size: 18px;
+  }
+  
+  .rating-section p,
+  .tags-section p {
+    font-size: 14px;
+  }
+  
+  .star {
+    font-size: 20px;
+  }
+  
+  /* 标签样式由TagSelector组件处理 */
+  
+  .checkin-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}

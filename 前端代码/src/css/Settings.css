@@ -1,0 +1,764 @@
+/* 设置页面主容器 */
+.settings-page {
+  min-height: 100vh;
+  background: var(--background-green);
+  padding: 20px;
+  font-family: Inter, 'Microsoft YaHei', 'Segoe UI', sans-serif;
+}
+
+.settings-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(45, 80, 22, 0.1);
+  overflow: hidden;
+}
+
+.settings-header {
+  padding: 30px 40px;
+  background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+  color: var(--white);
+  text-align: center;
+  position: relative;
+}
+
+.settings-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white" opacity="0.1"/><circle cx="80" cy="30" r="1.5" fill="white" opacity="0.1"/><circle cx="40" cy="70" r="2.5" fill="white" opacity="0.1"/><circle cx="70" cy="80" r="1" fill="white" opacity="0.1"/></svg>');
+  animation: float 20s infinite linear;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.settings-title {
+  margin: 0 !important;
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  color: var(--white) !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.settings-subtitle {
+  margin: 8px 0 0 0 !important;
+  font-size: 16px !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 400;
+}
+
+.settings-content {
+  padding: 0;
+}
+
+/* 标签页样式 */
+.settings-tabs {
+  min-height: 600px;
+}
+
+.settings-tabs .ant-tabs-tab {
+  padding: 16px 24px !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  color: var(--text-gray) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.settings-tabs .ant-tabs-tab:hover {
+  background: var(--light-gray) !important;
+  color: var(--primary-green) !important;
+}
+
+.settings-tabs .ant-tabs-tab-active {
+  background: var(--primary-green) !important;
+  color: var(--white) !important;
+  border-color: var(--primary-green) !important;
+  position: relative;
+}
+
+/* 确保选中项及其所有子元素都是白色字体 */
+.settings-tabs .ant-tabs-tab-active,
+.settings-tabs .ant-tabs-tab-active *,
+.settings-tabs .ant-tabs-tab-active:hover,
+.settings-tabs .ant-tabs-tab-active:hover *,
+.settings-tabs .ant-tabs-tab-active:focus,
+.settings-tabs .ant-tabs-tab-active:focus *,
+.settings-tabs .ant-tabs-tab-active:active,
+.settings-tabs .ant-tabs-tab-active:active * {
+  color: var(--white) !important;
+}
+
+/* 针对可能的特定类名 */
+.settings-tabs .ant-tabs-tab-active .ant-tabs-tab-btn,
+.settings-tabs .ant-tabs-tab-active .anticon,
+.settings-tabs .ant-tabs-tab-active span {
+  color: var(--white) !important;
+}
+
+.settings-tabs .ant-tabs-tab-active::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent-green);
+}
+
+.settings-tabs .ant-tabs-content-holder {
+  padding: 40px;
+}
+
+.settings-tabs .ant-tabs-nav {
+  background: var(--white);
+  border-right: 1px solid var(--border-color);
+  width: 200px;
+}
+
+.settings-tabs .ant-tabs-nav-wrap {
+  background: var(--white);
+}
+
+.settings-tabs .ant-tabs-content {
+  background: var(--white);
+}
+
+/* 设置区域样式 */
+.settings-section {
+  max-width: 800px;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.section-icon {
+  font-size: 24px;
+  color: var(--primary-green);
+  margin-top: 4px;
+}
+
+.section-header h3 {
+  margin: 0 0 8px 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--primary-green);
+}
+
+.section-header p {
+  margin: 0;
+  color: var(--text-gray);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* 头像上传区域 */
+.avatar-upload-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: var(--light-gray);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.avatar-upload-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.avatar-upload-info .ant-btn {
+  border-radius: 8px;
+  border-color: var(--primary-green);
+  color: var(--primary-green);
+}
+
+.avatar-upload-info .ant-btn:hover {
+  background: var(--primary-green);
+  color: var(--white);
+}
+
+/* 表单样式优化 */
+.settings-section .ant-form-item-label > label {
+  font-weight: 500;
+  color: var(--text-dark);
+  font-size: 14px;
+}
+
+.settings-section .ant-input,
+.settings-section .ant-input-number,
+.settings-section .ant-select-selector,
+.settings-section .ant-picker {
+  border-radius: 8px;
+  border-color: var(--border-color);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.settings-section .ant-input:focus,
+.settings-section .ant-input-number:focus,
+.settings-section .ant-select-focused .ant-select-selector,
+.settings-section .ant-picker:focus {
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 2px rgba(45, 80, 22, 0.1);
+}
+
+.settings-section .ant-btn-primary {
+  background: var(--primary-green);
+  border-color: var(--primary-green);
+  border-radius: 8px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(45, 80, 22, 0.2);
+}
+
+.settings-section .ant-btn-primary:hover {
+  background: var(--primary-green-dark);
+  border-color: var(--primary-green-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(45, 80, 22, 0.3);
+}
+
+/* 隐私设置组 */
+.privacy-group {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: var(--light-gray);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.privacy-group h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-green);
+}
+
+.privacy-switches {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.privacy-switch-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--white);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.privacy-switch-item:hover {
+  border-color: var(--accent-green);
+  box-shadow: 0 2px 8px rgba(45, 80, 22, 0.08);
+}
+
+.privacy-switch-item span {
+  font-size: 14px;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.privacy-switch-item .ant-switch {
+  background-color: var(--medium-gray);
+}
+
+.privacy-switch-item .ant-switch-checked {
+  background-color: var(--primary-green);
+}
+
+/* 心理健康设置 */
+.mental-health-switches {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mental-health-switch-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px;
+  background: var(--light-gray);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.mental-health-switch-item:hover {
+  border-color: var(--accent-green);
+  box-shadow: 0 4px 16px rgba(45, 80, 22, 0.1);
+}
+
+.mental-health-info {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.mental-health-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.mental-health-title strong {
+  font-size: 16px;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.mental-health-info span {
+  font-size: 14px;
+  color: var(--text-gray);
+  line-height: 1.5;
+}
+
+.mental-health-switch-item .ant-switch {
+  background-color: var(--medium-gray);
+  margin-top: 4px;
+}
+
+.mental-health-switch-item .ant-switch-checked {
+  background-color: var(--primary-green);
+}
+
+/* 通知设置 */
+.notification-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.notification-group {
+  background: var(--light-gray);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.notification-group h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-green);
+}
+
+.notification-switches {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.notification-switch-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--white);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.notification-switch-item:hover {
+  border-color: var(--accent-green);
+  box-shadow: 0 2px 8px rgba(45, 80, 22, 0.08);
+}
+
+.notification-info {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.notification-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.notification-title strong {
+  font-size: 14px;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.notification-info span {
+  font-size: 12px;
+  color: var(--text-gray);
+  line-height: 1.4;
+}
+
+.notification-switch-item .ant-switch {
+  background-color: var(--medium-gray);
+  margin-top: 2px;
+}
+
+.notification-switch-item .ant-switch-checked {
+  background-color: var(--primary-green);
+}
+
+/* 个人偏好设置 */
+.preference-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.preference-group {
+  background: var(--light-gray);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.preference-group h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-green);
+}
+
+.preference-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--white);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+}
+
+.preference-item:hover {
+  border-color: var(--accent-green);
+  box-shadow: 0 2px 8px rgba(45, 80, 22, 0.08);
+}
+
+.preference-item:last-child {
+  margin-bottom: 0;
+}
+
+.preference-info {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.preference-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 4px;
+}
+
+.preference-desc {
+  font-size: 12px;
+  color: var(--text-gray);
+  line-height: 1.4;
+}
+
+.preference-switches {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.preference-switch-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--white);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.preference-switch-item:hover {
+  border-color: var(--accent-green);
+  box-shadow: 0 2px 8px rgba(45, 80, 22, 0.08);
+}
+
+.preference-switch-item .preference-info {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.preference-switch-item .preference-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.preference-switch-item .preference-title strong {
+  font-size: 14px;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.preference-switch-item .preference-info span {
+  font-size: 12px;
+  color: var(--text-gray);
+  line-height: 1.4;
+}
+
+.preference-switch-item .ant-switch {
+  background-color: var(--medium-gray);
+  margin-top: 2px;
+}
+
+.preference-switch-item .ant-switch-checked {
+  background-color: var(--primary-green);
+}
+
+.preference-item .ant-radio-group {
+  display: flex;
+  gap: 12px;
+}
+
+.preference-item .ant-select {
+  min-width: 120px;
+}
+
+/* 数据管理 */
+.data-management-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.data-action-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  background: var(--light-gray);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.data-action-item:hover {
+  border-color: var(--accent-green);
+  box-shadow: 0 4px 16px rgba(45, 80, 22, 0.1);
+}
+
+.data-action-item.danger {
+  background: rgba(244, 67, 54, 0.05);
+  border-color: rgba(244, 67, 54, 0.2);
+}
+
+.data-action-item.danger:hover {
+  border-color: rgba(244, 67, 54, 0.3);
+  box-shadow: 0 4px 16px rgba(244, 67, 54, 0.1);
+}
+
+.data-action-info {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.data-action-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.data-action-icon {
+  font-size: 18px;
+  color: var(--primary-green);
+}
+
+.data-action-icon.danger {
+  color: #f44336;
+}
+
+.data-action-title strong {
+  font-size: 16px;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.data-action-info p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-gray);
+  line-height: 1.5;
+}
+
+.data-action-item .ant-btn {
+  border-radius: 8px;
+  font-weight: 500;
+  min-width: 100px;
+}
+
+.data-action-item .ant-btn-primary {
+  background: var(--primary-green);
+  border-color: var(--primary-green);
+}
+
+.data-action-item .ant-btn-primary:hover {
+  background: var(--primary-green-dark);
+  border-color: var(--primary-green-dark);
+}
+
+.data-action-item .ant-btn-danger {
+  background: #f44336;
+  border-color: #f44336;
+}
+
+.data-action-item .ant-btn-danger:hover {
+  background: #d32f2f;
+  border-color: #d32f2f;
+}
+
+/* 分割线 */
+.settings-section .ant-divider {
+  border-color: var(--border-color);
+  margin: 30px 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .settings-container {
+    margin: 0 10px;
+    border-radius: 12px;
+  }
+  
+  .settings-header {
+    padding: 24px 30px;
+  }
+  
+  .settings-tabs .ant-tabs-content-holder {
+    padding: 30px;
+  }
+  
+  .settings-tabs .ant-tabs-nav {
+    width: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-page {
+    padding: 10px;
+  }
+  
+  .settings-container {
+    margin: 0;
+    border-radius: 8px;
+  }
+  
+  .settings-header {
+    padding: 20px;
+  }
+  
+  .settings-title {
+    font-size: 24px !important;
+  }
+  
+  .settings-subtitle {
+    font-size: 14px !important;
+  }
+  
+  .settings-tabs {
+    min-height: auto;
+  }
+  
+  .settings-tabs .ant-tabs {
+    flex-direction: column;
+  }
+  
+  .settings-tabs .ant-tabs-nav {
+    width: 100%;
+    order: 1;
+  }
+  
+  .settings-tabs .ant-tabs-content-holder {
+    padding: 20px;
+    order: 2;
+  }
+  
+  .settings-tabs .ant-tabs-tab {
+    padding: 12px 16px !important;
+    text-align: center;
+  }
+  
+  .avatar-upload-section {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .data-action-item,
+  .mental-health-switch-item {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .data-action-info,
+  .mental-health-info {
+    margin-right: 0;
+  }
+}
+
+/* 确保始终使用浅色主题 */
+.settings-page,
+.settings-container,
+.settings-tabs .ant-tabs-nav,
+.settings-tabs .ant-tabs-nav-wrap,
+.settings-tabs .ant-tabs-content,
+.privacy-group,
+.mental-health-switch-item,
+.data-action-item,
+.privacy-switch-item {
+  background: var(--white) !important;
+  color: var(--text-dark) !important;
+}
+
+/* 额外的选中项白色字体强制规则 */
+.ant-tabs-left .ant-tabs-tab-active,
+.ant-tabs-left .ant-tabs-tab-active .ant-tabs-tab-btn,
+div[role="tab"][aria-selected="true"],
+div[role="tab"][aria-selected="true"] *,
+.settings-tabs div[role="tab"][aria-selected="true"],
+.settings-tabs div[role="tab"][aria-selected="true"] * {
+  color: var(--white) !important;
+}
+
+.settings-page {
+  background: var(--background-green) !important;
+}
+
+.section-header h3 {
+  color: var(--primary-green) !important;
+}
+
+.section-header p,
+.mental-health-info span,
+.data-action-info p {
+  color: var(--text-gray) !important;
+}

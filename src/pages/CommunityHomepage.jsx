@@ -234,39 +234,28 @@ const CommunityHomepage = () => {
               ) : (
                 filteredPosts.map(post => (
                   <div key={post.id} className="post-card" onClick={() => navigate(`/post/${post.id}`)}>
-                    <div className="post-header">
-                      <div className="author-info">
-                        <span className="author-avatar">{post.authorAvatar}</span>
-                        <div className="author-details">
-                          <span className="author-name">{post.author}</span>
-                          <span className="post-time">{formatTime(post.createdAt)}</span>
-                        </div>
-                      </div>
-                      <div className="post-category">{post.category}</div>
-                    </div>
                     <div className="post-content">
                       <h4 className="post-title">{post.title}</h4>
-                      <p className="post-summary">{post.content}</p>
-                      <div className="post-tags">
-                        {post.tags.map(tag => (
-                          <span key={tag} className="post-tag">#{tag}</span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="post-footer">
-                      <div className="post-stats">
-                        <span className="stat-item">
-                          <HeartOutlined className={post.isLiked ? 'liked' : ''} />
-                          {post.likes}
-                        </span>
-                        <span className="stat-item">
-                          <CommentOutlined />
-                          {post.comments}
-                        </span>
-                        <span className="stat-item">
-                          <EyeOutlined />
-                          {post.views}
-                        </span>
+                      <div className="post-meta">
+                        <div className="post-tags">
+                          {post.tags.map(tag => (
+                            <span key={tag} className="post-tag">#{tag}</span>
+                          ))}
+                        </div>
+                        <div className="post-stats">
+                          <span className="stat-item">
+                            <HeartOutlined className={post.isLiked ? 'liked' : ''} />
+                            {post.likes}
+                          </span>
+                          <span className="stat-item">
+                            <CommentOutlined />
+                            {post.comments}
+                          </span>
+                          <span className="stat-item">
+                            <EyeOutlined />
+                            {post.views}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>

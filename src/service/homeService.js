@@ -64,8 +64,6 @@ export const getArticles = async () => {
     // const response = await get(`${PREFIX}/articles`);
     // return response.data;
     
-    // 模拟网络延迟
-    await new Promise(resolve => setTimeout(resolve, 500));
     return mockArticles;
   } catch (error) {
     console.error('获取文章失败:', error);
@@ -79,7 +77,6 @@ export const getMoodData = async () => {
     // const response = await get(`${PREFIX}/mood-data`);
     // return response.data;
     
-    await new Promise(resolve => setTimeout(resolve, 300));
     return mockMoodData;
   } catch (error) {
     console.error('获取心情数据失败:', error);
@@ -93,7 +90,6 @@ export const getAnalysisData = async () => {
     // const response = await get(`${PREFIX}/analysis`);
     // return response.data;
     
-    await new Promise(resolve => setTimeout(resolve, 800));
     return mockAnalysisData;
   } catch (error) {
     console.error('获取分析数据失败:', error);

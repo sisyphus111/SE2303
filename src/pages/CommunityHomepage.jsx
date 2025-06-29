@@ -30,7 +30,7 @@ const CommunityHomepage = () => {
     const [sortBy, setSortBy] = useState('latest'); // latest, hot, comments
 
   // 热门标签
-  const hotTags = ['全部', '心情分享', '压力管理', '学习交流', '生活感悟', '健康心理', '人际关系'];
+  const hotTags = ['全部', '情感', '学习', '生活', '健康', '成长'];
   
   // 社区统计数据（模拟）
   const communityStats = {

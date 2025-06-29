@@ -6,7 +6,7 @@ import { request } from './apiUtils';
  * @param {Object} params - 查询参数
  * @param {number} params.page - 页码
  * @param {number} params.size - 每页大小
- * @param {string} params.category - 分类（根据页面：心情分享、压力管理、心理健康、资源推荐、互助交流）
+ * @param {string} params.category - 分类（根据页面：情感、学习、生活、健康、成长）
  * @param {Array<string>} params.tags - 标签数组
  * @param {string} params.sortBy - 排序方式（最新、最热、最多评论、最多浏览）
  * @param {string} params.keyword - 搜索关键词
@@ -97,8 +97,8 @@ export const getCommunityPosts = () => {
       content: '最近工作压力很大，想和大家分享一下我的减压方法，也希望能听到大家的建议...',
       author: '小明',
       authorAvatar: '👨',
-      category: '压力管理',
-      tags: ['工作压力', '减压方法', '心理健康'],
+      category: '健康',
+      tags: ['健康'],
       likes: 24,
       comments: 8,
       views: 156,
@@ -111,8 +111,8 @@ export const getCommunityPosts = () => {
       content: '每天早上起床后，我会花5分钟时间做深呼吸和简单的伸展运动，这让我一整天都感觉很好...',
       author: '小红',
       authorAvatar: '👩',
-      category: '心情分享',
-      tags: ['好习惯', '晨间routine', '积极心态'],
+      category: '情感',
+      tags: ['情感', '生活'],
       likes: 42,
       comments: 15,
       views: 289,
@@ -125,8 +125,8 @@ export const getCommunityPosts = () => {
       content: '想和大家讨论一下焦虑症这个话题，希望能帮助到有类似经历的朋友...',
       author: '小李',
       authorAvatar: '👨‍🦱',
-      category: '心理健康',
-      tags: ['焦虑症', '心理治疗', '互助'],
+      category: '健康',
+      tags: ['健康', '情感'],
       likes: 18,
       comments: 12,
       views: 203,
@@ -139,8 +139,8 @@ export const getCommunityPosts = () => {
       content: '最近读了几本很棒的心理学书籍，想推荐给大家，希望能帮助到需要的人...',
       author: '小王',
       authorAvatar: '👩‍🦰',
-      category: '资源推荐',
-      tags: ['书籍推荐', '心理学', '治愈系'],
+      category: '学习',
+      tags: ['学习', '成长'],
       likes: 31,
       comments: 6,
       views: 178,

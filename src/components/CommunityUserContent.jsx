@@ -88,7 +88,7 @@ function CommunityUserContent({ selectedTag }) {
                 
                 <div className="search-section">
                     <Input
-                        placeholder="🔍 搜索我的帖子..."
+                        placeholder="搜索我的帖子..."
                         prefix={<SearchOutlined />}
                         value={searchKeyword}
                         onChange={(e) => setSearchKeyword(e.target.value)}

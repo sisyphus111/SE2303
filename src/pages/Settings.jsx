@@ -224,25 +224,6 @@ function Settings() {
       </div>
 
       <div className="preference-groups">
-        <div className="preference-group">
-          <h4>界面设置</h4>
-
-
-          <div className="preference-item">
-            <div className="preference-info">
-              <div className="preference-title">字体大小</div>
-              <div className="preference-desc">调整界面文字显示大小</div>
-            </div>
-            <Radio.Group 
-              value={settings.fontSize} 
-              onChange={(e) => handleSettingChange('fontSize', e.target.value)}
-            >
-              <Radio value="small">小</Radio>
-              <Radio value="medium">中</Radio>
-              <Radio value="large">大</Radio>
-            </Radio.Group>
-          </div>
-        </div>
 
         <div className="preference-group">
           <h4>媒体设置</h4>

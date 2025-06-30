@@ -68,8 +68,8 @@
 .card {
   background: var(--white);
   border-radius: var(--radius-large);
-  width: 320px;
-  min-height: 280px;
+  width: 450px;
+  height: 480px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -108,7 +108,7 @@
 
 .card-content {
   text-align: center;
-  padding: 32px 24px;
+  padding: 20px 24px;
   width: 100%;
   z-index: 2;
   position: relative;
@@ -167,7 +167,7 @@
 }
 
 .feature-item > span {
-  font-size: 20px;
+  font-size: 24px !important;
   font-weight: 600;
   color: var(--primary-green);
   display: block;
@@ -219,12 +219,12 @@
   
   .card {
     width: 90%;
-    max-width: 320px;
-    min-height: 240px;
+    max-width: 450px;
+    height: 420px;
   }
 
   .card-content {
-    padding: 24px 20px;
+    padding: 16px 20px;
   }
 
   .card-content h2 {
@@ -241,7 +241,7 @@
   }
 
   .feature-item > span {
-    font-size: 18px;
+    font-size: 22px !important;
   }
 }
 
@@ -252,16 +252,16 @@
   
   .card {
     width: 100%;
-    min-height: 220px;
+    height: 380px;
   }
 
   .card-content {
-    padding: 20px 16px;
+    padding: 14px 16px;
   }
 
   .card-content h2 {
     font-size: 18px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
   }
 
   .feature-item {
@@ -269,7 +269,7 @@
   }
 
   .feature-item > span {
-    font-size: 16px;
+    font-size: 20px !important;
     margin-bottom: 12px;
   }
 }

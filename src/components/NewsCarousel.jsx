@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../css/NewsCarousel.css';
 
 const NewsCarousel = ({ articles = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const intervalRef = useRef(null);
+  const navigate = useNavigate();
 
   const handleArticleClick = (article) => {
     console.log('点击文章:', article.title);
-    // 可以跳转到文章详情页面
+    // 跳转到文章详情页面
+    navigate(`/article/${article.id}`);
   };
 
   // 自动轮播功能
@@ -64,7 +67,6 @@ const NewsCarousel = ({ articles = [] }) => {
             className="carousel-track"
             style={{
               transform: `translateX(-${currentIndex * 100}%)`,
-              width: `${articles.length * 100}%`
             }}
           >
             {articles.map((article, index) => (
@@ -79,7 +81,7 @@ const NewsCarousel = ({ articles = [] }) => {
                     alt={article.title} 
                     className="cover-image"
                     onError={(e) => {
-                      e.target.src = "https://via.placeholder.com/600x300/667eea/white?text=Article+Cover";
+                      e.target.src = "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1200&q=85";
                     }}
                   />
                   <div className="article-title-overlay">

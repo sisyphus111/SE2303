@@ -29,7 +29,7 @@
 .status-indicator {
   padding: 8px 16px;
   border-radius: 20px;
-  font-size: 14px;
+  font-size: 16px !important;
   font-weight: 500;
   display: inline-flex;
   align-items: center;
@@ -111,6 +111,7 @@
   .status-indicator {
     justify-content: center;
     padding: 10px 16px;
+    font-size: 15px;
   }
   
   .emergency-message {

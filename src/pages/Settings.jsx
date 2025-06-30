@@ -184,18 +184,6 @@ function Settings() {
               />
             </div>
 
-            <div className="notification-switch-item">
-              <div className="notification-info">
-                <div className="notification-title">
-                  <strong>提及通知</strong>
-                </div>
-                <span>有人在帖子中提及您时通知您</span>
-              </div>
-              <Switch 
-                checked={settings.mentionNotifications} 
-                onChange={(checked) => handleSettingChange('mentionNotifications', checked)} 
-              />
-            </div>
 
             <div className="notification-switch-item">
               <div className="notification-info">
@@ -273,19 +261,7 @@ function Settings() {
               />
             </div>
 
-            <div className="preference-switch-item">
-              <div className="preference-info">
-                <div className="preference-title">
-                  <EyeOutlined style={{ color: 'var(--primary-green)' }} />
-                  <strong>自动播放媒体</strong>
-                </div>
-                <span>自动播放帖子中的视频和音频内容</span>
-              </div>
-              <Switch 
-                checked={settings.autoPlayMedia} 
-                onChange={(checked) => handleSettingChange('autoPlayMedia', checked)} 
-              />
-            </div>
+
           </div>
         </div>
 

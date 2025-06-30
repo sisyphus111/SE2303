@@ -23,8 +23,8 @@ const Community = () => {
       content: '最近工作压力很大，想和大家分享一下我的减压方法，也希望能听到大家的建议...',
       author: '小明',
       authorAvatar: 'M',
-      category: '压力管理',
-      tags: ['工作压力', '减压方法', '心理健康'],
+      category: '健康',
+      tags: ['健康'],
       likes: 24,
       comments: 8,
       views: 156,
@@ -37,8 +37,8 @@ const Community = () => {
       content: '每天早上起床后，我会花5分钟时间做深呼吸和简单的伸展运动，这让我一整天都感觉很好...',
       author: '小红',
       authorAvatar: 'H',
-      category: '心情分享',
-      tags: ['好习惯', '晨间routine', '积极心态'],
+      category: '情感',
+      tags: ['情感', '生活'],
       likes: 42,
       comments: 15,
       views: 289,
@@ -51,8 +51,8 @@ const Community = () => {
       content: '想和大家讨论一下焦虑症这个话题，希望能帮助到有类似经历的朋友...',
       author: '小李',
       authorAvatar: 'L',
-      category: '心理健康',
-      tags: ['焦虑症', '心理治疗', '互助'],
+      category: '健康',
+      tags: ['健康', '情感'],
       likes: 18,
       comments: 12,
       views: 203,
@@ -65,8 +65,8 @@ const Community = () => {
       content: '最近读了几本很棒的心理学书籍，想推荐给大家，希望能帮助到需要的人...',
       author: '小王',
       authorAvatar: 'W',
-      category: '资源推荐',
-      tags: ['书籍推荐', '心理学', '治愈系'],
+      category: '学习',
+      tags: ['学习', '成长'],
       likes: 31,
       comments: 6,
       views: 178,
@@ -82,7 +82,7 @@ const Community = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
-  const categories = ['全部', '心情分享', '压力管理', '心理健康', '资源推荐', '互助交流'];
+  const categories = ['全部', '情感', '学习', '生活', '健康', '成长'];
 
   useEffect(() => {
     // 加载帖子列表

@@ -11,7 +11,6 @@ import {
   SmileOutlined,
   ThunderboltOutlined
 } from '@ant-design/icons';
-import { tagOptions } from '../data/post_data';
 import TagSelector from '../components/TagSelector';
 import '../css/SendCommunityPost.css';
 
@@ -163,7 +162,13 @@ const SendCommunityPostPage = () => {
                                 <span className="required">*</span>
                             </label>
                             <TagSelector
-                                tags={tagOptions}
+                                tags={[
+                                    { value: '情感', label: '情感' },
+                                    { value: '学习', label: '学习' },
+                                    { value: '生活', label: '生活' },
+                                    { value: '健康', label: '健康' },
+                                    { value: '成长', label: '成长' },
+                                ]}
                                 selectedTags={formData.tags}
                                 onTagToggle={handleTagToggle}
                                 variant="post"

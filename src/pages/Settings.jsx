@@ -224,54 +224,6 @@ function Settings() {
       </div>
 
       <div className="preference-groups">
-        <div className="preference-group">
-          <h4>界面设置</h4>
-          <div className="preference-item">
-            <div className="preference-info">
-              <div className="preference-title">主题模式</div>
-              <div className="preference-desc">选择您喜欢的界面主题</div>
-            </div>
-            <Radio.Group 
-              value={settings.theme} 
-              onChange={(e) => handleSettingChange('theme', e.target.value)}
-            >
-              <Radio value="light">浅色模式</Radio>
-              <Radio value="dark">深色模式</Radio>
-              <Radio value="auto">跟随系统</Radio>
-            </Radio.Group>
-          </div>
-
-          <div className="preference-item">
-            <div className="preference-info">
-              <div className="preference-title">语言</div>
-              <div className="preference-desc">选择界面显示语言</div>
-            </div>
-            <Select 
-              value={settings.language}
-              onChange={(value) => handleSettingChange('language', value)}
-              style={{ width: 150 }}
-            >
-              <Option value="zh-CN">简体中文</Option>
-              <Option value="zh-TW">繁體中文</Option>
-              <Option value="en-US">English</Option>
-            </Select>
-          </div>
-
-          <div className="preference-item">
-            <div className="preference-info">
-              <div className="preference-title">字体大小</div>
-              <div className="preference-desc">调整界面文字显示大小</div>
-            </div>
-            <Radio.Group 
-              value={settings.fontSize} 
-              onChange={(e) => handleSettingChange('fontSize', e.target.value)}
-            >
-              <Radio value="small">小</Radio>
-              <Radio value="medium">中</Radio>
-              <Radio value="large">大</Radio>
-            </Radio.Group>
-          </div>
-        </div>
 
         <div className="preference-group">
           <h4>媒体设置</h4>

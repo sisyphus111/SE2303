@@ -14,6 +14,7 @@ import AIChat from './pages/AIChat';
 import {AudioProvider} from './lib/GlobalAudioPlayer';
 import {UserProvider} from './lib/UserContext';
 import ArticleDetail from './pages/ArticleDetail';
+import {DiaryDetail} from './pages/DiaryDetail';
 import PostDetailPage from "./pages/CommunityPost";
 import SendCommunityPostPage from "./pages/SendCommunityPost";
 import CommunityUserPage from "./pages/CommunityUserPage";
@@ -39,6 +40,7 @@ function App() {
                                     <Route path="/mental_resource" element={<MentalResource/>}/>
                                     <Route path="/article/:id" element={<ArticleDetail/>}/>
                                     <Route path="/diary" element={<Diary/>}/>
+                                    <Route path="/diary/:id" element={<DiaryDetail/>}/>
                                     <Route path="/post/:id" element={<PostDetailPage/>}/>
                                     <Route path="/send_community_post" element={<SendCommunityPostPage/>}/>
                                     <Route path="/community" element={<CommunityHomepage/>}/>

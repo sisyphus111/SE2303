@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 
 /**
  * JWT认证过滤器
- * 验证请求中的JWT token并将用户信息添加到请求头中
+ * 简化版本：只负责token验证和转发，不处理token生成
  */
 @Component
 public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
@@ -32,45 +32,50 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getURI().getPath();
         
-        // 跳过认证相关的路径和测试路径
+        // 跳过不需要认证的路径（注册、登录等）
         if (isPublicPath(path)) {
+            logger.debug("Skipping authentication for public path: {}", path);
             return chain.filter(exchange);
         }
         
-        // 从cookie中获取access token
-        String accessToken = getTokenFromCookie(exchange, "access_token");
+        // 获取token
+        String token = getTokenFromRequest(exchange);
         
-        if (accessToken == null) {
-            // 尝试从Authorization header获取token
-            accessToken = getTokenFromHeader(exchange);
+        if (token == null) {
+            logger.warn("No token found for protected path: {}", path);
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
         }
         
-        if (accessToken == null || !jwtUtil.validateToken(accessToken) || !jwtUtil.isAccessToken(accessToken)) {
-            logger.warn("Invalid or missing access token for path: {}", path);
+        // 验证token
+        if (!jwtUtil.validateToken(token)) {
+            logger.warn("Invalid token for path: {}", path);
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
         
         try {
-            // 从token中提取用户信息（只包含学号）
-            String userId = jwtUtil.getUserIdFromToken(accessToken);
-            String account = jwtUtil.getUsernameFromToken(accessToken);
-            String code = jwtUtil.getCodeFromToken(accessToken);
+            // 从token中提取用户ID
+            String userId = jwtUtil.getUserIdFromToken(token);
             
-            // 将用户信息添加到请求头中，供后端服务使用（只传递学号）
+            if (userId == null || userId.isEmpty()) {
+                logger.warn("No userId found in token for path: {}", path);
+                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                return exchange.getResponse().setComplete();
+            }
+            
+            // 将用户ID添加到请求头中，供后端服务使用
             ServerHttpRequest request = exchange.getRequest().mutate()
                     .header("X-User-Id", userId)
-                    .header("X-User-Account", account)
-                    .header("X-User-Code", code)  // 只传递学号
                     .header("X-Gateway-Auth", "jwt")
                     .build();
             
-            logger.debug("Authenticated user: {} (ID: {}, Code: {})", account, userId, code);
+            logger.debug("Authenticated user ID: {} for path: {}", userId, path);
             
             return chain.filter(exchange.mutate().request(request).build());
             
         } catch (Exception e) {
-            logger.error("Failed to process JWT token", e);
+            logger.error("Failed to process JWT token for path: " + path, e);
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
@@ -80,30 +85,30 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
      * 检查是否为公开路径（不需要认证）
      */
     private boolean isPublicPath(String path) {
-        return path.startsWith("/api/auth/") ||
-               path.startsWith("/api/test/") ||
-               path.startsWith("/actuator/") ||
-               path.equals("/") ||
-               path.startsWith("/static/") ||
-               path.startsWith("/public/");
+        return path.startsWith("/api/user/") ||          // 认证相关路径（注册、登录）
+               path.startsWith("/api/test/") ||          // 测试路径
+               path.startsWith("/actuator/") ||          // 监控端点
+               path.equals("/") ||                       // 根路径
+               path.startsWith("/static/") ||            // 静态资源
+               path.startsWith("/public/");              // 公共资源
     }
     
     /**
-     * 从cookie中获取token
+     * 从请求中获取token（支持Authorization header和Cookie）
      */
-    private String getTokenFromCookie(ServerWebExchange exchange, String cookieName) {
-        HttpCookie cookie = exchange.getRequest().getCookies().getFirst(cookieName);
-        return cookie != null ? cookie.getValue() : null;
-    }
-    
-    /**
-     * 从Authorization header中获取token
-     */
-    private String getTokenFromHeader(ServerWebExchange exchange) {
+    private String getTokenFromRequest(ServerWebExchange exchange) {
+        // 首先尝试从Authorization header获取
         String authHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
         }
+        
+        // 然后尝试从Cookie获取
+        HttpCookie cookie = exchange.getRequest().getCookies().getFirst("access_token");
+        if (cookie != null) {
+            return cookie.getValue();
+        }
+        
         return null;
     }
     

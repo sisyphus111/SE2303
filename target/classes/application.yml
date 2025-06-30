@@ -1,45 +1,9 @@
 server:
-  port: 8081
+  port: 8080
 
 spring:
   application:
     name: se2303-gateway
-  
-  # 数据库配置
-  datasource:
-    url: jdbc:mysql://localhost:3306/se2303_gateway?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: root
-    password: ${DB_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  
-  # JPA配置
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-  
-  # OAuth2 Client配置 - JAccount OIDC
-  security:
-    oauth2:
-      client:
-        registration:
-          jaccount:
-            client-id: ${JACCOUNT_CLIENT_ID:your-client-id}
-            client-secret: ${JACCOUNT_CLIENT_SECRET}
-            scope: openid,profile
-            authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-            client-name: JAccount
-        provider:
-          jaccount:
-            authorization-uri: https://jaccount.sjtu.edu.cn/oauth2/authorize
-            token-uri: https://jaccount.sjtu.edu.cn/oauth2/token
-            user-info-uri: https://api.sjtu.edu.cn/v1/me/profile
-            jwk-set-uri: https://jaccount.sjtu.edu.cn/oauth2/jwks
-            user-name-attribute: account
   
   cloud:
     gateway:
@@ -63,58 +27,42 @@ spring:
       
       # 路由配置
       routes:
-        # 认证相关路由 - 不需要转发，由网关直接处理
-        - id: auth-login
-          uri: no://op
+        # 用户服务路由 - 注册和登录不需要token验证
+        - id: user-service-auth
+          uri: http://localhost:8082
           predicates:
-            - Path=/api/auth/login
+            - Path=/api/user/**
           filters:
-            - name: RewritePath
-              args:
-                regexp: /api/auth/login
-                replacement: /auth/login
-        
-        - id: auth-logout
-          uri: no://op
+            - RewritePath=/api/user/(?<segment>.*), /api/user/${segment}
+
+
+        # 社区服务路由
+        - id: community-service
+          uri: http://localhost:8083
           predicates:
-            - Path=/api/auth/logout
+            - Path=/api/community/**
           filters:
-            - name: RewritePath
-              args:
-                regexp: /api/auth/logout
-                replacement: /auth/logout
-        
-        - id: auth-user-info
-          uri: no://op
+            - RewritePath=/api/community/(?<segment>.*), /api/community/${segment}
+
+        # 心情服务路由
+        - id: mood-service
+          uri: http://localhost:8084
           predicates:
-            - Path=/api/auth/user
+            - Path=/api/mood/**
           filters:
-            - name: RewritePath
-              args:
-                regexp: /api/auth/user
-                replacement: /auth/user
-        
-        # 测试路由 - 简单的echo服务用于测试
-        - id: test-echo
-          uri: http://httpbin.org
+            - RewritePath=/api/mood/(?<segment>.*), /api/mood/${segment}
+
+        # 通知服务路由
+        - id: notification-service
+          uri: http://localhost:8085
           predicates:
-            - Path=/api/test/**
+            - Path=/api/notification/**
           filters:
-            - RewritePath=/api/test/(?<segment>.*), /${segment}
-            - AddRequestHeader=X-Gateway-Source, se2303-gateway
+            - RewritePath=/api/notification/(?<segment>.*), /api/notification/${segment}
 
 # JWT配置
 jwt:
   secret: ${JWT_SECRET}
-  expiration: 86400000  # 24小时 (毫秒)
-  refresh-expiration: 604800000  # 7天 (毫秒)
-
-# JAccount配置
-jaccount:
-  client-id: ${JACCOUNT_CLIENT_ID:your-client-id}
-  client-secret: ${JACCOUNT_CLIENT_SECRET}
-  redirect-uri: ${JACCOUNT_REDIRECT_URI:http://localhost:8081/api/auth/jaccount/callback}
-  profile-api-url: https://api.sjtu.edu.cn/v1/me/profile
 
 # 日志配置
 logging:

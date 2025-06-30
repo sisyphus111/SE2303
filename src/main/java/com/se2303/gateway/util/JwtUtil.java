@@ -11,20 +11,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * JWT工具类
- * 提供JWT的生成、解析和验证功能
+ * JWT工具类 - 简化版
+ * 只负责JWT的验证和解析，不负责生成（由后端服务生成）
  */
 @Component
 public class JwtUtil {
     
-    @Value("${jwt.secret}")
-    private String secret;
     
-    @Value("${jwt.expiration}")
-    private Long expiration;
-    
-    @Value("${jwt.refresh-expiration}")
-    private Long refreshExpiration;
+    private String secret = "REDACTED";
     
     /**
      * 获取签名密钥
@@ -33,44 +27,7 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
     
-    /**
-     * 生成访问token（只包含学号）
-     */
-    public String generateAccessToken(String userId, String account, String code) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", userId);
-        claims.put("account", account);
-        claims.put("code", code);  // 只保留学号
-        claims.put("type", "access");
-        
-        return createToken(claims, account, expiration);
-    }
-    
-    /**
-     * 生成刷新token
-     */
-    public String generateRefreshToken(String account) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("type", "refresh");
-        
-        return createToken(claims, account, refreshExpiration);
-    }
-    
-    /**
-     * 创建token
-     */
-    private String createToken(Map<String, Object> claims, String subject, Long expiration) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expiration);
-        
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
-                .compact();
-    }
+
     
     /**
      * 从token中获取用户名
@@ -93,19 +50,7 @@ public class JwtUtil {
         return getClaimFromToken(token, claims -> claims.get("userId", String.class));
     }
     
-    /**
-     * 从token中获取学号
-     */
-    public String getCodeFromToken(String token) {
-        return getClaimFromToken(token, claims -> claims.get("code", String.class));
-    }
-    
-    /**
-     * 从token中获取token类型
-     */
-    public String getTokenTypeFromToken(String token) {
-        return getClaimFromToken(token, claims -> claims.get("type", String.class));
-    }
+
     
     /**
      * 从token中获取指定的claim
@@ -135,15 +80,7 @@ public class JwtUtil {
     }
     
     /**
-     * 验证token
-     */
-    public Boolean validateToken(String token, String username) {
-        final String tokenUsername = getUsernameFromToken(token);
-        return (tokenUsername.equals(username) && !isTokenExpired(token));
-    }
-    
-    /**
-     * 验证token是否有效（不需要用户名）
+     * 验证token是否有效
      */
     public Boolean validateToken(String token) {
         try {
@@ -155,21 +92,5 @@ public class JwtUtil {
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
-    }
-    
-    /**
-     * 检查是否为访问token
-     */
-    public Boolean isAccessToken(String token) {
-        String type = getTokenTypeFromToken(token);
-        return "access".equals(type);
-    }
-    
-    /**
-     * 检查是否为刷新token
-     */
-    public Boolean isRefreshToken(String token) {
-        String type = getTokenTypeFromToken(token);
-        return "refresh".equals(type);
     }
 } 

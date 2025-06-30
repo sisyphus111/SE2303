@@ -11,7 +11,7 @@
     <packaging>jar</packaging>
 
     <name>SE2303 Gateway</name>
-    <description>Spring Cloud Gateway for SE2303 UniGPT Project</description>
+    <description>Spring Cloud Gateway for SE2303 Community Project</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -38,17 +38,7 @@
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
-        <!-- Spring Security -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
 
-        <!-- OAuth2 Client for JAccount OIDC -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-oauth2-client</artifactId>
-        </dependency>
 
         <!-- JWT Support -->
         <dependency>
@@ -69,19 +59,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Spring Data JPA for user storage -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
 
-        <!-- MySQL Driver -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version>
-            <scope>runtime</scope>
-        </dependency>
 
         <!-- Spring Boot Actuator (for monitoring) -->
         <dependency>
@@ -99,12 +77,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-        </dependency>
-
-        <!-- HTTP Client for JAccount API calls -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
         <!-- Test dependencies -->

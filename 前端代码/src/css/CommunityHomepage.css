@@ -134,32 +134,37 @@
     opacity: 0.6;
 }
 
-/* 主内容区域 */
+/* 主内容区域 - 极简 */
 .main-content {
     display: grid;
     grid-template-columns: 1fr 300px;
-    gap: 32px;
+    gap: 24px;
     align-items: flex-start;
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    border: none;
 }
 
 /* 主要内容区 */
 .content-main {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 0;
 }
 
 .section-card {
-    background: var(--white);
-    border-radius: var(--radius-large);
-    padding: 24px;
-    box-shadow: var(--shadow-light);
-    border: 1px solid var(--border-color);
-    transition: all 0.3s ease;
+    background: transparent;
+    border-radius: 0;
+    padding: 16px 0;
+    box-shadow: none;
+    border: none;
+    transition: none;
 }
 
 .section-card:hover {
-    box-shadow: var(--shadow-medium);
+    box-shadow: none;
 }
 
 .section-header {
@@ -204,18 +209,24 @@
     opacity: 1;
 }
 
-/* 筛选器部分 */
+/* 筛选器部分 - 简化 */
 .filter-section {
-    margin-bottom: 8px;
+    margin-bottom: 20px;
+    background: var(--white);
+    border: none;
+    box-shadow: var(--shadow-light);
+    padding: 20px;
+    border-radius: var(--radius-large);
+    border: 1px solid var(--border-color);
 }
 
 .filter-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 
 .filter-left {
@@ -226,72 +237,75 @@
 
 .filter-left h3 {
     color: var(--primary-green);
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     margin: 0;
 }
 
 .sort-controls {
     display: flex;
-    gap: 8px;
+    gap: 4px;
 }
 
 .sort-btn {
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 6px 12px;
-    background: var(--light-gray);
-    border: 1px solid var(--border-color);
+    gap: 3px;
+    padding: 4px 8px;
+    background: transparent;
+    border: none;
     border-radius: var(--radius-small);
     color: var(--text-gray);
-    font-size: 12px;
+    font-size: 11px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    opacity: 0.7;
 }
 
 .sort-btn:hover {
-    background: var(--medium-gray);
-    border-color: var(--accent-green);
+    background: rgba(45, 80, 22, 0.05);
     color: var(--primary-green);
+    opacity: 1;
 }
 
 .sort-btn.active {
-    background: var(--primary-green);
-    color: var(--white);
-    border-color: var(--primary-green);
+    background: rgba(45, 80, 22, 0.1);
+    color: var(--primary-green);
+    opacity: 1;
+    font-weight: 500;
 }
 
-/* 标签网格 */
+/* 标签网格 - 简化 */
 .tags-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 8px;
 }
 
 .tag-btn {
-    background: var(--light-gray);
+    background: transparent;
     color: var(--text-gray);
-    border: 1px solid var(--border-color);
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 13px;
+    border: none;
+    padding: 4px 8px;
+    border-radius: var(--radius-small);
+    font-size: 12px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    opacity: 0.7;
 }
 
 .tag-btn:hover {
-    background: var(--medium-gray);
-    border-color: var(--accent-green);
+    background: rgba(45, 80, 22, 0.05);
     color: var(--primary-green);
+    opacity: 1;
 }
 
 .tag-btn.active {
-    background: var(--primary-green);
-    color: var(--white);
-    border-color: var(--primary-green);
-    box-shadow: var(--shadow-light);
+    background: rgba(45, 80, 22, 0.1);
+    color: var(--primary-green);
+    opacity: 1;
+    font-weight: 600;
 }
 
 /* 帖子列表 */
@@ -350,33 +364,33 @@
     color: var(--text-gray);
 }
 
-/* 帖子区域 */
+/* 帖子区域 - 简化 */
 .posts-section {
     background: var(--white);
     border-radius: var(--radius-large);
-    padding: 24px;
+    padding: 20px;
     box-shadow: var(--shadow-light);
     border: 1px solid var(--border-color);
 }
 
 .posts-header {
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
     margin-bottom: 20px;
 }
 
 .posts-header h3 {
     color: var(--primary-green);
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     margin: 0;
 }
 
 .posts-count {
     color: var(--text-gray);
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 400;
-    opacity: 0.7;
+    opacity: 0.6;
 }
 
 .posts-list-main {
@@ -402,119 +416,76 @@
     margin: 0;
 }
 
-/* 帖子卡片 */
+/* 帖子卡片 - 极简设计 */
 .post-card {
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-medium);
-    padding: 20px;
+    padding: 16px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    background: var(--white);
+    transition: all 0.15s ease;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: var(--radius-medium);
+    backdrop-filter: blur(10px);
 }
 
 .post-card:hover {
-    border-color: var(--accent-green);
-    box-shadow: var(--shadow-light);
-    transform: translateY(-2px);
-}
-
-.post-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.author-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.author-avatar {
-    font-size: 24px;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--light-gray);
-    border-radius: 50%;
-}
-
-.author-details {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.author-name {
-    color: var(--primary-green);
-    font-weight: 500;
-    font-size: 14px;
-}
-
-.post-time {
-    color: var(--text-gray);
-    font-size: 12px;
-    opacity: 0.7;
-}
-
-.post-category {
-    background: var(--soft-green);
-    color: var(--primary-green);
-    padding: 4px 8px;
-    border-radius: var(--radius-small);
-    font-size: 12px;
-    font-weight: 500;
+    background: rgba(45, 80, 22, 0.04);
+    border-color: rgba(45, 80, 22, 0.15);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(45, 80, 22, 0.08);
 }
 
 .post-content {
-    margin-bottom: 16px;
+    width: 100%;
 }
 
 .post-title {
-    color: var(--primary-green);
+    color: #2c3e50;
     font-size: 16px;
     font-weight: 600;
     margin: 0 0 8px 0;
     line-height: 1.4;
-}
-
-.post-summary {
-    color: var(--text-gray);
-    font-size: 14px;
-    line-height: 1.5;
-    margin: 0 0 12px 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
+.post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    min-height: 24px;
+}
+
 .post-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
+    flex: 1;
+    align-items: center;
 }
 
 .post-tag {
-    background: var(--light-gray);
-    color: var(--text-gray);
-    padding: 2px 6px;
-    border-radius: var(--radius-small);
-    font-size: 11px;
-    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--primary-green);
+    padding: 0;
+    border-radius: 0;
+    font-size: 13px;
+    border: none;
+    opacity: 0.8;
+    font-weight: 500;
 }
 
-.post-footer {
-    border-top: 1px solid var(--border-color);
-    padding-top: 12px;
+.post-tag::before {
+    content: "#";
+    margin-right: 2px;
 }
 
 .post-stats {
     display: flex;
     gap: 16px;
+    flex-shrink: 0;
 }
 
 .stat-item {
@@ -523,24 +494,26 @@
     gap: 4px;
     color: var(--text-gray);
     font-size: 12px;
+    opacity: 0.7;
+    font-weight: 500;
 }
 
 .stat-item .anticon {
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .stat-item .liked {
-    color: #ff4757;
+    color: var(--primary-green);
 }
 
 /* 右侧边栏 */
 .sidebar {
-        display: flex;
+    display: flex;
     flex-direction: column;
     gap: 24px;
     position: sticky;
     top: 24px;
-    }
+}
 
 .sidebar-card {
     background: var(--white);
@@ -800,6 +773,16 @@
         grid-template-columns: 1fr;
         gap: 20px;
     }
+    
+    .filter-section,
+    .posts-section {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+
+    .posts-list-main {
+        gap: 12px;
+    }
 
     .sort-controls {
         flex-wrap: wrap;
@@ -849,7 +832,9 @@
     }
 
     .section-card,
-    .sidebar-card {
+    .sidebar-card,
+    .filter-section,
+    .posts-section {
         padding: 16px;
         border-radius: var(--radius-medium);
     }
@@ -861,6 +846,21 @@
 
     .post-title {
         font-size: 14px;
+        margin-bottom: 6px;
+    }
+
+    .post-meta {
+        flex-direction: column;
+        gap: 6px;
+        align-items: flex-start;
+    }
+
+    .post-stats {
+        gap: 10px;
+    }
+
+    .stat-item {
+        font-size: 11px;
     }
 
     .filter-header {
@@ -870,13 +870,29 @@
     }
 
     .post-card {
-        padding: 16px;
+        padding: 12px;
     }
 
-    .post-header {
+    .post-meta {
         flex-direction: column;
         gap: 8px;
         align-items: flex-start;
+    }
+
+    .post-stats {
+        gap: 12px;
+    }
+
+    .post-title {
+        font-size: 15px;
+    }
+
+    .main-content {
+        padding: 0;
+    }
+
+    .posts-list-main {
+        gap: 10px;
     }
 
     .posts-count {

@@ -16,20 +16,21 @@ import {
   CommentOutlined
 } from '@ant-design/icons';
 import { getCommunityPosts } from '../service/communityService';
+import { useUser } from '../lib/UserContext';
 import '../css/CommunityHomepage.css';
 
 const CommunityHomepage = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { isAuthenticated } = useUser();
     const [selectedTag, setSelectedTag] = useState('全部');
     const [searchValue, setSearchValue] = useState('');
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [allPosts, setAllPosts] = useState([]);
     const [filteredPosts, setFilteredPosts] = useState([]);
     const [sortBy, setSortBy] = useState('latest'); // latest, hot, comments
 
   // 热门标签
-  const hotTags = ['全部', '心情分享', '压力管理', '学习交流', '生活感悟', '健康心理', '人际关系'];
+  const hotTags = ['全部', '情感', '学习', '生活', '健康', '成长'];
   
   // 社区统计数据（模拟）
   const communityStats = {
@@ -143,7 +144,7 @@ const CommunityHomepage = () => {
             <p>分享心情，互相支持，一起成长</p>
           </div>
           <div className="quick-actions">
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <button 
                 className="action-btn primary"
                 onClick={() => navigate('/send_community_post')}
@@ -233,40 +234,29 @@ const CommunityHomepage = () => {
               ) : (
                 filteredPosts.map(post => (
                   <div key={post.id} className="post-card" onClick={() => navigate(`/post/${post.id}`)}>
-                    <div className="post-header">
-                      <div className="author-info">
-                        <span className="author-avatar">{post.authorAvatar}</span>
-                        <div className="author-details">
-                          <span className="author-name">{post.author}</span>
-                          <span className="post-time">{formatTime(post.createdAt)}</span>
-                        </div>
-                      </div>
-                      <div className="post-category">{post.category}</div>
-                    </div>
-                    <div className="post-content">
+                    
                       <h4 className="post-title">{post.title}</h4>
-                      <p className="post-summary">{post.content}</p>
-                      <div className="post-tags">
-                        {post.tags.map(tag => (
-                          <span key={tag} className="post-tag">#{tag}</span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="post-footer">
-                      <div className="post-stats">
-                        <span className="stat-item">
-                          <HeartOutlined className={post.isLiked ? 'liked' : ''} />
-                          {post.likes}
-                        </span>
-                        <span className="stat-item">
-                          <CommentOutlined />
-                          {post.comments}
-                        </span>
-                        <span className="stat-item">
-                          <EyeOutlined />
-                          {post.views}
-                        </span>
-                      </div>
+                      <div className="post-meta">
+                        <div className="post-tags">
+                          {post.tags.map(tag => (
+                            <span key={tag} className="post-tag">#{tag}</span>
+                          ))}
+                        </div>
+                        <div className="post-stats">
+                          <span className="stat-item">
+                            <HeartOutlined className={post.isLiked ? 'liked' : ''} />
+                            {post.likes}
+                          </span>
+                          <span className="stat-item">
+                            <CommentOutlined />
+                            {post.comments}
+                          </span>
+                          <span className="stat-item">
+                            <EyeOutlined />
+                            {post.views}
+                          </span>
+                        </div>
+            
                     </div>
                   </div>
                 ))
@@ -355,7 +345,7 @@ const CommunityHomepage = () => {
           </div>
 
           {/* 用户快捷操作 */}
-          {isLoggedIn && (
+          {isAuthenticated && (
             <div className="sidebar-card">
               <div className="sidebar-header">
                 <UserOutlined className="sidebar-icon" />

@@ -232,7 +232,7 @@ function Profile() {
                   <Row gutter={16}>
                     <Col span={12}>
                       <Form.Item 
-                        label="邮箱" 
+                        label="邮箱（不会公开显示）" 
                         name="email" 
                         rules={[
                           { required: true, message: '请输入邮箱' }, 
@@ -244,7 +244,7 @@ function Profile() {
                     </Col>
                     <Col span={12}>
                       <Form.Item 
-                        label="手机号" 
+                        label="手机号（不会公开显示）" 
                         name="phone"
                       >
                         <Input prefix={<MobileOutlined />} />
@@ -332,7 +332,7 @@ function Profile() {
                   <div className="privacy-item">
                     <div className="privacy-info">
                       <div className="privacy-title">个人资料可见性</div>
-                      <div className="privacy-desc">控制其他用户对您资料的查看权限</div>
+                      <div className="privacy-desc">控制其他用户对您个人资料的查看权限</div>
                     </div>
                     <Select 
                       value={userData.profileVisibility}
@@ -340,56 +340,12 @@ function Profile() {
                       style={{ width: '100%' }}
                     >
                       <Option value="public">公开</Option>
-                      <Option value="friends">仅好友</Option>
                       <Option value="private">私密</Option>
                     </Select>
                   </div>
 
                   <Divider />
 
-                  <div className="privacy-item">
-                    <div className="privacy-info">
-                      <div className="privacy-title">显示在线状态</div>
-                      <div className="privacy-desc">让其他用户看到您的在线状态</div>
-                    </div>
-                    <Switch 
-                      checked={userData.showOnlineStatus} 
-                      onChange={(checked) => handlePrivacyChange('showOnlineStatus', checked)} 
-                    />
-                  </div>
-
-                  <div className="privacy-item">
-                    <div className="privacy-info">
-                      <div className="privacy-title">允许私信</div>
-                      <div className="privacy-desc">允许陌生人向您发送私信</div>
-                    </div>
-                    <Switch 
-                      checked={userData.allowDirectMessage} 
-                      onChange={(checked) => handlePrivacyChange('allowDirectMessage', checked)} 
-                    />
-                  </div>
-
-                  <div className="privacy-item">
-                    <div className="privacy-info">
-                      <div className="privacy-title">显示邮箱</div>
-                      <div className="privacy-desc">在个人资料中显示邮箱地址</div>
-                    </div>
-                    <Switch 
-                      checked={userData.showEmail} 
-                      onChange={(checked) => handlePrivacyChange('showEmail', checked)} 
-                    />
-                  </div>
-
-                  <div className="privacy-item">
-                    <div className="privacy-info">
-                      <div className="privacy-title">显示手机号</div>
-                      <div className="privacy-desc">在个人资料中显示手机号码</div>
-                    </div>
-                    <Switch 
-                      checked={userData.showPhone} 
-                      onChange={(checked) => handlePrivacyChange('showPhone', checked)} 
-                    />
-                  </div>
                 </div>
               </Card>
 

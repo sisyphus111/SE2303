@@ -899,3 +899,155 @@
         font-size: 12px;
     }
 }
+
+/* 分页组件样式 */
+.pagination-container {
+    padding: 24px 0;
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid var(--border-color);
+    margin-top: 24px;
+}
+
+.pagination-container .ant-pagination {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pagination-container .ant-pagination-item {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
+    background: var(--white);
+    transition: all 0.3s ease;
+}
+
+.pagination-container .ant-pagination-item:hover {
+    border-color: var(--primary-green);
+    transform: translateY(-1px);
+}
+
+.pagination-container .ant-pagination-item-active {
+    background: var(--primary-green);
+    border-color: var(--primary-green);
+}
+
+.pagination-container .ant-pagination-item-active a {
+    color: var(--white);
+}
+
+.pagination-container .ant-pagination-item a {
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.pagination-container .ant-pagination-prev,
+.pagination-container .ant-pagination-next {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
+    background: var(--white);
+    transition: all 0.3s ease;
+}
+
+.pagination-container .ant-pagination-prev:hover,
+.pagination-container .ant-pagination-next:hover {
+    border-color: var(--primary-green);
+    transform: translateY(-1px);
+}
+
+.pagination-container .ant-pagination-prev .anticon,
+.pagination-container .ant-pagination-next .anticon {
+    color: var(--text-gray);
+}
+
+.pagination-container .ant-pagination-prev:hover .anticon,
+.pagination-container .ant-pagination-next:hover .anticon {
+    color: var(--primary-green);
+}
+
+.pagination-container .ant-select {
+    margin: 0 8px;
+}
+
+.pagination-container .ant-select .ant-select-selector {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
+    background: var(--white);
+    transition: all 0.3s ease;
+}
+
+.pagination-container .ant-select:hover .ant-select-selector {
+    border-color: var(--primary-green);
+}
+
+.pagination-container .ant-select-focused .ant-select-selector {
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 2px rgba(45, 80, 22, 0.1);
+}
+
+.pagination-container .ant-pagination-total-text {
+    color: var(--text-gray);
+    font-size: 14px;
+    margin: 0 16px;
+}
+
+.pagination-container .ant-pagination-options-quick-jumper {
+    color: var(--text-gray);
+    font-size: 14px;
+    margin-left: 16px;
+}
+
+.pagination-container .ant-pagination-options-quick-jumper input {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
+    background: var(--white);
+    padding: 4px 8px;
+    width: 50px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.pagination-container .ant-pagination-options-quick-jumper input:hover {
+    border-color: var(--primary-green);
+}
+
+.pagination-container .ant-pagination-options-quick-jumper input:focus {
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 2px rgba(45, 80, 22, 0.1);
+}
+
+/* 响应式分页样式 */
+@media (max-width: 768px) {
+    .pagination-container {
+        padding: 20px 0;
+    }
+    
+    .pagination-container .ant-pagination-total-text {
+        font-size: 12px;
+        margin: 0 8px;
+    }
+    
+    .pagination-container .ant-pagination-options-quick-jumper {
+        font-size: 12px;
+        margin-left: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination-container {
+        padding: 16px 0;
+        overflow-x: auto;
+    }
+    
+    .pagination-container .ant-pagination {
+        min-width: 320px;
+    }
+    
+    .pagination-container .ant-pagination-total-text {
+        display: none;
+    }
+    
+    .pagination-container .ant-pagination-options-quick-jumper {
+        display: none;
+    }
+}

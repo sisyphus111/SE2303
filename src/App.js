@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import './App.css';
+import 'antd/dist/reset.css';
 import Settings from './pages/Settings';
 import MentalResource from './pages/MentalResource';
 import AIChat from './pages/AIChat';

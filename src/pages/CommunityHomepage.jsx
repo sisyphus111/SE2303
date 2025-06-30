@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Pagination } from 'antd';
 import { 
   EditOutlined, 
   SearchOutlined, 
@@ -28,6 +29,8 @@ const CommunityHomepage = () => {
     const [allPosts, setAllPosts] = useState([]);
     const [filteredPosts, setFilteredPosts] = useState([]);
     const [sortBy, setSortBy] = useState('latest'); // latest, hot, comments
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10); // 每页显示10条帖子
 
   // 热门标签
   const hotTags = ['全部', '情感', '学习', '生活', '健康', '成长'];
@@ -90,6 +93,8 @@ const CommunityHomepage = () => {
         }
 
         setFilteredPosts(filtered);
+        // 筛选条件改变时，重置页码到第1页
+        setCurrentPage(1);
     }, [allPosts, selectedTag, searchValue, sortBy]);
 
     const handleSearch = (e) => {
@@ -108,6 +113,23 @@ const CommunityHomepage = () => {
 
     const handleSortChange = (sort) => {
         setSortBy(sort);
+    };
+
+    // 获取当前页的帖子
+    const getCurrentPagePosts = () => {
+        const startIndex = (currentPage - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        return filteredPosts.slice(startIndex, endIndex);
+    };
+
+    // 分页改变事件处理
+    const handlePageChange = (page, size) => {
+        setCurrentPage(page);
+        if (size && size !== pageSize) {
+            setPageSize(size);
+        }
+        // 滚动到帖子列表顶部
+        document.querySelector('.posts-section')?.scrollIntoView({ behavior: 'smooth' });
     };
 
     // 获取热门帖子（点赞数最多的前3个）
@@ -232,7 +254,7 @@ const CommunityHomepage = () => {
                   <p>试试调整筛选条件或搜索关键词</p>
                 </div>
               ) : (
-                filteredPosts.map(post => (
+                getCurrentPagePosts().map(post => (
                   <div key={post.id} className="post-card" onClick={() => navigate(`/post/${post.id}`)}>
                     
                       <h4 className="post-title">{post.title}</h4>
@@ -262,6 +284,25 @@ const CommunityHomepage = () => {
                 ))
               )}
             </div>
+            
+            {/* 分页组件 */}
+            {filteredPosts.length > 0 && (
+              <div className="pagination-container">
+                <Pagination
+                  current={currentPage}
+                  total={filteredPosts.length}
+                  pageSize={pageSize}
+                  showSizeChanger
+                  showQuickJumper
+                  showTotal={(total, range) => 
+                    `第 ${range[0]}-${range[1]} 条 / 共 ${total} 条`
+                  }
+                  pageSizeOptions={['5', '10', '15', '20']}
+                  onChange={handlePageChange}
+                  onShowSizeChange={handlePageChange}
+                />
+              </div>
+            )}
           </div>
         </div>
 

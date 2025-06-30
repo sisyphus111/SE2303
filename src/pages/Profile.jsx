@@ -347,49 +347,6 @@ function Profile() {
 
                   <Divider />
 
-                  <div className="privacy-item">
-                    <div className="privacy-info">
-                      <div className="privacy-title">显示在线状态</div>
-                      <div className="privacy-desc">让其他用户看到您的在线状态</div>
-                    </div>
-                    <Switch 
-                      checked={userData.showOnlineStatus} 
-                      onChange={(checked) => handlePrivacyChange('showOnlineStatus', checked)} 
-                    />
-                  </div>
-
-                  <div className="privacy-item">
-                    <div className="privacy-info">
-                      <div className="privacy-title">允许私信</div>
-                      <div className="privacy-desc">允许陌生人向您发送私信</div>
-                    </div>
-                    <Switch 
-                      checked={userData.allowDirectMessage} 
-                      onChange={(checked) => handlePrivacyChange('allowDirectMessage', checked)} 
-                    />
-                  </div>
-
-                  <div className="privacy-item">
-                    <div className="privacy-info">
-                      <div className="privacy-title">显示邮箱</div>
-                      <div className="privacy-desc">在个人资料中显示邮箱地址</div>
-                    </div>
-                    <Switch 
-                      checked={userData.showEmail} 
-                      onChange={(checked) => handlePrivacyChange('showEmail', checked)} 
-                    />
-                  </div>
-
-                  <div className="privacy-item">
-                    <div className="privacy-info">
-                      <div className="privacy-title">显示手机号</div>
-                      <div className="privacy-desc">在个人资料中显示手机号码</div>
-                    </div>
-                    <Switch 
-                      checked={userData.showPhone} 
-                      onChange={(checked) => handlePrivacyChange('showPhone', checked)} 
-                    />
-                  </div>
                 </div>
               </Card>
 

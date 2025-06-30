@@ -139,15 +139,18 @@ const Register = () => {
 
     try {
       // 调用注册API
-      const result = await registerUser({
-        virtualId: formData.email,
+      const userData = {
+        virtualId: formData.email, // 使用邮箱作为虚拟ID
         username: formData.username,
+        nickname: formData.nickname,
         email: formData.email,
-        password: formData.password,
-        telephone: "138000000",
-        avatar: "1a32d13213"
-        // nickname: formData.nickname || formData.username,
-      });
+        password: formData.password, // 修正：使用正确的密码字段
+        // telephone: "", // 注册时无需手机号
+        // avatar: "default_avatar.png" // 使用默认头像
+      };
+      
+      console.log('📤 发送注册数据:', userData);
+      const result = await registerUser(userData);
       
       if (result.success) {
         // 注册成功，设置用户信息到UserContext

@@ -22,15 +22,15 @@ const carouselImages = [
 const articles = [
   {
     id: "1",
-    title: "如何缓解焦虑情绪",
-    description: "掌握科学方法，帮助你有效应对生活中的焦虑与压力。",
+    title: "如何保持良好的心理健康",
+    description: "分享一些日常保持心理健康的小技巧，包括规律作息、适度运动、保持社交联系等实用方法。",
     cover: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
     link: "#",
   },
   {
     id: "2",
-    title: "心理健康的五个小习惯",
-    description: "每天坚持这些小习惯，让你的心理更健康。",
+    title: "压力管理的有效方法",
+    description: "学会管理生活和工作中的压力，通过时间管理、放松技巧和心态调整来应对挑战。",
     cover: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
     link: "#",
   },

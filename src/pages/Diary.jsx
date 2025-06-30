@@ -219,7 +219,7 @@ export const Diary = () => {
             onChange={(e) => setNewEntry(prev => ({ ...prev, title: e.target.value }))}
             placeholder="给你的日记起个标题..."
             className="diary-title-input"
-          />
+        />
         </div>
 
         {/* 天气选择器 */}

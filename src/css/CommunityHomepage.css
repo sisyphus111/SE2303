@@ -396,7 +396,7 @@
 .posts-list-main {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 16px;
 }
 
 .no-posts {
@@ -418,19 +418,20 @@
 
 /* 帖子卡片 - 极简设计 */
 .post-card {
-    padding: 10px 0;
+    padding: 16px;
     cursor: pointer;
     transition: all 0.15s ease;
-    background: transparent;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: var(--radius-medium);
+    backdrop-filter: blur(10px);
 }
 
 .post-card:hover {
-    background: rgba(45, 80, 22, 0.025);
-}
-
-.post-card:last-child {
-    border-bottom: none;
+    background: rgba(45, 80, 22, 0.04);
+    border-color: rgba(45, 80, 22, 0.15);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(45, 80, 22, 0.08);
 }
 
 .post-content {
@@ -779,6 +780,10 @@
         margin-bottom: 16px;
     }
 
+    .posts-list-main {
+        gap: 12px;
+    }
+
     .sort-controls {
         flex-wrap: wrap;
         gap: 6px;
@@ -865,7 +870,7 @@
     }
 
     .post-card {
-        padding: 10px 0;
+        padding: 12px;
     }
 
     .post-meta {
@@ -884,6 +889,10 @@
 
     .main-content {
         padding: 0;
+    }
+
+    .posts-list-main {
+        gap: 10px;
     }
 
     .posts-count {

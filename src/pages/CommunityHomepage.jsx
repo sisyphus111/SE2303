@@ -234,7 +234,7 @@ const CommunityHomepage = () => {
               ) : (
                 filteredPosts.map(post => (
                   <div key={post.id} className="post-card" onClick={() => navigate(`/post/${post.id}`)}>
-                    <div className="post-content">
+                    
                       <h4 className="post-title">{post.title}</h4>
                       <div className="post-meta">
                         <div className="post-tags">
@@ -256,7 +256,7 @@ const CommunityHomepage = () => {
                             {post.views}
                           </span>
                         </div>
-                      </div>
+            
                     </div>
                   </div>
                 ))

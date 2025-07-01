@@ -15,7 +15,7 @@ import '../css/Login.css';
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setUser, isAuthenticated, loading, error, clearError } = useUser();
+  const { setUser, isAuthenticated, loading, error } = useUser();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -48,10 +48,7 @@ const Login = () => {
     }
   }, [isAuthenticated, loading, navigate, location]);
 
-  // 清除错误当组件挂载时
-  useEffect(() => {
-    clearError();
-  }, [clearError]);
+ 
 
   // 表单验证
   const validateForm = () => {
@@ -101,7 +98,6 @@ const Login = () => {
     }
 
     setIsSubmitting(true);
-    clearError();
 
     try {
       // 调用认证服务进行登录

@@ -16,7 +16,7 @@ import '../css/Login.css';
 
 const Register = () => {
   const navigate = useNavigate();
-  const { setUser, isAuthenticated, loading, error, clearError } = useUser();
+  const { setUser, isAuthenticated, loading, error} = useUser();
 
   const [formData, setFormData] = useState({
     username: '',
@@ -50,10 +50,7 @@ const Register = () => {
     }
   }, [isAuthenticated, loading, navigate]);
 
-  // 清除错误当组件挂载时
-  useEffect(() => {
-    clearError();
-  }, [clearError]);
+
 
   // 表单验证
   const validateForm = () => {
@@ -135,7 +132,6 @@ const Register = () => {
     }
 
     setIsSubmitting(true);
-    clearError();
 
     try {
       // 调用注册API

@@ -27,6 +27,7 @@ import {
   CameraOutlined
 } from '@ant-design/icons';
 import { useUser } from '../lib/UserContext';
+import { updateUserProfile } from '../service/userService';
 import "../css/Profile.css";
 
 const { Title, Text } = Typography;
@@ -78,7 +79,18 @@ function Profile() {
         username: user.username || userData.username,
         email: user.email || userData.email,
         nickname: user.nickname || userData.nickname,
+        phone: user.telephone || userData.phone, // 后端是telephone，前端是phone
         avatar: user.avatar || userData.avatar,
+        gender: user.gender || userData.gender,
+        birthday: user.birthday || userData.birthday,
+        location: user.location || userData.location,
+        bio: user.bio || userData.bio,
+        tags: user.tags ? (typeof user.tags === 'string' ? user.tags.split(',') : user.tags) : userData.tags,
+        profileVisibility: user.profileVisibility || userData.profileVisibility,
+        showOnlineStatus: userData.showOnlineStatus,
+        allowDirectMessage: userData.allowDirectMessage,
+        showEmail: userData.showEmail,
+        showPhone: userData.showPhone,
       };
       setUserData(updatedData);
       form.setFieldsValue(updatedData);
@@ -88,21 +100,38 @@ function Profile() {
   const handleSave = async (values) => {
     setLoading(true);
     try {
+      // 处理tags字段 - 如果是数组则转换为字符串
+      const tagsString = Array.isArray(values.tags) ? values.tags.join(',') : values.tags;
+      
+      // 准备要发送到后端的数据
+      const updateData = {
+        username: values.username,
+        nickname: values.nickname,
+        avatar: userData.avatar, // 头像从当前状态获取
+        gender: values.gender,
+        birthday: values.birthday,
+        location: values.location,
+        telephone: values.phone,
+        bio: values.bio,
+        tags: tagsString,
+        profileVisibility: values.profileVisibility,
+        // userStatus字段通常不由用户直接修改，由管理员控制
+      };
+      
+      // 调用后端API更新用户信息
+      const response = await updateUserProfile(updateData);
+      
       // 更新本地状态
       const updatedData = { ...userData, ...values };
       setUserData(updatedData);
       
       // 更新用户上下文
-      await updateUser({
-        username: values.username,
-        nickname: values.nickname,
-        email: values.email,
-        avatar: updatedData.avatar,
-      });
+      await updateUser(response);
       
       message.success('个人资料保存成功！');
       setEditing(false);
     } catch (error) {
+      console.error('保存用户资料失败:', error);
       message.error('保存失败，请重试');
     } finally {
       setLoading(false);
@@ -122,9 +151,51 @@ function Profile() {
   };
 
   const handlePrivacyChange = async (key, value) => {
-    const updatedData = { ...userData, [key]: value };
-    setUserData(updatedData);
-    message.success('隐私设置已更新');
+    try {
+      // 更新本地状态
+      const updatedData = { ...userData, [key]: value };
+      setUserData(updatedData);
+      
+      // 准备发送到后端的数据，只发送必要的字段
+      const updateData = {
+        username: updatedData.username || user?.username,
+        nickname: updatedData.nickname || user?.nickname,
+        avatar: updatedData.avatar || user?.avatar || "default_avatar.png",
+        gender: updatedData.gender || user?.gender,
+        birthday: updatedData.birthday || user?.birthday,
+        location: updatedData.location || user?.location,
+        telephone: updatedData.phone || user?.telephone,
+        bio: updatedData.bio || user?.bio,
+        tags: (() => {
+          if (Array.isArray(updatedData.tags)) {
+            return updatedData.tags.join(',');
+          } else if (typeof updatedData.tags === 'string') {
+            return updatedData.tags;
+          } else {
+            return '';
+          }
+        })(),
+        profileVisibility: updatedData.profileVisibility,
+      };
+      
+      console.log('发送到后端的数据:', updateData); // 添加调试日志
+      console.log('profileVisibility 值:', updateData.profileVisibility);
+      console.log('tags 类型:', typeof updateData.tags, '值:', updateData.tags);
+      
+      // 调用后端API保存到数据库
+      const response = await updateUserProfile(updateData);
+      console.log('后端响应:', response);
+      
+      // 更新用户上下文
+      await updateUser(updatedData);
+      
+      message.success('隐私设置已更新并保存');
+    } catch (error) {
+      console.error('保存隐私设置失败:', error);
+      message.error('保存失败，请重试: ' + error.message);
+      // 回滚本地状态
+      setUserData(userData);
+    }
   };
 
   const getUserAvatar = () => {
@@ -374,4 +445,4 @@ function Profile() {
   );
 }
 
-export default Profile; 
+export default Profile;

@@ -11,7 +11,7 @@ export const loginUser = async (email, password) => {
   try {
     // 调用后端登录API
     // 后端会在登录成功后自动设置HttpOnly Cookie
-    const response = await post('/auth/login', { email, password });
+    const response = await post('/user/login', { email, password });
     
     return {
       success: true,
@@ -60,7 +60,7 @@ export const logout = async () => {
   try {
     // 调用后端登出API
     // 后端会清除HttpOnly Cookie
-    await post('/auth/logout', {});
+    await post('/user/logout', {});
     
     return {
       success: true,
@@ -82,7 +82,7 @@ export const logout = async () => {
  */
 export const checkEmailAvailability = async (email) => {
   try {
-    const response = await post('/auth/check-email', { email });
+    const response = await post('/user/check-email', { email });
     return {
       success: true,
       available: response.available
@@ -102,7 +102,7 @@ export const checkEmailAvailability = async (email) => {
  */
 export const checkUsernameAvailability = async (username) => {
   try {
-    const response = await post('/auth/check-username', { username });
+    const response = await post('/user/check-username', { username });
     return {
       success: true,
       available: response.available

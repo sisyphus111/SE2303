@@ -11,6 +11,7 @@ import {
 import { useUser } from '../lib/UserContext';
 import { loginUser } from '../service/authService';
 import '../css/Login.css';
+import { Result } from 'antd';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -101,18 +102,18 @@ const Login = () => {
 
     try {
       // 调用认证服务进行登录
-      const result = await loginUser(formData.email, formData.password);
+      const result_userProfile = await loginUser(formData.email, formData.password);
       
-      if (result.success) {
+      if (result_userProfile.success) {
         // 登录成功，后端已设置Cookie，直接使用返回的用户数据
-        console.log('✅ 登录成功，设置用户信息:', result);
+        console.log('✅ 登录成功，设置用户信息:', result_userProfile);
         
         // 直接设置用户数据
-        if (result.user) {
+        if (result_userProfile) {
           setUserData(
-            result.user, 
+            result_userProfile, 
             { identity: true, valid: true }, // 登录成功的用户默认已认证且有效
-            result.preferences || {}
+            {}
           );
         }
         
@@ -122,7 +123,7 @@ const Login = () => {
         navigate(redirectPath, { replace: true });
       } else {
         // 登录失败，显示错误信息
-        setFormErrors({ submit: result.error || '登录失败，请检查邮箱和密码' });
+        setFormErrors({ submit: result_userProfile.error || '登录失败，请检查邮箱和密码' });
       }
     } catch (error) {
       console.error('登录出错:', error);

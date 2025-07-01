@@ -16,7 +16,7 @@ import '../css/Login.css';
 
 const Register = () => {
   const navigate = useNavigate();
-  const { setUser, isAuthenticated, loading, error} = useUser();
+  const { setUserData, isAuthenticated, loading, error} = useUser();
 
   const [formData, setFormData] = useState({
     username: '',
@@ -135,23 +135,35 @@ const Register = () => {
 
     try {
       // 调用注册API
-      const result = await registerUser({
-        virtualId: formData.email,
+      const userData = {
+        virtualId: formData.email, // 使用邮箱作为虚拟ID
         username: formData.username,
+        nickname: formData.nickname,
         email: formData.email,
-        password: formData.password,
-        telephone: "138000000",
-        avatar: "1a32d13213"
-        // nickname: formData.nickname || formData.username,
-      });
+        password: formData.password, // 修正：使用正确的密码字段
+        // telephone: "", // 注册时无需手机号
+        // avatar: "default_avatar.png" // 使用默认头像
+      };
+      
+      console.log('📤 发送注册数据:', userData);
+      const result = await registerUser(userData);
       
       if (result.success) {
-        // 注册成功，设置用户信息到UserContext
-        setUser(result.user, result.preferences);
+        // 注册成功，后端已自动设置Cookie，直接使用返回的用户数据
+        console.log('✅ 注册成功，设置用户信息:', result);
+        
+        // 直接设置用户数据，不依赖Cookie重新获取
+        if (result.user) {
+          setUserData(
+            result.user, 
+            { identity: true, valid: true }, // 注册成功的用户默认已认证且有效
+            result.preferences || {}
+          );
+        }
         
         // 重定向到目标页面
         const redirectPath = getRedirectPath();
-        console.log('✅ 注册成功，重定向到:', redirectPath);
+        console.log('✅ 重定向到:', redirectPath);
         navigate(redirectPath, { replace: true });
       } else {
         // 注册失败，显示错误信息

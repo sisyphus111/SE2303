@@ -66,6 +66,8 @@ const isAuthPage = () => {
  * @throws {ApiError} 如果响应不成功
  */
 export const handleApiResponse = (response) => {
+  console.log('🔍 API响应处理:', response);
+  
   if (response.success) {
     return response.data;
   }
@@ -77,20 +79,24 @@ export const handleApiResponse = (response) => {
     if (isAuthPage()) {
       console.log('📝 当前在登录/注册页面，不进行重定向');
       // 在登录/注册页面，401错误是正常的，不进行重定向
-      return Promise.reject(new ApiError('未授权访问', 401));
+      throw new ApiError('未授权访问', 401);
     }
     
     // 不在认证页面，需要重定向到登录页面
-    console.log('🔄 重定向到登录页面');
+    console.log('🔄 准备重定向到登录页面');
     
-    // 保存当前完整路径（包括查询参数）用于登录后重定向
-    const currentPath = window.location.pathname + window.location.search;
-    const loginUrl = `/login?redirect=${encodeURIComponent(currentPath)}`;
+    // 延迟重定向，给组件一些时间处理错误状态
+    setTimeout(() => {
+      // 保存当前完整路径（包括查询参数）用于登录后重定向
+      const currentPath = window.location.pathname + window.location.search;
+      const loginUrl = `/login?redirect=${encodeURIComponent(currentPath)}`;
+      
+      console.log('🔄 重定向到:', loginUrl);
+      // 使用replace避免在浏览器历史中留下401错误页面
+      window.location.replace(loginUrl);
+    }, 100);
     
-    // 使用replace避免在浏览器历史中留下401错误页面
-    window.location.replace(loginUrl);
-    
-    return Promise.reject(new ApiError('未授权访问，正在重定向到登录页面', 401));
+    throw new ApiError('未授权访问，正在重定向到登录页面', 401);
   }
   
   throw new ApiError(

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { getUserStatus, getUserProfile, updateUserProfile, updateUserPreferences } from '../service/userService';
+import { getUserStatus, getUserProfile, updateUserProfile, getUserPreferences, updateUserPreferences } from '../service/userService';
 
 // Context
 const UserContext = createContext();
@@ -25,12 +25,7 @@ export const UserProvider = ({ children }) => {
   const [statusError, setStatusError] = useState(null);
 
   // ===== 用户偏好设置相关状态 =====
-  const [preferences, setPreferences] = useState({
-    theme: 'light',
-    language: 'zh-CN',
-    notifications: true,
-    soundEnabled: true,
-  }); // 这里的初始默认数据需要修改
+  const [preferences, setPreferences] = useState({}); // 空对象，等待从后端加载
   const [preferencesLoading, setPreferencesLoading] = useState(false);
   const [preferencesError, setPreferencesError] = useState(null);
 
@@ -51,16 +46,27 @@ export const UserProvider = ({ children }) => {
         const [userProfileData, userStatusData, userPreferencesData] = await Promise.allSettled([
           getUserProfile(),
           getUserStatus(),
-          // getUserPreferences() // 等待yyf完成此函数
+          getUserPreferences() // 现在调用真实的API
         ]);
 
         // 处理用户个人资料
         if (userProfileData.status === 'fulfilled' && userProfileData.value) {
-          setUserProfile(userProfileData.value);
-          setProfileError(null);
+          // getUserProfile返回的是 {user: ..., preferences: ...} 结构
+          if (userProfileData.value.user) {
+            setUserProfile(userProfileData.value.user);
+            setProfileError(null);
+            console.log('✅ 用户个人资料加载成功:', userProfileData.value.user);
+          } else {
+            console.log('⚠️ getUserProfile返回数据中没有user字段');
+            setUserProfile(null);
+          }
         } else if (userProfileData.status === 'rejected') {
           console.error('获取用户个人资料失败:', userProfileData.reason);
-          setProfileError('获取用户个人资料失败');
+          // 如果是401错误，不设置为error状态，让ErrorHandler处理重定向
+          if (userProfileData.reason?.errorCode !== 401) {
+            setProfileError('获取用户个人资料失败');
+          }
+          setUserProfile(null);
         }
 
         // 处理用户状态
@@ -68,19 +74,30 @@ export const UserProvider = ({ children }) => {
           setIdentity(userStatusData.value.identity);
           setValid(userStatusData.value.valid);
           setStatusError(null);
+          console.log('✅ 用户状态加载成功:', userStatusData.value);
         } else if (userStatusData.status === 'rejected') {
           console.error('获取用户状态失败:', userStatusData.reason);
-          setStatusError('获取用户状态失败');
+          // 如果是401错误，不设置为error状态，让ErrorHandler处理重定向
+          if (userStatusData.reason?.errorCode !== 401) {
+            setStatusError('获取用户状态失败');
+          }
+          setIdentity(null);
+          setValid(null);
         }
 
         // 处理用户偏好设置
-        // if (userPreferencesData.status === 'fulfilled' && userPreferencesData.value) {
-        //   setPreferences(prev => ({ ...prev, ...userPreferencesData.value }));
-        //   setPreferencesError(null);
-        // } else if (userPreferencesData.status === 'rejected') {
-        //   console.error('获取用户偏好设置失败:', userPreferencesData.reason);
-        //   setPreferencesError('获取用户偏好设置失败');
-        // }
+        if (userPreferencesData.status === 'fulfilled' && userPreferencesData.value) {
+          console.log('🔍 UserContext: 原始后端返回的偏好数据:', userPreferencesData.value);
+          // 直接设置完整的偏好数据，不要合并旧的默认值
+          setPreferences(userPreferencesData.value);
+          setPreferencesError(null);
+          console.log('✅ 用户偏好设置加载成功:', userPreferencesData.value);
+        } else if (userPreferencesData.status === 'rejected') {
+          console.error('获取用户偏好设置失败:', userPreferencesData.reason);
+          if (userPreferencesData.reason?.errorCode !== 401) {
+            setPreferencesError('获取用户偏好设置失败');
+          }
+        }
 
         setError(null);
         setLoading(false);
@@ -110,8 +127,10 @@ export const UserProvider = ({ children }) => {
       setProfileError(null);
       
       const updatedProfile = await updateUserProfile(updates);
+      // updateUserProfile返回的是用户对象，直接使用
       setUserProfile(prev => ({ ...prev, ...updatedProfile }));
       
+      console.log('✅ 用户资料更新成功:', updatedProfile);
       return { success: true, data: updatedProfile };
     } catch (error) {
       console.error('更新用户个人资料失败:', error);
@@ -141,17 +160,41 @@ export const UserProvider = ({ children }) => {
 
 
   // ===== 用户偏好设置相关方法 =====
-  const updateUserPrefs = useCallback(async (newPreferences) => {
+  const updateUserPrefs = useCallback(async (newPreferences, onlyUpdateSpecifiedFields = true) => {
     try {
+      console.log('🔄 UserContext.updateUserPrefs被调用，参数:', newPreferences);
+      console.log('🔄 onlyUpdateSpecifiedFields:', onlyUpdateSpecifiedFields);
       setPreferencesLoading(true);
       setPreferencesError(null);
       
+      console.log('🚀 调用updateUserPreferences service...');
       const updatedPreferences = await updateUserPreferences(newPreferences);
-      setPreferences(prev => ({ ...prev, ...updatedPreferences }));
+      console.log('📥 updateUserPreferences service返回:', updatedPreferences);
       
-      return { success: true, data: updatedPreferences };
+      if (onlyUpdateSpecifiedFields) {
+        // 只更新发送的字段，避免覆盖其他字段
+        const fieldsToUpdate = {};
+        Object.keys(newPreferences).forEach(key => {
+          if (updatedPreferences.hasOwnProperty(key)) {
+            fieldsToUpdate[key] = updatedPreferences[key];
+          }
+        });
+        console.log('🔄 UserContext: 只更新指定字段:', fieldsToUpdate);
+        setPreferences(prev => ({ ...prev, ...fieldsToUpdate }));
+        
+        const result = { success: true, data: updatedPreferences };
+        console.log('✅ UserContext.updateUserPrefs返回结果:', result);
+        return result;
+      } else {
+        // 使用完整数据更新（向后兼容）
+        setPreferences(prev => ({ ...prev, ...updatedPreferences }));
+        
+        const result = { success: true, data: updatedPreferences };
+        console.log('✅ UserContext.updateUserPrefs返回结果:', result);
+        return result;
+      }
     } catch (error) {
-      console.error('更新偏好设置失败:', error);
+      console.error('❌ UserContext.updateUserPrefs失败:', error);
       setPreferencesError('更新偏好设置失败');
       return { success: false, error: error.message };
     } finally {
@@ -191,11 +234,93 @@ export const UserProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
+  // ===== 清除用户数据方法 =====
+  const clearUser = useCallback(() => {
+    setUserProfile(null);
+    setIdentity(null);
+    setValid(null);
+    setPreferences({
+      theme: 'light',
+      language: 'zh-CN',
+      notifications: true,
+      soundEnabled: true,
+    });
+    setError(null);
+    setProfileError(null);
+    setStatusError(null);
+    setPreferencesError(null);
+    setLoading(false);
+    console.log('🧹 用户数据已清除');
+  }, []);
+
+  // ===== 刷新用户信息方法 =====
+  const refreshUserInfo = useCallback(async () => {
+    try {
+      console.log('🔄 刷新用户信息...');
+      setLoading(true);
+      
+      // 并行获取用户数据
+      const [userProfileData, userStatusData, userPreferencesData] = await Promise.allSettled([
+        getUserProfile(),
+        getUserStatus(),
+        getUserPreferences(),
+      ]);
+
+      // 处理用户个人资料
+      if (userProfileData.status === 'fulfilled' && userProfileData.value) {
+        if (userProfileData.value.user) {
+          setUserProfile(userProfileData.value.user);
+          setProfileError(null);
+          console.log('✅ 用户个人资料刷新成功:', userProfileData.value.user);
+        }
+      } else if (userProfileData.status === 'rejected') {
+        console.error('刷新用户个人资料失败:', userProfileData.reason);
+        if (userProfileData.reason?.errorCode !== 401) {
+          setProfileError('刷新用户个人资料失败');
+        }
+        setUserProfile(null);
+      }
+
+      // 处理用户状态
+      if (userStatusData.status === 'fulfilled' && userStatusData.value) {
+        setIdentity(userStatusData.value.identity);
+        setValid(userStatusData.value.valid);
+        setStatusError(null);
+        console.log('✅ 用户状态刷新成功:', userStatusData.value);
+      } else if (userStatusData.status === 'rejected') {
+        console.error('刷新用户状态失败:', userStatusData.reason);
+        if (userStatusData.reason?.errorCode !== 401) {
+          setStatusError('刷新用户状态失败');
+        }
+        setIdentity(null);
+        setValid(null);
+      }
+
+      // 处理用户偏好设置
+      if (userPreferencesData.status === 'fulfilled' && userPreferencesData.value) {
+        setPreferences(prev => ({ ...prev, ...userPreferencesData.value }));
+        setPreferencesError(null);
+        console.log('✅ 用户偏好设置刷新成功:', userPreferencesData.value);
+      } else if (userPreferencesData.status === 'rejected') {
+        console.error('刷新用户偏好设置失败:', userPreferencesData.reason);
+        if (userPreferencesData.reason?.errorCode !== 401) {
+          setPreferencesError('刷新用户偏好设置失败');
+        }
+      }
+
+      setError(null);
+    } catch (error) {
+      console.error('刷新用户信息时出错:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   // ===== 提供给子组件的值 =====
   const value = {
     // 状态数据
     userProfile,
+    user: userProfile, // 为了兼容Layout组件，user字段指向userProfile
     identity,
     valid,
     preferences,
@@ -217,13 +342,18 @@ export const UserProvider = ({ children }) => {
     updateUserProfile: updateUserProfileData,
     getUserAvatar,
     getUserDisplayName,
+    clearUser,
+    refreshUserInfo,
     
     // 用户偏好设置相关方法
     updateUserPrefs,
     resetUserPreferences,
+    setPreferences, // 添加setPreferences方法
     
     // 全局用户管理方法
     setUserData,
+    setUser: setUserData, // 为了兼容Register组件，setUser指向setUserData
+    clearUser,
   };
 
   return (
@@ -242,4 +372,4 @@ export const useUser = () => {
   return context;
 };
 
-export default UserContext; 
+export default UserContext;

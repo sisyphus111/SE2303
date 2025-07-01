@@ -1,5 +1,5 @@
 // 社区相关API服务
-import { request } from './apiUtils';
+import { get, post, put, del } from './common';
 
 /**
  * 获取帖子列表
@@ -14,7 +14,7 @@ import { request } from './apiUtils';
  */
 export const getPostList = async (params = {}) => {
   const queryString = new URLSearchParams(params).toString();
-  return request(`/posts?${queryString}`);
+  return get(`/community/posts?${queryString}`);
 };
 
 /**
@@ -35,10 +35,7 @@ export const getPostList = async (params = {}) => {
  * @returns {Promise<Object>} 创建的帖子
  */
 export const createPost = async (postData) => {
-  return request('/posts', {
-    method: 'POST',
-    body: JSON.stringify(postData),
-  });
+  return post('/community/posts', postData);
 };
 
 /**
@@ -47,7 +44,7 @@ export const createPost = async (postData) => {
  * @returns {Promise<Object>} 帖子详情
  */
 export const getPostDetail = async (postId) => {
-  return request(`/posts/${postId}`);
+  return get(`/community/posts/${postId}`);
 };
 
 /**
@@ -57,10 +54,7 @@ export const getPostDetail = async (postId) => {
  * @returns {Promise<Object>} 更新结果
  */
 export const updatePost = async (postId, postData) => {
-  return request(`/posts/${postId}`, {
-    method: 'PUT',
-    body: JSON.stringify(postData),
-  });
+  return put(`/community/posts/${postId}`, postData);
 };
 
 /**
@@ -69,9 +63,7 @@ export const updatePost = async (postId, postData) => {
  * @returns {Promise<Object>} 删除结果
  */
 export const deletePost = async (postId) => {
-  return request(`/posts/${postId}`, {
-    method: 'DELETE',
-  });
+  return del(`/community/posts/${postId}`);
 };
 
 /**
@@ -80,9 +72,7 @@ export const deletePost = async (postId) => {
  * @returns {Promise<Object>} 操作结果
  */
 export const togglePostLike = async (postId) => {
-  return request(`/posts/${postId}/like`, {
-    method: 'POST',
-  });
+  return post(`/community/posts/${postId}/like`, {});
 };
 
 /**

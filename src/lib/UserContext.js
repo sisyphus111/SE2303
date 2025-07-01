@@ -56,11 +56,22 @@ export const UserProvider = ({ children }) => {
 
         // 处理用户个人资料
         if (userProfileData.status === 'fulfilled' && userProfileData.value) {
-          setUserProfile(userProfileData.value);
-          setProfileError(null);
+          // getUserProfile返回的是 {user: ..., preferences: ...} 结构
+          if (userProfileData.value.user) {
+            setUserProfile(userProfileData.value.user);
+            setProfileError(null);
+            console.log('✅ 用户个人资料加载成功:', userProfileData.value.user);
+          } else {
+            console.log('⚠️ getUserProfile返回数据中没有user字段');
+            setUserProfile(null);
+          }
         } else if (userProfileData.status === 'rejected') {
           console.error('获取用户个人资料失败:', userProfileData.reason);
-          setProfileError('获取用户个人资料失败');
+          // 如果是401错误，不设置为error状态，让ErrorHandler处理重定向
+          if (userProfileData.reason?.errorCode !== 401) {
+            setProfileError('获取用户个人资料失败');
+          }
+          setUserProfile(null);
         }
 
         // 处理用户状态
@@ -68,9 +79,15 @@ export const UserProvider = ({ children }) => {
           setIdentity(userStatusData.value.identity);
           setValid(userStatusData.value.valid);
           setStatusError(null);
+          console.log('✅ 用户状态加载成功:', userStatusData.value);
         } else if (userStatusData.status === 'rejected') {
           console.error('获取用户状态失败:', userStatusData.reason);
-          setStatusError('获取用户状态失败');
+          // 如果是401错误，不设置为error状态，让ErrorHandler处理重定向
+          if (userStatusData.reason?.errorCode !== 401) {
+            setStatusError('获取用户状态失败');
+          }
+          setIdentity(null);
+          setValid(null);
         }
 
         // 处理用户偏好设置
@@ -110,8 +127,10 @@ export const UserProvider = ({ children }) => {
       setProfileError(null);
       
       const updatedProfile = await updateUserProfile(updates);
+      // updateUserProfile返回的是用户对象，直接使用
       setUserProfile(prev => ({ ...prev, ...updatedProfile }));
       
+      console.log('✅ 用户资料更新成功:', updatedProfile);
       return { success: true, data: updatedProfile };
     } catch (error) {
       console.error('更新用户个人资料失败:', error);
@@ -191,11 +210,80 @@ export const UserProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
+  // ===== 清除用户数据方法 =====
+  const clearUser = useCallback(() => {
+    setUserProfile(null);
+    setIdentity(null);
+    setValid(null);
+    setPreferences({
+      theme: 'light',
+      language: 'zh-CN',
+      notifications: true,
+      soundEnabled: true,
+    });
+    setError(null);
+    setProfileError(null);
+    setStatusError(null);
+    setPreferencesError(null);
+    setLoading(false);
+    console.log('🧹 用户数据已清除');
+  }, []);
+
+  // ===== 刷新用户信息方法 =====
+  const refreshUserInfo = useCallback(async () => {
+    try {
+      console.log('🔄 刷新用户信息...');
+      setLoading(true);
+      
+      // 并行获取用户数据
+      const [userProfileData, userStatusData] = await Promise.allSettled([
+        getUserProfile(),
+        getUserStatus(),
+      ]);
+
+      // 处理用户个人资料
+      if (userProfileData.status === 'fulfilled' && userProfileData.value) {
+        if (userProfileData.value.user) {
+          setUserProfile(userProfileData.value.user);
+          setProfileError(null);
+          console.log('✅ 用户个人资料刷新成功:', userProfileData.value.user);
+        }
+      } else if (userProfileData.status === 'rejected') {
+        console.error('刷新用户个人资料失败:', userProfileData.reason);
+        if (userProfileData.reason?.errorCode !== 401) {
+          setProfileError('刷新用户个人资料失败');
+        }
+        setUserProfile(null);
+      }
+
+      // 处理用户状态
+      if (userStatusData.status === 'fulfilled' && userStatusData.value) {
+        setIdentity(userStatusData.value.identity);
+        setValid(userStatusData.value.valid);
+        setStatusError(null);
+        console.log('✅ 用户状态刷新成功:', userStatusData.value);
+      } else if (userStatusData.status === 'rejected') {
+        console.error('刷新用户状态失败:', userStatusData.reason);
+        if (userStatusData.reason?.errorCode !== 401) {
+          setStatusError('刷新用户状态失败');
+        }
+        setIdentity(null);
+        setValid(null);
+      }
+
+      setError(null);
+    } catch (error) {
+      console.error('刷新用户信息时出错:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   // ===== 提供给子组件的值 =====
   const value = {
     // 状态数据
     userProfile,
+    user: userProfile, // 为了兼容Layout组件，user字段指向userProfile
     identity,
     valid,
     preferences,
@@ -217,6 +305,8 @@ export const UserProvider = ({ children }) => {
     updateUserProfile: updateUserProfileData,
     getUserAvatar,
     getUserDisplayName,
+    clearUser,
+    refreshUserInfo,
     
     // 用户偏好设置相关方法
     updateUserPrefs,
@@ -224,6 +314,8 @@ export const UserProvider = ({ children }) => {
     
     // 全局用户管理方法
     setUserData,
+    setUser: setUserData, // 为了兼容Register组件，setUser指向setUserData
+    clearUser,
   };
 
   return (
@@ -242,4 +334,4 @@ export const useUser = () => {
   return context;
 };
 
-export default UserContext; 
+export default UserContext;

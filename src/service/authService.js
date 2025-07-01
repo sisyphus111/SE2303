@@ -15,8 +15,8 @@ export const loginUser = async (email, password) => {
     
     return {
       success: true,
-      user: response.user,
-      preferences: response.preferences || {}
+      user: response.data?.user || response.user, // 兼容不同的响应格式
+      preferences: response.data?.preferences || response.preferences || {}
     };
   } catch (error) {
     console.error('登录请求失败:', error);

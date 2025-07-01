@@ -27,7 +27,6 @@ import {
   CameraOutlined
 } from '@ant-design/icons';
 import { useUser } from '../lib/UserContext';
-import { updateUserProfile } from '../service/userService';
 import "../css/Profile.css";
 
 const { Title, Text } = Typography;
@@ -35,26 +34,32 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 function Profile() {
-  const { user, updateUser, isAuthenticated } = useUser();
+  const { 
+    userProfile, 
+    updateUserProfile: updateUserProfileData, 
+    isAuthenticated, 
+    profileLoading,
+    profileError 
+  } = useUser();
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
   const [form] = Form.useForm();
 
   // 初始化表单数据
   const [userData, setUserData] = useState({
-    username: user?.username || '张三',
-    email: user?.email || 'zhangsan@example.com',
-    nickname: user?.nickname || '张三',
-    phone: '10000000000',
-    gender: '男',
-    birthday: '1998-05-15',
-    location: '北京市',
-    bio: '在校园心理社区寻找内心的平静与成长',
-    avatar: user?.avatar || null,
-    tags: ['积极', '乐观', '善于倾听'],
+    username: userProfile?.username || '',
+    email: userProfile?.email || '',
+    nickname: userProfile?.nickname || '',
+    phone: userProfile?.telephone || '',
+    gender: userProfile?.gender || '男',
+    birthday: userProfile?.birthday || '',
+    location: userProfile?.location || '',
+    bio: userProfile?.bio || '',
+    avatar: userProfile?.avatar || null,
+    tags: userProfile?.tags ? (typeof userProfile.tags === 'string' ? userProfile.tags.split(',') : userProfile.tags) : [],
     
     // 隐私设置
-    profileVisibility: 'public',
+    profileVisibility: userProfile?.profileVisibility || 'public',
     showOnlineStatus: true,
     allowDirectMessage: true,
     showEmail: false,
@@ -73,20 +78,20 @@ function Profile() {
   ];
 
   useEffect(() => {
-    if (user) {
+    if (userProfile) {
       const updatedData = {
         ...userData,
-        username: user.username || userData.username,
-        email: user.email || userData.email,
-        nickname: user.nickname || userData.nickname,
-        phone: user.telephone || userData.phone, // 后端是telephone，前端是phone
-        avatar: user.avatar || userData.avatar,
-        gender: user.gender || userData.gender,
-        birthday: user.birthday || userData.birthday,
-        location: user.location || userData.location,
-        bio: user.bio || userData.bio,
-        tags: user.tags ? (typeof user.tags === 'string' ? user.tags.split(',') : user.tags) : userData.tags,
-        profileVisibility: user.profileVisibility || userData.profileVisibility,
+        username: userProfile.username || userData.username,
+        email: userProfile.email || userData.email,
+        nickname: userProfile.nickname || userData.nickname,
+        phone: userProfile.telephone || userData.phone, // 后端是telephone，前端是phone
+        avatar: userProfile.avatar || userData.avatar,
+        gender: userProfile.gender || userData.gender,
+        birthday: userProfile.birthday || userData.birthday,
+        location: userProfile.location || userData.location,
+        bio: userProfile.bio || userData.bio,
+        tags: userProfile.tags ? (typeof userProfile.tags === 'string' ? userProfile.tags.split(',') : userProfile.tags) : userData.tags,
+        profileVisibility: userProfile.profileVisibility || userData.profileVisibility,
         showOnlineStatus: userData.showOnlineStatus,
         allowDirectMessage: userData.allowDirectMessage,
         showEmail: userData.showEmail,
@@ -95,7 +100,7 @@ function Profile() {
       setUserData(updatedData);
       form.setFieldsValue(updatedData);
     }
-  }, [user]);
+  }, [userProfile]);
 
   const handleSave = async (values) => {
     setLoading(true);
@@ -108,6 +113,7 @@ function Profile() {
         username: values.username,
         nickname: values.nickname,
         avatar: userData.avatar, // 头像从当前状态获取
+        email: values.email, // 添加邮箱字段
         gender: values.gender,
         birthday: values.birthday,
         location: values.location,
@@ -118,18 +124,21 @@ function Profile() {
         // userStatus字段通常不由用户直接修改，由管理员控制
       };
       
-      // 调用后端API更新用户信息
-      const response = await updateUserProfile(updateData);
+      console.log('准备发送到后端的数据:', updateData);
       
-      // 更新本地状态
-      const updatedData = { ...userData, ...values };
-      setUserData(updatedData);
+      // 使用UserContext的updateUserProfile方法
+      const result = await updateUserProfileData(updateData);
       
-      // 更新用户上下文
-      await updateUser(response);
-      
-      message.success('个人资料保存成功！');
-      setEditing(false);
+      if (result.success) {
+        // 更新本地状态
+        const updatedData = { ...userData, ...values };
+        setUserData(updatedData);
+        
+        message.success('个人资料保存成功！');
+        setEditing(false);
+      } else {
+        message.error(result.error || '保存失败，请重试');
+      }
     } catch (error) {
       console.error('保存用户资料失败:', error);
       message.error('保存失败，请重试');
@@ -144,7 +153,8 @@ function Profile() {
       reader.onload = e => {
         const newAvatar = e.target.result;
         setUserData(prev => ({ ...prev, avatar: newAvatar }));
-        updateUser({ avatar: newAvatar });
+        // 使用UserContext的updateUserProfile更新头像
+        updateUserProfileData({ avatar: newAvatar });
       };
       reader.readAsDataURL(info.file.originFileObj);
     }
@@ -158,14 +168,15 @@ function Profile() {
       
       // 准备发送到后端的数据，只发送必要的字段
       const updateData = {
-        username: updatedData.username || user?.username,
-        nickname: updatedData.nickname || user?.nickname,
-        avatar: updatedData.avatar || user?.avatar || "default_avatar.png",
-        gender: updatedData.gender || user?.gender,
-        birthday: updatedData.birthday || user?.birthday,
-        location: updatedData.location || user?.location,
-        telephone: updatedData.phone || user?.telephone,
-        bio: updatedData.bio || user?.bio,
+        username: updatedData.username || userProfile?.username,
+        nickname: updatedData.nickname || userProfile?.nickname,
+        avatar: updatedData.avatar || userProfile?.avatar || "default_avatar.png",
+        email: updatedData.email || userProfile?.email, // 添加邮箱字段
+        gender: updatedData.gender || userProfile?.gender,
+        birthday: updatedData.birthday || userProfile?.birthday,
+        location: updatedData.location || userProfile?.location,
+        telephone: updatedData.phone || userProfile?.telephone,
+        bio: updatedData.bio || userProfile?.bio,
         tags: (() => {
           if (Array.isArray(updatedData.tags)) {
             return updatedData.tags.join(',');
@@ -182,14 +193,17 @@ function Profile() {
       console.log('profileVisibility 值:', updateData.profileVisibility);
       console.log('tags 类型:', typeof updateData.tags, '值:', updateData.tags);
       
-      // 调用后端API保存到数据库
-      const response = await updateUserProfile(updateData);
-      console.log('后端响应:', response);
+      // 使用UserContext的updateUserProfile方法
+      const result = await updateUserProfileData(updateData);
+      console.log('后端响应:', result);
       
-      // 更新用户上下文
-      await updateUser(updatedData);
-      
-      message.success('隐私设置已更新并保存');
+      if (result.success) {
+        message.success('隐私设置已更新并保存');
+      } else {
+        message.error(result.error || '保存失败，请重试');
+        // 回滚本地状态
+        setUserData(userData);
+      }
     } catch (error) {
       console.error('保存隐私设置失败:', error);
       message.error('保存失败，请重试: ' + error.message);
@@ -205,6 +219,29 @@ function Profile() {
     const username = userData.username || userData.email || 'User';
     return username.charAt(0).toUpperCase();
   };
+
+  // 显示加载状态
+  if (profileLoading && !userProfile) {
+    return (
+      <div className="profile-page">
+        <div className="profile-container" style={{ textAlign: 'center', padding: '50px' }}>
+          <div>加载用户信息中...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // 显示错误状态
+  if (profileError) {
+    return (
+      <div className="profile-page">
+        <div className="profile-container" style={{ textAlign: 'center', padding: '50px' }}>
+          <div>加载用户信息失败: {profileError}</div>
+          <Button onClick={() => window.location.reload()}>重新加载</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-page">
@@ -425,11 +462,11 @@ function Profile() {
                 <div className="account-info">
                   <div className="info-item">
                     <Text type="secondary">注册时间</Text>
-                    <Text>{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : '2024-01-01'}</Text>
+                    <Text>{userProfile?.registrationDate ? new Date(userProfile.registrationDate).toLocaleDateString() : '2025-07-01'}</Text>
                   </div>
                   <div className="info-item">
                     <Text type="secondary">用户ID</Text>
-                    <Text>{user?.id || 'demo-user'}</Text>
+                    <Text>{userProfile?.id || userProfile?.virtualId || 'demo-user'}</Text>
                   </div>
                   <div className="info-item">
                     <Text type="secondary">账户状态</Text>

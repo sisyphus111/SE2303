@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { getUserProfile, updateUserProfile, updateUserPreferences } from '../service/userService';
+import { getUserStatus, getUserProfile, updateUserProfile, updateUserPreferences } from '../service/userService';
 
 // Context
 const UserContext = createContext();
@@ -12,19 +12,16 @@ const isAuthPage = () => {
 
 // Provider Component
 export const UserProvider = ({ children }) => {
-  // 使用简单的useState管理状态
-  const [user, setUser] = useState(null);
-  const [preferences, setPreferences] = useState({
-    theme: 'light',
-    language: 'zh-CN',
-    notifications: true,
-    soundEnabled: true,
-  });
+
+  // 使用useState管理用户状态（个人资料、偏好设置、身份信息、验证状态）
+  const [userProfile, setUserProfile] = useState(null);
+  const [preferences, setPreferences] = useState(null);
+  const [identity, setIdentity] = useState(null);
+  const [valid, setValid] = useState(null);
+
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // 计算是否已登录
-  const isAuthenticated = !!user;
 
   // 初始化用户信息
   useEffect(() => {
@@ -32,22 +29,24 @@ export const UserProvider = ({ children }) => {
       try {
         setLoading(true);
         
-        // 尝试从后端获取用户信息
+        // 尝试从后端获取用户个人资料，用户账号类型、状态信息
         const userProfile = await getUserProfile();
-        
-        if (userProfile) {
+        const userStatus = await getUserStatus();
+        const userPreferences = await getUserPreferences(); // 这个函数由UserService——yyf来完成
+      
+        if (userProfile && userStatus && userPreferences) {
           // 有用户信息，设置登录状态
-          setUser(userProfile.user);
-          setPreferences(prev => ({ ...prev, ...userProfile.preferences }));
+          setUserProfile(userProfile);
+          setPreferences(userPreferences);
+          setIdentity(userStatus.identity);
+          setValid(userStatus.valid);
           setError(null);
         }
         
         setLoading(false);
       } catch (error) {
+
         console.error('初始化用户信息时出错:', error);
-        
-        // 🔑 简化错误处理：让ErrorHandler统一处理401重定向
-        // 只有在非401错误且非登录/注册页面时才显示错误信息
         const isAuth401Error = error.status === 401 || 
                                error.message?.includes('401') || 
                                error.message?.includes('未授权');
@@ -66,6 +65,10 @@ export const UserProvider = ({ children }) => {
 
     initializeUser();
   }, []);
+
+
+
+
 
   // 设置用户信息（登录成功后调用）
   const setUserInfo = useCallback((userData, userPreferences = {}) => {
@@ -145,8 +148,10 @@ export const UserProvider = ({ children }) => {
   // 提供给子组件的值
   const value = {
     // 状态
-    user,
+    userProfile,
     preferences,
+    identity,
+    valid,
     loading,
     error,
     isAuthenticated,

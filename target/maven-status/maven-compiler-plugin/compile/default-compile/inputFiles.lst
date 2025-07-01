@@ -1,6 +1,0 @@
-/mnt/e/Codes/se2303-gateway/src/main/java/com/se2303/gateway/config/CorsConfig.java
-/mnt/e/Codes/se2303-gateway/src/main/java/com/se2303/gateway/GatewayApplication.java
-/mnt/e/Codes/se2303-gateway/src/main/java/com/se2303/gateway/filter/RequestHeaderFilter.java
-/mnt/e/Codes/se2303-gateway/src/main/java/com/se2303/gateway/util/JwtUtil.java
-/mnt/e/Codes/se2303-gateway/src/main/java/com/se2303/gateway/controller/GatewayController.java
-/mnt/e/Codes/se2303-gateway/src/main/java/com/se2303/gateway/filter/JwtAuthenticationFilter.java

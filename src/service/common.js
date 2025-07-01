@@ -42,6 +42,10 @@ export async function del(url, data) {
 }
 
 export async function post(url, data) {
+    const fullUrl = `${PREFIX}${url}`;
+    console.log(`🌐 POST请求: ${fullUrl}`);
+    console.log('📤 请求数据:', data);
+    
     let opts = {
         method: "POST",
         body: JSON.stringify(data),
@@ -50,8 +54,13 @@ export async function post(url, data) {
         },
         credentials: "include" // 包含cookie进行认证
     };
-    let res = await fetch(`${PREFIX}${url}`, opts);
+    
+    let res = await fetch(fullUrl, opts);
+    console.log(`📥 HTTP响应状态: ${res.status} ${res.statusText}`);
+    
     const response = await res.json();
+    console.log('📥 响应数据:', response);
+    
     return handleApiResponse(response);
 }
 

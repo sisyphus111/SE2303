@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Typography, 
   Tabs, 
@@ -10,7 +10,8 @@ import {
   Divider,
   Alert,
   Modal,
-  message
+  message,
+  Spin
 } from "antd";
 import {
   SettingOutlined,
@@ -25,6 +26,7 @@ import {
   EyeOutlined
 } from '@ant-design/icons';
 import { useUser } from '../lib/UserContext';
+import { getUserPreferences } from '../service/userService';
 import "../css/Settings.css";
 
 const { Title, Text } = Typography;
@@ -32,68 +34,216 @@ const { Option } = Select;
 const { confirm } = Modal;
 
 function Settings() {
-  const { user, updatePreferences } = useUser();
+  const { userProfile, preferences, updateUserPrefs, setPreferences, loading: userLoading } = useUser();
   const [activeTab, setActiveTab] = useState('notifications');
   const [loading, setLoading] = useState(false);
   const [settings, setSettings] = useState({
     // 通知设置
-    emailNotifications: true,
     pushNotifications: true,
+    emailNotifications: true,
     commentNotifications: true,
     likeNotifications: false,
-    mentionNotifications: true,
     systemNotifications: true,
     
     // 个人偏好
-    theme: 'light',
-    language: 'zh-CN',
-    fontSize: 'medium',
-    autoPlayMedia: false,
     soundEnabled: true,
+    showPostStats: true,
+    enablePostRecommendation: true,
+    blockSensitiveContent: true,
     
     // 心理健康设置
     crisisInterventionEnabled: true,
     moodTrackingEnabled: true,
     anonymousPosting: false,
-    mentalHealthDataSharing: false,
-    
-    // 社区交互设置
-    autoFollow: false,
-    showPostStats: true,
-    enablePostRecommendation: true,
-    blockSensitiveContent: true
+    mentalHealthDataSharing: false
   });
 
-  const handleSave = async (section, values) => {
-    setLoading(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      const updatedSettings = { ...settings, ...values };
-      setSettings(updatedSettings);
+  // 一次性同步 UserContext 中的偏好设置到本地 state，防止后续操作被覆盖
+  const [isInitialized, setIsInitialized] = useState(false);
+  useEffect(() => {
+    // 当preferences不为空且包含我们期望的字段时，进行同步
+    if (!isInitialized && preferences && typeof preferences === 'object') {
+      const hasExpectedFields = 'pushNotifications' in preferences || 
+                               'emailNotifications' in preferences || 
+                               'soundEnabled' in preferences;
       
-      // 更新用户偏好到上下文
-      if (section === 'preferences') {
-        await updatePreferences(values);
+      if (hasExpectedFields) {
+        console.log('📊 首次加载：同步偏好设置', preferences);
+        console.log('📊 preferences字段详情:', {
+          pushNotifications: preferences.pushNotifications,
+          emailNotifications: preferences.emailNotifications,
+          commentNotifications: preferences.commentNotifications,
+          likeNotifications: preferences.likeNotifications,
+          systemNotifications: preferences.systemNotifications,
+          soundEnabled: preferences.soundEnabled,
+          showPostStats: preferences.showPostStats,
+          enablePostRecommendation: preferences.enablePostRecommendation,
+          blockSensitiveContent: preferences.blockSensitiveContent,
+          crisisInterventionEnabled: preferences.crisisInterventionEnabled,
+          moodTrackingEnabled: preferences.moodTrackingEnabled,
+          anonymousPosting: preferences.anonymousPosting,
+          mentalHealthDataSharing: preferences.mentalHealthDataSharing
+        });
+        
+        // 直接使用从后端获取的真实数据，而不是与默认值合并
+        setSettings({
+          pushNotifications: preferences.pushNotifications ?? true,
+          emailNotifications: preferences.emailNotifications ?? true,
+          commentNotifications: preferences.commentNotifications ?? true,
+          likeNotifications: preferences.likeNotifications ?? false,
+          systemNotifications: preferences.systemNotifications ?? true,
+          soundEnabled: preferences.soundEnabled ?? true,
+          showPostStats: preferences.showPostStats ?? true,
+          enablePostRecommendation: preferences.enablePostRecommendation ?? true,
+          blockSensitiveContent: preferences.blockSensitiveContent ?? true,
+          crisisInterventionEnabled: preferences.crisisInterventionEnabled ?? true,
+          moodTrackingEnabled: preferences.moodTrackingEnabled ?? true,
+          anonymousPosting: preferences.anonymousPosting ?? false,
+          mentalHealthDataSharing: preferences.mentalHealthDataSharing ?? false
+        });
+        setIsInitialized(true);
+        console.log('✅ Settings状态已同步完成');
       }
+    }
+  }, [preferences, isInitialized]);
+
+  // 监听activeTab变化，但只在需要时同步数据
+  useEffect(() => {
+    if (isInitialized && preferences) {
+      console.log(`🔄 切换到${activeTab}标签页`);
+      // 不再自动同步数据，保持用户的本地更改
+      // 如果需要同步最新数据，用户可以使用"刷新"按钮
+    }
+  }, [activeTab, isInitialized]);
+
+  // 刷新偏好设置数据的方法
+  const refreshPreferences = async () => {
+    try {
+      setLoading(true);
+      console.log('🔄 手动刷新偏好设置数据...');
+      const freshPrefs = await getUserPreferences();
+      console.log('📥 从后端获取的最新偏好设置:', freshPrefs);
       
-      message.success('设置保存成功！');
+      // 更新UserContext中的preferences
+      setPreferences(freshPrefs);
+      
+      // 立即同步到本地settings
+      setSettings({
+        pushNotifications: freshPrefs.pushNotifications ?? true,
+        emailNotifications: freshPrefs.emailNotifications ?? true,
+        commentNotifications: freshPrefs.commentNotifications ?? true,
+        likeNotifications: freshPrefs.likeNotifications ?? false,
+        systemNotifications: freshPrefs.systemNotifications ?? true,
+        soundEnabled: freshPrefs.soundEnabled ?? true,
+        showPostStats: freshPrefs.showPostStats ?? true,
+        enablePostRecommendation: freshPrefs.enablePostRecommendation ?? true,
+        blockSensitiveContent: freshPrefs.blockSensitiveContent ?? true,
+        crisisInterventionEnabled: freshPrefs.crisisInterventionEnabled ?? true,
+        moodTrackingEnabled: freshPrefs.moodTrackingEnabled ?? true,
+        anonymousPosting: freshPrefs.anonymousPosting ?? false,
+        mentalHealthDataSharing: freshPrefs.mentalHealthDataSharing ?? false
+      });
+      
+      message.success('偏好设置已刷新');
     } catch (error) {
-      message.error('保存失败，请重试');
+      console.error('❌ 刷新偏好设置失败:', error);
+      message.error('刷新失败: ' + error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSettingChange = async (key, value) => {
-    const updatedSettings = { ...settings, [key]: value };
-    setSettings(updatedSettings);
-    
-    // 实时保存特定设置
-    if (['theme', 'language', 'soundEnabled'].includes(key)) {
-      await updatePreferences({ [key]: value });
+  const handleSave = async (section, updatedFields = null) => {
+    setLoading(true);
+    try {
+      console.log(`🔄 handleSave被调用，section=${section}，updatedFields=`, updatedFields);
+      console.log('当前settings状态:', settings);
+      
+      // 组装要保存的数据
+      let dataToSave = updatedFields;
+      if (!dataToSave) {
+        const map = {
+          notifications: ['pushNotifications','emailNotifications','commentNotifications','likeNotifications','systemNotifications'],
+          preferences: ['soundEnabled','showPostStats','enablePostRecommendation','blockSensitiveContent'],
+          mentalHealth: ['crisisInterventionEnabled','moodTrackingEnabled','anonymousPosting','mentalHealthDataSharing']
+        };
+        dataToSave = {};
+        map[section].forEach(key => { dataToSave[key] = settings[key]; });
+      }
+      console.log('📤 即将发送到后端的数据:', dataToSave);
+      
+      // 使用 Context 方法保存并获取后端返回的更新字段
+      console.log('🚀 开始调用updateUserPrefs...');
+      const result = await updateUserPrefs(dataToSave, true); // 第二个参数表示只更新指定字段
+      console.log('📥 updateUserPrefs返回结果:', result);
+      
+      if (result.success) {
+        const updatedPrefs = result.data;
+        console.log('✅ 保存成功，后端返回的完整数据:', updatedPrefs);
+        
+        // UserContext已经只更新了指定字段，这里只需要更新本地settings
+        setSettings(prev => ({ ...prev, ...dataToSave }));
+        
+        message.success('设置保存成功');
+      } else {
+        throw new Error(result.error || '保存失败');
+      }
+    } catch (error) {
+      console.error('❌ 保存失败:', error);
+      message.error('保存失败: ' + error.message);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  // 检查是否有未保存的更改
+  const hasUnsavedChanges = (section) => {
+    if (!preferences || !isInitialized) return false;
     
-    message.success('设置已更新');
+    const fieldMap = {
+      notifications: ['pushNotifications','emailNotifications','commentNotifications','likeNotifications','systemNotifications'],
+      preferences: ['soundEnabled','showPostStats','enablePostRecommendation','blockSensitiveContent'],
+      mentalHealth: ['crisisInterventionEnabled','moodTrackingEnabled','anonymousPosting','mentalHealthDataSharing']
+    };
+    
+    const fields = fieldMap[section] || [];
+    return fields.some(field => {
+      const currentValue = settings[field];
+      const originalValue = preferences[field];
+      return currentValue !== originalValue;
+    });
+  };
+
+  // 取消更改，恢复到保存的状态
+  const handleCancel = (section) => {
+    console.log(`🔄 取消${section}的更改，恢复到保存状态`);
+    
+    const fieldMap = {
+      notifications: ['pushNotifications','emailNotifications','commentNotifications','likeNotifications','systemNotifications'],
+      preferences: ['soundEnabled','showPostStats','enablePostRecommendation','blockSensitiveContent'],
+      mentalHealth: ['crisisInterventionEnabled','moodTrackingEnabled','anonymousPosting','mentalHealthDataSharing']
+    };
+    
+    const fields = fieldMap[section] || [];
+    setSettings(prev => {
+      const newSettings = { ...prev };
+      fields.forEach(field => {
+        newSettings[field] = preferences[field] ?? prev[field];
+      });
+      return newSettings;
+    });
+    
+    message.info('已取消更改');
+  };
+
+  const handleSettingChange = (key, value) => {
+    console.log(`🔧 设置变更: ${key} = ${value} (仅更新本地状态，不自动保存)`);
+    
+    // 只更新本地UI状态，不自动保存到后端
+    setSettings(prevSettings => ({
+      ...prevSettings,
+      [key]: value
+    }));
   };
 
   const handleDeleteAccount = () => {
@@ -201,14 +351,23 @@ function Settings() {
         </div>
       </div>
 
-      <Button 
-        type="primary" 
-        onClick={() => handleSave('notifications', settings)} 
-        loading={loading}
-        style={{ marginTop: 24 }}
-      >
-        保存通知设置
-      </Button>
+      <div style={{ display: 'flex', gap: '12px', marginTop: 24 }}>
+        <Button 
+          type="primary" 
+          onClick={() => handleSave('notifications')} 
+          loading={loading}
+          disabled={!hasUnsavedChanges('notifications')}
+        >
+          保存通知设置
+          {hasUnsavedChanges('notifications') && ' *'}
+        </Button>
+        
+        {hasUnsavedChanges('notifications') && (
+          <Button onClick={() => handleCancel('notifications')}>
+            取消更改
+          </Button>
+        )}
+      </div>
     </div>
   );
 
@@ -291,14 +450,23 @@ function Settings() {
         </div>
       </div>
 
-      <Button 
-        type="primary" 
-        onClick={() => handleSave('preferences', settings)} 
-        loading={loading}
-        style={{ marginTop: 24 }}
-      >
-        保存偏好设置
-      </Button>
+      <div style={{ display: 'flex', gap: '12px', marginTop: 24 }}>
+        <Button 
+          type="primary" 
+          onClick={() => handleSave('preferences')} 
+          loading={loading}
+          disabled={!hasUnsavedChanges('preferences')}
+        >
+          保存偏好设置
+          {hasUnsavedChanges('preferences') && ' *'}
+        </Button>
+        
+        {hasUnsavedChanges('preferences') && (
+          <Button onClick={() => handleCancel('preferences')}>
+            取消更改
+          </Button>
+        )}
+      </div>
     </div>
   );
 
@@ -379,14 +547,23 @@ function Settings() {
         </div>
       </div>
 
-      <Button 
-        type="primary" 
-        onClick={() => handleSave('mentalHealth', settings)} 
-        loading={loading} 
-        style={{ marginTop: 24 }}
-      >
-        保存心理健康设置
-      </Button>
+      <div style={{ display: 'flex', gap: '12px', marginTop: 24 }}>
+        <Button 
+          type="primary" 
+          onClick={() => handleSave('mentalHealth')} 
+          loading={loading}
+          disabled={!hasUnsavedChanges('mentalHealth')}
+        >
+          保存心理健康设置
+          {hasUnsavedChanges('mentalHealth') && ' *'}
+        </Button>
+        
+        {hasUnsavedChanges('mentalHealth') && (
+          <Button onClick={() => handleCancel('mentalHealth')}>
+            取消更改
+          </Button>
+        )}
+      </div>
     </div>
   );
 
@@ -441,7 +618,7 @@ function Settings() {
       children: <PreferenceSettings />
     },
     {
-      key: 'mental-health',
+      key: 'mentalHealth',
       label: (<span><HeartOutlined />心理健康</span>),
       children: <MentalHealthSettings />
     },
@@ -452,12 +629,35 @@ function Settings() {
     }
   ];
 
+  // 如果用户数据还在加载中，显示加载状态
+  if (userLoading) {
+    return (
+      <div className="settings-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+        <Spin size="large" tip="加载用户设置中..." />
+      </div>
+    );
+  }
+
   return (
     <div className="settings-page">
       <div className="settings-container">
         <div className="settings-header">
           <Title level={2} className="settings-title">系统设置</Title>
           <Text type="secondary" className="settings-subtitle">自定义您的使用体验和功能偏好</Text>
+          {userProfile && (
+            <Text type="secondary" style={{ marginLeft: 10 }}>
+              当前用户: {userProfile.username || userProfile.nickname}
+            </Text>
+          )}
+          <Button 
+            type="link" 
+            size="small" 
+            onClick={refreshPreferences}
+            loading={loading}
+            style={{ marginLeft: 10 }}
+          >
+            🔄 刷新数据
+          </Button>
         </div>
 
         <div className="settings-content">

@@ -142,16 +142,41 @@ export const updateUserProfile = async (updates) => {
 };
 
 /**
+ * 获取用户偏好设置
+ * @returns {Promise<Object>} 用户偏好设置
+ */
+export const getUserPreferences = async () => {
+  try {
+    const response = await get('/user/preferences');
+    console.log('🔍 userService: 后端返回的preferences响应:', response);
+    // 注意：后端返回的结构是 { preferences: {...} }，需要访问data.preferences
+    return response.preferences || response.data?.preferences;
+  } catch (error) {
+    console.error('获取用户偏好设置失败:', error);
+    throw error;
+  }
+};
+
+/**
  * 更新用户偏好设置
  * @param {Object} preferences - 偏好设置
  * @returns {Promise<Object>} 更新后的偏好设置
  */
 export const updateUserPreferences = async (preferences) => {
   try {
-    const response = await put('/user/preferences', preferences);
-    return response.preferences;
+    console.log('🚀 userService.updateUserPreferences被调用，参数:', preferences);
+    console.log('📤 发送POST请求到 /user/preferences...');
+    
+    const response = await post('/user/preferences', preferences);
+    console.log('� userService: 后端返回的原始响应:', response);
+    
+    // 注意：后端返回的结构是 { data: { preferences: {...} } }
+    const result = response.preferences || response.data?.preferences;
+    console.log('🔍 userService: 提取的preferences数据:', result);
+    
+    return result;
   } catch (error) {
-    console.error('更新偏好设置失败:', error);
+    console.error('❌ userService.updateUserPreferences失败:', error);
     throw error;
   }
 };
@@ -182,4 +207,4 @@ export const uploadUserAvatar = async (avatarFile) => {
     console.error('上传头像失败:', error);
     throw error;
   }
-}; 
+};

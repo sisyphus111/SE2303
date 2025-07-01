@@ -3,6 +3,15 @@ import { request } from './apiUtils';
 import { get, post, put } from './common';
 
 /**
+ * 获取用户身份、是否启用信息
+ * @returns {Promise<Object>} 用户身份identity(bool类型)、是否启用valid(bool类型)组成的结构体
+ */
+export const getUserStatus = async () => {
+  return get('/user/status');
+};
+
+
+/**
  * 获取用户信息
  * @param {string} userId - 用户ID（可选，不传则获取当前用户）
  * @returns {Promise<Object>} 用户信息

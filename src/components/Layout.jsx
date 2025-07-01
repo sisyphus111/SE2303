@@ -47,6 +47,21 @@ const Layout = ({children}) => {
         };
     }, [showUserMenu]);
 
+    // 监听路由变化，自动滚动到顶部
+    useEffect(() => {
+        console.log('路由变化到:', location.pathname);
+        
+        // 使用setTimeout确保页面完全渲染后再滚动
+        const timer = setTimeout(() => {
+            const mainElement = document.querySelector('.layout-main');
+            if (mainElement) {
+                mainElement.scrollIntoView({ behavior: 'auto', block: 'start' });
+            }
+        }, 50);
+
+        return () => clearTimeout(timer);
+    }, [location.pathname]);
+
     // 导航菜单项 - 使用 Ant Design 图标
     const navItems = [
         {path: '/', label: '个人主页', icon: <HomeOutlined />},

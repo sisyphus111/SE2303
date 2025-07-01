@@ -12,6 +12,9 @@ const CheckInCard = ({ onCheckInSuccess }) => {
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [checkedInData, setCheckedInData] = useState(null);
 
+  // 添加悬停评分状态
+  const [hoverRating, setHoverRating] = useState(0);
+
   // 可选标签
   const availableTags = [
     '开心', '焦虑', '压力', '放松', '疲惫', 
@@ -20,6 +23,14 @@ const CheckInCard = ({ onCheckInSuccess }) => {
 
   const handleRatingClick = (rating) => {
     setSelectedRating(rating);
+  };
+
+  const handleRatingHover = (rating) => {
+    setHoverRating(rating);
+  };
+
+  const handleRatingLeave = () => {
+    setHoverRating(0);
   };
 
   const handleTagToggle = (tag) => {
@@ -78,6 +89,7 @@ const CheckInCard = ({ onCheckInSuccess }) => {
     setCheckedInData(null);
     setSelectedRating(0);
     setSelectedTags([]);
+    setHoverRating(0);
   };
 
   return (
@@ -144,8 +156,14 @@ const CheckInCard = ({ onCheckInSuccess }) => {
                 {[1, 2, 3, 4, 5].map(star => (
                   <span
                     key={star}
-                    className={`star ${selectedRating >= star ? 'selected' : ''}`}
+                    className={`star ${
+                      hoverRating > 0 
+                        ? (star <= hoverRating ? 'selected' : '') 
+                        : (selectedRating >= star ? 'selected' : '')
+                    }`}
                     onClick={() => handleRatingClick(star)}
+                    onMouseEnter={() => handleRatingHover(star)}
+                    onMouseLeave={handleRatingLeave}
                   >
                     ★
                   </span>

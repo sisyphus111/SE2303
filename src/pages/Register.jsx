@@ -38,7 +38,7 @@ const Register = () => {
     const redirectParam = urlParams.get('redirect');
     
     // 2. 默认首页
-    return redirectParam || '/';
+    return redirectParam || '/login';
   };
 
   // 如果已经登录，重定向到首页

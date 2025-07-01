@@ -11,7 +11,7 @@ export const loginUser = async (email, password) => {
   try {
     // 调用后端登录API
     // 后端会在登录成功后自动设置HttpOnly Cookie
-    const response = await post('/user/login', { email, password });
+    const response = await post('/auth/login', { email, password });
     
     return {
       success: true,
@@ -35,7 +35,7 @@ export const loginUser = async (email, password) => {
 export const registerUser = async (userData) => {
   try {
     // 调用后端注册API
-    const response = await post('/user/register', userData);
+    const response = await post('/auth/register', userData);
     
     return {
       success: true,

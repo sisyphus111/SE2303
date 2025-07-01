@@ -5,7 +5,6 @@ import {
   RobotOutlined, 
   SendOutlined, 
   ReloadOutlined,
-  MoreOutlined,
   QuestionCircleOutlined,
   HeartOutlined,
   SmileOutlined,
@@ -462,19 +461,9 @@ const AIChat = () => {
           <button 
             className="action-button" 
             onClick={clearMessages}
-            title="清空对话"
+            title="清空对话记录"
           >
             <ClearOutlined />
-          </button>
-          <button 
-            className="action-button" 
-            onClick={() => setShowQuickReplies(!showQuickReplies)}
-            title="快捷回复"
-          >
-            <ThunderboltOutlined />
-          </button>
-          <button className="action-button" title="更多选项">
-            <MoreOutlined />
           </button>
         </div>
       </div>

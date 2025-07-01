@@ -23,7 +23,6 @@ import {
   MobileOutlined,
   EyeInvisibleOutlined,
   EditOutlined,
-  SaveOutlined,
   CameraOutlined
 } from '@ant-design/icons';
 import { useUser } from '../lib/UserContext';
@@ -185,13 +184,15 @@ function Profile() {
               </div>
               
               <div className="profile-actions">
-                <Button 
-                  type="primary" 
-                  icon={editing ? <SaveOutlined /> : <EditOutlined />}
-                  onClick={() => setEditing(!editing)}
-                >
-                  {editing ? '保存' : '编辑资料'}
-                </Button>
+                {!editing && (
+                  <Button 
+                    type="primary" 
+                    icon={<EditOutlined />}
+                    onClick={() => setEditing(true)}
+                  >
+                    编辑资料
+                  </Button>
+                )}
               </div>
             </div>
           </div>

@@ -15,7 +15,7 @@ import '../css/Login.css';
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setUser, isAuthenticated, loading, error } = useUser();
+  const { setUserData, isAuthenticated, loading, error } = useUser();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -104,12 +104,21 @@ const Login = () => {
       const result = await loginUser(formData.email, formData.password);
       
       if (result.success) {
-        // 登录成功，设置用户信息到UserContext
-        setUser(result.user, result.preferences);
+        // 登录成功，后端已设置Cookie，直接使用返回的用户数据
+        console.log('✅ 登录成功，设置用户信息:', result);
+        
+        // 直接设置用户数据
+        if (result.user) {
+          setUserData(
+            result.user, 
+            { identity: true, valid: true }, // 登录成功的用户默认已认证且有效
+            result.preferences || {}
+          );
+        }
         
         // 重定向到目标页面
         const redirectPath = getRedirectPath();
-        console.log('✅ 登录成功，重定向到:', redirectPath);
+        console.log('✅ 重定向到:', redirectPath);
         navigate(redirectPath, { replace: true });
       } else {
         // 登录失败，显示错误信息

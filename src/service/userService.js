@@ -1,6 +1,5 @@
 // 用户信息相关API服务
-import { request } from './apiUtils';
-import { get, post, put } from './common';
+import { get, post, put, del } from './common';
 
 /**
  * 获取用户身份、是否启用信息
@@ -17,8 +16,8 @@ export const getUserStatus = async () => {
  * @returns {Promise<Object>} 用户信息
  */
 export const getUserInfo = async (userId = null) => {
-  const endpoint = userId ? `/users/user : '/users/user';
-  return request(endpoint);
+  const endpoint = userId ? `/user/${userId}` : '/user/profile';
+  return get(endpoint);
 };
 
 /**
@@ -31,10 +30,7 @@ export const getUserInfo = async (userId = null) => {
  * @returns {Promise<Object>} 更新结果
  */
 export const updateUserInfo = async (userData) => {
-  return request('/users/user', {
-    method: 'PUT',
-    body: JSON.stringify(userData),
-  });
+  return put('/user/profile', userData);
 };
 
 /**
@@ -56,7 +52,7 @@ export const getUserStats = async () => {
  * @returns {Promise<Object>} 用户设置
  */
 export const getUserSettings = async () => {
-  return request('/users/user');
+  return get('/user/settings');
 };
 
 /**
@@ -65,10 +61,7 @@ export const getUserSettings = async () => {
  * @returns {Promise<Object>} 更新结果
  */
 export const updateUserSettings = async (settings) => {
-  return request('/users/user', {
-    method: 'PUT',
-    body: JSON.stringify(settings),
-  });
+  return put('/user/settings', settings);
 };
 
 /**
@@ -76,9 +69,7 @@ export const updateUserSettings = async (settings) => {
  * @returns {Promise<Object>} 签到结果
  */
 export const userCheckIn = async () => {
-  return request('/users/user', {
-    method: 'POST',
-  });
+  return post('/user/checkin', {});
 };
 
 /**
@@ -117,57 +108,6 @@ export const getSettingsData = async () => {
  * @returns {Promise<Object>} 用户资料
  */
 export const getUserProfile = async () => {
-  // 临时前端开发模式 - 直接返回本地用户数据
-  // TODO: 后端实现后，取消注释下面的代码，删除临时代码
-  
-  try {
-    // 模拟API延迟
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    // 检查是否有本地存储的用户信息（模拟登录状态）
-    const hasUserSession = localStorage.getItem('dev_user_logged_in') === 'true';
-    
-    if (!hasUserSession) {
-      // 模拟401未登录状态
-      return null;
-    }
-    
-    // 返回模拟用户数据
-    const mockUser = {
-      id: 'user_123',
-      username: 'testuser',
-      email: 'test@example.com',
-      nickname: '测试用户',
-      avatar: 'https://via.placeholder.com/100',
-      bio: '这是一个测试用户的个人简介',
-      createdAt: '2024-01-01T00:00:00Z',
-      lastLoginAt: new Date().toISOString()
-    };
-    
-    const mockPreferences = {
-      theme: 'light',
-      language: 'zh-CN',
-      notifications: {
-        email: true,
-        push: false,
-        dailyReminder: true
-      },
-      privacy: {
-        profileVisible: true,
-        diaryVisible: false
-      }
-    };
-    
-    return {
-      user: mockUser,
-      preferences: mockPreferences
-    };
-  } catch (error) {
-    console.error('获取用户资料失败:', error);
-    throw error;
-  }
-  
-  /* 原始后端API调用代码 - 后端实现后恢复
   try {
     // 调用后端API获取用户资料
     // 如果cookie中有有效token，后端会返回用户信息
@@ -184,7 +124,6 @@ export const getUserProfile = async () => {
     }
     throw error;
   }
-  */
 };
 
 /**
@@ -203,16 +142,41 @@ export const updateUserProfile = async (updates) => {
 };
 
 /**
+ * 获取用户偏好设置
+ * @returns {Promise<Object>} 用户偏好设置
+ */
+export const getUserPreferences = async () => {
+  try {
+    const response = await get('/user/preferences');
+    console.log('🔍 userService: 后端返回的preferences响应:', response);
+    // 注意：后端返回的结构是 { preferences: {...} }，需要访问data.preferences
+    return response.preferences || response.data?.preferences;
+  } catch (error) {
+    console.error('获取用户偏好设置失败:', error);
+    throw error;
+  }
+};
+
+/**
  * 更新用户偏好设置
  * @param {Object} preferences - 偏好设置
  * @returns {Promise<Object>} 更新后的偏好设置
  */
 export const updateUserPreferences = async (preferences) => {
   try {
-    const response = await put('/user/preferences', preferences);
-    return response.preferences;
+    console.log('🚀 userService.updateUserPreferences被调用，参数:', preferences);
+    console.log('📤 发送POST请求到 /user/preferences...');
+    
+    const response = await post('/user/preferences', preferences);
+    console.log('� userService: 后端返回的原始响应:', response);
+    
+    // 注意：后端返回的结构是 { data: { preferences: {...} } }
+    const result = response.preferences || response.data?.preferences;
+    console.log('🔍 userService: 提取的preferences数据:', result);
+    
+    return result;
   } catch (error) {
-    console.error('更新偏好设置失败:', error);
+    console.error('❌ userService.updateUserPreferences失败:', error);
     throw error;
   }
 };
@@ -243,4 +207,4 @@ export const uploadUserAvatar = async (avatarFile) => {
     console.error('上传头像失败:', error);
     throw error;
   }
-}; 
+};

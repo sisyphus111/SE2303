@@ -1,5 +1,5 @@
 // 日记相关API服务
-import { request } from './apiUtils';
+import { get, post, put, del } from './common';
 
 /**
  * 创建日记
@@ -11,10 +11,7 @@ import { request } from './apiUtils';
  * @returns {Promise<Object>} 创建的日记
  */
 export const createDiary = async (diaryData) => {
-  return request('/diaries', {
-    method: 'POST',
-    body: JSON.stringify(diaryData),
-  });
+  return post('/mood/diaries', diaryData);
 };
 
 /**
@@ -27,7 +24,7 @@ export const createDiary = async (diaryData) => {
  */
 export const getDiaryList = async (params = {}) => {
   const queryString = new URLSearchParams(params).toString();
-  return request(`/diaries?${queryString}`);
+  return get(`/mood/diaries?${queryString}`);
 };
 
 /**
@@ -36,7 +33,7 @@ export const getDiaryList = async (params = {}) => {
  * @returns {Promise<Object>} 日记详情
  */
 export const getDiaryDetail = async (diaryId) => {
-  return request(`/diaries/${diaryId}`);
+  return get(`/mood/diaries/${diaryId}`);
 };
 
 /**
@@ -46,10 +43,7 @@ export const getDiaryDetail = async (diaryId) => {
  * @returns {Promise<Object>} 更新结果
  */
 export const updateDiary = async (diaryId, diaryData) => {
-  return request(`/diaries/${diaryId}`, {
-    method: 'PUT',
-    body: JSON.stringify(diaryData),
-  });
+  return put(`/mood/diaries/${diaryId}`, diaryData);
 };
 
 /**
@@ -58,9 +52,7 @@ export const updateDiary = async (diaryId, diaryData) => {
  * @returns {Promise<Object>} 删除结果
  */
 export const deleteDiary = async (diaryId) => {
-  return request(`/diaries/${diaryId}`, {
-    method: 'DELETE',
-  });
+  return del(`/mood/diaries/${diaryId}`);
 };
 
 /**
@@ -70,7 +62,7 @@ export const deleteDiary = async (diaryId) => {
  * @returns {Promise<Object>} 心情统计数据
  */
 export const getMoodStats = async (startDate, endDate) => {
-  return request(`/diaries/mood-stats?startDate=${startDate}&endDate=${endDate}`);
+  return get(`/mood/diaries/mood-stats?startDate=${startDate}&endDate=${endDate}`);
 };
 
 /**

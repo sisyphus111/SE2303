@@ -13,49 +13,86 @@ const isAuthPage = () => {
 // Provider Component
 export const UserProvider = ({ children }) => {
 
-  // 使用useState管理用户状态（个人资料、偏好设置、身份信息、验证状态）
+  // ===== 用户个人资料相关状态 =====
   const [userProfile, setUserProfile] = useState(null);
-  const [preferences, setPreferences] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileError, setProfileError] = useState(null);
+
+  // ===== 用户状态相关状态 =====
   const [identity, setIdentity] = useState(null);
   const [valid, setValid] = useState(null);
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [statusError, setStatusError] = useState(null);
 
+  // ===== 用户偏好设置相关状态 =====
+  const [preferences, setPreferences] = useState({
+    theme: 'light',
+    language: 'zh-CN',
+    notifications: true,
+    soundEnabled: true,
+  }); // 这里的初始默认数据需要修改
+  const [preferencesLoading, setPreferencesLoading] = useState(false);
+  const [preferencesError, setPreferencesError] = useState(null);
 
+  // ===== 全局加载和错误状态 =====
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 初始化用户信息
+  // ===== 计算属性 =====
+  const isAuthenticated = !!(userProfile && identity);
+
+  // ===== 初始化用户信息 =====
   useEffect(() => {
     const initializeUser = async () => {
       try {
         setLoading(true);
         
-        // 尝试从后端获取用户个人资料，用户账号类型、状态信息
-        const userProfile = await getUserProfile();
-        const userStatus = await getUserStatus();
-        const userPreferences = await getUserPreferences(); // 这个函数由UserService——yyf来完成
-      
-        if (userProfile && userStatus && userPreferences) {
-          // 有用户信息，设置登录状态
-          setUserProfile(userProfile);
-          setPreferences(userPreferences);
-          setIdentity(userStatus.identity);
-          setValid(userStatus.valid);
-          setError(null);
+        // 并行获取用户数据
+        const [userProfileData, userStatusData, userPreferencesData] = await Promise.allSettled([
+          getUserProfile(),
+          getUserStatus(),
+          // getUserPreferences() // 等待yyf完成此函数
+        ]);
+
+        // 处理用户个人资料
+        if (userProfileData.status === 'fulfilled' && userProfileData.value) {
+          setUserProfile(userProfileData.value);
+          setProfileError(null);
+        } else if (userProfileData.status === 'rejected') {
+          console.error('获取用户个人资料失败:', userProfileData.reason);
+          setProfileError('获取用户个人资料失败');
         }
-        
+
+        // 处理用户状态
+        if (userStatusData.status === 'fulfilled' && userStatusData.value) {
+          setIdentity(userStatusData.value.identity);
+          setValid(userStatusData.value.valid);
+          setStatusError(null);
+        } else if (userStatusData.status === 'rejected') {
+          console.error('获取用户状态失败:', userStatusData.reason);
+          setStatusError('获取用户状态失败');
+        }
+
+        // 处理用户偏好设置
+        // if (userPreferencesData.status === 'fulfilled' && userPreferencesData.value) {
+        //   setPreferences(prev => ({ ...prev, ...userPreferencesData.value }));
+        //   setPreferencesError(null);
+        // } else if (userPreferencesData.status === 'rejected') {
+        //   console.error('获取用户偏好设置失败:', userPreferencesData.reason);
+        //   setPreferencesError('获取用户偏好设置失败');
+        // }
+
+        setError(null);
         setLoading(false);
       } catch (error) {
-
         console.error('初始化用户信息时出错:', error);
         const isAuth401Error = error.status === 401 || 
                                error.message?.includes('401') || 
                                error.message?.includes('未授权');
         
         if (!isAuth401Error && !isAuthPage()) {
-          // 非401错误且不在登录页面，显示错误信息
           setError('获取用户信息失败');
         } else {
-          // 401错误或在登录页面，静默处理
           console.log('📝 401错误或登录页面，由ErrorHandler统一处理');
         }
         
@@ -66,104 +103,127 @@ export const UserProvider = ({ children }) => {
     initializeUser();
   }, []);
 
-
-
-
-
-  // 设置用户信息（登录成功后调用）
-  const setUserInfo = useCallback((userData, userPreferences = {}) => {
-    setUser(userData);
-    setPreferences(prev => ({ ...prev, ...userPreferences }));
-    setError(null);
-    setLoading(false);
+  // ===== 用户个人资料相关方法 =====
+  const updateUserProfileData = useCallback(async (updates) => {
+    try {
+      setProfileLoading(true);
+      setProfileError(null);
+      
+      const updatedProfile = await updateUserProfile(updates);
+      setUserProfile(prev => ({ ...prev, ...updatedProfile }));
+      
+      return { success: true, data: updatedProfile };
+    } catch (error) {
+      console.error('更新用户个人资料失败:', error);
+      setProfileError('更新用户个人资料失败');
+      return { success: false, error: error.message };
+    } finally {
+      setProfileLoading(false);
+    }
   }, []);
 
-  // 清除用户信息（登出后调用）
-  const clearUser = useCallback(() => {
-    setUser(null);
+  
+
+  const getUserAvatar = useCallback(() => {
+    if (userProfile?.avatar) {
+      return userProfile.avatar;
+    }
+    
+    // 默认头像 - 基于用户名生成
+    const username = userProfile?.username || userProfile?.email || 'User';
+    const avatarChar = username.charAt(0).toUpperCase();
+    return avatarChar;
+  }, [userProfile]);
+
+  const getUserDisplayName = useCallback(() => {
+    return userProfile?.nickname || userProfile?.username || userProfile?.email || '用户';
+  }, [userProfile]);
+
+
+  // ===== 用户偏好设置相关方法 =====
+  const updateUserPrefs = useCallback(async (newPreferences) => {
+    try {
+      setPreferencesLoading(true);
+      setPreferencesError(null);
+      
+      const updatedPreferences = await updateUserPreferences(newPreferences);
+      setPreferences(prev => ({ ...prev, ...updatedPreferences }));
+      
+      return { success: true, data: updatedPreferences };
+    } catch (error) {
+      console.error('更新偏好设置失败:', error);
+      setPreferencesError('更新偏好设置失败');
+      return { success: false, error: error.message };
+    } finally {
+      setPreferencesLoading(false);
+    }
+  }, []);
+
+  const resetUserPreferences = useCallback(() => {
     setPreferences({
       theme: 'light',
       language: 'zh-CN',
       notifications: true,
       soundEnabled: true,
-    });
+    }); // 这里的默认数据需要修改
+    setPreferencesError(null);
+  }, []);
+
+  // ===== 全局用户管理方法 =====
+  const setUserData = useCallback((profileData, statusData, preferencesData) => {
+    if (profileData) {
+      setUserProfile(profileData);
+      setProfileError(null);
+    }
+    
+    if (statusData) {
+      setIdentity(statusData.identity);
+      setValid(statusData.valid);
+      setStatusError(null);
+    }
+    
+    if (preferencesData) {
+      setPreferences(prev => ({ ...prev, ...preferencesData }));
+      setPreferencesError(null);
+    }
+    
     setError(null);
     setLoading(false);
   }, []);
 
-  // 更新用户信息
-  const updateUser = useCallback(async (updates) => {
-    try {
-      // 调用API更新用户信息
-      const updatedUser = await updateUserProfile(updates);
-      
-      // 更新本地状态
-      setUser(prev => ({ ...prev, ...updatedUser }));
-      
-      return { success: true };
-    } catch (error) {
-      setError('更新用户信息失败');
-      return { success: false, error: error.message };
-    }
-  }, []);
 
-  // 更新用户偏好
-  const updateUserPrefs = useCallback(async (newPreferences) => {
-    try {
-      // 调用API更新偏好设置
-      const updatedPreferences = await updateUserPreferences(newPreferences);
-      
-      // 更新本地状态
-      setPreferences(prev => ({ ...prev, ...updatedPreferences }));
-      
-      return { success: true };
-    } catch (error) {
-      setError('更新偏好设置失败');
-      return { success: false, error: error.message };
-    }
-  }, []);
-
-  // 清除错误
-  const clearError = useCallback(() => {
-    setError(null);
-  }, []);
-
-  // 获取用户头像
-  const getUserAvatar = useCallback(() => {
-    if (user?.avatar) {
-      return user.avatar;
-    }
-    
-    // 默认头像 - 基于用户名生成
-    const username = user?.username || user?.email || 'User';
-    const avatarChar = username.charAt(0).toUpperCase();
-    return avatarChar;
-  }, [user]);
-
-  // 获取用户显示名称
-  const getUserDisplayName = useCallback(() => {
-    return user?.nickname || user?.username || user?.email || '用户';
-  }, [user]);
-
-  // 提供给子组件的值
+  // ===== 提供给子组件的值 =====
   const value = {
-    // 状态
+    // 状态数据
     userProfile,
-    preferences,
     identity,
     valid,
-    loading,
-    error,
+    preferences,
     isAuthenticated,
     
-    // 方法
-    setUser: setUserInfo,
-    clearUser,
-    updateUser,
-    updatePreferences: updateUserPrefs,
-    clearError,
+    // 加载状态
+    loading,
+    profileLoading,
+    statusLoading,
+    preferencesLoading,
+    
+    // 错误状态
+    error,
+    profileError,
+    statusError,
+    preferencesError,
+    
+    // 用户个人资料相关方法
+    updateUserProfile: updateUserProfileData,
     getUserAvatar,
     getUserDisplayName,
+    
+    // 用户偏好设置相关方法
+    updateUserPrefs,
+    resetUserPreferences,
+    
+    // 全局用户管理方法
+    setUserData,
   };
 
   return (

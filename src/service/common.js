@@ -6,6 +6,12 @@ export async function get(url) {
         credentials: "include" // 包含cookie进行认证
     });
     const response = await res.json(); // 反序列化
+    
+    // 如果HTTP状态码是401但响应体没有errorCode，添加errorCode字段
+    if (res.status === 401 && !response.errorCode) {
+        response.errorCode = 401;
+    }
+    
     return handleApiResponse(response);
 }
 
@@ -20,6 +26,12 @@ export async function put(url, data) {
     };
     let res = await fetch(`${PREFIX}${url}`, opts);
     const response = await res.json();
+    
+    // 如果HTTP状态码是401但响应体没有errorCode，添加errorCode字段
+    if (res.status === 401 && !response.errorCode) {
+        response.errorCode = 401;
+    }
+    
     return handleApiResponse(response);
 }
 
@@ -38,6 +50,12 @@ export async function del(url, data) {
     
     let res = await fetch(`${PREFIX}${url}`, opts);
     const response = await res.json();
+    
+    // 如果HTTP状态码是401但响应体没有errorCode，添加errorCode字段
+    if (res.status === 401 && !response.errorCode) {
+        response.errorCode = 401;
+    }
+    
     return handleApiResponse(response);
 }
 
@@ -60,6 +78,11 @@ export async function post(url, data) {
     
     const response = await res.json();
     console.log('📥 响应数据:', response);
+    
+    // 如果HTTP状态码是401但响应体没有errorCode，添加errorCode字段
+    if (res.status === 401 && !response.errorCode) {
+        response.errorCode = 401;
+    }
     
     return handleApiResponse(response);
 }

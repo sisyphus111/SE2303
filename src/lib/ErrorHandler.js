@@ -83,18 +83,15 @@ export const handleApiResponse = (response) => {
     }
     
     // 不在认证页面，需要重定向到登录页面
-    console.log('🔄 准备重定向到登录页面');
+    console.log('🔄 准备重定向到登录页面，当前路径:', window.location.pathname);
     
-    // 延迟重定向，给组件一些时间处理错误状态
-    setTimeout(() => {
-      // 保存当前完整路径（包括查询参数）用于登录后重定向
-      const currentPath = window.location.pathname + window.location.search;
-      const loginUrl = `/login?redirect=${encodeURIComponent(currentPath)}`;
-      
-      console.log('🔄 重定向到:', loginUrl);
-      // 使用replace避免在浏览器历史中留下401错误页面
-      window.location.replace(loginUrl);
-    }, 100);
+    // 立即重定向，不使用延迟
+    const currentPath = window.location.pathname + window.location.search;
+    // 如果已经在根路径或者没有特殊路径，直接跳转到登录页面
+    const loginUrl = currentPath === '/' ? '/login' : `/login?redirect=${encodeURIComponent(currentPath)}`;
+    
+    console.log('🔄 立即重定向到:', loginUrl);
+    window.location.replace(loginUrl);
     
     throw new ApiError('未授权访问，正在重定向到登录页面', 401);
   }

@@ -150,11 +150,29 @@ const Layout = ({children}) => {
                                     onClick={() => setShowUserMenu(!showUserMenu)}
                                 >
                                     <div className="user-avatar">
-                                        {typeof getUserAvatar() === 'string' && getUserAvatar().length === 1 ? (
-                                            <span className="avatar-text">{getUserAvatar()}</span>
-                                        ) : (
-                                            <UserOutlined />
-                                        )}
+                                        {userProfile?.avatar && userProfile.avatar.includes('http') ? (
+                                            <img 
+                                                src={userProfile.avatar} 
+                                                alt="用户头像"
+                                                className="avatar-image"
+                                                onError={(e) => {
+                                                    e.target.style.display = 'none';
+                                                    e.target.nextSibling.style.display = 'flex';
+                                                }}
+                                            />
+                                        ) : null}
+                                        <div 
+                                            className="avatar-fallback"
+                                            style={{
+                                                display: userProfile?.avatar && userProfile.avatar.includes('http') ? 'none' : 'flex'
+                                            }}
+                                        >
+                                            {getUserAvatar().length === 1 ? (
+                                                <span className="avatar-text">{getUserAvatar()}</span>
+                                            ) : (
+                                                <UserOutlined />
+                                            )}
+                                        </div>
                                     </div>
                                     <span className="user-name">{getUserDisplayName()}</span>
                                     <DownOutlined className="dropdown-icon" />

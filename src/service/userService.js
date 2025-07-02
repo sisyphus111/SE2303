@@ -100,8 +100,9 @@ export const getUserPreferences = async () => {
   try {
     const response = await get('/user/preferences');
     console.log('🔍 userService: 后端返回的preferences响应:', response);
-    // 注意：后端返回的结构是 { preferences: {...} }，需要访问data.preferences
-    return response.preferences || response.data?.preferences;
+    // 后端返回的结构是 { success: true, data: {...}, message: '...' }
+    // data字段直接包含偏好设置数据
+    return response.data || response;
   } catch (error) {
     console.error('获取用户偏好设置失败:', error);
     throw error;
@@ -119,10 +120,11 @@ export const apiUpdateUserPreferences = async (preferences) => {
     console.log('📤 发送POST请求到 /user/preferences...');
     
     const response = await post('/user/preferences', preferences);
-    console.log('� userService: 后端返回的原始响应:', response);
+    console.log('📥 userService: 后端返回的原始响应:', response);
     
-    // 注意：后端返回的结构是 { data: { preferences: {...} } }
-    const result = response.preferences || response.data?.preferences;
+    // 后端返回的结构是 { success: true, data: {...}, message: '...' }
+    // data字段直接包含偏好设置数据
+    const result = response.data || response;
     console.log('🔍 userService: 提取的preferences数据:', result);
     
     return result;

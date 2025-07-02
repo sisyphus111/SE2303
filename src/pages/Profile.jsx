@@ -28,6 +28,7 @@ import {
   CameraOutlined
 } from '@ant-design/icons';
 import { useUser } from '../lib/UserContext';
+import { uploadUserAvatar } from '../service/userService';
 import "../css/Profile.css";
 
 const { Title, Text } = Typography;
@@ -192,16 +193,54 @@ function Profile() {
     }
   };
 
-  const handleAvatarChange = (info) => {
-    if (info.file.status === 'done' || info.file.status === 'uploading') {
-      const reader = new FileReader();
-      reader.onload = e => {
-        const newAvatar = e.target.result;
-        setUserData(prev => ({ ...prev, avatar: newAvatar }));
-        // 使用UserContext的updateUserProfile更新头像
-        updateUserProfile({ avatar: newAvatar });
-      };
-      reader.readAsDataURL(info.file.originFileObj);
+  /**
+   * 处理头像上传
+   * 
+   * 整个上传流程：
+   * 1. 用户选择图片文件
+   * 2. 调用后端API上传到腾讯云COS
+   * 3. 获得云存储的URL
+   * 4. 更新本地状态和用户资料
+   * 5. 显示上传结果给用户
+   */
+  const handleAvatarChange = async (info) => {
+    const { file } = info;
+    
+    // 只在用户选择文件时处理（beforeUpload返回false，所以不会自动上传）
+    if (file.status === undefined) {
+      try {
+        console.log('🖼️ 用户选择头像文件:', file.name);
+        
+        // 1. 显示上传中状态
+        message.loading({ content: '正在上传头像...', key: 'avatar-upload' });
+        
+        // 2. 调用文件上传服务，上传到腾讯云COS
+        const newAvatarUrl = await uploadUserAvatar(file);
+        console.log('📸 新头像URL:', newAvatarUrl);
+        
+        // 3. 更新本地状态
+        setUserData(prev => ({ ...prev, avatar: newAvatarUrl }));
+        
+        // 4. 更新后端用户资料（保存到数据库）
+        const updateResult = await updateUserProfile({ avatar: newAvatarUrl });
+        
+        if (updateResult.success) {
+          // 5. 显示成功消息
+          message.success({ content: '头像上传成功！', key: 'avatar-upload', duration: 2 });
+        } else {
+          throw new Error(updateResult.error || '更新用户资料失败');
+        }
+        
+      } catch (error) {
+        console.error('❌ 头像上传失败:', error);
+        
+        // 显示错误消息
+        message.error({ 
+          content: `头像上传失败: ${error.message}`, 
+          key: 'avatar-upload',
+          duration: 3 
+        });
+      }
     }
   };
 

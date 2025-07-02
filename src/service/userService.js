@@ -135,29 +135,62 @@ export const apiUpdateUserPreferences = async (preferences) => {
 };
 
 /**
- * 上传用户头像
- * @param {File} avatarFile - 头像文件
- * @returns {Promise<Object>} 上传结果
+ * 上传用户头像到腾讯云COS
+ * 
+ * 整个流程：
+ * 1. 创建FormData对象，将文件添加到其中
+ * 2. 发送POST请求到后端/api/user/avatar接口
+ * 3. 后端验证用户身份和文件格式
+ * 4. 后端上传文件到腾讯云COS获得URL
+ * 5. 后端更新数据库中的用户头像字段
+ * 6. 返回新的头像URL给前端
+ * 
+ * @param {File} avatarFile - 头像文件对象
+ * @returns {Promise<string>} 上传后的头像URL
+ * @throws {Error} 上传失败时抛出错误
  */
 export const uploadUserAvatar = async (avatarFile) => {
   try {
+    console.log('🚀 开始上传头像文件:', avatarFile.name, '大小:', avatarFile.size, 'bytes');
+    
+    // 1. 创建FormData，这是处理文件上传的标准方式
     const formData = new FormData();
     formData.append('avatar', avatarFile);
     
-    const response = await fetch('/api/user/avatar', {
+    // 2. 发送POST请求到后端头像上传接口
+    const response = await fetch('http://localhost:8080/api/user/avatar', {
       method: 'POST',
       body: formData,
-      credentials: 'include' // 包含cookie
+      credentials: 'include' // 包含cookie中的JWT token用于身份验证
     });
     
+    // 3. 检查HTTP状态码
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.message || `HTTP错误! 状态码: ${response.status}`;
+      throw new Error(errorMessage);
     }
     
+    // 4. 解析后端返回的JSON响应
     const result = await response.json();
-    return result.avatarUrl;
+    console.log('📥 后端响应:', result);
+    
+    // 5. 检查业务逻辑是否成功
+    if (!result.success) {
+      throw new Error(result.message || '上传失败');
+    }
+    
+    // 6. 返回新的头像URL
+    const avatarUrl = result.data?.avatarUrl;
+    if (!avatarUrl) {
+      throw new Error('后端返回的头像URL为空');
+    }
+    
+    console.log('✅ 头像上传成功，新URL:', avatarUrl);
+    return avatarUrl;
+    
   } catch (error) {
-    console.error('上传头像失败:', error);
+    console.error('❌ 上传头像失败:', error);
     throw error;
   }
 };

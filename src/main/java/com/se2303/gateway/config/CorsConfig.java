@@ -13,6 +13,9 @@ import java.util.Arrays; // 数组工具类，用于创建列表
 /**
  * CORS（跨域资源共享）配置类
  * 
+ * 注意：此配置类已被禁用，因为在application.yml中已经配置了Spring Cloud Gateway的globalcors
+ * 避免重复配置导致CORS头部冲突问题
+ * 
  * 功能说明：
  * - 解决前端应用跨域访问网关API的问题
  * - 提供全局的CORS配置，适用于所有通过网关的请求
@@ -31,10 +34,14 @@ public class CorsConfig {
     /**
      * 配置CORS过滤器Bean
      * 
+     * 注意：此方法已被注释，因为在application.yml中已经通过Spring Cloud Gateway的globalcors进行了CORS配置
+     * 如果同时使用两种配置方式，会导致Access-Control-Allow-Origin头部出现重复值的问题
+     * 
      * 该方法创建并配置一个CORS过滤器，用于处理所有的跨域请求
      * 
      * @return CorsWebFilter 配置好的CORS过滤器实例
      */
+    /*
     @Bean // 将返回值注册为Spring Bean，由Spring容器管理
     public CorsWebFilter corsWebFilter() {
         // 创建CORS配置对象，用于定义跨域访问规则
@@ -92,4 +99,5 @@ public class CorsConfig {
         // 该过滤器会自动处理所有的跨域请求和预检请求
         return new CorsWebFilter(source);
     }
+    */
 }

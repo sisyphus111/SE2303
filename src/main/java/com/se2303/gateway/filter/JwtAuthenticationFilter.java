@@ -169,10 +169,8 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         // 设置响应内容类型为JSON
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
         
-        // 设置CORS头部（如果需要）
-        response.getHeaders().add("Access-Control-Allow-Origin", "*");
-        response.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        response.getHeaders().add("Access-Control-Allow-Headers", "*");
+        // 注意：不在这里设置CORS头部，因为网关的application.yml已经统一配置了CORS
+        // 避免重复设置导致 "Access-Control-Allow-Origin header contains multiple values" 错误
         
         try {
             // 创建ApiResponse对象 - 认证失败时object为null
@@ -234,7 +232,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
      * 
      * 支持两种方式：
      * 1. Authorization请求头：Bearer {token} 格式（推荐方式）
-     * 2. Cookie方式：access_token名称的Cookie
+     * 2. Cookie方式：accessToken名称的Cookie
      * 
      * @param exchange 服务器Web交换对象
      * @return String JWT令牌字符串，如果未找到则返回null
@@ -249,8 +247,8 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         }
         
         // 方式2：尝试从Cookie中获取令牌
-        // 查找名为"access_token"的Cookie
-        HttpCookie cookie = exchange.getRequest().getCookies().getFirst("access_token");
+        // 查找名为"accessToken"的Cookie（与后端设置的cookie名称一致）
+        HttpCookie cookie = exchange.getRequest().getCookies().getFirst("accessToken");
         if (cookie != null) {
             // 返回Cookie的值作为令牌
             return cookie.getValue();

@@ -98,12 +98,13 @@ public class JwtUtil {
      * 用户ID通常作为自定义声明存储在JWT中
      * 
      * @param token JWT令牌字符串
-     * @return String 用户ID，如果没有该声明则返回null
+     * @return String 用户ID的字符串表示，如果没有该声明则返回null
      */
     public String getUserIdFromToken(String token) {
         // 使用Lambda表达式提取名为"X-User-Id"的自定义声明
-        // claims.get("X-User-Id", String.class) 获取指定名称和类型的声明值
-        return getClaimFromToken(token, claims -> claims.get("X-User-Id", String.class));
+        // 先获取Long类型的用户ID，然后转换为String用于HTTP头传递
+        Long userId = getClaimFromToken(token, claims -> claims.get("X-User-Id", Long.class));
+        return userId != null ? userId.toString() : null;
     }
 
     /**

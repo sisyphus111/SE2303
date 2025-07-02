@@ -35,7 +35,7 @@ const { TextArea } = Input;
 function Profile() {
   const { 
     userProfile, 
-    updateUserProfile: updateUserProfileData, 
+    updateUserProfileData, 
     isAuthenticated, 
     profileLoading,
     profileError 

@@ -491,3 +491,100 @@ input[type="password"]::-ms-reveal {
 }
 
 /* 白绿色调亮色主题优化 */ 
+
+/* Jaccount登录页面专用样式 */
+.jaccount-login-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  text-align: center;
+}
+
+.jaccount-info {
+  margin-bottom: 16px;
+}
+
+.jaccount-description {
+  color: var(--text-gray, #666);
+  font-size: 15px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.jaccount-button {
+  background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 16px 24px;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.jaccount-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.jaccount-button:hover::before {
+  left: 100%;
+}
+
+.jaccount-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(25, 118, 210, 0.3);
+  background: linear-gradient(135deg, #1565c0 0%, #2196f3 100%);
+}
+
+.jaccount-button:active {
+  transform: translateY(0);
+}
+
+.login-notice {
+  margin-top: 8px;
+}
+
+.notice-text {
+  color: var(--text-gray, #888);
+  font-size: 13px;
+  margin: 0;
+  font-style: italic;
+}
+
+/* 响应式设计更新 */
+@media (max-width: 768px) {
+  .jaccount-login-section {
+    gap: 20px;
+  }
+  
+  .jaccount-description {
+    font-size: 14px;
+  }
+  
+  .jaccount-button {
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+  
+  .notice-text {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .jaccount-login-section {
+    gap: 16px;
+  }
+  
+  .jaccount-button {
+    padding: 13px 18px;
+    font-size: 14px;
+  }
+} 

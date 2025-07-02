@@ -5,7 +5,6 @@ import Layout from './components/Layout';
 import {Home} from './pages/Home';
 import {Diary} from './pages/Diary';
 import Login from './pages/Login';
-import Register from './pages/Register';
 import Profile from './pages/Profile';
 import './App.css';
 import 'antd/dist/reset.css';
@@ -26,9 +25,8 @@ function App() {
             <AudioProvider>
                 <Router>
                     <Routes>
-                        {/* 公开路由 - 登录和注册页面 */}
+                        {/* 公开路由 - Jaccount登录页面 */}
                         <Route path="/login" element={<Login/>}/>
-                        <Route path="/register" element={<Register/>}/>
                         
                         {/* 应用路由 - 依赖401状态码进行认证控制 */}
                         <Route path="/*" element={

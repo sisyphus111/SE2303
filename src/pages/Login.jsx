@@ -16,7 +16,7 @@ import { Result } from 'antd';
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setUserData, isAuthenticated, loading, error } = useUser();
+  const { loginSuccess, isAuthenticated, loading, error } = useUser();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -42,11 +42,16 @@ const Login = () => {
 
   // 如果已经登录，重定向到目标页面
   useEffect(() => {
-    if (isAuthenticated && !loading) {
-      const redirectPath = getRedirectPath();
-      console.log('🔄 用户已登录，重定向到:', redirectPath);
-      navigate(redirectPath, { replace: true });
-    }
+    // 添加小延迟，避免在登出过程中的状态清除时出现闪烁
+    const timer = setTimeout(() => {
+      if (isAuthenticated && !loading) {
+        const redirectPath = getRedirectPath();
+        console.log('🔄 用户已登录，重定向到:', redirectPath);
+        navigate(redirectPath, { replace: true });
+      }
+    }, 100); // 100ms延迟，足够状态更新
+
+    return () => clearTimeout(timer);
   }, [isAuthenticated, loading, navigate, location]);
 
  
@@ -102,28 +107,28 @@ const Login = () => {
 
     try {
       // 调用认证服务进行登录
-      const result_userProfile = await loginUser(formData.email, formData.password);
+      const loginResult = await loginUser(formData.email, formData.password);
       
-      if (result_userProfile.success) {
-        // 登录成功，后端已设置Cookie，直接使用返回的用户数据
-        console.log('✅ 登录成功，设置用户信息:', result_userProfile);
+      if (loginResult.success) {
+        // 登录成功，调用loginSuccess方法获取完整用户信息
+        console.log('✅ 登录成功，开始获取完整用户信息:', loginResult);
         
-        // 直接设置用户数据
-        if (result_userProfile) {
-          setUserData(
-            result_userProfile, 
-            { identity: true, valid: true }, // 登录成功的用户默认已认证且有效
-            {}
-          );
+        const setupResult = await loginSuccess(loginResult);
+        
+        if (setupResult.success) {
+          // 重定向到目标页面
+          const redirectPath = getRedirectPath();
+          console.log('✅ 用户信息设置完成，重定向到:', redirectPath);
+          navigate(redirectPath, { replace: true });
+        } else {
+          // 用户信息设置失败，但登录成功了，仍然可以重定向
+          console.warn('⚠️ 用户信息设置失败，但登录成功:', setupResult.error);
+          const redirectPath = getRedirectPath();
+          navigate(redirectPath, { replace: true });
         }
-        
-        // 重定向到目标页面
-        const redirectPath = getRedirectPath();
-        console.log('✅ 重定向到:', redirectPath);
-        navigate(redirectPath, { replace: true });
       } else {
         // 登录失败，显示错误信息
-        setFormErrors({ submit: result_userProfile.error || '登录失败，请检查邮箱和密码' });
+        setFormErrors({ submit: loginResult.error || '登录失败，请检查邮箱和密码' });
       }
     } catch (error) {
       console.error('登录出错:', error);

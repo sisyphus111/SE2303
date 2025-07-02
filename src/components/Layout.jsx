@@ -18,13 +18,12 @@ import {
   DownOutlined
 } from '@ant-design/icons';
 import '../css/Layout.css';
-// import CommunityHeader from "./CommunityHeader";
 
 const Layout = ({children}) => {
     const location = useLocation();
     const navigate = useNavigate();
     const {current} = useAudio();
-    const { isAuthenticated, user, getUserAvatar, getUserDisplayName, clearUser } = useUser();
+    const { userProfile, identity, valid, preferences, getUserAvatar, getUserDisplayName, clearUser } = useUser();
     const [showUserMenu, setShowUserMenu] = useState(false);
     const userMenuRef = useRef(null);
 
@@ -76,23 +75,27 @@ const Layout = ({children}) => {
 
     const handleLogout = async () => {
         try {
-            // 调用认证服务的登出API
+            setShowUserMenu(false);
+            
+            // 立即清除本地用户状态，确保UI及时更新
+            clearUser();
+            
+            // 调用认证服务的登出API清除服务器端状态
             const result = await authLogout();
             
             if (result.success) {
-                // 清除UserContext中的用户信息
-                clearUser();
-                setShowUserMenu(false);
-                navigate('/login');
+                console.log('✅ 登出成功');
             } else {
-                console.error('登出失败:', result.error);
+                console.warn('⚠️ 后端登出失败，但前端状态已清除:', result.error);
             }
+            
+            // 无论后端API是否成功，都重定向到登录页
+            navigate('/login', { replace: true });
+            
         } catch (error) {
-            console.error('登出失败:', error);
-            // 即使API调用失败，也要清除本地状态
-            clearUser();
-            setShowUserMenu(false);
-            navigate('/login');
+            console.error('❌ 登出API调用失败:', error);
+            // 前端状态已经清除，仍然重定向到登录页
+            navigate('/login', { replace: true });
         }
     };
 
@@ -140,7 +143,7 @@ const Layout = ({children}) => {
 
                     {/* 用户区域 */}
                     <div className="header-user">
-                        {isAuthenticated ? (
+                        {userProfile && identity && valid ? (
                             <div className="user-dropdown" ref={userMenuRef}>
                                 <button 
                                     className="user-button"

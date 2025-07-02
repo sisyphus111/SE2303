@@ -20,18 +20,6 @@ export const getUserInfo = async (userId = null) => {
   return get(endpoint);
 };
 
-/**
- * 更新用户信息
- * @param {Object} userData - 用户数据
- * @param {string} userData.nickname - 昵称
- * @param {string} userData.avatar - 头像URL
- * @param {string} userData.bio - 个人简介
- * @param {string} userData.email - 邮箱
- * @returns {Promise<Object>} 更新结果
- */
-export const updateUserInfo = async (userData) => {
-  return put('/user/profile', userData);
-};
 
 /**
  * 获取用户统计数据
@@ -55,14 +43,6 @@ export const getUserSettings = async () => {
   return get('/user/settings');
 };
 
-/**
- * 更新用户设置
- * @param {Object} settings - 设置数据
- * @returns {Promise<Object>} 更新结果
- */
-export const updateUserSettings = async (settings) => {
-  return put('/user/settings', settings);
-};
 
 /**
  * 用户签到
@@ -72,36 +52,7 @@ export const userCheckIn = async () => {
   return post('/user/checkin', {});
 };
 
-/**
- * 获取用户设置数据（模拟函数，用于前端测试）
- * @returns {Promise<Object>} 用户设置数据
- */
-export const getSettingsData = async () => {
-  // 模拟API调用延迟
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  return {
-    profile: {
-      nickname: '用户昵称',
-      avatar: 'https://via.placeholder.com/100',
-      bio: '这是我的个人简介',
-      email: 'user@example.com'
-    },
-    settings: {
-      notifications: {
-        email: true,
-        push: false,
-        dailyReminder: true
-      },
-      privacy: {
-        profileVisible: true,
-        diaryVisible: false
-      },
-      theme: 'light',
-      language: 'zh-CN'
-    }
-  };
-};
+
 
 /**
  * 获取用户资料
@@ -130,7 +81,7 @@ export const getUserProfile = async () => {
  * @param {Object} updates - 要更新的用户信息
  * @returns {Promise<Object>} 更新后的用户信息
  */
-export const updateUserProfile = async (updates) => {
+export const apiUpdateUserProfile = async (updates) => {
   try {
     const response = await put('/user/profile', updates);
     // 后端返回的结构是 { success, message, data: UserProfileResponse }
@@ -162,7 +113,7 @@ export const getUserPreferences = async () => {
  * @param {Object} preferences - 偏好设置
  * @returns {Promise<Object>} 更新后的偏好设置
  */
-export const updateUserPreferences = async (preferences) => {
+export const apiUpdateUserPreferences = async (preferences) => {
   try {
     console.log('🚀 userService.updateUserPreferences被调用，参数:', preferences);
     console.log('📤 发送POST请求到 /user/preferences...');

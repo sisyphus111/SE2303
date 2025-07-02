@@ -51,15 +51,10 @@ export const UserProvider = ({ children }) => {
 
         // 处理用户个人资料
         if (userProfileData.status === 'fulfilled' && userProfileData.value) {
-          // getUserProfile返回的是 {user: ..., preferences: ...} 结构
-          if (userProfileData.value.user) {
-            setUserProfile(userProfileData.value.user);
-            setProfileError(null);
-            console.log('✅ 用户个人资料加载成功:', userProfileData.value.user);
-          } else {
-            console.log('⚠️ getUserProfile返回数据中没有user字段');
-            setUserProfile(null);
-          }
+          // getUserProfile现在直接返回用户资料对象
+          setUserProfile(userProfileData.value);
+          setProfileError(null);
+          console.log('✅ 用户个人资料加载成功:', userProfileData.value);
         } else if (userProfileData.status === 'rejected') {
           console.error('获取用户个人资料失败:', userProfileData.reason);
           // 如果是401错误，不设置为error状态，让ErrorHandler处理重定向
@@ -226,7 +221,7 @@ export const UserProvider = ({ children }) => {
     }
     
     if (preferencesData) {
-      setPreferences(prev => ({ ...prev, ...preferencesData }));
+      updateUserPrefs(preferencesData);
       setPreferencesError(null);
     }
     
@@ -268,11 +263,9 @@ export const UserProvider = ({ children }) => {
 
       // 处理用户个人资料
       if (userProfileData.status === 'fulfilled' && userProfileData.value) {
-        if (userProfileData.value.user) {
-          setUserProfile(userProfileData.value.user);
-          setProfileError(null);
-          console.log('✅ 用户个人资料刷新成功:', userProfileData.value.user);
-        }
+        setUserProfile(userProfileData.value);
+        setProfileError(null);
+        console.log('✅ 用户个人资料刷新成功:', userProfileData.value);
       } else if (userProfileData.status === 'rejected') {
         console.error('刷新用户个人资料失败:', userProfileData.reason);
         if (userProfileData.reason?.errorCode !== 401) {
@@ -320,7 +313,6 @@ export const UserProvider = ({ children }) => {
   const value = {
     // 状态数据
     userProfile,
-    user: userProfile, // 为了兼容Layout组件，user字段指向userProfile
     identity,
     valid,
     preferences,
@@ -339,7 +331,7 @@ export const UserProvider = ({ children }) => {
     preferencesError,
     
     // 用户个人资料相关方法
-    updateUserProfile: updateUserProfileData,
+    updateUserProfileData,
     getUserAvatar,
     getUserDisplayName,
     clearUser,
@@ -348,11 +340,9 @@ export const UserProvider = ({ children }) => {
     // 用户偏好设置相关方法
     updateUserPrefs,
     resetUserPreferences,
-    setPreferences, // 添加setPreferences方法
     
     // 全局用户管理方法
     setUserData,
-    setUser: setUserData, // 为了兼容Register组件，setUser指向setUserData
     clearUser,
   };
 

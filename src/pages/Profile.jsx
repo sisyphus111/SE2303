@@ -35,8 +35,7 @@ const { TextArea } = Input;
 function Profile() {
   const { 
     userProfile, 
-    updateUserProfileData, 
-    isAuthenticated, 
+    updateUserProfile,  
     profileLoading,
     profileError 
   } = useUser();
@@ -126,7 +125,7 @@ function Profile() {
       console.log('准备发送到后端的数据:', updateData);
       
       // 使用UserContext的updateUserProfile方法
-      const result = await updateUserProfileData(updateData);
+      const result = await updateUserProfile(updateData);
       
       if (result.success) {
         // 更新本地状态
@@ -153,7 +152,7 @@ function Profile() {
         const newAvatar = e.target.result;
         setUserData(prev => ({ ...prev, avatar: newAvatar }));
         // 使用UserContext的updateUserProfile更新头像
-        updateUserProfileData({ avatar: newAvatar });
+        updateUserProfile({ avatar: newAvatar });
       };
       reader.readAsDataURL(info.file.originFileObj);
     }
@@ -193,7 +192,7 @@ function Profile() {
       console.log('tags 类型:', typeof updateData.tags, '值:', updateData.tags);
       
       // 使用UserContext的updateUserProfile方法
-      const result = await updateUserProfileData(updateData);
+      const result = await updateUserProfile(updateData);
       console.log('后端响应:', result);
       
       if (result.success) {

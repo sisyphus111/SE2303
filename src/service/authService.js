@@ -39,7 +39,7 @@ export const registerUser = async (userData) => {
     
     return {
       success: true,
-      user: response.user,
+      user: response.data, // 后端返回的用户信息在data字段中
       preferences: response.preferences || {}
     };
   } catch (error) {
@@ -60,7 +60,7 @@ export const logout = async () => {
   try {
     // 调用后端登出API
     // 后端会清除HttpOnly Cookie
-    await post('/user/logout', {});
+    await post('/auth/logout', {});
     
     return {
       success: true,

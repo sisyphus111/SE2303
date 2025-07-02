@@ -23,7 +23,7 @@ import '../css/CommunityHomepage.css';
 const CommunityHomepage = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { isAuthenticated } = useUser();
+    const { userProfile, identity, valid } = useUser();
     const [selectedTag, setSelectedTag] = useState('全部');
     const [searchValue, setSearchValue] = useState('');
     const [allPosts, setAllPosts] = useState([]);
@@ -166,7 +166,7 @@ const CommunityHomepage = () => {
             <p>分享心情，互相支持，一起成长</p>
           </div>
           <div className="quick-actions">
-            {isAuthenticated ? (
+            {userProfile && identity && valid ? (
               <button 
                 className="action-btn primary"
                 onClick={() => navigate('/send_community_post')}
@@ -386,7 +386,7 @@ const CommunityHomepage = () => {
           </div>
 
           {/* 用户快捷操作 */}
-          {isAuthenticated && (
+          {userProfile && identity && valid && (
             <div className="sidebar-card">
               <div className="sidebar-header">
                 <UserOutlined className="sidebar-icon" />

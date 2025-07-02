@@ -51,15 +51,10 @@ export const UserProvider = ({ children }) => {
 
         // 处理用户个人资料
         if (userProfileData.status === 'fulfilled' && userProfileData.value) {
-          // getUserProfile返回的是UserProfile对象
-          if (userProfileData.value) {
-            setUserProfile(userProfileData.value);
-            setProfileError(null);
-            console.log('✅ 用户个人资料加载成功:', userProfileData.value);
-          } else {
-            console.log('⚠️ getUserProfile返回数据中没有user字段');
-            setUserProfile(null);
-          }
+          // getUserProfile现在直接返回用户资料对象
+          setUserProfile(userProfileData.value);
+          setProfileError(null);
+          console.log('✅ 用户个人资料加载成功:', userProfileData.value);
         } else if (userProfileData.status === 'rejected') {
           console.error('获取用户个人资料失败:', userProfileData.reason);
           // 如果是401错误，不设置为error状态，让ErrorHandler处理重定向
@@ -268,11 +263,9 @@ export const UserProvider = ({ children }) => {
 
       // 处理用户个人资料
       if (userProfileData.status === 'fulfilled' && userProfileData.value) {
-        if (userProfileData.value.user) {
-          setUserProfile(userProfileData.value.user);
-          setProfileError(null);
-          console.log('✅ 用户个人资料刷新成功:', userProfileData.value.user);
-        }
+        setUserProfile(userProfileData.value);
+        setProfileError(null);
+        console.log('✅ 用户个人资料刷新成功:', userProfileData.value);
       } else if (userProfileData.status === 'rejected') {
         console.error('刷新用户个人资料失败:', userProfileData.reason);
         if (userProfileData.reason?.errorCode !== 401) {

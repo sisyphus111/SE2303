@@ -113,10 +113,9 @@ export const getUserProfile = async () => {
     // 如果cookie中有有效token，后端会返回用户信息
     const response = await get('/user/profile');
     
-    return {
-      user: response.user,
-      preferences: response.preferences || {}
-    };
+    // 后端返回的结构是 { success, message, data: UserProfileResponse }
+    // 直接返回data字段，这就是用户资料对象
+    return response.data || response;
   } catch (error) {
     // 如果是401错误，说明未登录
     if (error.status === 401) {
@@ -134,7 +133,8 @@ export const getUserProfile = async () => {
 export const updateUserProfile = async (updates) => {
   try {
     const response = await put('/user/profile', updates);
-    return response.user;
+    // 后端返回的结构是 { success, message, data: UserProfileResponse }
+    return response.data || response;
   } catch (error) {
     console.error('更新用户资料失败:', error);
     throw error;

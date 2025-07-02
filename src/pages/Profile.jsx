@@ -34,6 +34,33 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
 
+// 辅助函数：安全地将字符串转换为dayjs对象
+const safeStringToDate = (dateString) => {
+  if (!dateString || dateString === '' || dateString === 'null' || dateString === 'undefined') {
+    return undefined; // 使用 undefined 而不是 null，更适合 Ant Design
+  }
+  try {
+    const date = dayjs(dateString);
+    return date.isValid() ? date : undefined;
+  } catch (error) {
+    console.warn('日期解析错误:', dateString, error);
+    return undefined;
+  }
+};
+
+// 辅助函数：安全地将dayjs对象转换为字符串
+const safeDateToString = (date) => {
+  if (!date) return '';
+  if (dayjs.isDayjs(date) && date.isValid()) {
+    return date.format('YYYY-MM-DD');
+  }
+  if (typeof date === 'string') {
+    const parsedDate = dayjs(date);
+    return parsedDate.isValid() ? parsedDate.format('YYYY-MM-DD') : '';
+  }
+  return '';
+};
+
 function Profile() {
   const { 
     userProfile, 
@@ -102,11 +129,20 @@ function Profile() {
       // 为表单设置值，生日需要转换为dayjs对象
       const formData = {
         ...updatedData,
-        birthday: updatedData.birthday ? dayjs(updatedData.birthday) : null
+        birthday: safeStringToDate(updatedData.birthday)
       };
       form.setFieldsValue(formData);
     }
-  }, [userProfile]);
+    
+    // 组件挂载时的初始化（处理没有userProfile的情况）
+    if (!userProfile && userData) {
+      const safeInitialData = {
+        ...userData,
+        birthday: safeStringToDate(userData.birthday)
+      };
+      form.setFieldsValue(safeInitialData);
+    }
+  }, [userProfile, userData.birthday]); // 监听userProfile和生日数据变化
 
   const handleSave = async (values) => {
     setLoading(true);
@@ -115,7 +151,7 @@ function Profile() {
       const tagsString = Array.isArray(values.tags) ? values.tags.join(',') : values.tags;
       
       // 处理生日格式 - 将dayjs对象转换为YYYY-MM-DD字符串
-      const birthdayString = values.birthday ? (dayjs.isDayjs(values.birthday) ? values.birthday.format('YYYY-MM-DD') : values.birthday) : '';
+      const birthdayString = safeDateToString(values.birthday);
       
       // 准备要发送到后端的数据
       const updateData = {
@@ -176,8 +212,7 @@ function Profile() {
       setUserData(updatedData);
       
       // 准备发送到后端的数据，只发送必要的字段
-      const birthdayData = updatedData.birthday || userProfile?.birthday;
-      const birthdayString = birthdayData ? (dayjs.isDayjs(birthdayData) ? birthdayData.format('YYYY-MM-DD') : birthdayData) : '';
+      const birthdayString = safeDateToString(updatedData.birthday || userProfile?.birthday);
       
       const updateData = {
         username: updatedData.username || userProfile?.username,
@@ -327,7 +362,6 @@ function Profile() {
                 <Form 
                   form={form}
                   layout="vertical" 
-                  initialValues={userData} 
                   onFinish={handleSave}
                   disabled={!editing}
                 >
@@ -435,7 +469,7 @@ function Profile() {
                           // 重置表单时需要处理生日格式
                           const formData = {
                             ...userData,
-                            birthday: userData.birthday ? dayjs(userData.birthday) : null
+                            birthday: safeStringToDate(userData.birthday)
                           };
                           form.setFieldsValue(formData);
                         }}

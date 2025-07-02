@@ -14,8 +14,10 @@ import {
   message,
   Card,
   Divider,
-  Tag
+  Tag,
+  DatePicker
 } from "antd";
+import dayjs from 'dayjs';
 import {
   UserOutlined,
   UploadOutlined,
@@ -96,7 +98,13 @@ function Profile() {
         showPhone: userData.showPhone,
       };
       setUserData(updatedData);
-      form.setFieldsValue(updatedData);
+      
+      // 为表单设置值，生日需要转换为dayjs对象
+      const formData = {
+        ...updatedData,
+        birthday: updatedData.birthday ? dayjs(updatedData.birthday) : null
+      };
+      form.setFieldsValue(formData);
     }
   }, [userProfile]);
 
@@ -106,6 +114,9 @@ function Profile() {
       // 处理tags字段 - 如果是数组则转换为字符串
       const tagsString = Array.isArray(values.tags) ? values.tags.join(',') : values.tags;
       
+      // 处理生日格式 - 将dayjs对象转换为YYYY-MM-DD字符串
+      const birthdayString = values.birthday ? (dayjs.isDayjs(values.birthday) ? values.birthday.format('YYYY-MM-DD') : values.birthday) : '';
+      
       // 准备要发送到后端的数据
       const updateData = {
         username: values.username,
@@ -113,7 +124,7 @@ function Profile() {
         avatar: userData.avatar, // 头像从当前状态获取
         email: values.email, // 添加邮箱字段
         gender: values.gender,
-        birthday: values.birthday,
+        birthday: birthdayString,
         location: values.location,
         telephone: values.phone,
         bio: values.bio,
@@ -165,13 +176,16 @@ function Profile() {
       setUserData(updatedData);
       
       // 准备发送到后端的数据，只发送必要的字段
+      const birthdayData = updatedData.birthday || userProfile?.birthday;
+      const birthdayString = birthdayData ? (dayjs.isDayjs(birthdayData) ? birthdayData.format('YYYY-MM-DD') : birthdayData) : '';
+      
       const updateData = {
         username: updatedData.username || userProfile?.username,
         nickname: updatedData.nickname || userProfile?.nickname,
         avatar: updatedData.avatar || userProfile?.avatar || "default_avatar.png",
         email: updatedData.email || userProfile?.email, // 添加邮箱字段
         gender: updatedData.gender || userProfile?.gender,
-        birthday: updatedData.birthday || userProfile?.birthday,
+        birthday: birthdayString,
         location: updatedData.location || userProfile?.location,
         telephone: updatedData.phone || userProfile?.telephone,
         bio: updatedData.bio || userProfile?.bio,
@@ -372,7 +386,11 @@ function Profile() {
                     </Col>
                     <Col span={12}>
                       <Form.Item label="生日" name="birthday">
-                        <Input type="date" />
+                        <DatePicker 
+                          placeholder="选择生日"
+                          style={{ width: '100%' }}
+                          format="YYYY-MM-DD"
+                        />
                       </Form.Item>
                     </Col>
                   </Row>
@@ -414,7 +432,12 @@ function Profile() {
                         style={{ marginLeft: 8 }}
                         onClick={() => {
                           setEditing(false);
-                          form.resetFields();
+                          // 重置表单时需要处理生日格式
+                          const formData = {
+                            ...userData,
+                            birthday: userData.birthday ? dayjs(userData.birthday) : null
+                          };
+                          form.setFieldsValue(formData);
                         }}
                       >
                         取消

@@ -313,9 +313,7 @@ const CommunityHomepage = () => {
             <div className="sidebar-header">
               <FireOutlined className="sidebar-icon" />
               <h3>热门帖子</h3>
-              <button className="more-btn" onClick={() => handleSortChange('hot')}>
-                更多 <ArrowRightOutlined />
-              </button>
+            
             </div>
             <div className="hot-posts-list">
               {getHotPosts().map((post, index) => (
@@ -340,9 +338,6 @@ const CommunityHomepage = () => {
             <div className="sidebar-header">
               <ClockCircleOutlined className="sidebar-icon" />
               <h3>最新动态</h3>
-              <button className="more-btn" onClick={() => handleSortChange('latest')}>
-                更多 <ArrowRightOutlined />
-              </button>
             </div>
             <div className="recent-posts-list">
               {getRecentPosts().map(post => (

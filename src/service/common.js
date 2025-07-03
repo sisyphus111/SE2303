@@ -59,8 +59,23 @@ export async function del(url, data) {
     return handleApiResponse(response);
 }
 
-export async function post(url, data) {
-    const fullUrl = `${PREFIX}${url}`;
+export async function post(url, data, options = {}) {
+    let fullUrl = `${PREFIX}${url}`;
+    
+    // 如果有查询参数，添加到URL中
+    if (options.params) {
+        const searchParams = new URLSearchParams();
+        Object.entries(options.params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                searchParams.append(key, value);
+            }
+        });
+        const queryString = searchParams.toString();
+        if (queryString) {
+            fullUrl += `?${queryString}`;
+        }
+    }
+    
     console.log(`🌐 POST请求: ${fullUrl}`);
     console.log('📤 请求数据:', data);
     

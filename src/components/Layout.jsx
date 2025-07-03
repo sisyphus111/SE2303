@@ -214,13 +214,6 @@ const Layout = ({children}) => {
                                     <LoginOutlined />
                                     登录
                                 </button>
-                                <button 
-                                    className="auth-btn register-btn"
-                                    onClick={() => navigate('/register')}
-                                >
-                                    <UserOutlined />
-                                    注册
-                                </button>
                             </div>
                         )}
                     </div>

@@ -56,7 +56,7 @@ export const handleApiError = (error, defaultMessage = '操作失败', callback)
  */
 const isAuthPage = () => {
   const pathname = window.location.pathname;
-  return pathname === '/login' || pathname === '/register';
+  return pathname === '/login' || pathname === '/register' || pathname.startsWith('/auth');
 };
 
 /**

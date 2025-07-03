@@ -1,33 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
-  UserOutlined, 
-  LockOutlined, 
-  EyeOutlined, 
-  EyeInvisibleOutlined,
   LoginOutlined,
   SunOutlined 
 } from '@ant-design/icons';
 import { useUser } from '../lib/UserContext';
-import { loginUser } from '../service/authService';
 import '../css/Login.css';
-import { Result } from 'antd';
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { loginSuccess, isAuthenticated, loading, error } = useUser();
+  const { isAuthenticated, loading } = useUser();
 
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-  const [formErrors, setFormErrors] = useState({});
-  const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-
-  // 获取重定向路径 - 支持三种来源
+  // 获取重定向路径 - 支持多种来源
   const getRedirectPath = () => {
     // 1. URL查询参数 ?redirect=/profile
     const urlParams = new URLSearchParams(location.search);
@@ -54,88 +39,33 @@ const Login = () => {
     return () => clearTimeout(timer);
   }, [isAuthenticated, loading, navigate, location]);
 
- 
+  // 处理Jaccount登录
+  const handleJaccountLogin = () => {
+    console.log('🚀 Jaccount登录按钮被点击');
 
-  // 表单验证
-  const validateForm = () => {
-    const errors = {};
-
-    // 邮箱验证
-    if (!formData.email) {
-      errors.email = '请输入邮箱地址';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = '请输入有效的邮箱地址';
+    // 保存当前要重定向的路径到localStorage，以便回调页面使用
+    const redirectPath = getRedirectPath();
+    if (redirectPath !== '/') {
+      localStorage.setItem('loginRedirect', redirectPath);
+      console.log('💾 保存重定向路径到localStorage:', redirectPath);
     }
 
-    // 密码验证
-    if (!formData.password) {
-      errors.password = '请输入密码';
-    } else if (formData.password.length < 6) {
-      errors.password = '密码至少需要6个字符';
-    }
+    // 构建Jaccount OAuth URL，redirect_uri指向专门的回调页面
+    const jaccountConfig = {
+      response_type: 'code',
+      scope: 'profile', // 经测试，选用'basic'或'essential'会报错invalid scope
+      client_id: 'REDACTED',
+      redirect_uri: window.location.origin + '/auth/jaccount/callback',
+      state: Math.random().toString(36).substring(2, 15) // 防CSRF攻击
+    };
 
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
+    const authUrl = new URL('http://jaccount.sjtu.edu.cn/oauth2/authorize');
+    Object.entries(jaccountConfig).forEach(([key, value]) => {
+      authUrl.searchParams.append(key, value);
+    });
 
-  // 处理输入变化
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-
-    // 清除该字段的错误信息
-    if (formErrors[name]) {
-      setFormErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
-  };
-
-  // 处理表单提交
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      // 调用认证服务进行登录
-      const loginResult = await loginUser(formData.email, formData.password);
-      
-      if (loginResult.success) {
-        // 登录成功，调用loginSuccess方法获取完整用户信息
-        console.log('✅ 登录成功，开始获取完整用户信息:', loginResult);
-        
-        const setupResult = await loginSuccess(loginResult);
-        
-        if (setupResult.success) {
-          // 重定向到目标页面
-          const redirectPath = getRedirectPath();
-          console.log('✅ 用户信息设置完成，重定向到:', redirectPath);
-          navigate(redirectPath, { replace: true });
-        } else {
-          // 用户信息设置失败，但登录成功了，仍然可以重定向
-          console.warn('⚠️ 用户信息设置失败，但登录成功:', setupResult.error);
-          const redirectPath = getRedirectPath();
-          navigate(redirectPath, { replace: true });
-        }
-      } else {
-        // 登录失败，显示错误信息
-        setFormErrors({ submit: loginResult.error || '登录失败，请检查邮箱和密码' });
-      }
-    } catch (error) {
-      console.error('登录出错:', error);
-      setFormErrors({ submit: '登录出错，请稍后重试' });
-    } finally {
-      setIsSubmitting(false);
-    }
+    console.log('🔗 跳转到Jaccount授权页面:', authUrl.toString());
+    window.location.href = authUrl.toString();
   };
 
   return (
@@ -147,108 +77,32 @@ const Login = () => {
             <SunOutlined className="logo-icon" />
             <h1 className="logo-text">心晴校园</h1>
           </div>
-          <p className="login-subtitle">欢迎回来，继续您的心理健康之旅</p>
+          <p className="login-subtitle">欢迎来到心晴校园，请使用Jaccount登录</p>
         </div>
 
-        {/* 登录表单 */}
-        <form className="login-form" onSubmit={handleSubmit}>
-          {/* 全局错误显示 */}
-          {(error || formErrors.submit) && (
-            <div className="error-message global-error">
-              {error || formErrors.submit}
-            </div>
-          )}
-
-          {/* 邮箱输入 */}
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">邮箱地址</label>
-            <div className="input-wrapper">
-              <UserOutlined className="input-icon" />
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className={`form-input ${formErrors.email ? 'error' : ''}`}
-                placeholder="请输入邮箱地址"
-                autoComplete="email"
-              />
-            </div>
-            {formErrors.email && (
-              <span className="error-message">{formErrors.email}</span>
-            )}
+        {/* Jaccount登录区域 */}
+        <div className="jaccount-login-section">
+          <div className="jaccount-info">
+            <p className="jaccount-description">
+              使用上海交通大学统一身份认证系统登录
+            </p>
           </div>
 
-          {/* 密码输入 */}
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">密码</label>
-            <div className="input-wrapper">
-              <LockOutlined className="input-icon" />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                className={`form-input ${formErrors.password ? 'error' }`}
-                placeholder="请输入密码"
-                autoComplete="current-password"
-              />
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-              </button>
-            </div>
-            {formErrors.password && (
-              <span className="error-message">{formErrors.password}</span>
-            )}
-          </div>
-
-          {/* 记住我选项 */}
-          <div className="form-options">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="checkbox-input"
-              />
-              <span className="checkbox-text">记住我</span>
-            </label>
-          </div>
-
-          {/* 登录按钮 */}
+          {/* Jaccount登录按钮 */}
           <button
-            type="submit"
-            className="login-button"
-            disabled={isSubmitting}
+            type="button"
+            className="login-button jaccount-button"
+            onClick={handleJaccountLogin}
           >
-            {isSubmitting ? (
-              <>
-                <div className="button-spinner" />
-                登录中...
-              </>
-            ) : (
-              <>
-                <LoginOutlined />
-                登录
-              </>
-            )}
+            <LoginOutlined />
+            Jaccount登录
           </button>
-        </form>
 
-        {/* 页面底部 */}
-        <div className="login-footer">
-          <p className="footer-text">
-            还没有账号？{' '}
-            <Link to="/register" className="footer-link">
-              立即注册
-            </Link>
-          </p>
+          <div className="login-notice">
+            <p className="notice-text">
+              首次登录将自动为您创建账号
+            </p>
+          </div>
         </div>
       </div>
 

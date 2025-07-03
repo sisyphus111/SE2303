@@ -27,29 +27,6 @@ export const loginUser = async (email, password) => {
   }
 };
 
-/**
- * 用户注册
- * @param {Object} userData - 用户数据
- * @returns {Promise<Object>} 注册结果
- */
-export const registerUser = async (userData) => {
-  try {
-    // 调用后端注册API
-    const response = await post('/auth/register', userData);
-    
-    return {
-      success: true,
-      user: response.data, // 后端返回的用户信息在data字段中
-      preferences: response.preferences || {}
-    };
-  } catch (error) {
-    console.error('注册请求失败:', error);
-    return {
-      success: false,
-      error: error.message || '注册失败，请稍后重试'
-    };
-  }
-};
 
 /**
  * 用户登出
@@ -58,9 +35,16 @@ export const registerUser = async (userData) => {
 export const logout = async () => {
 
   try {
-    // 调用后端登出API
-    // 后端会清除HttpOnly Cookie
-    await post('/auth/logout', {});
+    // 构建登出后的重定向地址（通常是登录页面）
+    const postLogoutRedirectUri = `${window.location.origin}/login`;
+    
+    // 调用后端登出API，传递jAccount登出所需的参数
+    await post('/auth/logout', {}, {
+      params: {
+        post_logout_redirect_uri: postLogoutRedirectUri,
+        state: 'logout_success' // 可选的状态参数
+      }
+    });
     
     return {
       success: true,

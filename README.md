@@ -1,26 +1,38 @@
-# SE2303大作业 校园心理健康互助社区—后端微服务
-启动脚本：
+# SE2303大作业——网关
+`make gateway`启动网关
 
-```make bot```
-启动bot-service
+## 系统架构说明：
 
-```make community```
-启动community-service
+基于Spring Cloud Gateway实现的微服务API网关
 
-```make mood```
-启动mood-service
+作为前端和后端微服务之间的统一入口
 
-```make notification```
-启动notification-service
+负责请求路由、负载均衡、跨域处理、身份认证等功能
 
-```make user```
-启动user-service
+## 主要功能模块：
+统一入口和反向代理：将前端请求路由到相应的后端服务
 
-```make alert```
-启动alert-service
+CORS跨域处理：解决前端应用跨域访问API的问题
+JWT身份认证：验证用户token并提取用户信息
 
-```make inspection```
-启动inspection-service
+请求头处理：为所有请求添加统一的请求头信息
 
-```make all```
-全部启动
+请求路径重写和转发：根据配置将请求转发到对应的微服务
+
+## 服务端口：8080
+
+## 支持的微服务：
+
+用户服务 (localhost:8082)：处理用户注册、登录、个人信息管理
+
+社区服务 (localhost:8083)：处理社区帖子、评论、互动功能
+
+校园端服务 (localhost:8084): 处理校园端管理功能
+
+心情服务 (localhost:8085)：处理心情记录、分析、统计功能
+
+预警服务 (localhost:8086)：处理预警信息、通知校园端功能
+
+通知服务 (localhost:8087)：资源推送功能
+
+检查服务 (localhost:8088)：内容审查功能

@@ -49,7 +49,7 @@ const JaccountCallback = () => {
           state: state
         });
 
-        if (result.success) {
+        
           setStatus('success');
           setMessage('登录成功，正在跳转...');
 
@@ -65,10 +65,7 @@ const JaccountCallback = () => {
             console.log('✅ 登录成功，重定向到:', redirectPath);
             navigate(redirectPath, { replace: true });
           }, 1500);
-        } else {
-          setStatus('error');
-          setMessage(result.message || '登录失败，请重试');
-        }
+        
       } catch (error) {
         console.error('❌ Jaccount回调处理出错:', error);
         setStatus('error');

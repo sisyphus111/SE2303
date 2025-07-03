@@ -1,0 +1,374 @@
+/* 管理员专用布局样式 - 白蓝风格 */
+
+.admin-layout-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    display: flex;
+    flex-direction: column;
+}
+
+/* 管理员Header */
+.admin-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 3px solid #4a90e2;
+}
+
+.admin-header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 64px;
+}
+
+.admin-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+}
+
+.admin-logo-icon {
+    font-size: 24px;
+    color: #ffffff;
+}
+
+.admin-logo-text {
+    font-size: 20px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+/* 管理员导航 */
+.admin-nav {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.admin-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.admin-nav-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.admin-nav-item.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-weight: 600;
+}
+
+.admin-nav-icon {
+    font-size: 16px;
+}
+
+.admin-nav-label {
+    font-size: 14px;
+}
+
+/* 管理员用户区域 */
+.admin-user-area {
+    display: flex;
+    align-items: center;
+}
+
+.admin-user-dropdown {
+    position: relative;
+}
+
+.admin-user-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.admin-user-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.admin-user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.admin-user-name {
+    font-weight: 500;
+}
+
+.admin-dropdown-icon {
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.admin-user-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    min-width: 160px;
+    overflow: hidden;
+    z-index: 1001;
+}
+
+.admin-menu-item {
+    width: 100%;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.admin-menu-item:hover {
+    background: #f8f9fa;
+}
+
+.admin-menu-item.admin-logout {
+    color: #dc3545;
+    border-top: 1px solid #f0f0f0;
+}
+
+.admin-menu-item.admin-logout:hover {
+    background: #fff5f5;
+}
+
+.admin-auth-error {
+    color: #ffcccb;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* 管理员主内容区域 */
+.admin-main {
+    flex: 1;
+    padding: 24px;
+    background: transparent;
+}
+
+.admin-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    min-height: calc(100vh - 200px);
+    overflow: hidden;
+}
+
+/* 管理员Footer */
+.admin-footer {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 16px 24px;
+    margin-top: auto;
+}
+
+.admin-footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.admin-footer-content p {
+    margin: 4px 0;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .admin-header-content {
+        padding: 0 16px;
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 64px;
+    }
+    
+    .admin-logo {
+        flex: 1;
+    }
+    
+    .admin-nav {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        padding: 12px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .admin-nav-item {
+        flex-direction: column;
+        gap: 4px;
+        padding: 8px 12px;
+    }
+    
+    .admin-nav-label {
+        font-size: 12px;
+    }
+    
+    .admin-main {
+        padding: 16px;
+    }
+    
+    .admin-content {
+        border-radius: 8px;
+        min-height: calc(100vh - 180px);
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-logo-text {
+        font-size: 16px;
+    }
+    
+    .admin-nav {
+        gap: 4px;
+    }
+    
+    .admin-nav-item {
+        padding: 6px 8px;
+    }
+    
+    .admin-user-button {
+        padding: 6px 12px;
+    }
+    
+    .admin-user-avatar {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+/* 管理员特色动画 */
+.admin-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: translateX(-100%);
+    animation: admin-shine 3s infinite;
+}
+
+@keyframes admin-shine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* 管理员内容卡片样式 */
+.admin-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+    border-left: 4px solid #4a90e2;
+}
+
+.admin-card-title {
+    color: #2c3e50;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-card-content {
+    color: #555;
+    line-height: 1.6;
+}
+
+/* 管理员按钮样式 */
+.admin-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.admin-btn-primary {
+    background: #4a90e2;
+    color: white;
+}
+
+.admin-btn-primary:hover {
+    background: #357abd;
+    transform: translateY(-2px);
+}
+
+.admin-btn-danger {
+    background: #e74c3c;
+    color: white;
+}
+
+.admin-btn-danger:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+}
+
+.admin-btn-success {
+    background: #27ae60;
+    color: white;
+}
+
+.admin-btn-success:hover {
+    background: #219a52;
+    transform: translateY(-2px);
+} 

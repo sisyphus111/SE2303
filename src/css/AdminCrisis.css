@@ -1,0 +1,120 @@
+/* 危险用户监控页面样式 */
+
+.admin-crisis-container {
+    padding: 24px;
+}
+
+.admin-crisis-controls {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.admin-crisis-stats {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    flex-wrap: wrap;
+}
+
+.admin-stat-high {
+    color: #dc3545;
+}
+
+.admin-crisis-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.admin-crisis-item {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    transition: all 0.3s ease;
+}
+
+.admin-crisis-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.admin-crisis-user {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.admin-user-username {
+    font-weight: 600;
+    color: #333;
+}
+
+.admin-risk-badge {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.admin-risk-badge.high {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.admin-risk-badge.medium {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.admin-risk-badge.low {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.admin-crisis-info {
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: #666;
+}
+
+.admin-crisis-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .admin-crisis-container {
+        padding: 16px;
+    }
+    
+    .admin-crisis-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .admin-crisis-stats {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .admin-crisis-user {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .admin-crisis-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+} 

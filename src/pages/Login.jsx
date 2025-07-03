@@ -12,7 +12,7 @@ const Login = () => {
   const location = useLocation();
   const { isAuthenticated, loading } = useUser();
 
-  // 获取重定向路径 - 支持三种来源
+  // 获取重定向路径 - 支持多种来源
   const getRedirectPath = () => {
     // 1. URL查询参数 ?redirect=/profile
     const urlParams = new URLSearchParams(location.search);
@@ -41,9 +41,31 @@ const Login = () => {
 
   // 处理Jaccount登录
   const handleJaccountLogin = () => {
-    // 这里的逻辑由用户处理
-    console.log('Jaccount登录按钮被点击');
-    // 用户将在这里实现Jaccount登录逻辑
+    console.log('🚀 Jaccount登录按钮被点击');
+
+    // 保存当前要重定向的路径到localStorage，以便回调页面使用
+    const redirectPath = getRedirectPath();
+    if (redirectPath !== '/') {
+      localStorage.setItem('loginRedirect', redirectPath);
+      console.log('💾 保存重定向路径到localStorage:', redirectPath);
+    }
+
+    // 构建Jaccount OAuth URL，redirect_uri指向专门的回调页面
+    const jaccountConfig = {
+      response_type: 'code',
+      scope: 'profile',
+      client_id: 'REDACTED',
+      redirect_uri: window.location.origin + '/auth/jaccount/callback',
+      state: Math.random().toString(36).substring(2, 15) // 防CSRF攻击
+    };
+
+    const authUrl = new URL('http://jaccount.sjtu.edu.cn/oauth2/authorize');
+    Object.entries(jaccountConfig).forEach(([key, value]) => {
+      authUrl.searchParams.append(key, value);
+    });
+
+    console.log('🔗 跳转到Jaccount授权页面:', authUrl.toString());
+    window.location.href = authUrl.toString();
   };
 
   return (

@@ -53,7 +53,7 @@ const Login = () => {
     // 构建Jaccount OAuth URL，redirect_uri指向专门的回调页面
     const jaccountConfig = {
       response_type: 'code',
-      scope: 'profile',
+      scope: 'profile', // 经测试，选用'basic'或'essential'会报错invalid scope
       client_id: 'REDACTED',
       redirect_uri: window.location.origin + '/auth/jaccount/callback',
       state: Math.random().toString(36).substring(2, 15) // 防CSRF攻击

@@ -76,7 +76,6 @@ function Profile() {
   // 初始化表单数据
   const [userData, setUserData] = useState({
     username: userProfile?.username || '',
-    email: userProfile?.email || '',
     nickname: userProfile?.nickname || '',
     phone: userProfile?.telephone || '',
     gender: userProfile?.gender || '男',
@@ -90,7 +89,6 @@ function Profile() {
     profileVisibility: userProfile?.profileVisibility || 'public',
     showOnlineStatus: true,
     allowDirectMessage: true,
-    showEmail: false,
     showPhone: false,
   });
 
@@ -110,7 +108,6 @@ function Profile() {
       const updatedData = {
         ...userData,
         username: userProfile.username || userData.username,
-        email: userProfile.email || userData.email,
         nickname: userProfile.nickname || userData.nickname,
         phone: userProfile.telephone || userData.phone, // 后端是telephone，前端是phone
         avatar: userProfile.avatar || userData.avatar,
@@ -122,7 +119,6 @@ function Profile() {
         profileVisibility: userProfile.profileVisibility || userData.profileVisibility,
         showOnlineStatus: userData.showOnlineStatus,
         allowDirectMessage: userData.allowDirectMessage,
-        showEmail: userData.showEmail,
         showPhone: userData.showPhone,
       };
       setUserData(updatedData);
@@ -159,7 +155,6 @@ function Profile() {
         username: values.username,
         nickname: values.nickname,
         avatar: userData.avatar, // 头像从当前状态获取
-        email: values.email, // 添加邮箱字段
         gender: values.gender,
         birthday: birthdayString,
         location: values.location,
@@ -167,7 +162,6 @@ function Profile() {
         bio: values.bio,
         tags: tagsString,
         profileVisibility: values.profileVisibility,
-        // userStatus字段通常不由用户直接修改，由管理员控制
       };
       
       console.log('准备发送到后端的数据:', updateData);
@@ -257,7 +251,6 @@ function Profile() {
         username: updatedData.username || userProfile?.username,
         nickname: updatedData.nickname || userProfile?.nickname,
         avatar: updatedData.avatar || userProfile?.avatar || "default_avatar.png",
-        email: updatedData.email || userProfile?.email, // 添加邮箱字段
         gender: updatedData.gender || userProfile?.gender,
         birthday: birthdayString,
         location: updatedData.location || userProfile?.location,
@@ -302,7 +295,7 @@ function Profile() {
     if (userData.avatar) {
       return userData.avatar;
     }
-    const username = userData.username || userData.email || 'User';
+    const username = userData.username || 'User';
     return username.charAt(0).toUpperCase();
   };
 
@@ -424,28 +417,12 @@ function Profile() {
                     </Col>
                   </Row>
 
-                  <Row gutter={16}>
-                    <Col span={12}>
-                      <Form.Item 
-                        label="邮箱（不会公开显示）" 
-                        name="email" 
-                        rules={[
-                          { required: true, message: '请输入邮箱' }, 
-                          { type: 'email', message: '邮箱格式不正确' }
-                        ]}
-                      >
-                        <Input prefix={<GlobalOutlined />} />
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
                       <Form.Item 
                         label="手机号（不会公开显示）" 
                         name="phone"
                       >
                         <Input prefix={<MobileOutlined />} />
                       </Form.Item>
-                    </Col>
-                  </Row>
 
                   <Row gutter={16}>
                     <Col span={12}>

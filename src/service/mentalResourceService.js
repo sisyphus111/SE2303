@@ -1,27 +1,71 @@
 // 心理健康资源相关API服务
 import { request } from './apiUtils';
+import {get} from "./common";
 
 /**
  * 获取轮播图数据
- * @param {string} type - 轮播图类型（banner, resource, article等）
+ * @param {string} category - 轮播图分类（可选，如 'resource', 'banner' 等）
  * @returns {Promise<Array>} 轮播图列表
  */
-export const getCarouselImages = async (type = 'resource') => {
-  return request(`/resources/carousel?type=${type}`);
+export const getCarouselImages = async (category = null) => {
+  try {
+    let url = '/notification/carousel/all';
+    
+    // 如果指定了分类，使用带分类参数的端点
+    if (category) {
+      url = `/notification/carousel/list?category=${encodeURIComponent(category)}`;
+    }
+    
+    const response = await get(url);
+    return response;
+  } catch (error) {
+    console.error('获取轮播图数据失败:', error);
+    // 不抛出错误，让调用方处理
+    return null;
+  }
 };
 
+// 默认推荐文章数据
+export const defaultArticles = [
+  {
+    id: "1",
+    title: "如何保持良好的心理健康",
+    description: "分享一些日常保持心理健康的小技巧，包括规律作息、适度运动、保持社交联系等实用方法。",
+    cover: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+    link: "#",
+  },
+  {
+    id: "2",
+    title: "压力管理的有效方法",
+    description: "学会管理生活和工作中的压力，通过时间管理、放松技巧和心态调整来应对挑战。",
+    cover: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
+    link: "#",
+  },
+];
+
 /**
- * 获取推荐文章列表
+ * 获取推荐文章列表，优先用后端，失败时用默认
  * @param {Object} params - 查询参数
- * @param {number} params.page - 页码
- * @param {number} params.size - 每页大小
- * @param {string} params.category - 文章分类
- * @param {string} params.keyword - 搜索关键词
- * @returns {Promise<Object>} 文章列表
+ * @returns {Promise<Array>} 文章列表
  */
-export const getRecommendedArticles = async (params = {}) => {
-  const queryString = new URLSearchParams(params).toString();
-  return request(`/resources/articles?${queryString}`);
+export const getRecommendedArticles = async (params = { page: 1, size: 10, category: 'mental-health' }) => {
+  try {
+    let url = '/notification/articles/recommended';
+    // 如果有参数，拼接到url
+    const queryString = new URLSearchParams(params).toString();
+    if (queryString) {
+      url += `?${queryString}`;
+    }
+    const response = await get(url);
+    // response 应该是数组
+    if (Array.isArray(response) && response.length > 0) {
+      return response;
+    }
+    return defaultArticles;
+  } catch (error) {
+    // 失败时兜底
+    return defaultArticles;
+  }
 };
 
 /**
@@ -33,19 +77,42 @@ export const getArticleDetail = async (articleId) => {
   return request(`/resources/articles/${articleId}`);
 };
 
+// 默认音乐数据
+export const defaultMusics = [
+  {
+    title: "森林白噪音",
+    artist: "Nature Sounds",
+    cover: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=120&q=80",
+    url: "example.invalid/birdsing.mp3",
+  },
+  {
+    title: "舒缓钢琴",
+    artist: "Piano Music",
+    cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=120&q=80",
+    url: "example.invalid/piano.mp3",
+  },
+];
+
 /**
- * 获取音乐列表
+ * 获取音乐列表，优先用后端，失败时用默认
  * @param {Object} params - 查询参数
- * @param {string} params.id - 音乐ID
- * @param {string} params.title - 音乐标题
- * @param {string} params.cover - 封面图片
- * @param {string} params.description - 音乐描述
- * @param {string} params.url - 音乐URL
- * @returns {Promise<Object>} 音乐列表
+ * @returns {Promise<Array>} 音乐列表
  */
-export const getMusicList = async (params = {}) => {
-  const queryString = new URLSearchParams(params).toString();
-  return request(`/resources/music?${queryString}`);
+export const getMusicList = async (params = { page: 1, size: 20 }) => {
+  try {
+    let url = '/notification/music/list';
+    const queryString = new URLSearchParams(params).toString();
+    if (queryString) {
+      url += `?${queryString}`;
+    }
+    const response = await get(url);
+    if (Array.isArray(response) && response.length > 0) {
+      return response;
+    }
+    return defaultMusics;
+  } catch (error) {
+    return defaultMusics;
+  }
 };
 
 /**

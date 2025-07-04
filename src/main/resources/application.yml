@@ -86,7 +86,7 @@ spring:
             - RewritePath=/api/admin/(?<segment>.*), /api/admin/${segment}
 
         # -----------------------------------
-        # 心情服务路由配置
+        # 心情服务路由配置t
         # -----------------------------------
         - id: mood-service                # 路由唯一标识符
           uri: http://localhost:8085      # 目标服务地址（心情服务）

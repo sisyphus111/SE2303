@@ -1,14 +1,6 @@
 package com.se2303.gateway.config;
 
-// 导入Spring框架相关类
-import org.springframework.context.annotation.Bean; // Bean注解，用于声明Spring管理的组件
-import org.springframework.context.annotation.Configuration; // 配置类注解
-// 导入CORS相关类
-import org.springframework.web.cors.CorsConfiguration; // CORS配置类
-import org.springframework.web.cors.reactive.CorsWebFilter; // 响应式CORS过滤器
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource; // 基于URL的CORS配置源
-// 导入Java集合工具类
-import java.util.Arrays; // 数组工具类，用于创建列表
+import org.springframework.context.annotation.Configuration;
 
 /**
  * CORS（跨域资源共享）配置类

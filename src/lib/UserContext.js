@@ -7,7 +7,7 @@ const UserContext = createContext();
 // 检查是否为登录/注册页面
 const isAuthPage = () => {
   const pathname = window.location.pathname;
-  return pathname === '/login' || pathname === '/register';
+  return pathname === '/login' || pathname === '/register' || pathname.startsWith('auth');
 };
 
 // Provider Component
@@ -224,14 +224,11 @@ export const UserProvider = ({ children }) => {
         console.log('✅ 设置基础用户信息:', loginResult.user);
       }
       
-      // 设置认证状态
-      setIdentity(true);
-      setValid(true);
-      
       // 并行获取完整的用户数据
-      const [userProfileData, userPreferencesData] = await Promise.allSettled([
+      const [userProfileData, userPreferencesData, userStatusData] = await Promise.allSettled([
         getUserProfile(),
-        getUserPreferences()
+        getUserPreferences(),
+        getUserStatus()
       ]);
 
       // 处理用户个人资料
@@ -239,6 +236,13 @@ export const UserProvider = ({ children }) => {
         setUserProfile(userProfileData.value);
         setProfileError(null);
         console.log('✅ 完整用户资料获取成功:', userProfileData.value);
+      }
+
+      // 处理用户状态
+      if (userStatusData.status === 'fulfilled' && userStatusData.value) {
+        setIdentity(userStatusData.value.identity);
+        setValid(userStatusData.value.valid);
+        setStatusError(null);
       }
 
       // 处理用户偏好设置

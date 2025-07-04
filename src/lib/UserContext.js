@@ -243,6 +243,7 @@ export const UserProvider = ({ children }) => {
         setIdentity(userStatusData.value.identity);
         setValid(userStatusData.value.valid);
         setStatusError(null);
+        console.log('✅ 用户状态获取成功:', userStatusData.value);
       }
 
       // 处理用户偏好设置

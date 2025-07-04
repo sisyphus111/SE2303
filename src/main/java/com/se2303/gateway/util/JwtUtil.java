@@ -114,9 +114,21 @@ public class JwtUtil {
      * @return boolean 用户是否有效，如果没有该声明则返回false
      */
     public boolean getValidFromToken(String token) {
-        // 使用Lambda表达式提取名为"X-Valid"的自定义声明
-        // claims.get("X-Valid", boolean.class) 获取指定名称和类型的声明值
-        return getClaimFromToken(token, claims -> claims.get("X-Valid", boolean.class));
+        try {
+            // 先获取Object类型，然后转换为Boolean
+            Object validObj = getClaimFromToken(token, claims -> claims.get("X-Valid"));
+            if (validObj instanceof Boolean) {
+                return (Boolean) validObj;
+            } else if (validObj instanceof String) {
+                return Boolean.parseBoolean((String) validObj);
+            } else {
+                System.out.println("Unexpected valid type: " + (validObj != null ? validObj.getClass().getName() : "null"));
+                return false;
+            }
+        } catch (Exception e) {
+            System.out.println("Error extracting valid from token: " + e.getMessage());
+            return false;
+        }
     }
 
     /**
@@ -126,9 +138,21 @@ public class JwtUtil {
      * @return boolean 用户是否是普通用户，如果没有该声明则返回false
      */
     public boolean getIdentityFromToken(String token) {
-        // 使用Lambda表达式提取名为"X-Identity"的自定义声明
-        // claims.get("X-Identity", boolean.class) 获取指定名称和类型的声明值
-        return getClaimFromToken(token, claims -> claims.get("X-Identity", boolean.class));
+        try {
+            // 先获取Object类型，然后转换为Boolean
+            Object identityObj = getClaimFromToken(token, claims -> claims.get("X-Identity"));
+            if (identityObj instanceof Boolean) {
+                return (Boolean) identityObj;
+            } else if (identityObj instanceof String) {
+                return Boolean.parseBoolean((String) identityObj);
+            } else {
+                System.out.println("Unexpected identity type: " + (identityObj != null ? identityObj.getClass().getName() : "null"));
+                return false;
+            }
+        } catch (Exception e) {
+            System.out.println("Error extracting identity from token: " + e.getMessage());
+            return false;
+        }
     }
     
     /**

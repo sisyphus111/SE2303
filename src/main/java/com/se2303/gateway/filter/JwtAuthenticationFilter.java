@@ -107,8 +107,17 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         }
         
         try {
-            // 从有效的令牌中提取用户ID信息
+            // 从有效的令牌中提取用户信息
             String userId = jwtUtil.getUserIdFromToken(token);
+            boolean valid = jwtUtil.getValidFromToken(token);
+            boolean identity = jwtUtil.getIdentityFromToken(token);
+            
+            // 添加详细的调试日志
+            logger.info("=== JWT Token解析结果 ===");
+            logger.info("Token: {}", token.substring(0, Math.min(50, token.length())) + "...");
+            logger.info("Extracted userId: {}", userId);
+            logger.info("Extracted valid: {}", valid);
+            logger.info("Extracted identity: {}", identity);
             
             // 检查用户ID是否存在且非空
             if (userId == null || userId.isEmpty()) {
@@ -123,12 +132,21 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
             ServerHttpRequest request = exchange.getRequest().mutate()
                     // 添加用户ID到请求头，供后端服务使用
                     .header("X-User-Id", userId)
+                    // 添加用户有效性状态到请求头
+                    .header("X-Valid", String.valueOf(valid))
+                    // 添加用户身份标识到请求头
+                    .header("X-Identity", String.valueOf(identity))
                     // 添加认证方式标识，表明使用JWT认证
                     .header("X-Gateway-Auth", "jwt")
                     .build(); // 构建新的请求对象
             
             // 记录调试日志：成功认证的用户信息
-            logger.debug("Authenticated user ID: {} for path: {}", userId, path);
+            logger.info("=== 设置请求头 ===");
+            logger.info("X-User-Id: {}", userId);
+            logger.info("X-Valid: {}", String.valueOf(valid));
+            logger.info("X-Identity: {}", String.valueOf(identity));
+            logger.info("Authenticated user - ID: {}, Valid: {}, Identity: {} for path: {}", 
+                        userId, valid, identity, path);
             
             // 使用包含用户信息的新请求继续执行过滤器链
             return chain.filter(exchange.mutate().request(request).build());

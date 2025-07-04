@@ -77,7 +77,6 @@ function Profile() {
   const [userData, setUserData] = useState({
     username: userProfile?.username || '',
     nickname: userProfile?.nickname || '',
-    phone: userProfile?.telephone || '',
     gender: userProfile?.gender || '男',
     birthday: userProfile?.birthday || '',
     location: userProfile?.location || '',
@@ -109,7 +108,6 @@ function Profile() {
         ...userData,
         username: userProfile.username || userData.username,
         nickname: userProfile.nickname || userData.nickname,
-        phone: userProfile.telephone || userData.phone, // 后端是telephone，前端是phone
         avatar: userProfile.avatar || userData.avatar,
         gender: userProfile.gender || userData.gender,
         birthday: userProfile.birthday || userData.birthday,
@@ -158,7 +156,6 @@ function Profile() {
         gender: values.gender,
         birthday: birthdayString,
         location: values.location,
-        telephone: values.phone,
         bio: values.bio,
         tags: tagsString,
         profileVisibility: values.profileVisibility,
@@ -254,7 +251,6 @@ function Profile() {
         gender: updatedData.gender || userProfile?.gender,
         birthday: birthdayString,
         location: updatedData.location || userProfile?.location,
-        telephone: updatedData.phone || userProfile?.telephone,
         bio: updatedData.bio || userProfile?.bio,
         tags: (() => {
           if (Array.isArray(updatedData.tags)) {
@@ -416,13 +412,6 @@ function Profile() {
                       </Form.Item>
                     </Col>
                   </Row>
-
-                      <Form.Item 
-                        label="手机号（不会公开显示）" 
-                        name="phone"
-                      >
-                        <Input prefix={<MobileOutlined />} />
-                      </Form.Item>
 
                   <Row gutter={16}>
                     <Col span={12}>

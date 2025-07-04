@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import "../css/MentalResource.css";
 
 // API服务导入注释
-// import { getCarouselImages, getRecommendedArticles, getMusicList, recordMusicPlay } from '../service/mentalResourceService';
+import { getCarouselImages, getRecommendedArticles, getMusicList, recordMusicPlay } from '../service/mentalResourceService';
 
 const { Title, Paragraph } = Typography;
 
@@ -66,29 +66,25 @@ function MentalResource() {
   const loadResourceData = async () => {
     try {
       setLoading(true);
-      
-      // API调用注释：获取轮播图数据
-      // const carouselRes = await getCarouselImages('resource');
-      // setCarouselData(carouselRes.data);
-      
-      // API调用注释：获取推荐文章列表
-      // const articlesRes = await getRecommendedArticles({
-      //   page: 1,
-      //   size: 10,
-      //   category: 'mental-health'
-      // });
-      // setArticlesData(articlesRes.data);
-      
-      // API调用注释：获取音乐列表
-      // const musicRes = await getMusicList({
-      //   page: 1,
-      //   size: 20
-      // });
-      // setMusicData(musicRes.data);
-      
+      // 轮播图
+      const carouselRes = await getCarouselImages();
+      if (carouselRes && Array.isArray(carouselRes) && carouselRes.length > 0) {
+        const formattedCarouselData = carouselRes.map(item => item.imageUrl);
+        setCarouselData(formattedCarouselData);
+      } else {
+        setCarouselData(carouselImages);
+      }
+      // 推荐文章
+      const articlesRes = await getRecommendedArticles({ page: 1, size: 10, category: 'mental-health' });
+      setArticlesData(articlesRes);
+      // 音乐
+      const musicRes = await getMusicList({ page: 1, size: 20 });
+      setMusicData(musicRes);
     } catch (error) {
       console.error('加载资源数据失败:', error);
-      // 使用默认数据作为备选
+      setCarouselData(carouselImages);
+      setArticlesData(articles);
+      setMusicData(musics);
     } finally {
       setLoading(false);
     }

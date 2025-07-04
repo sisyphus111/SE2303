@@ -1,0 +1,129 @@
+/* 内容审核页面样式 */
+
+.admin-review-container {
+    padding: 24px;
+}
+
+.admin-review-controls {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.admin-review-stats {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    flex-wrap: wrap;
+}
+
+.admin-stat-approved {
+    color: #27ae60;
+}
+
+.admin-review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.admin-content-item {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    transition: all 0.3s ease;
+}
+
+.admin-content-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.admin-content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.admin-content-type {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    color: #4a90e2;
+}
+
+.admin-content-time {
+    font-size: 12px;
+    color: #666;
+}
+
+.admin-content-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.admin-content-info {
+    flex: 1;
+}
+
+.admin-content-title h4 {
+    margin: 0 0 8px 0;
+    color: #333;
+    font-size: 16px;
+}
+
+.admin-content-text {
+    margin-bottom: 8px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.admin-content-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: #666;
+}
+
+.admin-content-author {
+    color: #4a90e2;
+}
+
+.admin-content-tags {
+    color: #28a745;
+}
+
+.admin-content-status {
+    display: flex;
+    align-items: center;
+}
+
+.admin-status-badge.approved {
+    background: #d4edda;
+    color: #155724;
+}
+
+.admin-content-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.admin-content-full {
+    margin-top: 8px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+} 

@@ -2,6 +2,7 @@
 
 # IDE settings
 /.idea
+/.cursor
 # dependencies
 /node_modules
 /.pnp

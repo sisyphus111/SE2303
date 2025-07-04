@@ -1,77 +1,120 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../lib/UserContext';
 import '../css/Diary.css';
 
-// API服务导入注释
-// import { createDiary, getDiaryList, updateDiary, deleteDiary, getMoodStats } from '../service/diaryService';
+// API服务导入
+import { createDiary, getDiaryList, updateDiary, deleteDiary, getMoodStats } from '../service/diaryService';
 
 export const Diary = () => {
   const navigate = useNavigate();
+  const { userProfile, identity } = useUser();
   const [diaryEntries, setDiaryEntries] = useState([]);
   const [newEntry, setNewEntry] = useState({
     title: '',
     content: '',
     weather: 'sunny'
   });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // 加载日记列表
     loadDiaryEntries();
-  }, []);
+  }, [userProfile]);
 
   const loadDiaryEntries = async () => {
-    // API调用注释：获取日记列表
-    // try {
-    //   const response = await getDiaryList({
-    //     startDate: '2024-01-01',
-    //     endDate: new Date().toISOString().split('T')[0]
-    //   });
-    //   setDiaryEntries(response.data);
-    // } catch (error) {
-    //   console.error('获取日记列表失败:', error);
-    //   // 使用模拟数据作为备选
-    //   const mockEntries = [
-    //     {
-    //       id: 1,
-    //       date: '2024-01-15',
-    //       content: '今天心情不错，工作进展顺利...',
-    //       mood: 4
-    //     },
-    //     {
-    //       id: 2,
-    //       date: '2024-01-14',
-    //       content: '有点压力，但还是坚持下来了...',
-    //       mood: 3
-    //     }
-    //   ];
-    //   setDiaryEntries(mockEntries);
-    // }
+    /*if (!userProfile?.id) {
+      console.log('用户未登录，使用模拟数据');
+      // 使用模拟数据作为备选
+      const mockEntries = [
+        {
+          id: 1,
+          title: '充实的一天',
+          date: '2024-01-15',
+          content: '今天工作进展顺利，完成了几个重要的任务。下午和朋友一起喝咖啡，聊了很多有趣的话题。晚上看了一部电影，感觉很放松。',
+          weather: 'sunny'
+        },
+        {
+          id: 2,
+          title: '挑战与成长',
+          date: '2024-01-14',
+          content: '今天遇到了一些工作上的挑战，虽然有点压力，但还是坚持下来了。通过这次经历学到了很多新东西，感觉自己在成长。',
+          weather: 'cloudy'
+        },
+        {
+          id: 3,
+          title: '雨中思考',
+          date: '2024-01-13',
+          content: '今天下雨了，待在家里看书，思考了很多人生的问题。雨声很舒缓，让我感到内心的平静。',
+          weather: 'rainy'
+        }
+      ];
+      setDiaryEntries(mockEntries);
+      return;
+    }*/
 
-    // 示例数据
-    const mockEntries = [
-      {
-        id: 1,
-        title: '充实的一天',
-        date: '2024-01-15',
-        content: '今天工作进展顺利，完成了几个重要的任务。下午和朋友一起喝咖啡，聊了很多有趣的话题。晚上看了一部电影，感觉很放松。',
-        weather: 'sunny'
-      },
-      {
-        id: 2,
-        title: '挑战与成长',
-        date: '2024-01-14',
-        content: '今天遇到了一些工作上的挑战，虽然有点压力，但还是坚持下来了。通过这次经历学到了很多新东西，感觉自己在成长。',
-        weather: 'cloudy'
-      },
-      {
-        id: 3,
-        title: '雨中思考',
-        date: '2024-01-13',
-        content: '今天下雨了，待在家里看书，思考了很多人生的问题。雨声很舒缓，让我感到内心的平静。',
-        weather: 'rainy'
+    try {
+      setLoading(true);
+      const response = await getDiaryList(/*userProfile.id*/1, {
+        startDate: '2024-01-01',
+        endDate: new Date().toISOString().split('T')[0]
+      });
+      
+      if (response && Array.isArray(response)) {
+        // 将大写天气枚举值转换为小写值
+        const weatherMapReverse = {
+          'SUNNY': 'sunny',
+          'CLOUDY': 'cloudy',
+          'RAINY': 'rainy',
+          'SNOWY': 'snowy',
+          'WINDY': 'windy',
+          'FOGGY': 'foggy'
+        };
+        
+        // 过滤出有日记内容的记录
+        const diariesWithContent = response.filter(entry => 
+          entry.diaryDescription && entry.diaryDescription.trim()
+        ).map(entry => ({
+          id: entry.id,
+          title: entry.diaryTitle || '无标题日记',
+          date: entry.date,
+          content: entry.diaryDescription,
+          weather: weatherMapReverse[entry.weather] || 'sunny'
+        }));
+        setDiaryEntries(diariesWithContent);
+      } else {
+        setDiaryEntries([]);
       }
-    ];
-    setDiaryEntries(mockEntries);
+    } catch (error) {
+      console.error('获取日记列表失败:', error);
+      // 使用模拟数据作为备选
+      const mockEntries = [
+        {
+          id: 1,
+          title: '充实的一天',
+          date: '2024-01-15',
+          content: '今天工作进展顺利，完成了几个重要的任务。下午和朋友一起喝咖啡，聊了很多有趣的话题。晚上看了一部电影，感觉很放松。',
+          weather: 'sunny'
+        },
+        {
+          id: 2,
+          title: '挑战与成长',
+          date: '2024-01-14',
+          content: '今天遇到了一些工作上的挑战，虽然有点压力，但还是坚持下来了。通过这次经历学到了很多新东西，感觉自己在成长。',
+          weather: 'cloudy'
+        },
+        {
+          id: 3,
+          title: '雨中思考',
+          date: '2024-01-13',
+          content: '今天下雨了，待在家里看书，思考了很多人生的问题。雨声很舒缓，让我感到内心的平静。',
+          weather: 'rainy'
+        }
+      ];
+      setDiaryEntries(mockEntries);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSave = async () => {
@@ -84,78 +127,82 @@ export const Diary = () => {
       return;
     }
     
-    // API调用注释：创建日记
-    // try {
-    //   const diaryData = {
-    //     title: newEntry.title,
-    //     content: newEntry.content,
-    //     weather: newEntry.weather,
-    //     date: new Date().toISOString().split('T')[0]
-    //   };
-    //   await createDiary(diaryData);
-    //   setNewEntry({ title: '', content: '', weather: 'sunny' });
-    //   alert('日记保存成功！');
-    //   // 重新加载日记列表
-    //   loadDiaryEntries();
-    // } catch (error) {
-    //   console.error('保存日记失败:', error);
-    //   alert('保存失败，请重试');
-    // }
+    /*if (!userProfile?.id) {
+      alert('请先登录');
+      return;
+    }*/
 
-    // 保存日记逻辑
-    const newDiary = {
-      id: Date.now(),
-      title: newEntry.title,
-      content: newEntry.content,
-      weather: newEntry.weather,
-      date: new Date().toISOString().split('T')[0]
-    };
-    
-    setDiaryEntries(prev => [newDiary, ...prev]);
-    setNewEntry({ title: '', content: '', weather: 'sunny' });
-    alert('日记保存成功！');
+    try {
+      setLoading(true);
+      
+      // 将小写天气值转换为大写枚举值
+      const weatherMap = {
+        sunny: 'SUNNY',
+        cloudy: 'CLOUDY',
+        rainy: 'RAINY',
+        snowy: 'SNOWY',
+        windy: 'WINDY',
+        foggy: 'FOGGY'
+      };
+      
+      const diaryData = {
+        diaryTitle: newEntry.title,
+        diaryDescription: newEntry.content,
+        weather: weatherMap[newEntry.weather] || 'SUNNY',
+        date: new Date().toISOString().split('T')[0]
+      };
+      
+      await createDiary(diaryData, /*userProfile.id*/1, identity || false);
+      setNewEntry({ title: '', content: '', weather: 'sunny' });
+      alert('日记保存成功！');
+      // 重新加载日记列表
+      loadDiaryEntries();
+    } catch (error) {
+      console.error('保存日记失败:', error);
+      alert('保存失败，请重试');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // 更新日记的函数
   const handleUpdateDiary = async (diaryId, updatedData) => {
-    // API调用注释：更新日记
-    // try {
-    //   await updateDiary(diaryId, updatedData);
-    //   alert('日记更新成功！');
-    //   loadDiaryEntries();
-    // } catch (error) {
-    //   console.error('更新日记失败:', error);
-    //   alert('更新失败，请重试');
-    // }
+    try {
+      await updateDiary(diaryId, updatedData);
+      alert('日记更新成功！');
+      loadDiaryEntries();
+    } catch (error) {
+      console.error('更新日记失败:', error);
+      alert('更新失败，请重试');
+    }
   };
 
   // 删除日记的函数
   const handleDeleteDiary = async (diaryId) => {
-    // API调用注释：删除日记
-    // if (window.confirm('确定要删除这篇日记吗？')) {
-    //   try {
-    //     await deleteDiary(diaryId);
-    //     alert('日记删除成功！');
-    //     loadDiaryEntries();
-    //   } catch (error) {
-    //     console.error('删除日记失败:', error);
-    //     alert('删除失败，请重试');
-    //   }
-    // }
+    if (window.confirm('确定要删除这篇日记吗？')) {
+      try {
+        await deleteDiary(diaryId);
+        alert('日记删除成功！');
+        loadDiaryEntries();
+      } catch (error) {
+        console.error('删除日记失败:', error);
+        alert('删除失败，请重试');
+      }
+    }
   };
 
   // 获取心情统计的函数
   const loadMoodStats = async () => {
-    // API调用注释：获取心情统计
-    // try {
-    //   const startDate = '2024-01-01';
-    //   const endDate = new Date().toISOString().split('T')[0];
-    //   const stats = await getMoodStats(startDate, endDate);
-    //   console.log('心情统计数据:', stats.data);
-    //   // 这里可以用于显示心情统计图表
-    // } catch (error) {
-    //   console.error('获取心情统计失败:', error);
-    // }
+    //if (!userProfile?.id) return;
+    
+    try {
+      const startDate = '2024-01-01';
+      const endDate = new Date().toISOString().split('T')[0];
+      const stats = await getMoodStats(/*userProfile.id*/1, startDate, endDate);
+      // 这里可以用于显示心情统计图表
+    } catch (error) {
+      console.error('获取心情统计失败:', error);
+    }
   };
 
   // 获取天气图标
@@ -251,14 +298,16 @@ export const Diary = () => {
           />
         </div>
         
-        <button onClick={handleSave} className="save-btn">
-          保存日记
+        <button onClick={handleSave} className="save-btn" disabled={loading}>
+          {loading ? '保存中...' : '保存日记'}
         </button>
       </div>
 
       <div className="diary-list">
         <h2>历史日记</h2>
-        {diaryEntries.length === 0 ? (
+        {loading ? (
+          <div className="diary-loading">加载中...</div>
+        ) : diaryEntries.length === 0 ? (
           <div className="diary-empty">
             还没有写过日记，开始记录你的生活吧！
           </div>

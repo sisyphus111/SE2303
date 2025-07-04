@@ -76,14 +76,12 @@ export async function post(url, data, options = {}) {
         }
     }
     
-    console.log(`🌐 POST请求: ${fullUrl}`);
-    console.log('📤 请求数据:', data);
-    
     let opts = {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            ...options.headers // 合并额外的请求头
         },
         credentials: "include" // 包含cookie进行认证
     };

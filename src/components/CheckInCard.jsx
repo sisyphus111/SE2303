@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { submitCheckIn } from '../service/homeService';
+import React, { useState, useEffect } from 'react';
+import { submitCheckIn, checkTodayStatus, getTodayMood, getAvailableLabels } from '../service/checkInService';
+import { useUser } from '../lib/UserContext';
 import TagSelector from './TagSelector';
 import '../css/CheckInCard.css';
 
 const CheckInCard = ({ onCheckInSuccess }) => {
+  const { userProfile } = useUser();
+  const userId = userProfile?.id || userProfile?.userId || 'default-user';
   const [selectedRating, setSelectedRating] = useState(0);
   const [selectedTags, setSelectedTags] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -16,10 +19,52 @@ const CheckInCard = ({ onCheckInSuccess }) => {
   const [hoverRating, setHoverRating] = useState(0);
 
   // 可选标签
-  const availableTags = [
+  const [availableTags, setAvailableTags] = useState([
     '开心', '焦虑', '压力', '放松', '疲惫', 
     '兴奋', '平静', '担心', '满足', '困惑'
-  ];
+  ]);
+
+  // 检查今日打卡状态
+  useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const hasCheckedIn = await checkTodayStatus(userId);
+        if (hasCheckedIn) {
+          const todayMood = await getTodayMood(userId);
+          if (todayMood) {
+            setCheckedInData({
+              rating: todayMood.score,
+              tags: todayMood.moodLabels || [],
+              timestamp: todayMood.createdAt,
+              date: todayMood.date
+            });
+            setIsCheckedIn(true);
+          }
+        }
+      } catch (error) {
+        console.error('检查打卡状态失败:', error);
+      }
+    };
+
+    const loadLabels = async () => {
+      try {
+        const labels = await getAvailableLabels();
+        // 确保 labels 是数组
+        if (Array.isArray(labels)) {
+          setAvailableTags(labels);
+        } else {
+          console.warn('获取到的标签不是数组格式:', labels);
+          // 保持默认标签
+        }
+      } catch (error) {
+        console.error('加载情绪标签失败:', error);
+        // 保持默认标签
+      }
+    };
+
+    checkStatus();
+    loadLabels();
+  }, [userId]);
 
   const handleRatingClick = (rating) => {
     setSelectedRating(rating);
@@ -57,13 +102,10 @@ const CheckInCard = ({ onCheckInSuccess }) => {
     };
     
     try {
-      // API调用注释：提交打卡数据到后端
-      // await submitCheckIn(checkInData);
+      // 提交打卡数据到后端
+      await submitCheckIn(checkInData, userId);
       
-      // 模拟API调用延迟
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // 保存打卡成功状态和数据（仅在前端，重启后清空）
+      // 保存打卡成功状态和数据
       setCheckedInData(checkInData);
       setIsCheckedIn(true);
       

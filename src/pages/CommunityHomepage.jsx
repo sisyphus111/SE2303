@@ -28,7 +28,7 @@ const CommunityHomepage = () => {
     const [searchValue, setSearchValue] = useState('');
     const [allPosts, setAllPosts] = useState([]);
     const [filteredPosts, setFilteredPosts] = useState([]);
-    const [sortBy, setSortBy] = useState('latest'); // latest, hot, comments
+    const [sortBy, setSortBy] = useState('latest'); // latest, mostViewed, mostCommented
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10); // 每页显示10条帖子
 
@@ -80,10 +80,10 @@ const CommunityHomepage = () => {
 
         // 排序
         switch (sortBy) {
-            case 'hot':
+            case 'mostViewed':
                 filtered.sort((a, b) => b.likes - a.likes);
                 break;
-            case 'comments':
+            case 'mostCommented':
                 filtered.sort((a, b) => b.comments - a.comments);
                 break;
             case 'latest':
@@ -213,16 +213,16 @@ const CommunityHomepage = () => {
                   <ClockCircleOutlined /> 最新
                 </button>
                 <button 
-                  className={`sort-btn ${sortBy === 'hot' ? 'active' : ''}`}
+                      className={`sort-btn ${sortBy === 'mostViewed' ? 'active' : ''}`}
                   onClick={() => handleSortChange('hot')}
                 >
-                  <FireOutlined /> 最热
+                  <FireOutlined /> 最多浏览
                 </button>
                 <button 
-                  className={`sort-btn ${sortBy === 'comments' ? 'active' : ''}`}
+                  className={`sort-btn ${sortBy === 'mostCommented' ? 'active' : ''}`}
                   onClick={() => handleSortChange('comments')}
                 >
-                  <CommentOutlined /> 评论最多
+                  <CommentOutlined /> 最多评论
                 </button>
               </div>
             </div>

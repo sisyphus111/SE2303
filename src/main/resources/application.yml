@@ -19,15 +19,16 @@ spring:
       globalcors:
         cors-configurations:
           '[/**]':  # 匹配所有路径的跨域配置
-            allowedOrigins:  # 允许跨域访问的源地址列表
-              - "http://localhost:3000"   # 本地开发环境前端地址
-              - "http://127.0.0.1:3000"   # 本地回环地址前端
+            allowedOriginPatterns:  # 允许跨域访问的源地址模式列表（支持通配符）
+              - "*"                      # 允许任何来源（最宽松的配置）
             allowedMethods:  # 允许的HTTP请求方法
               - GET     # 获取数据请求
               - POST    # 创建数据请求
               - PUT     # 更新数据请求
               - DELETE  # 删除数据请求
               - OPTIONS # 预检请求方法
+              - PATCH   # 部分更新请求
+              - HEAD    # 头部信息请求
             allowedHeaders:  # 允许的请求头
               - "*"     # 允许所有请求头，包括自定义头部
             allowCredentials: true    # 允许携带认证信息（如Cookie、Authorization头）

@@ -1,14 +1,29 @@
 import React, { useState } from 'react';
 import { SendOutlined } from '@ant-design/icons';
+import { message } from 'antd';
+import { useUser } from '../lib/UserContext';
+import { sendCommentToPost } from '../service/communityService';
 import '../css/CommentIinput.css';
 
-const CommentInput = ({ onSubmit }) => {
+const CommentInput = ({ onSubmit, postId }) => {
     const [comment, setComment] = useState('');
+    const { userProfile, valid } = useUser();
+    const auth = { userId: userProfile?.id, valid };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        if (!userProfile || !valid) {
+            message.error('请先登录');
+            return;
+        }
         if (comment.trim()) {
-            onSubmit(comment);
-            setComment('');
+            const response = await sendCommentToPost(postId, { content: comment }, auth);
+            if (response.success) {
+                onSubmit(response.data);
+                setComment('');
+                message.success('评论发表成功');
+            } else {
+                message.error(response.error);
+            }
         }
     };
 
@@ -28,8 +43,8 @@ const CommentInput = ({ onSubmit }) => {
                 <textarea
                     className="comment-textarea"
                     placeholder="分享你的想法..."
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
                     onKeyDown={handleKeyPress}
                     rows={4}
                 />
@@ -37,9 +52,9 @@ const CommentInput = ({ onSubmit }) => {
                     <div className="char-count">
                         {comment.length}/500
                     </div>
-                    <button 
+                    <button
                         className="submit-btn"
-                        onClick={handleSubmit} 
+                        onClick={handleSubmit}
                         disabled={!comment.trim() || comment.length > 500}
                     >
                         <SendOutlined />

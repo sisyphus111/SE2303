@@ -1,20 +1,54 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  HeartOutlined, 
-  HeartFilled, 
-  ShareAltOutlined,
-  EyeOutlined,
-  ClockCircleOutlined
+import {
+    HeartOutlined,
+    HeartFilled,
+    ShareAltOutlined,
+    EyeOutlined,
+    ClockCircleOutlined
 } from "@ant-design/icons";
+import { LikePost, UnlikePost } from '../service/communityService';
+import { message } from 'antd';
+import { useUser } from '../lib/UserContext';
 import '../css/CommunityPostDetail.css';
 
 const PostDetail = ({ postData }) => {
     const navigate = useNavigate();
-    const [liked, setLiked] = useState(false);
+    const { userProfile, valid, getUserAvatar, getUserDisplayName } = useUser();
+    const [liked, setLiked] = useState(postData.isLiked || false);
+    const [likeCount, setLikeCount] = useState(postData.postMetrics?.likeCount || 0);
+    const auth = { userId: userProfile?.id, valid };
 
-    const handleLike = () => {
-        setLiked(l => !l);
+    const handleLike = async () => {
+        if (!userProfile || !valid) {
+            message.error('请先登录');
+            navigate('/login');
+            return;
+        }
+        try {
+            let response;
+            if (liked) {
+                response = await UnlikePost(postData.id, auth);
+                if (response.success) {
+                    setLiked(false);
+                    setLikeCount(prev => prev - 1);
+                    message.success('取消点赞成功');
+                } else {
+                    message.error(response.error);
+                }
+            } else {
+                response = await LikePost(postData.id, auth);
+                if (response.success) {
+                    setLiked(true);
+                    setLikeCount(prev => prev + 1);
+                    message.success('点赞成功');
+                } else {
+                    message.error(response.error);
+                }
+            }
+        } catch (error) {
+            message.error('操作失败：' + error.message);
+        }
     };
 
     const formatDate = (dateString) => {
@@ -30,63 +64,59 @@ const PostDetail = ({ postData }) => {
 
     return (
         <div className="post-detail-container">
-            {/* 帖子头部 */}
             <div className="post-header">
                 <h1 className="post-title">{postData.title}</h1>
                 <div className="post-meta">
                     <div className="post-tags">
-                            {postData.tags.map(tag => (
+                        {postData.tags.map(tag => (
                             <span key={tag} className="post-tag">
-                                        {tag}
+                                {tag}
                             </span>
                         ))}
                     </div>
                     <div className="post-time">
                         <ClockCircleOutlined />
-                        <span>{formatDate(postData.time)}</span>
+                        <span>{formatDate(postData.createdAt)}</span>
                     </div>
                 </div>
             </div>
 
-            {/* 作者信息 */}
             <div className="post-author-section">
                 <div className="author-info">
-                    <img 
-                        src={postData.user.avatar} 
-                        alt={postData.user.name}
+                    <img
+                        src={getUserAvatar(postData.userId)}
+                        alt={getUserDisplayName(postData.userId)}
                         className="author-avatar"
                     />
                     <div className="author-details">
-                        <div className="author-name">{postData.user.name}</div>
+                        <div className="author-name">{getUserDisplayName(postData.userId)}</div>
                         <div className="author-badge">活跃作者</div>
                     </div>
                 </div>
                 <div className="post-stats">
                     <div className="stat-item">
                         <EyeOutlined />
-                        <span>{postData.views}</span>
+                        <span>{postData.postMetrics?.viewCount || 0}</span>
                     </div>
                     <div className="stat-item">
                         <HeartOutlined />
-                        <span>{postData.likes + (liked ? 1 : 0)}</span>
+                        <span>{likeCount}</span>
                     </div>
                 </div>
             </div>
 
-            {/* 帖子内容 */}
             <div className="post-content">
                 <p>{postData.content}</p>
-                      </div>
+            </div>
 
-            {/* 互动区域 */}
             <div className="post-actions">
-                <button 
+                <button
                     className={`action-btn like-btn ${liked ? 'liked' : ''}`}
-                                onClick={handleLike}
-                            >
+                    onClick={handleLike}
+                >
                     {liked ? <HeartFilled /> : <HeartOutlined />}
                     <span>{liked ? '已点赞' : '点赞'}</span>
-                    <span className="like-count">({postData.likes + (liked ? 1 : 0)})</span>
+                    <span className="like-count">({likeCount})</span>
                 </button>
                 <button className="action-btn share-btn">
                     <ShareAltOutlined />

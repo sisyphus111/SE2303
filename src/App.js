@@ -27,6 +27,9 @@ import AdminCheckins from "./pages/AdminCheckins";
 import AdminReports from "./pages/AdminReports";
 import AdminReview from "./pages/AdminReview";
 import AdminCrisis from "./pages/AdminCrisis";
+import NotificationPage from "./pages/NotificationPage";
+import TestNotificationDropdown from "./pages/TestNotificationDropdown";
+import NotificationTester from "./pages/NotificationTester";
 
 // 管理员路由组件
 const AdminRoutes = () => {

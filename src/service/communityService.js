@@ -1,141 +1,561 @@
-// 社区相关API服务
 import { get, post, put, del } from './common';
+import { message } from 'antd';
 
-/**
- * 获取帖子列表
- * @param {Object} params - 查询参数
- * @param {number} params.page - 页码
- * @param {number} params.size - 每页大小
- * @param {string} params.category - 分类（根据页面：情感、学习、生活、健康、成长）
- * @param {Array<string>} params.tags - 标签数组
- * @param {string} params.sortBy - 排序方式（最新、最热、最多评论、最多浏览）
- * @param {string} params.keyword - 搜索关键词
- * @returns {Promise<Object>} 帖子列表
- */
-export const getPostList = async (params = {}) => {
-  const queryString = new URLSearchParams(params).toString();
-  return get(`/community/posts?${queryString}`);
-};
+// 获取帖子列表
 
-/**
- * 创建帖子
- * @param {Object} postData - 帖子数据
- * @param {string} postData.id - 帖子ID
- * @param {string} postData.title - 标题
- * @param {string} postData.content - 内容
- * @param {string} postData.author - 作者
- * @param {string} postData.authorAvatar - 作者头像
- * @param {string} postData.category - 分类
- * @param {Array<string>} postData.tags - 标签数组
- * @param {number} postData.likes - 点赞数
- * @param {number} postData.comments - 评论数
- * @param {number} postData.views - 浏览数
- * @param {string} postData.createdAt - 创建时间
- * @param {boolean} postData.isLiked - 是否已点赞
- * @returns {Promise<Object>} 创建的帖子
- */
-export const createPost = async (postData) => {
-  return post('/community/posts', postData);
-};
-
-/**
- * 获取帖子详情
- * @param {string} postId - 帖子ID
- * @returns {Promise<Object>} 帖子详情
- */
-export const getPostDetail = async (postId) => {
-  return get(`/community/posts/${postId}`);
-};
-
-/**
- * 更新帖子
- * @param {string} postId - 帖子ID
- * @param {Object} postData - 更新的帖子数据
- * @returns {Promise<Object>} 更新结果
- */
-export const updatePost = async (postId, postData) => {
-  return put(`/community/posts/${postId}`, postData);
-};
-
-/**
- * 删除帖子
- * @param {string} postId - 帖子ID
- * @returns {Promise<Object>} 删除结果
- */
-export const deletePost = async (postId) => {
-  return del(`/community/posts/${postId}`);
-};
-
-/**
- * 点赞/取消点赞帖子
- * @param {string} postId - 帖子ID
- * @returns {Promise<Object>} 操作结果
- */
-export const togglePostLike = async (postId) => {
-  return post(`/community/posts/${postId}/like`, {});
-};
-
-/**
- * 获取社区帖子数据（模拟数据，用于前端测试）
- * @returns {Array} 帖子列表
- */
-export const getCommunityPosts = () => {
-  return [
-    {
-      id: 1,
-      title: '如何缓解工作压力？',
-      content: '最近工作压力很大，想和大家分享一下我的减压方法，也希望能听到大家的建议...',
-      author: '小明',
-      authorAvatar: '👨',
-      category: '健康',
-      tags: ['健康'],
-      likes: 24,
-      comments: 8,
-      views: 156,
-      createdAt: '2024-01-15 14:30',
-      isLiked: false
-    },
-    {
-      id: 2,
-      title: '分享一个让我心情变好的小习惯',
-      content: '每天早上起床后，我会花5分钟时间做深呼吸和简单的伸展运动，这让我一整天都感觉很好...',
-      author: '小红',
-      authorAvatar: '👩',
-      category: '情感',
-      tags: ['情感', '生活'],
-      likes: 42,
-      comments: 15,
-      views: 289,
-      createdAt: '2024-01-14 09:15',
-      isLiked: true
-    },
-    {
-      id: 3,
-      title: '关于焦虑症的一些思考',
-      content: '想和大家讨论一下焦虑症这个话题，希望能帮助到有类似经历的朋友...',
-      author: '小李',
-      authorAvatar: '👨‍🦱',
-      category: '健康',
-      tags: ['健康', '情感'],
-      likes: 18,
-      comments: 12,
-      views: 203,
-      createdAt: '2024-01-13 16:45',
-      isLiked: false
-    },
-    {
-      id: 4,
-      title: '推荐几本治愈系书籍',
-      content: '最近读了几本很棒的心理学书籍，想推荐给大家，希望能帮助到需要的人...',
-      author: '小王',
-      authorAvatar: '👩‍🦰',
-      category: '学习',
-      tags: ['学习', '成长'],
-      likes: 31,
-      comments: 6,
-      views: 178,
-      createdAt: '2024-01-12 11:20',
-      isLiked: false
+export const getPostList = async (params = {}, auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
     }
-  ];
-}; 
+
+    if (params.page < 1) {
+        throw new Error('页码必须大于或等于1');
+    }
+    if (params.size < 1 || params.size > 100) {
+        throw new Error('每页大小必须在1到100之间');
+    }
+    if (params.sortBy && !['latest', 'mostCommented', 'mostViewed'].includes(params.sortBy)) {
+        throw new Error('排序方式必须是 latest、mostCommented 或 mostViewed');
+    }
+
+    const queryParams = {
+        page: params.page || 1,
+        size: params.size || 5,
+        sortBy: params.sortBy || 'latest',
+        ...(params.category && { category: params.category }),
+        ...(params.keyword && { keyword: params.keyword }),
+    };
+    const queryString = new URLSearchParams(queryParams).toString();
+
+    try {
+        const response = await get(`/posts/get_posts?${queryString}`, {}, auth);
+        if (response.success) {
+            return {
+                success: true,
+                data: response.object,
+                message: response.message,
+            };
+        } else {
+            message.error(response.message || '获取帖子失败');
+            return {
+                success: false,
+                error: response.message || '获取帖子失败',
+            };
+        }
+    } catch (error) {
+        message.error('获取帖子失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '获取帖子失败',
+        };
+    }
+};
+
+// 创建帖子
+export const createPost = async (postData, auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+
+    if (!postData.title || postData.title.trim() === '') {
+        throw new Error('帖子标题不能为空');
+    }
+    if (!postData.content || postData.content.trim() === '') {
+        throw new Error('帖子内容不能为空');
+    }
+    if (!postData.tags || !Array.isArray(postData.tags)) {
+        throw new Error('帖子标签必须为数组');
+    }
+
+    try {
+        const response = await post('/posts/send', postData, {}, auth);
+        if (response.success) {
+            message.success('帖子创建成功');
+            return {
+                success: true,
+                data: response.object,
+                message: response.message,
+            };
+        } else {
+            message.error(response.message || '创建帖子失败');
+            return {
+                success: false,
+                error: response.message || '创建帖子失败',
+            };
+        }
+    } catch (error) {
+        message.error('创建帖子失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '创建帖子失败',
+        };
+    }
+};
+
+// 获取帖子详情
+export const getPostDetail = async (postId, auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    if (!postId || postId.trim() === '') {
+        throw new Error('帖子ID不能为空');
+    }
+    try {
+        const response = await get(`/posts/get_post/${postId}`, {}, auth);
+        if (response.success) {
+            return {
+                success: true,
+                data: response.object,
+                message: response.message,
+            };
+        } else {
+            message.error(response.message || '获取帖子详情失败');
+            return {
+                success: false,
+                error: response.message || '获取帖子详情失败',
+            };
+        }
+    } catch (error) {
+        message.error('获取帖子详情失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '获取帖子详情失败',
+        };
+    }
+};
+
+// 更新帖子
+export const updatePost = async (postId, postData, auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    if (!postId || postId.trim() === '') {
+        throw new Error('帖子ID不能为空');
+    }
+    if (!postData.title || postData.title.trim() === '') {
+        throw new Error('帖子标题不能为空');
+    }
+    if (!postData.content || postData.content.trim() === '') {
+        throw new Error('帖子内容不能为空');
+    }
+    if (!postData.tags || !Array.isArray(postData.tags)) {
+        throw new Error('帖子标签必须为数组');
+    }
+
+    try {
+        const response = await put(`/posts/update/${postId}`, postData, {}, auth);
+        if (response.success) {
+            message.success('帖子更新成功');
+            return {
+                success: true,
+                data: response.object,
+                message: response.message,
+            };
+        } else {
+            message.error(response.message || '更新帖子失败');
+            return {
+                success: false,
+                error: response.message || '更新帖子失败',
+            };
+        }
+    } catch (error) {
+        message.error('更新帖子失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '更新帖子失败',
+        };
+    }
+};
+
+// 删除帖子
+export const deletePost = async (postId, auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    if (!postId || postId.trim() === '') {
+        throw new Error('帖子ID不能为空');
+    }
+    try {
+        const response = await put(`/posts/delete/${postId}`, {}, {}, auth);
+        if (response.success) {
+            message.success('帖子删除成功');
+            return {
+                success: true,
+                data: response.object,
+                message: response.message,
+            };
+        } else {
+            message.error(response.message || '删除帖子失败');
+            return {
+                success: false,
+                error: response.message || '删除帖子失败',
+            };
+        }
+    } catch (error) {
+        message.error('删除帖子失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '删除帖子失败',
+        };
+    }
+};
+
+// 点赞帖子
+export const LikePost = async (postId, auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    if (!postId || postId.trim() === '') {
+        throw new Error('帖子ID不能为空');
+    }
+    try {
+        const response = await post(`/posts/like/${postId}`, {}, {}, auth);
+        if (response.success) {
+            message.success('点赞成功');
+            return {
+                success: true,
+                data: response.object,
+                message: response.message,
+            };
+        } else {
+            message.error(response.message || '点赞失败');
+            return {
+                success: false,
+                error: response.message || '点赞失败',
+            };
+        }
+    } catch (error) {
+        message.error('点赞失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '点赞失败',
+        };
+    }
+};
+
+// 取消点赞帖子
+export const UnlikePost = async (postId, auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    if (!postId || postId.trim() === '') {
+        throw new Error('帖子ID不能为空');
+    }
+    try {
+        const response = await del(`/posts/unlike/${postId}`, {}, {}, auth);
+        if (response.success) {
+            message.success('取消点赞成功');
+            return {
+                success: true,
+                data: response.object,
+                message: response.message,
+            };
+        } else {
+            message.error(response.message || '取消点赞失败');
+            return {
+                success: false,
+                error: response.message || '取消点赞失败',
+            };
+        }
+    } catch (error) {
+        message.error('取消点赞失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '取消点赞失败',
+        };
+    }
+};
+
+// 获取我的帖子
+export const MyPost = async (auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    try {
+        const response = await get(`/posts/my_post`, {}, auth);
+        if (response.success) {
+            return {
+                success: true,
+                data: response.object,
+                message: response.message,
+            };
+        } else {
+            message.error(response.message || '获取我的帖子失败');
+            return {
+                success: false,
+                error: response.message || '获取我的帖子失败',
+            };
+        }
+    } catch (error) {
+        message.error('获取我的帖子失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '获取我的帖子失败',
+        };
+    }
+};
+
+// 获取所有标签
+export const getAllTags = async (auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    try {
+        const response = await get(`/posts/get_tags`, {}, auth);
+        if (response.success) {
+            return {
+                success: true,
+                data: response.object,
+                message: response.message,
+            };
+        } else {
+            message.error(response.message || '获取标签失败');
+            return {
+                success: false,
+                error: response.message || '获取标签失败',
+            };
+        }
+    } catch (error) {
+        message.error('获取标签失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '获取标签失败',
+        };
+    }
+};
+
+// 获取帖子评论
+export const getCommentOfPost = async (postId, page = 1, size = 5, auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    try {
+        const response = await get(`/posts/get_comments/${postId}?page=${page}&size=${size}`, {}, auth);
+        if (response.success) {
+            return {
+                success: true,
+                data: response.object,
+                message: response.message,
+            };
+        } else {
+            message.error(response.message || '获取评论失败');
+            return {
+                success: false,
+                error: response.message || '获取评论失败',
+            };
+        }
+    } catch (error) {
+        message.error('获取评论失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '获取评论失败',
+        };
+    }
+};
+
+// 给对应帖子发评论
+export const sendCommentToPost = async (postId, commentData, auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    try {
+        const response = await post(`/posts/add_comment/${postId}`, commentData, {}, auth);
+        if (response.success) {
+            message.success('评论发表成功');
+            return {
+                success: true,
+                data: response.object,
+                message: response.message,
+            };
+        } else {
+            message.error(response.message || '评论发表失败');
+            return {
+                success: false,
+                error: response.message || '评论发表失败',
+            };
+        }
+    } catch (error) {
+        message.error('评论发表失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '评论发表失败',
+        };
+    }
+};
+
+// 收藏帖子
+export const collectPost = async (postId, auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    try {
+        const response = await post(`/posts/collect/${postId}`, {}, {}, auth);
+        if (response.success) {
+            message.success('收藏成功');
+            return {
+                success: true,
+                data: response.object,
+                message: response.message,
+            };
+        } else {
+            message.error(response.message || '收藏失败');
+            return {
+                success: false,
+                error: response.message || '收藏失败',
+            };
+        }
+    } catch (error) {
+        message.error('收藏失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '收藏失败',
+        };
+    }
+};
+
+// 取消收藏帖子
+export const delCollectedPost = async (postId, auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    try {
+        const response = await del(`/posts/delete/collection/${postId}`, {}, {}, auth);
+        if (response.success) {
+            message.success('取消收藏成功');
+            return {
+                success: true,
+                data: response.object,
+                message: response.message,
+            };
+        } else {
+            message.error(response.message || '取消收藏失败');
+            return {
+                success: false,
+                error: response.message || '取消收藏失败',
+            };
+        }
+    } catch (error) {
+        message.error('取消收藏失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '取消收藏失败',
+        };
+    }
+};
+
+// 审核通过帖子
+export const approvePost = async (postId, auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    if (auth.identity !== false) {
+        message.error('仅管理员可审核帖子');
+        throw new Error('权限不足');
+    }
+    try {
+        const response = await put(`/posts/approve/${postId}`, {}, {}, auth);
+        if (response.success) {
+            message.success('帖子审核通过');
+            return {
+                success: true,
+                data: response.object,
+                message: response.message,
+            };
+        } else {
+            message.error(response.message || '审核帖子失败');
+            return {
+                success: false,
+                error: response.message || '审核帖子失败',
+            };
+        }
+    } catch (error) {
+        message.error('审核帖子失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '审核帖子失败',
+        };
+    }
+};
+
+// 封禁帖子
+export const banPost = async (postId, auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    if (auth.identity !== false) {
+        message.error('仅管理员可封禁帖子');
+        throw new Error('权限不足');
+    }
+    try {
+        const response = await put(`/posts/ban/${postId}`, {}, {}, auth);
+        if (response.success) {
+            message.success('帖子封禁成功');
+            return {
+                success: true,
+                data: response.object,
+                message: response.message,
+            };
+        } else {
+            message.error(response.message || '封禁帖子失败');
+            return {
+                success: false,
+                error: response.message || '封禁帖子失败',
+            };
+        }
+    } catch (error) {
+        message.error('封禁帖子失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '封禁帖子失败',
+        };
+    }
+};
+
+// 举报帖子
+export const reportPost = async (postId, reason, auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    if (!reason || reason.trim() === '') {
+        throw new Error('举报原因不能为空');
+    }
+    try {
+        const response = await post(`/posts/report/${postId}`, { reason }, {}, auth);
+        if (response.success) {
+            message.success('举报成功');
+            return {
+                success: true,
+                data: response.object,
+                message: response.message,
+            };
+        } else {
+            message.error(response.message || '举报帖子失败');
+            return {
+                success: false,
+                error: response.message || '举报帖子失败',
+            };
+        }
+    } catch (error) {
+        message.error('举报帖子失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '举报帖子失败',
+        };
+    }
+};

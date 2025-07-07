@@ -1,130 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Card, Typography, Space, Divider } from 'antd';
-import { UserOutlined, TeamOutlined, TagOutlined, PlusOutlined, FilterOutlined } from '@ant-design/icons';
-import { useNavigate, useLocation } from 'react-router-dom';
-import CommunityUserContent from '../components/CommunityUserContent.jsx';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from 'antd';
+import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
+import CommunityUserContent from '../components/CommunityUserContent';
+import { useUser } from '../lib/UserContext';
 import '../css/CommunityUserPage.css';
 
-const { Title } = Typography;
-
-const allTags = ['全部', '情感', '学习', '生活', '健康', '成长'];
-
-// API服务导入注释
-// import { getUserInfo } from '../service/userService';
-// import { getPostList, createPost } from '../service/communityService';
-
-function CommunityUserPage() {
+const CommunityUserPage = () => {
     const navigate = useNavigate();
-    const location = useLocation();
-    const [selectedTag, setSelectedTag] = useState('全部');
+    const { userProfile, valid, getUserAvatar, getUserDisplayName } = useUser();
 
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const tag = params.get('tag');
-        if (tag && allTags.includes(tag)) {
-            setSelectedTag(tag);
-        } else {
-            setSelectedTag('全部');
-        }
-    }, [location.search]);
+    if (!userProfile || !valid) {
+        navigate('/login');
+        return null;
+    }
 
     return (
-        <div className="user-page-container">
-            {/* 页面头部 */}
+        <div className="community-user-page">
             <div className="user-page-header">
-                <div className="user-page-header-content">
-                    <div className="user-page-title-section">
-                        <UserOutlined className="user-page-main-icon" />
-                        <Title level={1} className="user-page-main-title">
-                            我的帖子
-                        </Title>
-                        <p className="user-page-subtitle">
-                            管理和查看你发布的所有帖子内容
-                        </p>
+                <Button
+                    type="text"
+                    icon={<ArrowLeftOutlined />}
+                    onClick={() => navigate(-1)}
+                    className="back-btn"
+                >
+                    返回
+                </Button>
+                <div className="user-info">
+                    <img
+                        src={getUserAvatar(userProfile.id)}
+                        alt={getUserDisplayName(userProfile.id)}
+                        className="user-avatar"
+                    />
+                    <div className="user-details">
+                        <h2>{getUserDisplayName(userProfile.id)}</h2>
+                        <p>欢迎回来！查看你的帖子、点赞和收藏</p>
                     </div>
                 </div>
+                <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => navigate('/send_community_post')}
+                    className="create-post-btn"
+                >
+                    发布新帖子
+                </Button>
             </div>
-
-            {/* 主要内容区域 */}
-            <div className="user-page-content">
-                <div className="user-page-layout">
-                    {/* 左侧边栏 */}
-                    <aside className="user-page-sidebar">
-                        <Card className="sidebar-card">
-                            <div className="sidebar-section">
-                                <Title level={4} className="sidebar-title">
-                                    <TeamOutlined className="sidebar-icon" />
-                                    导航
-                                </Title>
-                                <Space direction="vertical" className="sidebar-nav">
-                                    <Button
-                                        type="text"
-                                        icon={<TeamOutlined />}
-                                        className="nav-btn"
-                                        onClick={() => navigate('/community')}
-                                    >
-                                        社区广场
-                                    </Button>
-                                    <Button
-                                        type="primary"
-                                        icon={<UserOutlined />}
-                                        className="nav-btn active"
-                                        onClick={() => navigate('/community_user_page')}
-                                    >
-                                        我的帖子
-                                    </Button>
-                                    <Button
-                                        type="text"
-                                        icon={<PlusOutlined />}
-                                        className="nav-btn"
-                                        onClick={() => navigate('/send_community_post')}
-                                    >
-                                        发布帖子
-                                    </Button>
-                                </Space>
-                            </div>
-
-                            <Divider />
-
-                            <div className="sidebar-section">
-                                <Title level={4} className="sidebar-title">
-                                    <FilterOutlined className="sidebar-icon" />
-                                    标签筛选
-                                </Title>
-                                <div className="tag-filter-list">
-                                    {allTags.map(tag => (
-                                        <Button
-                                            key={tag}
-                                            type={selectedTag === tag ? "primary" : "text"}
-                                            size="small"
-                                            icon={<TagOutlined />}
-                                            className={`tag-filter-btn ${selectedTag === tag ? 'active' : ''}`}
-                                            onClick={() => {
-                                                setSelectedTag(tag);
-                                                const url = tag === '全部' 
-                                                    ? '/community_user_page' 
-                                                    : `/community_user_page?tag=${encodeURIComponent(tag)}`;
-                                                navigate(url);
-                                            }}
-                                        >
-                                            {tag}
-                                        </Button>
-                                    ))}
-                                </div>
-                            </div>
-                        </Card>
-                    </aside>
-
-                    {/* 主内容区域 */}
-                    <main className="user-page-main">
-                        <Card className="main-content-card">
-                            <CommunityUserContent selectedTag={selectedTag} />
-                        </Card>
-                    </main>
-                </div>
-            </div>
+            <CommunityUserContent />
         </div>
     );
-}
+};
 
 export default CommunityUserPage;

@@ -24,6 +24,9 @@ import AdminUsers from "./pages/AdminUsers";
 import AdminReports from "./pages/AdminReports";
 import AdminReview from "./pages/AdminReview";
 import AdminCrisis from "./pages/AdminCrisis";
+import NotificationPage from "./pages/NotificationPage";
+import TestNotificationDropdown from "./pages/TestNotificationDropdown";
+import NotificationTester from "./pages/NotificationTester";
 
 // 根据用户身份渲染不同的路由
 const AppRoutes = () => {
@@ -77,6 +80,9 @@ const AppRoutes = () => {
                 <Route path="/send_community_post" element={<SendCommunityPostPage/>}/>
                 <Route path="/community" element={<CommunityHomepage/>}/>
                 <Route path="/community_user_page" element={<CommunityUserPage/>}/>
+                <Route path="/notifications" element={<NotificationPage/>}/>
+                <Route path="/test-notification" element={<TestNotificationDropdown/>}/>
+                <Route path="/notification-tester" element={<NotificationTester/>}/>
                 <Route path="/ai_chat" element={<AIChat/>}/>
                 {/* 管理员路径重定向到首页 */}
                 <Route path="/admin/*" element={<Home/>}/>

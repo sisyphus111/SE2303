@@ -1,20 +1,20 @@
-/* 管理员专用布局样式 - 白蓝风格 */
+/* 管理员专用布局样式 - 白-深蓝简约风格 */
 
 .admin-layout-container {
     min-height: 100vh;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: #ffffff;
     display: flex;
     flex-direction: column;
 }
 
 /* 管理员Header */
 .admin-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background: #1e3a8a;
+    box-shadow: 0 2px 8px rgba(30, 58, 138, 0.1);
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-bottom: 3px solid #4a90e2;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .admin-header-content {
@@ -24,7 +24,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 64px;
+    height: 60px;
 }
 
 .admin-logo {
@@ -35,12 +35,12 @@
 }
 
 .admin-logo-icon {
-    font-size: 24px;
+    font-size: 20px;
     color: #ffffff;
 }
 
 .admin-logo-text {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
     color: #ffffff;
     letter-spacing: 0.5px;
@@ -49,7 +49,7 @@
 /* 管理员导航 */
 .admin-nav {
     display: flex;
-    gap: 8px;
+    gap: 4px;
     align-items: center;
 }
 
@@ -60,23 +60,22 @@
     padding: 8px 16px;
     background: transparent;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     color: rgba(255, 255, 255, 0.8);
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     text-decoration: none;
 }
 
 .admin-nav-item:hover {
     background: rgba(255, 255, 255, 0.1);
     color: white;
-    transform: translateY(-2px);
 }
 
 .admin-nav-item.active {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
     color: white;
     font-weight: 600;
 }
@@ -103,30 +102,29 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 16px;
+    padding: 6px 12px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 24px;
+    border-radius: 20px;
     color: white;
-    font-size: 14px;
+    font-size: 13px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .admin-user-button:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .admin-user-avatar {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .admin-user-name {
@@ -134,8 +132,8 @@
 }
 
 .admin-dropdown-icon {
-    font-size: 12px;
-    transition: transform 0.3s ease;
+    font-size: 10px;
+    transition: transform 0.2s ease;
 }
 
 .admin-user-menu {
@@ -145,42 +143,43 @@
     margin-top: 8px;
     background: white;
     border-radius: 8px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    min-width: 160px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    min-width: 140px;
     overflow: hidden;
     z-index: 1001;
+    border: 1px solid #e5e7eb;
 }
 
 .admin-menu-item {
     width: 100%;
-    padding: 12px 16px;
+    padding: 10px 16px;
     display: flex;
     align-items: center;
     gap: 8px;
     background: transparent;
     border: none;
-    color: #333;
+    color: #374151;
     font-size: 14px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     text-align: left;
 }
 
 .admin-menu-item:hover {
-    background: #f8f9fa;
+    background: #f3f4f6;
 }
 
 .admin-menu-item.admin-logout {
-    color: #dc3545;
-    border-top: 1px solid #f0f0f0;
+    color: #dc2626;
+    border-top: 1px solid #f3f4f6;
 }
 
 .admin-menu-item.admin-logout:hover {
-    background: #fff5f5;
+    background: #fef2f2;
 }
 
 .admin-auth-error {
-    color: #ffcccb;
+    color: #fecaca;
     font-size: 14px;
     font-weight: 500;
 }
@@ -189,22 +188,23 @@
 .admin-main {
     flex: 1;
     padding: 24px;
-    background: transparent;
+    background: #f9fafb;
 }
 
 .admin-content {
     max-width: 1400px;
     margin: 0 auto;
     background: white;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    min-height: calc(100vh - 200px);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    min-height: calc(100vh - 160px);
     overflow: hidden;
+    border: 1px solid #e5e7eb;
 }
 
 /* 管理员Footer */
 .admin-footer {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #1e3a8a;
     color: white;
     padding: 16px 24px;
     margin-top: auto;
@@ -217,9 +217,9 @@
 }
 
 .admin-footer-content p {
-    margin: 4px 0;
-    font-size: 14px;
-    opacity: 0.9;
+    margin: 2px 0;
+    font-size: 13px;
+    opacity: 0.8;
 }
 
 /* 响应式设计 */
@@ -228,7 +228,7 @@
         padding: 0 16px;
         flex-wrap: wrap;
         height: auto;
-        min-height: 64px;
+        min-height: 60px;
     }
     
     .admin-logo {
@@ -259,7 +259,7 @@
     
     .admin-content {
         border-radius: 8px;
-        min-height: calc(100vh - 180px);
+        min-height: calc(100vh - 140px);
     }
 }
 
@@ -269,7 +269,7 @@
     }
     
     .admin-nav {
-        gap: 4px;
+        gap: 2px;
     }
     
     .admin-nav-item {
@@ -277,46 +277,28 @@
     }
     
     .admin-user-button {
-        padding: 6px 12px;
+        padding: 4px 8px;
     }
     
     .admin-user-avatar {
-        width: 28px;
-        height: 28px;
+        width: 24px;
+        height: 24px;
     }
-}
-
-/* 管理员特色动画 */
-.admin-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transform: translateX(-100%);
-    animation: admin-shine 3s infinite;
-}
-
-@keyframes admin-shine {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
 }
 
 /* 管理员内容卡片样式 */
 .admin-card {
     background: white;
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 24px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    margin-bottom: 24px;
-    border-left: 4px solid #4a90e2;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 16px;
+    border: 1px solid #e5e7eb;
 }
 
 .admin-card-title {
-    color: #2c3e50;
-    font-size: 20px;
+    color: #1e3a8a;
+    font-size: 18px;
     font-weight: 600;
     margin-bottom: 16px;
     display: flex;
@@ -325,50 +307,107 @@
 }
 
 .admin-card-content {
-    color: #555;
-    line-height: 1.6;
+    color: #374151;
+    line-height: 1.5;
 }
 
 /* 管理员按钮样式 */
 .admin-btn {
     padding: 8px 16px;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
     gap: 6px;
 }
 
 .admin-btn-primary {
-    background: #4a90e2;
+    background: #1e3a8a;
     color: white;
 }
 
 .admin-btn-primary:hover {
-    background: #357abd;
-    transform: translateY(-2px);
+    background: #1e40af;
 }
 
 .admin-btn-danger {
-    background: #e74c3c;
+    background: #dc2626;
     color: white;
 }
 
 .admin-btn-danger:hover {
-    background: #c0392b;
-    transform: translateY(-2px);
+    background: #b91c1c;
 }
 
 .admin-btn-success {
-    background: #27ae60;
+    background: #059669;
     color: white;
 }
 
 .admin-btn-success:hover {
-    background: #219a52;
-    transform: translateY(-2px);
+    background: #047857;
+}
+
+/* 简约风格的表格样式 */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-table th {
+    background: #f9fafb;
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+}
+
+.admin-table td {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.admin-table tr:hover {
+    background: #f9fafb;
+}
+
+/* 简约风格的状态徽章 */
+.admin-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.admin-badge.success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.admin-badge.warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.admin-badge.danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.admin-badge.info {
+    background: #dbeafe;
+    color: #1e40af;
 } 

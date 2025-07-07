@@ -1,7 +1,9 @@
-/* 举报处理页面样式 */
+/* 举报处理页面样式 - 白-深蓝简约风格 */
 
 .admin-reports-container {
     padding: 24px;
+    background: #f9fafb;
+    min-height: 100%;
 }
 
 .admin-reports-controls {
@@ -10,28 +12,35 @@
     margin-bottom: 24px;
     flex-wrap: wrap;
     align-items: center;
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
 }
 
 .admin-reports-stats {
     display: flex;
     gap: 24px;
     margin-bottom: 24px;
-    padding: 16px;
-    background: #f8f9fa;
+    padding: 20px;
+    background: white;
     border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
     flex-wrap: wrap;
 }
 
 .admin-stat-pending {
-    color: #fd7e14;
+    color: #d97706;
 }
 
 .admin-stat-resolved {
-    color: #27ae60;
+    color: #059669;
 }
 
 .admin-stat-rejected {
-    color: #e74c3c;
+    color: #dc2626;
 }
 
 .admin-reports-list {
@@ -42,15 +51,16 @@
 
 .admin-report-item {
     background: white;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #e5e7eb;
     border-radius: 8px;
     padding: 16px;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .admin-report-item:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #1e3a8a;
 }
 
 .admin-report-header {
@@ -65,12 +75,12 @@
     align-items: center;
     gap: 8px;
     font-weight: 500;
-    color: #4a90e2;
+    color: #1e3a8a;
 }
 
 .admin-report-time {
     font-size: 12px;
-    color: #666;
+    color: #6b7280;
 }
 
 .admin-report-content {
@@ -87,21 +97,22 @@
 .admin-report-reason {
     margin-bottom: 8px;
     font-size: 14px;
+    color: #374151;
 }
 
 .admin-report-users {
     display: flex;
     gap: 16px;
     font-size: 12px;
-    color: #666;
+    color: #6b7280;
 }
 
 .admin-report-reporter {
-    color: #27ae60;
+    color: #059669;
 }
 
 .admin-report-reported {
-    color: #e74c3c;
+    color: #dc2626;
 }
 
 .admin-report-status {
@@ -110,18 +121,18 @@
 }
 
 .admin-status-badge.pending {
-    background: #fff3cd;
-    color: #856404;
+    background: #fef3c7;
+    color: #92400e;
 }
 
 .admin-status-badge.resolved {
-    background: #d4edda;
-    color: #155724;
+    background: #dcfce7;
+    color: #166534;
 }
 
 .admin-status-badge.rejected {
-    background: #f8d7da;
-    color: #721c24;
+    background: #fee2e2;
+    color: #991b1b;
 }
 
 .admin-report-actions {
@@ -131,13 +142,12 @@
 }
 
 .admin-btn-secondary {
-    background: #6c757d;
+    background: #6b7280;
     color: white;
 }
 
 .admin-btn-secondary:hover {
-    background: #5a6268;
-    transform: translateY(-2px);
+    background: #4b5563;
 }
 
 /* 模态框样式 */
@@ -156,12 +166,14 @@
 
 .admin-modal-content {
     background: white;
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 0;
     max-width: 600px;
     width: 90%;
     max-height: 80vh;
     overflow: hidden;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
 }
 
 .admin-modal-header {
@@ -169,32 +181,34 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px 24px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
 }
 
 .admin-modal-header h3 {
     margin: 0;
-    color: #333;
+    color: #1e3a8a;
+    font-weight: 600;
 }
 
 .admin-modal-close {
     background: none;
     border: none;
-    font-size: 24px;
+    font-size: 20px;
     cursor: pointer;
-    color: #666;
-    padding: 0;
-    width: 32px;
-    height: 32px;
+    color: #6b7280;
+    padding: 4px;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    transition: background 0.3s ease;
+    transition: background 0.2s ease;
 }
 
 .admin-modal-close:hover {
-    background: #f0f0f0;
+    background: #f3f4f6;
 }
 
 .admin-modal-body {
@@ -209,7 +223,7 @@
 }
 
 .admin-detail-item strong {
-    color: #333;
+    color: #1e3a8a;
     margin-right: 8px;
 }
 

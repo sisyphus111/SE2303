@@ -3,6 +3,7 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import {useAudio} from '../lib/GlobalAudioPlayer';
 import { useUser } from '../lib/UserContext';
 import { logout as authLogout } from '../service/authService';
+import NotificationDropdown from './NotificationDropdown';
 import { 
   HomeOutlined, 
   TeamOutlined, 
@@ -144,66 +145,72 @@ const Layout = ({children}) => {
                     {/* 用户区域 */}
                     <div className="header-user">
                         {userProfile && identity && valid ? (
-                            <div className="user-dropdown" ref={userMenuRef}>
-                                <button 
-                                    className="user-button"
-                                    onClick={() => setShowUserMenu(!showUserMenu)}
-                                >
-                                    <div className="user-avatar">
-                                        {userProfile?.avatar && userProfile.avatar.includes('http') ? (
-                                            <img 
-                                                src={userProfile.avatar} 
-                                                alt="用户头像"
-                                                className="avatar-image"
-                                                onError={(e) => {
-                                                    e.target.style.display = 'none';
-                                                    e.target.nextSibling.style.display = 'flex';
-                                                }}
-                                            />
-                                        ) : null}
-                                        <div 
-                                            className="avatar-fallback"
-                                            style={{
-                                                display: userProfile?.avatar && userProfile.avatar.includes('http') ? 'none' : 'flex'
-                                            }}
-                                        >
-                                            {getUserAvatar().length === 1 ? (
-                                                <span className="avatar-text">{getUserAvatar()}</span>
-                                            ) : (
-                                                <UserOutlined />
-                                            )}
-                                        </div>
-                                    </div>
-                                    <span className="user-name">{getUserDisplayName()}</span>
-                                    <DownOutlined className="dropdown-icon" />
-                                </button>
+                            <div className="user-area">
+                                {/* 消息通知 */}
+                                <NotificationDropdown />
                                 
-                                {showUserMenu && (
-                                    <div className="user-menu">
-                                        <button 
-                                            className="menu-item"
-                                            onClick={() => handleUserMenuClick('profile')}
-                                        >
-                                            <UserOutlined />
-                                            个人资料
-                                        </button>
-                                        <button 
-                                            className="menu-item"
-                                            onClick={() => handleUserMenuClick('settings')}
-                                        >
-                                            <SettingOutlined />
-                                            设置
-                                        </button>
-                                        <div className="menu-divider"></div>
-                                        <button 
-                                            className="menu-item logout"
-                                            onClick={() => handleUserMenuClick('logout')}
-                                        >
-                                            <LogoutOutlined />
-                                            登出
-                                        </button>
-                                    </div>
-                                )}
+                                {/* 用户下拉菜单 */}
+                                <div className="user-dropdown" ref={userMenuRef}>
+                                    <button 
+                                        className="user-button"
+                                        onClick={() => setShowUserMenu(!showUserMenu)}
+                                    >
+                                        <div className="user-avatar">
+                                            {userProfile?.avatar && userProfile.avatar.includes('http') ? (
+                                                <img 
+                                                    src={userProfile.avatar} 
+                                                    alt="用户头像"
+                                                    className="avatar-image"
+                                                    onError={(e) => {
+                                                        e.target.style.display = 'none';
+                                                        e.target.nextSibling.style.display = 'flex';
+                                                    }}
+                                                />
+                                            ) : null}
+                                            <div 
+                                                className="avatar-fallback"
+                                                style={{
+                                                    display: userProfile?.avatar && userProfile.avatar.includes('http') ? 'none' : 'flex'
+                                                }}
+                                            >
+                                                {getUserAvatar().length === 1 ? (
+                                                    <span className="avatar-text">{getUserAvatar()}</span>
+                                                ) : (
+                                                    <UserOutlined />
+                                                )}
+                                            </div>
+                                        </div>
+                                        <span className="user-name">{getUserDisplayName()}</span>
+                                        <DownOutlined className="dropdown-icon" />
+                                    </button>
+                                    
+                                    {showUserMenu && (
+                                        <div className="user-menu">
+                                            <button 
+                                                className="menu-item"
+                                                onClick={() => handleUserMenuClick('profile')}
+                                            >
+                                                <UserOutlined />
+                                                个人资料
+                                            </button>
+                                            <button 
+                                                className="menu-item"
+                                                onClick={() => handleUserMenuClick('settings')}
+                                            >
+                                                <SettingOutlined />
+                                                设置
+                                            </button>
+                                            <div className="menu-divider"></div>
+                                            <button 
+                                                className="menu-item logout"
+                                                onClick={() => handleUserMenuClick('logout')}
+                                            >
+                                                <LogoutOutlined />
+                                                登出
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         ) : (
                             <div className="auth-buttons">

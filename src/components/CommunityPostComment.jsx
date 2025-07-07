@@ -80,10 +80,10 @@ const PostComment = ({ comment }) => {
                 <div className="comment-actions">
                     <button
                         className={`comment-action-btn like-btn ${liked ? 'liked' : ''}`}
-                        onClick={handleLike}
+                        // onClick={handleLike}
                     >
                         {liked ? <HeartFilled /> : <HeartOutlined />}
-                        <span>{likeCount}</span>
+                        <span>8</span>
                     </button>
                     <button className="comment-action-btn reply-btn">
                         <MessageOutlined />

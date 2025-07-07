@@ -1,6 +1,9 @@
 # SE2303大作业——网关
 `make gateway`启动网关
 
+## 使用cpolar配置内网穿透
+运行`cpolar http 8080`
+
 ## 系统架构说明：
 
 基于Spring Cloud Gateway实现的微服务API网关

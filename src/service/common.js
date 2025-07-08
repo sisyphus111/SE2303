@@ -122,5 +122,5 @@ export async function post(url, data, options = {}) {
     return handleApiResponse(response);
 }
 
-export const BASEURL = 'https://6c2909dc.r5.cpolar.top';
+export const BASEURL = 'https://7c297f9b.r7.cpolar.cn';
 export const PREFIX = `${BASEURL}/api`;

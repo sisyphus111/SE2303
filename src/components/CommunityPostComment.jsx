@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useMemo, useState} from 'react';
 import { HeartOutlined, HeartFilled, MessageOutlined, MoreOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import { useNavigate } from 'react-router-dom';
@@ -8,10 +8,14 @@ import '../css/CommunityPostComment.css';
 
 const PostComment = ({ comment }) => {
     const navigate = useNavigate();
-    const { userProfile, valid, getUserDisplayName, getUserAvatar } = useUser();
+    const { userProfile, valid, identity,getUserDisplayName, getUserAvatar } = useUser();
     const [liked, setLiked] = useState(comment.isLiked || false);
     const [likeCount, setLikeCount] = useState(comment.likeCount || 0);
-    const auth = { userId: userProfile?.id, valid };
+    const auth = useMemo(() => ({
+        userId: userProfile?.userId,
+        valid,
+        identity,
+    }), [userProfile, valid, identity]);
 
     const handleLike = async () => {
         if (!userProfile || !valid) {

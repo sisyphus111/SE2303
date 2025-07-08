@@ -1,21 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeftOutlined, 
-  TagOutlined, 
-  EditOutlined,
-  SendOutlined,
-  BookOutlined,
-  HeartOutlined,
-  UserOutlined,
-  SmileOutlined,
-  ThunderboltOutlined
+import {
+    ArrowLeftOutlined,
+    TagOutlined,
+    EditOutlined,
+    SendOutlined,
+    BookOutlined,
+    HeartOutlined,
+    UserOutlined,
+    SmileOutlined,
+    ThunderboltOutlined
 } from '@ant-design/icons';
+import { message } from 'antd';
+import { createPost } from '../service/communityService'; // Import createPost from communityService
+import { useUser } from '../lib/UserContext'; // Import useUser hook from UserContext
 import TagSelector from '../components/TagSelector';
 import '../css/SendCommunityPost.css';
 
 const SendCommunityPostPage = () => {
     const navigate = useNavigate();
+    const { userProfile, valid, identity, loading: contextLoading } = useUser(); // Get auth data from UserContext
     const [formData, setFormData] = useState({
         title: '',
         content: '',
@@ -32,9 +36,18 @@ const SendCommunityPostPage = () => {
         '成长': <ThunderboltOutlined />
     };
 
+    // Redirect to login if not authenticated
+    useEffect(() => {
+        if (!contextLoading && (!userProfile || !valid)) {
+            console.log('❌ 用户未认证，重定向到登录页面');
+            message.error('请先登录');
+            navigate('/login');
+        }
+    }, [userProfile, valid, contextLoading, navigate]);
+
     const validateForm = () => {
         const newErrors = {};
-        
+
         if (!formData.title.trim()) {
             newErrors.title = '请输入帖子标题';
         } else if (formData.title.length > 100) {
@@ -60,8 +73,8 @@ const SendCommunityPostPage = () => {
             ...prev,
             [field]: value
         }));
-        
-        // 清除对应字段的错误
+
+        // Clear error for the field
         if (errors[field]) {
             setErrors(prev => ({
                 ...prev,
@@ -88,35 +101,72 @@ const SendCommunityPostPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!validateForm()) {
             return;
         }
 
         setLoading(true);
-        
+
         try {
-            // TODO: 调用API提交帖子
-            console.log('Submitted post:', formData);
-            
-            // 模拟API调用
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            // 成功后导航回社区页面
-            navigate('/community');
+            // Prepare post data
+            const postData = {
+                title: formData.title,
+                content: formData.content,
+                tags: formData.tags
+            };
+
+            console.log('postData: ', postData);
+            // Call createPost from communityService with auth data
+            const auth = {
+                userId: userProfile?.userId,
+                valid,
+                identity
+            };
+            console.log('auth: ', auth);
+            const response = await createPost(postData, auth);
+
+            console.log('response: ', response);
+            if (response.success) {
+                message.success(response.message || '帖子发布成功');
+                navigate('/community');
+            } else {
+                message.error(response.error || '发布帖子失败');
+                setErrors({ submit: response.error || '发布帖子失败' });
+            }
         } catch (error) {
             console.error('Failed to submit post:', error);
-            // TODO: 显示错误提示
+            message.error('发布帖子失败，请稍后重试');
+            setErrors({ submit: '发布帖子失败，请稍后重试' });
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     };
+
+    // Show loading state while UserContext is initializing
+    if (contextLoading) {
+        return (
+            <div className="loading" style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                fontSize: '16px',
+                color: '#666'
+            }}>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ marginBottom: '16px', fontSize: '24px' }}>⏳</div>
+                    正在初始化用户信息...
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="send-post-page">
             {/* 头部导航 */}
             <div className="send-post-header">
-                <button 
+                <button
                     className="back-button"
                     onClick={() => navigate('/community')}
                 >
@@ -188,7 +238,15 @@ const SendCommunityPostPage = () => {
                             </label>
                             <textarea
                                 className={`form-textarea ${errors.content ? 'error' : ''}`}
-                                placeholder="分享你的想法、经历或感受...&#10;&#10;在这里你可以：&#10;• 分享学习心得和方法&#10;• 讨论生活中的趣事和困扰&#10;• 交流情感体验和成长感悟&#10;• 分享健康生活的小贴士&#10;&#10;让我们一起创建一个温暖、积极的交流空间！"
+                                placeholder="分享你的想法、经历或感受...
+
+在这里你可以：
+• 分享学习心得和方法
+• 讨论生活中的趣事和困扰
+• 交流情感体验和成长感悟
+• 分享健康生活的小贴士
+
+让我们一起创建一个温暖、积极的交流空间！"
                                 value={formData.content}
                                 onChange={(e) => handleInputChange('content', e.target.value)}
                                 rows={12}
@@ -228,6 +286,7 @@ const SendCommunityPostPage = () => {
                                 )}
                             </button>
                         </div>
+                        {errors.submit && <span className="error-message">{errors.submit}</span>}
                     </form>
                 </div>
 

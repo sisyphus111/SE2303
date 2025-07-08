@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, message } from 'antd';
 import { EditOutlined, HeartOutlined, StarOutlined } from '@ant-design/icons';
@@ -15,7 +15,11 @@ const CommunityUserContent = () => {
     const [collectedPosts, setCollectedPosts] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    const auth = { userId: userProfile?.id, valid, identity };
+    const auth = useMemo(() => ({
+        userId: userProfile?.userId,
+        valid,
+        identity,
+    }), [userProfile, valid, identity]);
 
     useEffect(() => {
         if (!userProfile || !valid) {

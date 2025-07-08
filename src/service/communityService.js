@@ -64,7 +64,7 @@ export const createPost = async (postData, auth = {}) => {
     }
 
     try {
-        const response = await post('/community/posts/send', {postData});
+        const response = await post('/community/posts/send', postData);
 
         message.success('帖子创建成功');
         return {

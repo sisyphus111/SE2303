@@ -136,10 +136,10 @@ spring:
         - id: inform-service        # 路由唯一标识符
           uri: http://localhost:8089      # 目标服务地址（通知服务）
           predicates:                     # 路由匹配条件
-            - Path=/api/inform/**   # 匹配以/api/inform/开头的所有路径
+            - Path=/api/informs/**   # 匹配以/api/inform/开头的所有路径
           filters:                        # 路由过滤器配置
             # 路径重写：保持原有路径结构不变
-            - RewritePath=/api/inform/(?<segment>.*), /api/inform/${segment}
+            - RewritePath=/api/informs/(?<segment>.*), /api/informs/${segment}
 
 
 # ===================================

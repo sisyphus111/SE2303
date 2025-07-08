@@ -110,6 +110,7 @@ export async function post(url, data, options = {}) {
 
     console.log(`🌐 POST请求: ${fullUrl}`);
     console.log('📤 请求数据:', data);
+    console.log('📤 请求数据（JSON 序列化后）:', JSON.stringify(data));
 
     let opts = {
         method: "POST",

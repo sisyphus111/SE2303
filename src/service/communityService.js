@@ -301,13 +301,13 @@ export const getCommentOfPost = async (postId, page = 1, size = 5, auth = {}) =>
 };
 
 // 给对应帖子发评论
-export const sendCommentToPost = async (postId, commentData, auth = {}) => {
+export const sendCommentToPost = async (postId, content, auth = {}) => {
     if (!auth.userId || auth.valid === false) {
         message.error('请先登录');
         throw new Error('用户未登录');
     }
     try {
-        const response = await post(`/community/posts/add_comment/${postId}`, commentData);
+        const response = await post(`/community/posts/add_comment/${postId}`, {content});
 
         message.success('评论发表成功');
         return {

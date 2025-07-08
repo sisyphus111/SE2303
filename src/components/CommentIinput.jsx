@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useMemo, useState} from 'react';
 import { SendOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import { useUser } from '../lib/UserContext';
@@ -7,8 +7,12 @@ import '../css/CommentIinput.css';
 
 const CommentInput = ({ onSubmit, postId }) => {
     const [comment, setComment] = useState('');
-    const { userProfile, valid } = useUser();
-    const auth = { userId: userProfile?.id, valid };
+    const { userProfile, valid, identity } = useUser();
+    const auth = useMemo(() => ({
+        userId: userProfile?.userId,
+        valid,
+        identity,
+    }), [userProfile, valid, identity]);
 
     const handleSubmit = async () => {
         if (!userProfile || !valid) {
@@ -16,7 +20,7 @@ const CommentInput = ({ onSubmit, postId }) => {
             return;
         }
         if (comment.trim()) {
-            const response = await sendCommentToPost(postId, { content: comment }, auth);
+            const response = await sendCommentToPost(postId, comment, auth);
             if (response.success) {
                 onSubmit(response.data);
                 setComment('');

@@ -13,11 +13,18 @@ import {
   MessageOutlined,
   FlagOutlined
 } from '@ant-design/icons';
+import { 
+  getAdminPosts, 
+  approvePost, 
+  banPost, 
+  deletePost 
+} from '../service/community_common';
 import '../css/AdminPosts.css';
 
 const AdminPosts = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
@@ -25,134 +32,60 @@ const AdminPosts = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
+  const [operatingPostId, setOperatingPostId] = useState(null);
 
-  // 模拟帖子数据
-  const mockPosts = [
-    {
-      id: 1,
-      title: "今天的心情分享",
-      content: "今天感觉心情不错，想和大家分享一下我的小确幸...",
-      author: "张三",
-      authorId: 101,
-      type: "mood",
-      status: "published",
-      createdAt: "2024-01-15 14:30:00",
-      updatedAt: "2024-01-15 14:30:00",
-      likes: 25,
-      comments: 8,
-      reports: 0,
-      tags: ["心情", "分享", "生活"]
-    },
-    {
-      id: 2,
-      title: "关于焦虑的一些想法",
-      content: "最近总是感到焦虑，不知道是不是因为期末考试快到了...",
-      author: "李四",
-      authorId: 102,
-      type: "help",
-      status: "published",
-      createdAt: "2024-01-15 10:15:00",
-      updatedAt: "2024-01-15 10:15:00",
-      likes: 12,
-      comments: 15,
-      reports: 1,
-      tags: ["焦虑", "求助", "心理"]
-    },
-    {
-      id: 3,
-      title: "学习压力太大了",
-      content: "感觉学习压力很大，有时候会想要放弃...",
-      author: "王五",
-      authorId: 103,
-      type: "help",
-      status: "pending",
-      createdAt: "2024-01-14 16:45:00",
-      updatedAt: "2024-01-14 16:45:00",
-      likes: 5,
-      comments: 3,
-      reports: 0,
-      tags: ["学习", "压力", "心理"]
-    },
-    {
-      id: 4,
-      title: "分享一些减压的方法",
-      content: "给大家分享一些我平时用来减压的小方法，希望对大家有帮助...",
-      author: "赵六",
-      authorId: 104,
-      type: "share",
-      status: "published",
-      createdAt: "2024-01-14 09:20:00",
-      updatedAt: "2024-01-14 09:20:00",
-      likes: 45,
-      comments: 20,
-      reports: 0,
-      tags: ["减压", "方法", "分享"]
-    },
-    {
-      id: 5,
-      title: "不当内容举报",
-      content: "这里包含一些不当内容，需要管理员审核...",
-      author: "用户X",
-      authorId: 105,
-      type: "other",
-      status: "reported",
-      createdAt: "2024-01-13 20:30:00",
-      updatedAt: "2024-01-13 20:30:00",
-      likes: 2,
-      comments: 1,
-      reports: 5,
-      tags: ["其他"]
+  // 获取帖子数据
+  const fetchPosts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const options = {
+        page: currentPage,
+        size: postsPerPage,
+        sortBy: 'latest'
+      };
+      
+      if (searchTerm) options.keyword = searchTerm;
+      if (typeFilter !== 'all') options.category = typeFilter;
+      
+      const data = await getAdminPosts(options);
+      // 确保 posts 是数组
+      const postsArray = Array.isArray(data) ? data : (data?.content || []);
+      setPosts(postsArray);
+      setTotalPages(data?.totalPages || 0);
+    } catch (err) {
+      console.error('获取帖子列表失败:', err);
+      setError('获取帖子列表失败');
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   useEffect(() => {
-    // 模拟API调用
-    const fetchPosts = async () => {
-      setLoading(true);
-      try {
-        // TODO: 调用实际API获取帖子列表
-        // const response = await fetch('/api/admin/posts');
-        // const data = await response.json();
-        // setPosts(data);
-        
-        // 模拟网络延迟
-        setTimeout(() => {
-          setPosts(mockPosts);
-          setLoading(false);
-        }, 1000);
-      } catch (error) {
-        console.error('获取帖子列表失败:', error);
-        setLoading(false);
-      }
-    };
-
     fetchPosts();
-  }, []);
+  }, [currentPage, searchTerm, typeFilter]);
 
-  // 筛选帖子
-  const filteredPosts = posts.filter(post => {
-    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.author.toLowerCase().includes(searchTerm.toLowerCase());
+  // 筛选帖子（现在主要用于本地状态筛选）
+  const filteredPosts = Array.isArray(posts) ? posts.filter(post => {
+    const matchesStatus = statusFilter === 'all' || 
+      (statusFilter === 'published' && post.reviewStatus === 'APPROVED') ||
+      (statusFilter === 'pending' && post.reviewStatus === 'PENDING') ||
+      (statusFilter === 'reported' && post.reviewStatus === 'REPORTED') ||
+      (statusFilter === 'rejected' && post.reviewStatus === 'BANNED');
     
-    const matchesStatus = statusFilter === 'all' || post.status === statusFilter;
-    const matchesType = typeFilter === 'all' || post.type === typeFilter;
-    
-    return matchesSearch && matchesStatus && matchesType;
-  });
+    return matchesStatus;
+  }) : [];
 
-  // 分页
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
-  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+
 
   // 统计数据
   const stats = {
-    total: posts.length,
-    published: posts.filter(p => p.status === 'published').length,
-    pending: posts.filter(p => p.status === 'pending').length,
-    reported: posts.filter(p => p.status === 'reported').length
+    total: Array.isArray(posts) ? posts.length : 0,
+    published: Array.isArray(posts) ? posts.filter(p => p.reviewStatus === 'APPROVED').length : 0,
+    pending: Array.isArray(posts) ? posts.filter(p => p.reviewStatus === 'PENDING').length : 0,
+    reported: Array.isArray(posts) ? posts.filter(p => p.reviewStatus === 'REPORTED').length : 0
   };
 
   // 帖子操作
@@ -163,56 +96,68 @@ const AdminPosts = () => {
 
   const handleApprovePost = async (postId) => {
     try {
-      // TODO: 调用API批准帖子
-      // await fetch(`/api/admin/posts/${postId}/approve`, { method: 'POST' });
+      setOperatingPostId(postId);
+      await approvePost(postId);
       
+      // 更新本地状态
       setPosts(posts.map(post => 
-        post.id === postId ? { ...post, status: 'published' } : post
+        post.id === postId ? { ...post, reviewStatus: 'APPROVED' } : post
       ));
       console.log('帖子已批准:', postId);
-    } catch (error) {
-      console.error('批准帖子失败:', error);
+    } catch (err) {
+      console.error('批准帖子失败:', err);
+      setError('批准帖子失败');
+    } finally {
+      setOperatingPostId(null);
     }
   };
 
   const handleRejectPost = async (postId) => {
     try {
-      // TODO: 调用API拒绝帖子
-      // await fetch(`/api/admin/posts/${postId}/reject`, { method: 'POST' });
+      setOperatingPostId(postId);
+      await banPost(postId);
       
+      // 更新本地状态
       setPosts(posts.map(post => 
-        post.id === postId ? { ...post, status: 'rejected' } : post
+        post.id === postId ? { ...post, reviewStatus: 'BANNED' } : post
       ));
       console.log('帖子已拒绝:', postId);
-    } catch (error) {
-      console.error('拒绝帖子失败:', error);
+    } catch (err) {
+      console.error('拒绝帖子失败:', err);
+      setError('拒绝帖子失败');
+    } finally {
+      setOperatingPostId(null);
     }
   };
 
   const handleDeletePost = async (postId) => {
     if (window.confirm('确定要删除这个帖子吗？此操作不可恢复。')) {
       try {
-        // TODO: 调用API删除帖子
-        // await fetch(`/api/admin/posts/${postId}`, { method: 'DELETE' });
+        setOperatingPostId(postId);
+        await deletePost(postId);
         
-        setPosts(posts.filter(post => post.id !== postId));
+        // 重新获取数据
+        fetchPosts();
         console.log('帖子已删除:', postId);
-      } catch (error) {
-        console.error('删除帖子失败:', error);
+      } catch (err) {
+        console.error('删除帖子失败:', err);
+        setError('删除帖子失败');
+      } finally {
+        setOperatingPostId(null);
       }
     }
   };
 
   // 获取状态显示
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'published':
+  const getStatusBadge = (reviewStatus) => {
+    switch (reviewStatus) {
+      case 'APPROVED':
         return <span className="admin-badge success">已发布</span>;
-      case 'pending':
+      case 'PENDING':
         return <span className="admin-badge warning">待审核</span>;
-      case 'reported':
+      case 'REPORTED':
         return <span className="admin-badge danger">被举报</span>;
-      case 'rejected':
+      case 'BANNED':
         return <span className="admin-badge info">已拒绝</span>;
       default:
         return <span className="admin-badge info">未知</span>;
@@ -220,8 +165,8 @@ const AdminPosts = () => {
   };
 
   // 获取类型显示
-  const getTypeDisplay = (type) => {
-    switch (type) {
+  const getTypeDisplay = (category) => {
+    switch (category) {
       case 'mood':
         return '心情分享';
       case 'help':
@@ -231,12 +176,13 @@ const AdminPosts = () => {
       case 'other':
         return '其他';
       default:
-        return '未知';
+        return category || '未知';
     }
   };
 
   // 格式化时间
   const formatDate = (dateString) => {
+    if (!dateString) return '未知';
     const date = new Date(dateString);
     return date.toLocaleString('zh-CN');
   };
@@ -257,6 +203,14 @@ const AdminPosts = () => {
           <FileTextOutlined />
           帖子内容管理
         </div>
+        
+        {/* 错误提示 */}
+        {error && (
+          <div className="admin-error-message">
+            {error}
+            <button onClick={() => setError(null)} className="admin-error-close">×</button>
+          </div>
+        )}
         
         {/* 控制面板 */}
         <div className="admin-posts-controls">
@@ -299,6 +253,14 @@ const AdminPosts = () => {
               <option value="other">其他</option>
             </select>
           </div>
+          
+          <button 
+            onClick={fetchPosts}
+            disabled={loading}
+            className="admin-btn admin-btn-primary"
+          >
+            刷新
+          </button>
         </div>
 
         {/* 统计信息 */}
@@ -323,20 +285,20 @@ const AdminPosts = () => {
 
         {/* 帖子列表 */}
         <div className="admin-posts-list">
-          {currentPosts.length === 0 ? (
+          {filteredPosts.length === 0 ? (
             <div className="admin-empty-state">
               <FileTextOutlined />
               <p>暂无帖子数据</p>
             </div>
           ) : (
-            currentPosts.map((post) => (
+            filteredPosts.map((post) => (
               <div key={post.id} className="admin-post-item">
                 <div className="admin-post-header">
                   <div className="admin-post-title">
                     <h4>{post.title}</h4>
                     <div className="admin-post-meta">
-                      <span className="admin-post-type">{getTypeDisplay(post.type)}</span>
-                      {getStatusBadge(post.status)}
+                      <span className="admin-post-type">{getTypeDisplay(post.category)}</span>
+                      {getStatusBadge(post.reviewStatus)}
                     </div>
                   </div>
                   <div className="admin-post-time">
@@ -347,27 +309,27 @@ const AdminPosts = () => {
                 <div className="admin-post-content">
                   <div className="admin-post-info">
                     <p className="admin-post-text">
-                      {post.content.length > 100 ? 
+                      {post.content && post.content.length > 100 ? 
                         `${post.content.substring(0, 100)}...` : 
-                        post.content
+                        post.content || '无内容'
                       }
                     </p>
                     <div className="admin-post-details">
                       <div className="admin-post-author">
-                        <UserOutlined /> {post.author}
+                        <UserOutlined /> {post.username || '未知用户'}
                       </div>
                       <div className="admin-post-stats">
-                        <span><LikeOutlined /> {post.likes}</span>
-                        <span><MessageOutlined /> {post.comments}</span>
-                        {post.reports > 0 && (
+                        <span><LikeOutlined /> {post.postMetrics?.likeCount || 0}</span>
+                        <span><MessageOutlined /> {post.postMetrics?.commentCount || 0}</span>
+                        {post.reportCount > 0 && (
                           <span className="admin-post-reports">
-                            <FlagOutlined /> {post.reports}
+                            <FlagOutlined /> {post.reportCount}
                           </span>
                         )}
                       </div>
                     </div>
                     <div className="admin-post-tags">
-                      {post.tags.map((tag, index) => (
+                      {post.tags && post.tags.map((tag, index) => (
                         <span key={index} className="admin-post-tag">#{tag}</span>
                       ))}
                     </div>
@@ -381,45 +343,80 @@ const AdminPosts = () => {
                       <EyeOutlined /> 查看详情
                     </button>
                     
-                    {post.status === 'pending' && (
+                    {post.reviewStatus === 'PENDING' && (
                       <>
                         <button
                           onClick={() => handleApprovePost(post.id)}
+                          disabled={operatingPostId === post.id}
                           className="admin-btn admin-btn-success"
                         >
-                          <CheckCircleOutlined /> 批准
+                          {operatingPostId === post.id ? (
+                            <div className="admin-btn-loading"></div>
+                          ) : (
+                            <>
+                              <CheckCircleOutlined /> 批准
+                            </>
+                          )}
                         </button>
                         <button
                           onClick={() => handleRejectPost(post.id)}
+                          disabled={operatingPostId === post.id}
                           className="admin-btn admin-btn-secondary"
                         >
-                          <ExclamationCircleOutlined /> 拒绝
+                          {operatingPostId === post.id ? (
+                            <div className="admin-btn-loading"></div>
+                          ) : (
+                            <>
+                              <ExclamationCircleOutlined /> 拒绝
+                            </>
+                          )}
                         </button>
                       </>
                     )}
                     
-                    {post.status === 'reported' && (
+                    {post.reviewStatus === 'REPORTED' && (
                       <>
                         <button
                           onClick={() => handleApprovePost(post.id)}
+                          disabled={operatingPostId === post.id}
                           className="admin-btn admin-btn-success"
                         >
-                          <CheckCircleOutlined /> 恢复
+                          {operatingPostId === post.id ? (
+                            <div className="admin-btn-loading"></div>
+                          ) : (
+                            <>
+                              <CheckCircleOutlined /> 恢复
+                            </>
+                          )}
                         </button>
                         <button
                           onClick={() => handleRejectPost(post.id)}
+                          disabled={operatingPostId === post.id}
                           className="admin-btn admin-btn-secondary"
                         >
-                          <ExclamationCircleOutlined /> 下架
+                          {operatingPostId === post.id ? (
+                            <div className="admin-btn-loading"></div>
+                          ) : (
+                            <>
+                              <ExclamationCircleOutlined /> 下架
+                            </>
+                          )}
                         </button>
                       </>
                     )}
                     
                     <button
                       onClick={() => handleDeletePost(post.id)}
+                      disabled={operatingPostId === post.id}
                       className="admin-btn admin-btn-danger"
                     >
-                      <DeleteOutlined /> 删除
+                      {operatingPostId === post.id ? (
+                        <div className="admin-btn-loading"></div>
+                      ) : (
+                        <>
+                          <DeleteOutlined /> 删除
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
@@ -433,7 +430,7 @@ const AdminPosts = () => {
           <div className="admin-pagination">
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
+              disabled={currentPage === 1 || loading}
               className="admin-btn admin-btn-secondary"
             >
               上一页
@@ -445,7 +442,7 @@ const AdminPosts = () => {
             
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
+              disabled={currentPage === totalPages || loading}
               className="admin-btn admin-btn-secondary"
             >
               下一页
@@ -474,15 +471,15 @@ const AdminPosts = () => {
               </div>
               
               <div className="admin-detail-item">
-                <strong>作者:</strong> {selectedPost.author} (ID: {selectedPost.authorId})
+                <strong>作者:</strong> {selectedPost.username} (ID: {selectedPost.userId})
               </div>
               
               <div className="admin-detail-item">
-                <strong>类型:</strong> {getTypeDisplay(selectedPost.type)}
+                <strong>类型:</strong> {getTypeDisplay(selectedPost.category)}
               </div>
               
               <div className="admin-detail-item">
-                <strong>状态:</strong> {getStatusBadge(selectedPost.status)}
+                <strong>状态:</strong> {getStatusBadge(selectedPost.reviewStatus)}
               </div>
               
               <div className="admin-detail-item">
@@ -496,16 +493,16 @@ const AdminPosts = () => {
               <div className="admin-detail-item">
                 <strong>数据统计:</strong>
                 <div className="admin-post-stats">
-                  <span><LikeOutlined /> 点赞: {selectedPost.likes}</span>
-                  <span><MessageOutlined /> 评论: {selectedPost.comments}</span>
-                  <span><FlagOutlined /> 举报: {selectedPost.reports}</span>
+                  <span><LikeOutlined /> 点赞: {selectedPost.postMetrics?.likeCount || 0}</span>
+                  <span><MessageOutlined /> 评论: {selectedPost.postMetrics?.commentCount || 0}</span>
+                  <span><FlagOutlined /> 举报: {selectedPost.reportCount || 0}</span>
                 </div>
               </div>
               
               <div className="admin-detail-item">
                 <strong>标签:</strong>
                 <div className="admin-post-tags">
-                  {selectedPost.tags.map((tag, index) => (
+                  {selectedPost.tags && selectedPost.tags.map((tag, index) => (
                     <span key={index} className="admin-post-tag">#{tag}</span>
                   ))}
                 </div>

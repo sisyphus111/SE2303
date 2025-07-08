@@ -8,7 +8,7 @@ import {
   ReloadOutlined,
   MessageOutlined
 } from '@ant-design/icons';
-import { getReviewQueue, reviewContent } from '../service/adminService';
+import { getReviewQueue, reviewContent, getContentDetail } from '../service/community_common';
 import '../css/AdminReview.css';
 
 const AdminReview = () => {
@@ -27,15 +27,15 @@ const AdminReview = () => {
         try {
             setLoading(true);
             setError(null);
-            const response = await getReviewQueue();
-            if (response.success) {
-                setContents(response.data || []);
-            } else {
-                setError(response.message || '获取审核队列失败');
-            }
+            const data = await getReviewQueue();
+            // 确保 contents 是数组
+            const contentsArray = Array.isArray(data) ? data : (data?.content || []);
+            setContents(contentsArray);
         } catch (err) {
             console.error('获取审核队列失败:', err);
             setError('获取审核队列失败');
+            // 确保错误时也设置为空数组
+            setContents([]);
         } finally {
             setLoading(false);
         }
@@ -50,18 +50,18 @@ const AdminReview = () => {
     const handleReviewAction = async (contentId, action, reason = '') => {
         try {
             setOperatingContentId(contentId);
-            const response = await reviewContent(contentId, action, reason);
-            if (response.success) {
-                // 更新本地状态
-                setContents(contents.map(content => 
+            await reviewContent(contentId, action, reason);
+            
+            // 更新本地状态
+            setContents(prevContents => {
+                if (!Array.isArray(prevContents)) return [];
+                return prevContents.map(content => 
                     content.id === contentId 
                         ? { ...content, status: action, reviewedAt: new Date().toISOString() }
                         : content
-                ));
-                console.log(`内容 ${contentId} 已${action === 'approved' ? '通过' : '拒绝'}审核`);
-            } else {
-                setError(response.message || '审核内容失败');
-            }
+                );
+            });
+            console.log(`内容 ${contentId} 已${action === 'approved' ? '通过' : '拒绝'}审核`);
         } catch (err) {
             console.error('审核内容失败:', err);
             setError('审核内容失败');
@@ -71,7 +71,7 @@ const AdminReview = () => {
     };
 
     // 过滤内容列表
-    const filteredContents = contents.filter(content => {
+    const filteredContents = Array.isArray(contents) ? contents.filter(content => {
         const matchesSearch = content.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                              content.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                              content.author?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -80,7 +80,7 @@ const AdminReview = () => {
         const matchesType = filterType === 'all' || content.type === filterType;
         
         return matchesSearch && matchesStatus && matchesType;
-    });
+    }) : [];
 
     // 获取状态显示文本
     const getStatusText = (status) => {
@@ -120,9 +120,15 @@ const AdminReview = () => {
     };
 
     // 查看详情
-    const viewContentDetail = (content) => {
-        setSelectedContent(content);
-        setShowDetailModal(true);
+    const viewContentDetail = async (content) => {
+        try {
+            const detailData = await getContentDetail(content.id, content.type);
+            setSelectedContent(detailData);
+            setShowDetailModal(true);
+        } catch (err) {
+            console.error('获取内容详情失败:', err);
+            setError('获取内容详情失败');
+        }
     };
 
     return (
@@ -185,24 +191,24 @@ const AdminReview = () => {
                 <div className="admin-review-stats">
                     <div className="admin-stat-item">
                         <span className="admin-stat-label">总内容数:</span>
-                        <span className="admin-stat-value">{contents.length}</span>
+                        <span className="admin-stat-value">{Array.isArray(contents) ? contents.length : 0}</span>
                     </div>
                     <div className="admin-stat-item">
                         <span className="admin-stat-label">待审核:</span>
                         <span className="admin-stat-value admin-stat-pending">
-                            {contents.filter(c => c.status === 'pending').length}
+                            {Array.isArray(contents) ? contents.filter(c => c.status === 'pending').length : 0}
                         </span>
                     </div>
                     <div className="admin-stat-item">
                         <span className="admin-stat-label">已通过:</span>
                         <span className="admin-stat-value admin-stat-approved">
-                            {contents.filter(c => c.status === 'approved').length}
+                            {Array.isArray(contents) ? contents.filter(c => c.status === 'approved').length : 0}
                         </span>
                     </div>
                     <div className="admin-stat-item">
                         <span className="admin-stat-label">已拒绝:</span>
                         <span className="admin-stat-value admin-stat-rejected">
-                            {contents.filter(c => c.status === 'rejected').length}
+                            {Array.isArray(contents) ? contents.filter(c => c.status === 'rejected').length : 0}
                         </span>
                     </div>
                 </div>
@@ -256,6 +262,11 @@ const AdminReview = () => {
                                             {content.tags && (
                                                 <span className="admin-content-tags">
                                                     标签: {content.tags.join(', ')}
+                                                </span>
+                                            )}
+                                            {content.postId && (
+                                                <span className="admin-content-post">
+                                                    帖子ID: {content.postId}
                                                 </span>
                                             )}
                                         </div>
@@ -333,35 +344,48 @@ const AdminReview = () => {
                             <div className="admin-detail-item">
                                 <strong>内容类型:</strong> {getTypeText(selectedContent.type)}
                             </div>
-                            {selectedContent.title && (
+                            {selectedContent.content?.title && (
                                 <div className="admin-detail-item">
-                                    <strong>标题:</strong> {selectedContent.title}
+                                    <strong>标题:</strong> {selectedContent.content.title}
                                 </div>
                             )}
                             <div className="admin-detail-item">
                                 <strong>内容:</strong> 
                                 <div className="admin-content-full">
-                                    {selectedContent.content}
+                                    {selectedContent.content?.content || selectedContent.content?.content}
                                 </div>
                             </div>
                             <div className="admin-detail-item">
-                                <strong>作者:</strong> {selectedContent.author}
+                                <strong>作者:</strong> {selectedContent.content?.userId}
                             </div>
                             <div className="admin-detail-item">
-                                <strong>创建时间:</strong> {formatDate(selectedContent.createdAt)}
+                                <strong>创建时间:</strong> {formatDate(selectedContent.content?.createdAt)}
                             </div>
                             <div className="admin-detail-item">
-                                <strong>审核状态:</strong> {getStatusText(selectedContent.status)}
+                                <strong>审核状态:</strong> {getStatusText(selectedContent.content?.reviewStatus?.toLowerCase())}
                             </div>
-                            {selectedContent.tags && (
+                            {selectedContent.content?.tags && (
                                 <div className="admin-detail-item">
-                                    <strong>标签:</strong> {selectedContent.tags.join(', ')}
+                                    <strong>标签:</strong> {selectedContent.content.tags.join(', ')}
                                 </div>
                             )}
-                            {selectedContent.reviewedAt && (
+                            {selectedContent.content?.postId && (
                                 <div className="admin-detail-item">
-                                    <strong>审核时间:</strong> {formatDate(selectedContent.reviewedAt)}
+                                    <strong>所属帖子ID:</strong> {selectedContent.content.postId}
                                 </div>
+                            )}
+                            {selectedContent.post && (
+                                <>
+                                    <div className="admin-detail-item">
+                                        <strong>所属帖子标题:</strong> {selectedContent.post.title}
+                                    </div>
+                                    <div className="admin-detail-item">
+                                        <strong>所属帖子内容:</strong> 
+                                        <div className="admin-content-full">
+                                            {selectedContent.post.content}
+                                        </div>
+                                    </div>
+                                </>
                             )}
                         </div>
                     </div>

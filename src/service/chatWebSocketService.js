@@ -66,9 +66,10 @@ class ChatWebSocketService {
 
   /**
    * 建立WebSocket连接
+   * @param {string} userId - 用户ID，用于传递给后端
    * @returns {Promise<void>}
    */
-  connect() {
+  connect(userId = null) {
     return new Promise((resolve, reject) => {
       // 如果已经连接或正在连接，直接返回
       if (this.ws?.readyState === WebSocket.OPEN) {
@@ -78,10 +79,17 @@ class ChatWebSocketService {
 
       try {
         this.updateStatus('connecting');
-        console.log(`尝试连接WebSocket: ${this.config.url}`);
+        
+        // 构建WebSocket URL，包含用户ID参数
+        let wsUrl = this.config.url;
+        if (userId) {
+          wsUrl += `?userId=${encodeURIComponent(userId)}`;
+        }
+        
+        console.log(`尝试连接WebSocket: ${wsUrl}`);
         
         // 创建WebSocket连接
-        this.ws = new WebSocket(this.config.url);
+        this.ws = new WebSocket(wsUrl);
 
         // 连接成功事件
         this.ws.onopen = () => {

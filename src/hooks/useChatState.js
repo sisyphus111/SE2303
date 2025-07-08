@@ -171,29 +171,37 @@ export const useChatState = () => {
   useEffect(() => {
     console.log('初始化聊天状态管理');
     
+    // 获取当前用户ID（从localStorage、context或其他地方）
+    const getCurrentUserId = () => {
+      // 这里需要根据你的用户认证系统来获取用户ID
+      // 例如从localStorage、context、或API调用获取
+      const userProfile = localStorage.getItem('userProfile');
+      if (userProfile) {
+        const user = JSON.parse(userProfile);
+        return user.userId || user.id;
+      }
+      return null;
+    };
+
+    const userId = getCurrentUserId();
+    console.log('当前用户ID:', userId);
+
     // 设置WebSocket事件监听器
     chatWebSocketService.on('statusChange', handleStatusChange);
     chatWebSocketService.on('message', handleWebSocketMessage);
     chatWebSocketService.on('error', handleWebSocketError);
-    
-    // 建立WebSocket连接
-    chatWebSocketService.connect().catch(error => {
-      console.error('初始连接失败:', error);
-      // 初始连接失败时不显示错误消息，让自动重连机制处理
+
+    // 建立WebSocket连接，传递用户ID
+    chatWebSocketService.connect(userId).catch(error => {
+      console.error('WebSocket连接失败:', error);
+      setConnectionStatus('disconnected');
     });
-    
-    // 清理函数：组件卸载时断开连接并清理事件监听器
+
+    // 清理函数
     return () => {
-      console.log('清理聊天状态管理');
-      
-      // 清除超时定时器
-      if (messageTimeoutRef.current) {
-        clearTimeout(messageTimeoutRef.current);
-      }
-      
       chatWebSocketService.destroy();
     };
-  }, []); // 空依赖数组，仅在组件挂载时执行一次
+  }, []);
 
   // ==================== 操作方法 ====================
 

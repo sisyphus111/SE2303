@@ -11,7 +11,8 @@ import {
   LogoutOutlined,
   DownOutlined,
   SettingOutlined,
-  CheckCircleOutlined
+  CheckCircleOutlined,
+  HeartOutlined
 } from '@ant-design/icons';
 import '../css/AdminLayout.css';
 
@@ -46,7 +47,8 @@ const AdminLayout = ({ children }) => {
         { path: '/admin/checkins', label: '打卡管理', icon: <CheckCircleOutlined /> },
         { path: '/admin/reports', label: '举报处理', icon: <ExclamationCircleOutlined /> },
         { path: '/admin/review', label: '内容审核', icon: <FileTextOutlined /> },
-        { path: '/admin/crisis', label: '危险用户', icon: <WarningOutlined /> }
+        { path: '/admin/crisis', label: '危险用户', icon: <WarningOutlined /> },
+        { path: '/admin/mental-resource', label: '心理资源', icon: <HeartOutlined /> }
     ];
 
     const handleNavigation = (path) => {

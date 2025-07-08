@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     ArrowLeftOutlined,
@@ -18,14 +18,18 @@ import "../css/CommunityPostDetail.css";
 const CommunityPostPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { userProfile, valid, identity, getUserAvatar, getUserDisplayName } = useUser();
+    const { userProfile, valid, identity, loading: contextLoading, getUserAvatar, getUserDisplayName } = useUser();
     const [postData, setPostData] = useState(null);
     const [comments, setComments] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize] = useState(10);
     const [loading, setLoading] = useState(false);
 
-    const auth = { userId: userProfile?.id, valid, identity };
+    const auth = useMemo(() => ({
+        userId: userProfile?.userId,
+        valid,
+        identity,
+    }), [userProfile, valid, identity]);
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -56,8 +60,12 @@ const CommunityPostPage = () => {
             setLoading(false);
         };
 
-        fetchPost();
-        fetchComments();
+        if (valid && userProfile && !contextLoading) {
+            fetchPost();
+            fetchComments();
+        } else if (!valid || !userProfile) {
+            navigate('/login');
+        }
     }, [id, currentPage, pageSize, auth, userProfile, valid, navigate]);
 
     const handleNewComment = async (content) => {

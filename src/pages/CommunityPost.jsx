@@ -60,13 +60,20 @@ const CommunityPostPage = () => {
             setLoading(false);
         };
 
-        if (valid && userProfile && !contextLoading) {
+        // 只有在UserContext加载完成后才进行认证检查
+        if (contextLoading) {
+            console.log('🔄 UserContext正在加载，等待初始化完成...');
+            return;
+        }
+
+        if (valid && userProfile) {
             fetchPost();
             fetchComments();
         } else if (!valid || !userProfile) {
+            console.log('❌ 用户未认证，重定向到登录页面');
             navigate('/login');
         }
-    }, [id, currentPage, pageSize, auth, userProfile, valid, navigate]);
+    }, [id, currentPage, pageSize, auth, userProfile, valid, contextLoading, navigate]);
 
     const handleNewComment = async (content) => {
         if (!userProfile || !valid) {
@@ -82,6 +89,25 @@ const CommunityPostPage = () => {
             message.error(response.error);
         }
     };
+
+    // 在UserContext加载期间显示加载状态
+    if (contextLoading) {
+        return (
+            <div className="loading" style={{
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                height: '100vh',
+                fontSize: '16px',
+                color: '#666'
+            }}>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ marginBottom: '16px', fontSize: '24px' }}>⏳</div>
+                    正在初始化用户信息...
+                </div>
+            </div>
+        );
+    }
 
     if (loading) {
         return <div className="loading">加载中...</div>;

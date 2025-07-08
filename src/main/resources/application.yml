@@ -74,20 +74,9 @@ spring:
           filters:                        # 路由过滤器配置
             # 路径重写：保持原有路径结构不变
             - RewritePath=/api/community/(?<segment>.*), /api/community/${segment}
-        
-        # -----------------------------------
-        # 校园端服务路由配置  
-        # -----------------------------------
-        - id: admin-service           # 路由唯一标识符
-          uri: http://localhost:8084      # 目标服务地址（校园端服务）
-          predicates:                     # 路由匹配条件
-            - Path=/api/admin/**      # 匹配以/api/admin/开头的所有路径
-          filters:                        # 路由过滤器配置
-            # 路径重写：保持原有路径结构不变
-            - RewritePath=/api/admin/(?<segment>.*), /api/admin/${segment}
 
         # -----------------------------------
-        # 心情服务路由配置t
+        # 心情服务路由配置
         # -----------------------------------
         - id: mood-service                # 路由唯一标识符
           uri: http://localhost:8085      # 目标服务地址（心情服务）
@@ -136,7 +125,7 @@ spring:
         - id: inform-service        # 路由唯一标识符
           uri: http://localhost:8089      # 目标服务地址（通知服务）
           predicates:                     # 路由匹配条件
-            - Path=/api/informs/**   # 匹配以/api/inform/开头的所有路径
+            - Path=/api/informs/**   # 匹配以/api/informs/开头的所有路径
           filters:                        # 路由过滤器配置
             # 路径重写：保持原有路径结构不变
             - RewritePath=/api/informs/(?<segment>.*), /api/informs/${segment}

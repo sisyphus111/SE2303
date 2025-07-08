@@ -23,11 +23,8 @@ const AdminUsers = () => {
             setLoading(true);
             setError(null);
             const response = await getAllUsers();
-            if (response.success) {
-                setUsers(response.data || []);
-            } else {
-                setError(response.message || '获取用户列表失败');
-            }
+            setUsers(response);
+            
         } catch (err) {
             console.error('获取用户列表失败:', err);
             setError('获取用户列表失败');
@@ -46,11 +43,11 @@ const AdminUsers = () => {
         try {
             setOperatingUserId(userId);
             const response = await updateUserStatus(userId, newStatus);
-            if (response.success) {
-                // 更新本地状态
+            if (response) {
+                // 更新本地状态 - 修复数据结构不一致问题
                 setUsers(users.map(user => 
                     user.id === userId 
-                        ? { ...user, auth: { ...user.auth, valid: newStatus } }
+                        ? { ...user, valid: newStatus }
                         : user
                 ));
                 console.log(`用户 ${userId} 状态已更新为: ${newStatus ? '启用' : '禁用'}`);
@@ -69,11 +66,11 @@ const AdminUsers = () => {
     const filteredUsers = users.filter(user => {
         const matchesSearch = user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                              user.nickname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             user.auth?.jaccount?.toLowerCase().includes(searchTerm.toLowerCase());
+                             user.sjtuId?.toLowerCase().includes(searchTerm.toLowerCase());
         
         const matchesFilter = filterStatus === 'all' || 
-                             (filterStatus === 'active' && user.auth?.valid) ||
-                             (filterStatus === 'inactive' && !user.auth?.valid);
+                             (filterStatus === 'active' && user.valid) ||
+                             (filterStatus === 'inactive' && !user.valid);
         
         return matchesSearch && matchesFilter;
     });
@@ -144,13 +141,13 @@ const AdminUsers = () => {
                     <div className="admin-stat-item">
                         <span className="admin-stat-label">启用用户:</span>
                         <span className="admin-stat-value admin-stat-active">
-                            {users.filter(u => u.auth?.valid).length}
+                            {users.filter(u => u.valid).length}
                         </span>
                     </div>
                     <div className="admin-stat-item">
                         <span className="admin-stat-label">禁用用户:</span>
                         <span className="admin-stat-value admin-stat-inactive">
-                            {users.filter(u => !u.auth?.valid).length}
+                            {users.filter(u => !u.valid).length}
                         </span>
                     </div>
                 </div>
@@ -196,33 +193,33 @@ const AdminUsers = () => {
                                     </div>
                                     <div className="admin-user-details">
                                         <span className="admin-user-detail">
-                                            学号: {user.auth?.sjtuId || '未知'}
+                                            学号: {user.sjtuId || '未知'}
                                         </span>
                                         <span className="admin-user-detail">
                                             注册时间: {formatDate(user.registrationDate)}
                                         </span>
                                         <span className="admin-user-detail">
-                                            身份: {user.auth?.identity ? '普通用户' : '管理员'}
+                                            身份: {user.isUser ? '普通用户' : '管理员'}
                                         </span>
                                     </div>
                                 </div>
                                 
                                 <div className="admin-user-status">
-                                    <span className={`admin-status-badge ${user.auth?.valid ? 'active' : 'inactive'}`}>
-                                        {user.auth?.valid ? '启用' : '禁用'}
+                                    <span className={`admin-status-badge ${user.valid ? 'active' : 'inactive'}`}>
+                                        {user.valid ? '启用' : '禁用'}
                                     </span>
                                 </div>
                                 
                                 <div className="admin-user-actions">
-                                    {user.auth?.identity && ( // 只有普通用户可以被启用/禁用
+                                    {user.isUser && ( // 只有普通用户可以被启用/禁用
                                         <button
-                                            onClick={() => handleUserStatusChange(user.id, !user.auth?.valid)}
+                                            onClick={() => handleUserStatusChange(user.id, !user.valid)}
                                             disabled={operatingUserId === user.id}
-                                            className={`admin-btn ${user.auth?.valid ? 'admin-btn-danger' : 'admin-btn-success'}`}
+                                            className={`admin-btn ${user.valid ? 'admin-btn-danger' : 'admin-btn-success'}`}
                                         >
                                             {operatingUserId === user.id ? (
                                                 <div className="admin-btn-loading"></div>
-                                            ) : user.auth?.valid ? (
+                                            ) : user.valid ? (
                                                 <>
                                                     <StopOutlined />
                                                     禁用

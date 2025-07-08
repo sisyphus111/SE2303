@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Pagination, message } from 'antd';
 import {
@@ -23,7 +23,7 @@ import '../css/CommunityHomepage.css';
 const CommunityHomepage = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { userProfile, identity, valid, getUserDisplayName, getUserAvatar } = useUser();
+    const { userProfile, valid, identity, loading: contextLoading, getUserDisplayName} = useUser();
     const [selectedTag, setSelectedTag] = useState('全部');
     const [searchValue, setSearchValue] = useState('');
     const [posts, setPosts] = useState({ content: [], totalElements: 0 });
@@ -33,7 +33,11 @@ const CommunityHomepage = () => {
     const [tags, setTags] = useState(['全部']);
     const [loading, setLoading] = useState(false);
 
-    const auth = { userId: userProfile?.id, valid, identity };
+    const auth = useMemo(() => ({
+        userId: userProfile?.userId,
+        valid,
+        identity,
+    }), [userProfile, valid, identity]);
 
     const communityStats = {
         totalPosts: 1248,
@@ -44,26 +48,35 @@ const CommunityHomepage = () => {
 
     useEffect(() => {
         const fetchTags = async () => {
+            if (!userProfile || !valid || identity === null) {
+                console.log('Waiting for user context to initialize');
+                return;
+            }
+
             setLoading(true);
             const response = await getAllTags(auth);
             if (response.success) {
+                console.log('tags返回数据：', response.data);
                 setTags(['全部', ...response.data]);
             } else {
                 message.error('获取标签失败');
             }
             setLoading(false);
         };
-        fetchTags();
 
-        const params = new URLSearchParams(location.search);
-        const tag = params.get('tag');
-        if (tag) {
-            setSelectedTag(tag);
+        if (valid && userProfile && !contextLoading) {
+            fetchTags();
+        } else if (!valid || !userProfile) {
+            navigate('/login');
         }
-    }, [location.search, auth]);
+    }, [valid, userProfile, identity, contextLoading, navigate]);
 
     useEffect(() => {
         const fetchPosts = async () => {
+            if (!userProfile || !valid || identity === null) {
+                console.log('Waiting for user context to initialize');
+                return;
+            }
             setLoading(true);
             const params = {
                 page: currentPage,
@@ -72,20 +85,23 @@ const CommunityHomepage = () => {
                 category: selectedTag !== '全部' ? selectedTag : undefined,
                 keyword: searchValue.trim() || undefined,
             };
+            console.log('🚀 发送请求参数:', JSON.stringify(params, null, 2));
             const response = await getPostList(params, auth);
+            console.log('📥 帖子响应:', JSON.stringify(response, null, 2));
             if (response.success) {
+                console.log('posts返回数据：', response.data);
                 setPosts(response.data);
             } else {
                 message.error(response.error);
             }
             setLoading(false);
         };
-        if (valid && userProfile) {
+
+        if (valid && userProfile && !contextLoading) {
             fetchPosts();
-        } else {
-            navigate('/login');
         }
-    }, [currentPage, pageSize, sortBy, selectedTag, searchValue, auth, valid, userProfile, navigate]);
+    }, [currentPage, pageSize, sortBy, selectedTag, searchValue, valid, userProfile, identity, contextLoading, navigate]);
+
 
     const handleSearch = (e) => {
         setSearchValue(e.target.value);

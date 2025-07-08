@@ -1,25 +1,30 @@
 import { handleApiResponse } from '../lib/ErrorHandler';
 
 
-const addAuthHeaders = (options = {}, auth = {}) => {
-    const headers = {
-        ...(options.headers || {}),
-        'Content-Type': 'application/json',
-    };
-    if (auth.userId) {
-        headers['X-User-Id'] = auth.userId;
-        headers['X-Valid'] = auth.valid?.toString() || 'false';
-        headers['X-Identity'] = auth.identity?.toString() || 'true';
-    }
-    return { ...options, headers };
-};
 
-export async function get(url) {
-    let res = await fetch(`${PREFIX}${url}`, {
+export async function get(url, options = {}) {
+    let fullUrl = `${PREFIX}${url}`;
+    if (options.params) {
+        const searchParams = new URLSearchParams();
+        Object.entries(options.params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                searchParams.append(key, value);
+            }
+        });
+        const queryString = searchParams.toString();
+        console.log("get请求：",queryString);
+        if (queryString) {
+            fullUrl += `?${queryString}`;
+        }
+    }
+
+    console.log(`🌐 GET请求: ${fullUrl}`);
+
+    let res = await fetch(fullUrl, {
         method: "GET",
         credentials: "include" // 包含cookie进行认证
     });
-    const response = await res.json(); // 反序列化
+    const response = await res.json();
 
     // 如果HTTP状态码是401但响应体没有errorCode，添加errorCode字段
     if (res.status === 401 && !response.errorCode) {

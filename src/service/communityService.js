@@ -69,7 +69,7 @@ export const createPost = async (postData, auth = {}) => {
         message.success('帖子创建成功');
         return {
             success: true,
-            data: response.object,
+            data: response,
             message: response.message,
         };
 
@@ -134,7 +134,7 @@ export const updatePost = async (postId, postData, auth = {}) => {
         message.success('帖子更新成功');
         return {
             success: true,
-            data: response.object,
+            data: response,
             message: response.message,
         };
 
@@ -162,7 +162,7 @@ export const deletePost = async (postId, auth = {}) => {
         message.success('帖子删除成功');
         return {
             success: true,
-            data: response.object,
+            data: response,
             message: response.message,
         };
 
@@ -189,7 +189,7 @@ export const LikePost = async (postId, auth = {}) => {
         message.success('点赞成功');
         return {
             success: true,
-            data: response.object,
+            data: response,
             message: response.message,
         };
 
@@ -216,7 +216,7 @@ export const UnlikePost = async (postId, auth = {}) => {
         message.success('取消点赞成功');
         return {
             success: true,
-            data: response.object,
+            data: response,
             message: response.message,
         };
 
@@ -240,7 +240,7 @@ export const MyPost = async (auth = {}) => {
 
         return {
             success: true,
-            data: response.object,
+            data: response,
             message: response.message,
         };
 
@@ -283,11 +283,11 @@ export const getCommentOfPost = async (postId, page = 1, size = 5, auth = {}) =>
         throw new Error('用户未登录');
     }
     try {
-        const response = await get(`/community/posts/get_comments/${postId}?page=${page}&size=${size}`, {}, auth);
+        const response = await get(`/community/posts/get_comments/${postId}?page=${page}&size=${size}`);
 
         return {
             success: true,
-            data: response.object,
+            data: response,
             message: response.message,
         };
 
@@ -312,7 +312,7 @@ export const sendCommentToPost = async (postId, commentData, auth = {}) => {
         message.success('评论发表成功');
         return {
             success: true,
-            data: response.object,
+            data: response,
             message: response.message,
         };
 
@@ -336,7 +336,7 @@ export const collectPost = async (postId, auth = {}) => {
         message.success('收藏成功');
         return {
             success: true,
-            data: response.object,
+            data: response,
             message: response.message,
         };
 
@@ -360,7 +360,7 @@ export const delCollectedPost = async (postId, auth = {}) => {
         message.success('取消收藏成功');
         return {
             success: true,
-            data: response.object,
+            data: response,
             message: response.message,
         };
 
@@ -389,7 +389,7 @@ export const approvePost = async (postId, auth = {}) => {
         message.success('帖子审核通过');
         return {
             success: true,
-            data: response.object,
+            data: response,
             message: response.message,
         };
 
@@ -418,7 +418,7 @@ export const banPost = async (postId, auth = {}) => {
         message.success('帖子封禁成功');
         return {
             success: true,
-            data: response.object,
+            data: response,
             message: response.message,
         };
 
@@ -446,7 +446,7 @@ export const reportPost = async (postId, reason, auth = {}) => {
         message.success('举报成功');
         return {
             success: true,
-            data: response.object,
+            data: response,
             message: response.message,
         };
 

@@ -54,7 +54,7 @@ const CommunityPostPage = () => {
             const response = await getCommentOfPost(id, currentPage, pageSize, auth);
             console.log(response);
             if (response.success) {
-                setComments(response.data);
+                setComments(response.data.content);
             } else {
                 message.error(response.error);
             }

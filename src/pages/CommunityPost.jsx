@@ -52,8 +52,9 @@ const CommunityPostPage = () => {
         const fetchComments = async () => {
             setLoading(true);
             const response = await getCommentOfPost(id, currentPage, pageSize, auth);
+            console.log(response);
             if (response.success) {
-                setComments(response.data.content);
+                setComments(response.data);
             } else {
                 message.error(response.error);
             }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useMemo, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     HeartOutlined,
@@ -14,10 +14,15 @@ import '../css/CommunityPostDetail.css';
 
 const PostDetail = ({ postData }) => {
     const navigate = useNavigate();
-    const { userProfile, valid, getUserAvatar, getUserDisplayName } = useUser();
+    const { userProfile, valid, identity, getUserAvatar, loading: contextLoading, getUserDisplayName } = useUser();
     const [liked, setLiked] = useState(postData.isLiked || false);
     const [likeCount, setLikeCount] = useState(postData.postMetrics?.likeCount || 0);
-    const auth = { userId: userProfile?.id, valid };
+    const [loading, setLoading] = useState(false);
+    const auth = useMemo(() => ({
+        userId: userProfile?.userId,
+        valid,
+        identity,
+    }), [userProfile, valid, identity]);
 
     const handleLike = async () => {
         if (!userProfile || !valid) {
@@ -28,6 +33,7 @@ const PostDetail = ({ postData }) => {
         try {
             let response;
             if (liked) {
+
                 response = await UnlikePost(postData.id, auth);
                 if (response.success) {
                     setLiked(false);
@@ -37,6 +43,7 @@ const PostDetail = ({ postData }) => {
                     message.error(response.error);
                 }
             } else {
+
                 response = await LikePost(postData.id, auth);
                 if (response.success) {
                     setLiked(true);

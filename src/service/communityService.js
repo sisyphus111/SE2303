@@ -96,7 +96,7 @@ export const getPostDetail = async (postId, auth = {}) => {
 
         return {
             success: true,
-            data: response.object,
+            data: response,
             message: response.message,
         };
 

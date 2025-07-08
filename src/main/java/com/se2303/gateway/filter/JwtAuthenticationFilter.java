@@ -76,14 +76,26 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         // 获取请求的URI路径，用于判断是否需要认证
         String path = exchange.getRequest().getURI().getPath();
+        String method = exchange.getRequest().getMethod() != null ? 
+                       exchange.getRequest().getMethod().toString() : "UNKNOWN";
+        String clientIp = getClientIp(exchange);
+        
+        // 记录每个请求的基本信息
+        logger.info("=== 收到网关请求 ===");
+        logger.info("请求路径: {}", path);
+        logger.info("请求方法: {}", method);
+        logger.info("客户端IP: {}", clientIp);
+        logger.info("请求URI: {}", exchange.getRequest().getURI());
         
         // 检查当前路径是否为公开路径（不需要认证的路径）
         if (isPublicPath(path)) {
             // 记录调试日志：跳过公开路径的认证
-            logger.debug("Skipping authentication for public path: {}", path);
+            logger.info("✅ 公开路径，跳过JWT认证: {}", path);
             // 直接继续执行后续过滤器，无需认证
             return chain.filter(exchange);
         }
+        
+        logger.info("🔒 受保护路径，开始JWT认证: {}", path);
         
         // 从请求中提取JWT令牌
         String token = getTokenFromRequest(exchange);
@@ -91,20 +103,26 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         // 检查是否成功获取到令牌
         if (token == null) {
             // 记录警告日志：受保护路径缺少令牌
-            logger.warn("No token found for protected path: {}", path);
+            logger.warn("❌ 认证失败 - 缺少Token: path={}, clientIp={}", path, clientIp);
             // 返回自定义错误响应：缺少认证令牌
             return writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED, 
                 "认证失败：缺少访问令牌", "MISSING_TOKEN");
         }
         
+        logger.info("🔍 检测到Token，开始验证: token={}", 
+                   token.substring(0, Math.min(20, token.length())) + "...");
+        
         // 使用JWT工具类验证令牌的有效性
         if (!jwtUtil.validateToken(token)) {
             // 记录警告日志：令牌验证失败
-            logger.warn("Invalid token for path: {}", path);
+            logger.warn("❌ 认证失败 - Token无效: path={}, clientIp={}, token={}", 
+                       path, clientIp, token.substring(0, Math.min(20, token.length())) + "...");
             // 返回自定义错误响应：令牌无效
             return writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED, 
                 "认证失败：访问令牌无效或已过期", "INVALID_TOKEN");
         }
+        
+        logger.info("✅ Token验证通过，开始解析用户信息");
         
         try {
             // 从有效的令牌中提取用户信息
@@ -115,14 +133,15 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
             // 添加详细的调试日志
             logger.info("=== JWT Token解析结果 ===");
             logger.info("Token: {}", token.substring(0, Math.min(50, token.length())) + "...");
-            logger.info("Extracted userId: {}", userId);
-            logger.info("Extracted valid: {}", valid);
-            logger.info("Extracted identity: {}", identity);
+            logger.info("用户ID: {}", userId);
+            logger.info("用户状态: {}", valid ? "有效" : "无效");
+            logger.info("用户身份: {}", identity ? "管理员" : "普通用户");
             
             // 检查用户ID是否存在且非空
             if (userId == null || userId.isEmpty()) {
                 // 记录警告日志：令牌中没有用户ID信息
-                logger.warn("No userId found in token for path: {}", path);
+                logger.warn("❌ Token解析失败 - 缺少用户ID: path={}, token={}", 
+                           path, token.substring(0, Math.min(20, token.length())) + "...");
                 // 返回自定义错误响应：用户ID缺失
                 return writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED, 
                     "认证失败：令牌中缺少用户标识", "MISSING_USER_ID");
@@ -138,23 +157,40 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
                     .header("X-Identity", String.valueOf(identity))
                     // 添加认证方式标识，表明使用JWT认证
                     .header("X-Gateway-Auth", "jwt")
+                    // 添加客户端IP信息
+                    .header("X-Client-IP", clientIp)
                     .build(); // 构建新的请求对象
             
             // 记录调试日志：成功认证的用户信息
-            logger.info("=== 设置请求头 ===");
+            logger.info("=== 设置请求头信息 ===");
             logger.info("X-User-Id: {}", userId);
             logger.info("X-Valid: {}", String.valueOf(valid));
             logger.info("X-Identity: {}", String.valueOf(identity));
-            logger.info("Authenticated user - ID: {}, Valid: {}, Identity: {} for path: {}", 
-                        userId, valid, identity, path);
+            logger.info("X-Client-IP: {}", clientIp);
+            logger.info("✅ 认证成功 - 用户ID: {}, 状态: {}, 身份: {}, 路径: {}", 
+                        userId, valid ? "有效" : "无效", identity ? "管理员" : "普通用户", path);
+            
+            // 记录请求转发信息
+            logger.info("🚀 请求转发到后端服务: {} -> 后端服务", path);
             
             // 使用包含用户信息的新请求继续执行过滤器链
-            return chain.filter(exchange.mutate().request(request).build());
+            return chain.filter(exchange.mutate().request(request).build())
+                .doOnSuccess(aVoid -> {
+                    // 请求成功处理完成后的日志
+                    logger.info("✅ 请求处理完成: path={}, userId={}, status={}", 
+                               path, userId, exchange.getResponse().getStatusCode());
+                })
+                .doOnError(throwable -> {
+                    // 请求处理出现错误时的日志
+                    logger.error("❌ 请求处理异常: path={}, userId={}, error={}", 
+                               path, userId, throwable.getMessage(), throwable);
+                });
             
         } catch (Exception e) {
             // 捕获JWT处理过程中的任何异常
             // 记录错误日志：JWT处理失败的详细信息
-            logger.error("Failed to process JWT token for path: " + path, e);
+            logger.error("❌ JWT处理异常: path={}, clientIp={}, error={}", 
+                        path, clientIp, e.getMessage(), e);
             // 返回自定义错误响应：令牌处理异常
             return writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED, 
                 "认证失败：令牌处理异常", "TOKEN_PROCESSING_ERROR");
@@ -180,6 +216,16 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
                                         String message, String errorCode) {
         // 获取响应对象
         ServerHttpResponse response = exchange.getResponse();
+        String path = exchange.getRequest().getURI().getPath();
+        String clientIp = getClientIp(exchange);
+        
+        // 记录错误响应详细信息
+        logger.warn("=== 返回错误响应 ===");
+        logger.warn("路径: {}", path);
+        logger.warn("客户端IP: {}", clientIp);
+        logger.warn("状态码: {} ({})", status.value(), status.getReasonPhrase());
+        logger.warn("错误消息: {}", message);
+        logger.warn("错误代码: {}", errorCode);
         
         // 设置HTTP状态码
         response.setStatusCode(status);
@@ -203,15 +249,16 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
             // 创建数据缓冲区
             DataBuffer buffer = response.bufferFactory().wrap(bytes);
             
-            // 记录调试日志：返回错误响应
-            logger.debug("Returning error response: {} - {} ({})", status.value(), message, errorCode);
+            // 记录最终响应信息
+            logger.info("📤 错误响应已发送: status={}, message={}, code={}", 
+                       status.value(), message, errorCode);
             
             // 写入响应体并完成响应
             return response.writeWith(Mono.just(buffer));
             
         } catch (JsonProcessingException e) {
             // JSON序列化失败时的备用处理
-            logger.error("Failed to serialize error response to JSON", e);
+            logger.error("JSON序列化失败", e);
             
             // 返回简单的文本错误响应
             String fallbackResponse = "{\"success\":false,\"object\":null,\"message\":\"认证失败\"}";
@@ -220,6 +267,53 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
             
             return response.writeWith(Mono.just(buffer));
         }
+    }
+    
+    /**
+     * 获取客户端真实IP地址
+     * 
+     * @param exchange 服务器Web交换对象
+     * @return String 客户端IP地址
+     */
+    private String getClientIp(ServerWebExchange exchange) {
+        ServerHttpRequest request = exchange.getRequest();
+        
+        // 尝试从各种代理头中获取真实IP
+        String ip = request.getHeaders().getFirst("X-Forwarded-For");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            // X-Forwarded-For可能包含多个IP，取第一个
+            return ip.split(",")[0].trim();
+        }
+        
+        ip = request.getHeaders().getFirst("X-Real-IP");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
+        
+        ip = request.getHeaders().getFirst("Proxy-Client-IP");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
+        
+        ip = request.getHeaders().getFirst("WL-Proxy-Client-IP");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
+        
+        // 如果都没有，则使用远程地址
+        try {
+            var remoteAddress = request.getRemoteAddress();
+            if (remoteAddress != null) {
+                var address = remoteAddress.getAddress();
+                if (address != null) {
+                    return address.getHostAddress();
+                }
+            }
+        } catch (Exception e) {
+            logger.debug("获取远程地址失败: {}", e.getMessage());
+        }
+        
+        return "unknown";
     }
     
     /**

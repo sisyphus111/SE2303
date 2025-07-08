@@ -3,6 +3,11 @@ package com.se2303.gateway;
 // 导入Spring Boot核心启动类
 import org.springframework.boot.SpringApplication; // Spring Boot应用启动器
 import org.springframework.boot.autoconfigure.SpringBootApplication; // Spring Boot自动配置注解
+// 导入日志相关类
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Bean;
 
 /**
  * SE2303心理健康平台网关服务启动类
@@ -32,6 +37,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication; // Spring B
  */
 @SpringBootApplication // Spring Boot应用主类注解，启用自动配置、组件扫描等功能
 public class GatewayApplication {
+
+    private static final Logger logger = LoggerFactory.getLogger(GatewayApplication.class);
 
     /**
      * 应用程序主入口方法

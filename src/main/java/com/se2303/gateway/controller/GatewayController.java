@@ -9,6 +9,9 @@ import reactor.core.publisher.Mono; // 响应式编程Mono类型
 // 导入Java标准库
 import java.util.HashMap; // 哈希映射类
 import java.util.Map; // 映射接口
+// 导入日志相关类
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 网关控制器
@@ -33,6 +36,9 @@ import java.util.Map; // 映射接口
 @RequestMapping("/gateway") // 设置控制器的基础请求路径
 public class GatewayController {
 
+    // 创建日志记录器
+    private static final Logger logger = LoggerFactory.getLogger(GatewayController.class);
+
     /**
      * 获取网关基本信息接口
      * 
@@ -47,6 +53,8 @@ public class GatewayController {
      */
     @GetMapping("/info") // 映射GET请求到/gateway/info路径
     public Mono<Map<String, Object>> getGatewayInfo() {
+        logger.info("📋 收到网关信息查询请求: /gateway/info");
+        
         // 创建信息映射对象，用于存储网关信息
         Map<String, Object> info = new HashMap<>();
         
@@ -79,6 +87,9 @@ public class GatewayController {
         info.put("timestamp", System.currentTimeMillis()); // 当前时间戳
         info.put("status", "running"); // 运行状态
         
+        logger.info("✅ 网关信息查询成功，返回数据: services={}, features={}", 
+                   services.size(), features.size());
+        
         // 使用Mono.just()包装响应数据，符合响应式编程模型
         // 这样可以与其他异步操作组合，保持系统的响应式特性
         return Mono.just(info);
@@ -98,6 +109,8 @@ public class GatewayController {
      */
     @GetMapping("/health") // 映射GET请求到/gateway/health路径
     public Mono<Map<String, Object>> getHealth() {
+        logger.info("🔍 收到健康检查请求: /gateway/health");
+        
         // 创建健康状态信息映射
         Map<String, Object> health = new HashMap<>();
         
@@ -111,6 +124,9 @@ public class GatewayController {
         details.put("memory", getMemoryInfo()); // 内存使用情况
         details.put("uptime", getUptime()); // 运行时间
         health.put("details", details); // 将详细信息添加到健康状态中
+        
+        logger.info("✅ 健康检查完成: status=UP, memory={}MB", 
+                   Runtime.getRuntime().totalMemory() / (1024 * 1024));
         
         // 返回响应式结果
         return Mono.just(health);

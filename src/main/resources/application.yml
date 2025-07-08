@@ -153,25 +153,7 @@ jwt:
                       # 环境变量覆盖方式：
                       # export JWT_SECRET=MySecretKey@2024#SE2303$Gateway!
 
-# ===================================
-# 日志配置
-# ===================================
-logging:
-  level:  # 设置不同组件的日志级别
-    org.springframework.cloud.gateway: DEBUG    # 网关组件日志级别（详细调试信息）
-    org.springframework.web.cors: DEBUG         # CORS组件日志级别（详细调试信息）
-    org.springframework.security: DEBUG         # 安全组件日志级别（详细调试信息）
-    com.se2303.gateway: DEBUG                   # 自定义网关代码日志级别（详细调试信息）
-    reactor.netty: INFO                         # Netty网络库日志级别（基本信息）
-  pattern:
-    # 控制台日志输出格式
-    # %d{yyyy-MM-dd HH:mm:ss}: 时间戳格式
-    # [%thread]: 线程名称
-    # %-5level: 日志级别，左对齐5个字符宽度
-    # %logger{36}: 日志记录器名称，最多36个字符
-    # %msg: 日志消息内容
-    # %n: 换行符
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
 
 # ===================================
 # 监控端点配置
@@ -187,4 +169,30 @@ management:
       show-details: always  # 健康检查端点显示详细信息
                            # always: 总是显示详细信息
                            # when-authorized: 仅在授权用户时显示
-                           # never: 从不显示详细信息 
+                           # never: 从不显示详细信息
+
+# ===================================
+# 日志配置
+# ===================================
+logging:
+  level:
+    # 设置根日志级别
+    root: INFO
+    # 网关相关包的日志级别
+    com.se2303.gateway: INFO
+    # Spring Cloud Gateway的日志级别
+    org.springframework.cloud.gateway: INFO
+    # HTTP请求日志级别
+    org.springframework.web: INFO
+    # 响应式编程相关日志
+    reactor.netty: INFO
+  pattern:
+    # 控制台日志输出格式
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+    # 文件日志输出格式  
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+  file:
+    # 日志文件配置
+    name: logs/gateway.log
+    max-size: 10MB
+    max-history: 30

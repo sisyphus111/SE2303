@@ -6,12 +6,14 @@ import EmergencyAlert from '../components/EmergencyAlert';
 import EmotionChart from '../components/EmotionChart';
 import AnalysisPanel from '../components/AnalysisPanel';
 import { getArticles, getMoodData, getAnalysisData } from '../service/homeService';
+import { useUser } from '../lib/UserContext';
 import '../css/Home.css';
 
 // API服务导入注释（已导入homeService）
 // import { getEmergencyStatus, submitCheckIn } from '../service/homeService';
 
 export const Home = () => {
+  const { userProfile } = useUser();
   const [articles, setArticles] = useState([]);
   const [moodData, setMoodData] = useState([]);
   const [analysisData, setAnalysisData] = useState('');
@@ -19,8 +21,10 @@ export const Home = () => {
   const [emergencyStatus, setEmergencyStatus] = useState({ status: 'normal', message: '' });
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (userProfile) {
+      loadData();
+    }
+  }, [userProfile]);
 
   const loadData = async () => {
     try {
@@ -37,10 +41,10 @@ export const Home = () => {
       
       // API调用注释：获取预警状态
       // const emergencyRes = await getEmergencyStatus();
-      
+
       const [articlesRes, moodRes, analysisRes] = await Promise.all([
         getArticles(),
-        getMoodData(),
+        getMoodData(userProfile?.id || 1), // 使用真实用户ID，如果没有则使用1作为后备
         getAnalysisData()
       ]);
       

@@ -154,6 +154,31 @@
     margin-left: 16px;
 }
 
+/* 用户区域容器 */
+.user-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* 通知组件在用户区域的特殊样式 */
+.user-area .notification-dropdown {
+    margin-right: 8px;
+}
+
+/* 确保通知按钮在 header 中有合适的样式 */
+.header-user .notification-trigger {
+    background: #f5f5f5;
+    border: 1px solid #d9d9d9;
+    color: #595959;
+}
+
+.header-user .notification-trigger:hover {
+    background: #e6f7ff;
+    border-color: #40a9ff;
+    color: #1890ff;
+}
+
 /* 用户下拉菜单 */
 .user-dropdown {
     position: relative;

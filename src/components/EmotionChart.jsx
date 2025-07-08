@@ -238,7 +238,7 @@ const EmotionChart = ({ data = [] }) => {
           
           {/* Y轴标签 */}
           <div className="y-axis-labels">
-            {[1, 2, 3, 4, 5].map(value => (
+            {[5, 4, 3, 2, 1].map(value => (
               <span key={value} className="y-label" style={{
                 bottom: `${((value - minValue) / (maxValue - minValue)) * 100}%`
               }}>

@@ -83,15 +83,91 @@ export const getArticles = async () => {
   }
 };
 
-export const getMoodData = async () => {
+export const getMoodData = async (userId) => {
   try {
-    // 实际API调用
-    // const response = await get(`${PREFIX}/mood-data`);
-    // return response.data;
+    if (!userId) {
+      console.warn('未提供用户ID，返回模拟数据');
+      return mockMoodData;
+    }
+
+    // 计算最近7天的日期范围
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - 6); // 获取最近7天
+
+    // 格式化日期为 YYYY-MM-DD
+    const formatDate = (date) => {
+      return date.toISOString().split('T')[0];
+    };
+
+    const startDateStr = formatDate(startDate);
+    const endDateStr = formatDate(endDate);
+
+    // 调用后端API获取情绪数据
+    const response = await get(`/mood/user/${userId}/range?startDate=${startDateStr}&endDate=${endDateStr}`);
+
+    // 检查响应格式 - 可能是直接返回数组，也可能是包装在object中
+    let moodRecords;
+    if (Array.isArray(response)) {
+      // 直接返回数组的情况
+      moodRecords = response;
+    } else if (response && response.object && Array.isArray(response.object)) {
+      // 包装在object中的情况
+      moodRecords = response.object;
+    } else {
+      console.warn('⚠️ 未知的响应格式:', response);
+      return mockMoodData;
+    }
+
+    // 先按日期升序排列（最早的在前）
+    const sortedRecords = [...moodRecords].sort((a, b) => new Date(a.date) - new Date(b.date));
     
-    return mockMoodData;
+    // 将后端数据转换为前端需要的格式
+    const moodData = sortedRecords.map(record => {
+      
+      // 确保日期格式正确
+      let date;
+      if (typeof record.date === 'string') {
+        date = new Date(record.date);
+      } else if (record.date) {
+        date = new Date(record.date);
+      } else {
+        console.warn('⚠️ 记录中没有日期:', record);
+        return null;
+      }
+      
+      const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+      const dayName = dayNames[date.getDay()];
+      
+      // 确保评分值正确
+      let score = record.score;
+      if (score === null || score === undefined) {
+        score = 1; // 默认值
+      }
+      
+      const dataPoint = {
+        date: dayName,
+        value: score
+      };
+
+      return dataPoint;
+    }).filter(item => item !== null); // 过滤掉无效的记录
+
+    // 如果数据不足7天，用默认值填充
+    while (moodData.length < 7) {
+      const missingDayIndex = moodData.length;
+      const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+      moodData.push({
+        date: dayNames[missingDayIndex],
+        value: 1 // 默认值
+      });
+    }
+
+    console.log('✅ 最终情绪数据:', moodData);
+    return moodData;
+    
   } catch (error) {
-    console.error('获取心情数据失败:', error);
+    console.error('❌ 获取心情数据失败:', error);
     return mockMoodData;
   }
 };

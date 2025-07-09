@@ -12,7 +12,7 @@ const ReportModal = ({
     contentTitle = ''
 }) => {
     const [reason, setReason] = useState('');
-    const [description, setDescription] = useState('');
+    const [detail, setDetail] = useState('');
     const [additionalInfo, setAdditionalInfo] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -32,7 +32,7 @@ const ReportModal = ({
             return;
         }
 
-        if (reason === 'other' && !description.trim()) {
+        if (reason === 'other' && !detail.trim()) {
             message.error('请填写详细说明');
             return;
         }
@@ -40,8 +40,8 @@ const ReportModal = ({
         try {
             setLoading(true);
             const reportData = {
-                reason: reason === 'other' ? description : reportReasons.find(r => r.value === reason)?.label,
-                description: additionalInfo
+                reason: reason ,
+                detail: detail,
             };
             
             await onReport(contentId, reportData);
@@ -56,8 +56,7 @@ const ReportModal = ({
 
     const handleClose = () => {
         setReason('');
-        setDescription('');
-        setAdditionalInfo('');
+        setDetail('');
         setLoading(false);
         onClose();
     };
@@ -106,39 +105,23 @@ const ReportModal = ({
                             </div>
                         </div>
 
-                        {reason === 'other' && (
-                            <div className="report-form-group">
-                                <label className="report-form-label">
-                                    <span className="required">*</span>详细说明
-                                </label>
-                                <textarea
-                                    className="report-description-input"
-                                    placeholder="请详细描述举报原因..."
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    rows={4}
-                                    maxLength={500}
-                                />
-                                <div className="report-char-count">
-                                    {description.length}/500
-                                </div>
-                            </div>
-                        )}
-
                         <div className="report-form-group">
-                            <label className="report-form-label">补充说明（可选）</label>
+                            <label className="report-form-label">
+                                <span className="required">*</span>详细说明
+                            </label>
                             <textarea
-                                className="report-description-input"
-                                placeholder="如有其他需要说明的情况，请在此填写..."
-                                value={additionalInfo}
-                                onChange={(e) => setAdditionalInfo(e.target.value)}
-                                rows={3}
-                                maxLength={300}
+                                className="report-detail-input"
+                                placeholder="请详细描述举报原因..."
+                                value={detail}
+                                onChange={(e) => setDetail(e.target.value)}
+                                rows={4}
+                                maxLength={500}
                             />
                             <div className="report-char-count">
-                                {additionalInfo.length}/300
+                                {detail.length}/500
                             </div>
                         </div>
+
                     </div>
 
                     <div className="report-notice">

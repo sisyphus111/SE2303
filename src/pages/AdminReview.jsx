@@ -46,10 +46,10 @@ const AdminReview = () => {
     }, []);
 
     // 审核内容
-    const handleReviewAction = async (contentId, action, reason = '') => {
+    const handleReviewAction = async (contentId, action, type, reason = '') => {
         try {
             setOperatingContentId(contentId);
-            await reviewContent(contentId, action, reason);
+            await reviewContent(contentId, action, type, reason);
             
             // 更新本地状态
             setContents(prevContents => {
@@ -290,7 +290,7 @@ const AdminReview = () => {
                                     {content.status === 'PENDING' && (
                                         <>
                                             <button
-                                                onClick={() => handleReviewAction(content.id, 'APPROVED')}
+                                                onClick={() => handleReviewAction(content.id, 'APPROVED', content.type)}
                                                 disabled={operatingContentId === content.id}
                                                 className="admin-btn admin-btn-success"
                                             >
@@ -304,7 +304,7 @@ const AdminReview = () => {
                                                 )}
                                             </button>
                                             <button
-                                                onClick={() => handleReviewAction(content.id, 'BANNED')}
+                                                onClick={() => handleReviewAction(content.id, 'BANNED', content.type)}
                                                 disabled={operatingContentId === content.id}
                                                 className="admin-btn admin-btn-danger"
                                             >
@@ -343,38 +343,37 @@ const AdminReview = () => {
                             <div className="admin-detail-item">
                                 <strong>内容类型:</strong> {getTypeText(selectedContent.type)}
                             </div>
-                            {selectedContent.content?.title && (
+                            {selectedContent.title && (
                                 <div className="admin-detail-item">
-                                    <strong>标题:</strong> {selectedContent.content.title}
+                                    <strong>标题:</strong> {selectedContent.title}
                                 </div>
                             )}
                             <div className="admin-detail-item">
                                 <strong>内容:</strong> 
                                 <div className="admin-content-full">
-                                    {selectedContent.content}
+                                    {selectedContent.content || selectedContent.comment.content}
                                 </div>
                             </div>
                             <div className="admin-detail-item">
-                                <strong>作者ID:</strong> {selectedContent.author}
+                                <strong>作者ID:</strong> {selectedContent.author || selectedContent.comment.userId}
                             </div>
                             <div className="admin-detail-item">
-                                <strong>创建时间:</strong> {formatDate(selectedContent.createdAt)}
+                                <strong>创建时间:</strong> {formatDate(selectedContent.createdAt || selectedContent.comment.createdAt)}
                             </div>
                             <div className="admin-detail-item">
-                                <strong>审核状态:</strong> {getStatusText(selectedContent.status)}
+                                <strong>审核状态:</strong> {getStatusText(selectedContent.status || selectedContent.comment.reviewStatus)}
                             </div>
-                            {selectedContent.content?.tags && (
+                            {selectedContent.tags && (
                                 <div className="admin-detail-item">
-                                    <strong>标签:</strong> {selectedContent.content.tags.join(', ')}
+                                    <strong>标签:</strong> {selectedContent.tags.join(', ')}
                                 </div>
                             )}
-                            {selectedContent.content?.postId && (
-                                <div className="admin-detail-item">
-                                    <strong>所属帖子ID:</strong> {selectedContent.content.postId}
-                                </div>
-                            )}
+                
                             {selectedContent.post && (
                                 <>
+                                    <div className="admin-detail-item">
+                                    <strong>所属帖子ID:</strong> {selectedContent.post.id}
+                                    </div>
                                     <div className="admin-detail-item">
                                         <strong>所属帖子标题:</strong> {selectedContent.post.title}
                                     </div>
@@ -384,6 +383,7 @@ const AdminReview = () => {
                                             {selectedContent.post.content}
                                         </div>
                                     </div>
+        
                                 </>
                             )}
                         </div>

@@ -367,14 +367,15 @@ export async function getContentDetail(contentId, type = null) {
 /**
  * 审核内容
  * @param {number} contentId - 内容ID
- * @param {string} action - 审核动作 (approved/rejected)
+ * @param {string} action - 审核动作 (APPROVED/BANNED)
+ * @param {string} type - 内容类型 (post/comment)
  * @param {string} reason - 审核原因
  */
-export async function reviewContent(contentId, action, reason = '') {
+export async function reviewContent(contentId, action, type, reason = '') {
     try {
-        console.log('🚀 [管理员] 审核内容:', contentId, action, reason);
+        console.log('🚀 [管理员] 审核内容:', contentId, action, type, reason);
         
-        const data = { action, reason };
+        const data = { action, type, reason };
         return await put(`/community/review/${contentId}`, data);
     } catch (error) {
         console.error('❌ [管理员] 审核内容失败:', error);

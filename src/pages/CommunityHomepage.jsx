@@ -278,11 +278,11 @@ const CommunityHomepage = () => {
                                             <div className="post-stats">
                                                 <span className="stat-item">
                                                     <HeartOutlined className={post.isLiked ? 'liked' : ''} />
-                                                    {post.postMetrics?.likeCount || 0}
+                                                    {post.likeCount || 0}
                                                 </span>
                                                 <span className="stat-item">
                                                     <CommentOutlined />
-                                                    {post.postMetrics?.commentCount || 0}
+                                                    {post.commentCount || 0}
                                                 </span>
                                             </div>
                                             <div className="post-author">

@@ -82,7 +82,7 @@ const PostComment = ({ comment }) => {
                     {comment.content}
                 </div>
                 <div className="comment-actions">
-                    <button
+                    {/* <button
                         className={`comment-action-btn like-btn ${liked ? 'liked' : ''}`}
                         // onClick={handleLike}
                     >
@@ -92,7 +92,7 @@ const PostComment = ({ comment }) => {
                     <button className="comment-action-btn reply-btn">
                         <MessageOutlined />
                         <span>回复</span>
-                    </button>
+                    </button> */}
                 </div>
             </div>
         </div>

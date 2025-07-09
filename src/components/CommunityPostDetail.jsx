@@ -13,10 +13,14 @@ import { useUser } from '../lib/UserContext';
 import '../css/CommunityPostDetail.css';
 
 const PostDetail = ({ postData }) => {
+    // 打印postData的liked
+    console.log("postData.liked:", postData.liked);
+
+
     const navigate = useNavigate();
     const { userProfile, valid, identity, getUserAvatar, loading: contextLoading, getUserDisplayName } = useUser();
-    const [liked, setLiked] = useState(postData.isLiked || false);
-    const [likeCount, setLikeCount] = useState(postData.postMetrics?.likeCount || 0);
+    const [liked, setLiked] = useState(postData.liked || false);
+    const [likeCount, setLikeCount] = useState(postData.likeCount || 0);
     const [loading, setLoading] = useState(false);
     const auth = useMemo(() => ({
         userId: userProfile?.userId,
@@ -25,16 +29,21 @@ const PostDetail = ({ postData }) => {
     }), [userProfile, valid, identity]);
 
     const handleLike = async () => {
+
+        console.log("like 按钮被点击");
         if (!userProfile || !valid) {
             message.error('请先登录');
             navigate('/login');
             return;
         }
+        // 日志输出liked和postData.id
+        console.log("当前liked状态:", liked);
+        console.log("当前postData.id:", postData.id);
         try {
             let response;
             if (liked) {
 
-                response = await UnlikePost(postData.id, auth);
+                response = await UnlikePost(postData.id);
                 if (response.success) {
                     setLiked(false);
                     setLikeCount(prev => prev - 1);
@@ -43,8 +52,9 @@ const PostDetail = ({ postData }) => {
                     message.error(response.error);
                 }
             } else {
-
-                response = await LikePost(postData.id, auth);
+                console.log("开始点赞操作");
+                response = await LikePost(postData.id);
+                console.log("点赞操作完成", response);
                 if (response.success) {
                     setLiked(true);
                     setLikeCount(prev => prev + 1);
@@ -102,10 +112,6 @@ const PostDetail = ({ postData }) => {
                 </div>
                 <div className="post-stats">
                     <div className="stat-item">
-                        <EyeOutlined />
-                        <span>{postData.postMetrics?.viewCount || 0}</span>
-                    </div>
-                    <div className="stat-item">
                         <HeartOutlined />
                         <span>{likeCount}</span>
                     </div>
@@ -124,10 +130,6 @@ const PostDetail = ({ postData }) => {
                     {liked ? <HeartFilled /> : <HeartOutlined />}
                     <span>{liked ? '已点赞' : '点赞'}</span>
                     <span className="like-count">({likeCount})</span>
-                </button>
-                <button className="action-btn share-btn">
-                    <ShareAltOutlined />
-                    <span>分享</span>
                 </button>
             </div>
         </div>

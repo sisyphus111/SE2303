@@ -176,15 +176,13 @@ export const deletePost = async (postId, auth = {}) => {
 };
 
 // 点赞帖子
-export const LikePost = async (postId, auth = {}) => {
-    if (!auth.userId || auth.valid === false) {
-        message.error('请先登录');
-        throw new Error('用户未登录');
-    }
-    if (!postId || postId.trim() === '') {
-        throw new Error('帖子ID不能为空');
-    }
+export const LikePost = async (postId) => {
+
+    // if (!postId || postId.trim() === '') {
+    //     throw new Error('帖子ID不能为空');
+    // }
     try {
+        console.log("开始点赞操作111");
         const response = await post(`/community/posts/like/${postId}`, {});
         message.success('点赞成功');
         return {
@@ -203,14 +201,14 @@ export const LikePost = async (postId, auth = {}) => {
 };
 
 // 取消点赞帖子
-export const UnlikePost = async (postId, auth = {}) => {
-    if (!auth.userId || auth.valid === false) {
-        message.error('请先登录');
-        throw new Error('用户未登录');
-    }
-    if (!postId || postId.trim() === '') {
-        throw new Error('帖子ID不能为空');
-    }
+export const UnlikePost = async (postId) => {
+    // if (!auth.userId || auth.valid === false) {
+    //     message.error('请先登录');
+    //     throw new Error('用户未登录');
+    // }
+    // if (!postId || postId.trim() === '') {
+    //     throw new Error('帖子ID不能为空');
+    // }
     try {
         const response = await del(`/community/posts/unlike/${postId}`, {});
         message.success('取消点赞成功');

@@ -10,7 +10,7 @@ const PostCommentList = ({ comments }) => {
                 dataSource={comments}
                 renderItem={(comment, index) => (
                     <List.Item>
-                        <PostComment key={index} user={comment.user} content={comment.content} />
+                        <PostComment key={index} comment={comment} />
                     </List.Item>
                 )}
             />

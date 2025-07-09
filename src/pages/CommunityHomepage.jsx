@@ -284,10 +284,6 @@ const CommunityHomepage = () => {
                                                     <CommentOutlined />
                                                     {post.postMetrics?.commentCount || 0}
                                                 </span>
-                                                <span className="stat-item">
-                                                    <EyeOutlined />
-                                                    {post.postMetrics?.viewCount || 0}
-                                                </span>
                                             </div>
                                             <div className="post-author">
                                                 <span className="author-name">{getUserDisplayName(post.userId)}</span>
@@ -408,15 +404,9 @@ const CommunityHomepage = () => {
                                 </button>
                                 <button
                                     className="user-action-btn"
-                                    onClick={() => navigate('/send_community_post')}
+                                    onClick={() => navigate('/community_user_page?tab=liked')}
                                 >
-                                    <PlusOutlined /> 发布新帖
-                                </button>
-                                <button
-                                    className="user-action-btn"
-                                    onClick={() => navigate('/community?filter=liked')}
-                                >
-                                    <HeartOutlined /> 我的收藏
+                                    <HeartOutlined /> 我的点赞
                                 </button>
                             </div>
                         </div>

@@ -5,11 +5,14 @@ import {
     HeartFilled,
     ShareAltOutlined,
     EyeOutlined,
-    ClockCircleOutlined
+    ClockCircleOutlined,
+    ExclamationCircleOutlined
 } from "@ant-design/icons";
 import { LikePost, UnlikePost } from '../service/communityService';
+import { reportPost } from '../service/community_common';
 import { message } from 'antd';
 import { useUser } from '../lib/UserContext';
+import ReportModal from './ReportModal';
 import '../css/CommunityPostDetail.css';
 
 const PostDetail = ({ postData }) => {
@@ -22,6 +25,7 @@ const PostDetail = ({ postData }) => {
     const [liked, setLiked] = useState(postData.liked || false);
     const [likeCount, setLikeCount] = useState(postData.likeCount || 0);
     const [loading, setLoading] = useState(false);
+    const [showReportModal, setShowReportModal] = useState(false);
     const auth = useMemo(() => ({
         userId: userProfile?.userId,
         valid,
@@ -66,6 +70,26 @@ const PostDetail = ({ postData }) => {
         } catch (error) {
             message.error('操作失败：' + error.message);
         }
+    };
+
+    // 处理举报
+    const handleReport = async (postId, reportData) => {
+        try {
+            await reportPost(postId, reportData.reason);
+            return { success: true };
+        } catch (error) {
+            throw new Error(error.message || '举报失败');
+        }
+    };
+
+    // 打开举报弹窗
+    const openReportModal = () => {
+        if (!userProfile || !valid) {
+            message.error('请先登录');
+            navigate('/login');
+            return;
+        }
+        setShowReportModal(true);
     };
 
     const formatDate = (dateString) => {
@@ -131,7 +155,25 @@ const PostDetail = ({ postData }) => {
                     <span>{liked ? '已点赞' : '点赞'}</span>
                     <span className="like-count">({likeCount})</span>
                 </button>
+                
+                <button
+                    className="action-btn report-btn"
+                    onClick={openReportModal}
+                >
+                    <ExclamationCircleOutlined />
+                    <span>举报</span>
+                </button>
             </div>
+
+            {/* 举报弹窗 */}
+            <ReportModal
+                visible={showReportModal}
+                onClose={() => setShowReportModal(false)}
+                onReport={handleReport}
+                contentType="post"
+                contentId={postData.id}
+                contentTitle={postData.title}
+            />
         </div>
     );
 };

@@ -255,6 +255,22 @@ export async function reportPost(postId, reason) {
     }
 }
 
+/**
+ * 举报评论
+ * @param {number} commentId - 评论ID
+ * @param {string} reason - 举报原因
+ */
+export async function reportComment(commentId, reason) {
+    try {
+        console.log('🚀 举报评论:', commentId, reason);
+        // 注意：后端可能还没有实现评论举报API，这里先预留接口
+        return await post(`/community/comments/report/${commentId}`, reason);
+    } catch (error) {
+        console.error('❌ 举报评论失败:', error);
+        throw error;
+    }
+}
+
 // 注意：以下API可能需要后端进一步实现具体的举报和审核管理接口
 // 目前使用模拟实现，后续可以替换为真实API
 

@@ -89,6 +89,60 @@
   color: var(--primary-green);
 }
 
+/* 评论菜单容器 */
+.comment-menu-container {
+  position: relative;
+}
+
+/* 评论菜单下拉框 */
+.comment-menu-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-medium);
+  box-shadow: var(--shadow-medium);
+  z-index: 100;
+  min-width: 120px;
+  overflow: hidden;
+  animation: menuSlideIn 0.2s ease-out;
+}
+
+@keyframes menuSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.comment-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  color: var(--text-gray);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.comment-menu-item:hover {
+  background: var(--light-gray);
+  color: var(--error);
+}
+
+.comment-menu-item .anticon {
+  font-size: 12px;
+}
+
 /* 评论文本 */
 .comment-text {
   color: var(--text-dark);

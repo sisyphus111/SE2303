@@ -43,10 +43,31 @@
   color: #222;
 }
 
+.admin-mental-resource-tabs .ant-tabs-tab:hover {
+  color: #003a8c;
+}
+
+.admin-mental-resource-tabs .ant-tabs-tab:hover span {
+  color: #003a8c !important;
+}
+
 .admin-mental-resource-tabs .ant-tabs-tab-active {
   background: #fff;
-  border-bottom: 2px solid #1890ff;
-  color: #1890ff !important;
+  border-bottom: 2px solid #003a8c;
+  color: #003a8c !important;
+}
+
+.admin-mental-resource-tabs .ant-tabs-tab-active .anticon {
+  color: #003a8c;
+}
+
+.admin-mental-resource-tabs .ant-tabs-tab-active span {
+  color: #003a8c !important;
+}
+
+/* 激活指示器（下划线）颜色 */
+.admin-mental-resource-tabs .ant-tabs-ink-bar {
+  background-color: #003a8c !important;
 }
 
 .admin-mental-resource-tabs .ant-tabs-content-holder {
@@ -101,13 +122,13 @@
 }
 
 .admin-mental-resource .ant-btn-primary {
-  background: #1890ff;
-  border-color: #1890ff;
+  background: #003a8c !important;
+  border-color: #003a8c !important;
 }
 
 .admin-mental-resource .ant-btn-primary:hover {
-  background: #40a9ff;
-  border-color: #40a9ff;
+  background: #1052d4 !important;
+  border-color: #1052d4 !important;
 }
 
 .admin-mental-resource .ant-btn-danger {
@@ -132,7 +153,7 @@
 .admin-mental-resource .ant-modal-title {
   font-size: 20px;
   font-weight: 700;
-  color: #1890ff;
+  color: #003a8c;
 }
 
 .admin-mental-resource .ant-modal-body {
@@ -156,8 +177,8 @@
 .admin-mental-resource .ant-input-focused,
 .admin-mental-resource .ant-input-number:focus,
 .admin-mental-resource .ant-select-focused .ant-select-selector {
-  border-color: #1890ff;
-  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.15);
+  border-color: #003a8c;
+  box-shadow: 0 0 0 2px rgba(0, 58, 140, 0.15);
 }
 
 .admin-mental-resource .ant-pagination {
@@ -170,12 +191,111 @@
 }
 
 .admin-mental-resource .ant-pagination-item-active {
-  background: #1890ff;
-  border-color: #1890ff;
+  background: #003a8c !important;
+  border-color: #003a8c !important;
 }
 
 .admin-mental-resource .ant-pagination-item-active a {
-  color: #fff;
+  color: #fff !important;
+}
+
+/* 强制覆盖分页组件的所有绿色样式 */
+.admin-mental-resource .ant-pagination-item-active,
+.admin-mental-resource .ant-pagination-item-active:hover,
+.admin-mental-resource .ant-pagination-item-active:focus {
+  background-color: #003a8c !important;
+  border-color: #003a8c !important;
+}
+
+.admin-mental-resource .ant-pagination-item-active a,
+.admin-mental-resource .ant-pagination-item-active:hover a,
+.admin-mental-resource .ant-pagination-item-active:focus a {
+  color: #fff !important;
+}
+
+/* 分页悬停状态 */
+.admin-mental-resource .ant-pagination-item:hover {
+  border-color: #003a8c !important;
+}
+
+.admin-mental-resource .ant-pagination-item:hover a {
+  color: #003a8c !important;
+}
+
+/* 分页导航按钮 */
+.admin-mental-resource .ant-pagination-prev:hover,
+.admin-mental-resource .ant-pagination-next:hover {
+  border-color: #003a8c !important;
+  color: #003a8c !important;
+}
+
+/* 其他可能的分页元素 */
+.admin-mental-resource .ant-pagination-options-quick-jumper input:focus {
+  border-color: #003a8c !important;
+  box-shadow: 0 0 0 2px rgba(0, 58, 140, 0.15) !important;
+}
+
+.admin-mental-resource .ant-select:not(.ant-select-disabled):hover .ant-select-selector {
+  border-color: #003a8c !important;
+}
+
+/* 额外的深蓝色主题样式 */
+
+/* 分页前进后退按钮 */
+.admin-mental-resource .ant-pagination-prev:hover,
+.admin-mental-resource .ant-pagination-next:hover,
+.admin-mental-resource .ant-pagination-jump-prev:hover,
+.admin-mental-resource .ant-pagination-jump-next:hover {
+  border-color: #003a8c;
+  color: #003a8c;
+}
+
+/* 分页快速跳转按钮 */
+.admin-mental-resource .ant-pagination-item:hover {
+  border-color: #003a8c;
+}
+
+.admin-mental-resource .ant-pagination-item:hover a {
+  color: #003a8c;
+}
+
+/* 表格操作按钮hover状态 */
+.admin-mental-resource .ant-btn-link:hover {
+  color: #003a8c;
+}
+
+/* 选择器下拉选项 */
+.admin-mental-resource .ant-select-item-option-selected {
+  background-color: rgba(0, 58, 140, 0.1);
+  color: #003a8c;
+}
+
+/* 复选框选中状态 */
+.admin-mental-resource .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #003a8c;
+  border-color: #003a8c;
+}
+
+/* Switch开关组件 */
+.admin-mental-resource .ant-switch-checked {
+  background-color: #003a8c;
+}
+
+/* 表单验证成功状态 */
+.admin-mental-resource .ant-form-item-has-success .ant-input,
+.admin-mental-resource .ant-form-item-has-success .ant-input:focus,
+.admin-mental-resource .ant-form-item-has-success .ant-input-focused {
+  border-color: #003a8c;
+}
+
+/* 上传组件 */
+.admin-mental-resource .ant-upload-list-item-name:hover {
+  color: #003a8c;
+}
+
+/* 链接颜色 */
+.admin-mental-resource a:hover {
+  color: #003a8c;
 }
 
 /* 响应式设计 */

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   UserOutlined, 
   CheckCircleOutlined, 
@@ -6,6 +6,7 @@ import {
   SearchOutlined,
   ReloadOutlined
 } from '@ant-design/icons';
+import { Avatar } from 'antd';
 import { getAllUsers, updateUserStatus } from '../service/adminService';
 import '../css/AdminUsers.css';
 
@@ -13,9 +14,12 @@ const AdminUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(''); // 输入框的值
+    const [activeSearchTerm, setActiveSearchTerm] = useState(''); // 实际用于搜索的值
     const [filterStatus, setFilterStatus] = useState('all'); // all, active, inactive
     const [operatingUserId, setOperatingUserId] = useState(null);
+    const searchInputRef = useRef(null);
+    const clearButtonRef = useRef(null);
 
     // 获取用户列表
     const fetchUsers = async () => {
@@ -62,11 +66,56 @@ const AdminUsers = () => {
         }
     };
 
+    // 处理搜索回车键
+    const handleSearchKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            setActiveSearchTerm(searchTerm.trim());
+        }
+    };
+
+    // 清除搜索
+    const handleClearSearch = () => {
+        setSearchTerm('');
+        setActiveSearchTerm('');
+    };
+
+    // 动态调整清除按钮位置
+    const updateClearButtonPosition = () => {
+        if (searchInputRef.current && clearButtonRef.current && activeSearchTerm) {
+            const input = searchInputRef.current;
+            const clearBtn = clearButtonRef.current;
+            
+            // 创建临时元素来测量文字宽度
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const computedStyle = window.getComputedStyle(input);
+            context.font = `${computedStyle.fontSize} ${computedStyle.fontFamily}`;
+            
+            // 使用当前输入框中显示的文字宽度
+            const displayedText = searchTerm || activeSearchTerm;
+            const textWidth = context.measureText(displayedText).width;
+            
+            // 计算按钮位置（左边距 + 搜索图标宽度 + 文字宽度 + 一点间隙）
+            const leftPosition = 40 + textWidth + 8;
+            
+            // 确保按钮不超出输入框右边界
+            const maxLeft = input.offsetWidth - 32;
+            const finalLeft = Math.min(leftPosition, maxLeft);
+            
+            clearBtn.style.left = `${finalLeft}px`;
+        }
+    };
+
+    // 监听搜索词变化，更新清除按钮位置
+    useEffect(() => {
+        updateClearButtonPosition();
+    }, [searchTerm, activeSearchTerm]);
+
     // 过滤用户列表
     const filteredUsers = users.filter(user => {
-        const matchesSearch = user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             user.nickname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             user.sjtuId?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = user.username?.toLowerCase().includes(activeSearchTerm.toLowerCase()) ||
+                             user.nickname?.toLowerCase().includes(activeSearchTerm.toLowerCase()) ||
+                             user.sjtuId?.toLowerCase().includes(activeSearchTerm.toLowerCase());
         
         const matchesFilter = filterStatus === 'all' || 
                              (filterStatus === 'active' && user.valid) ||
@@ -102,12 +151,24 @@ const AdminUsers = () => {
                     <div className="admin-search-box">
                         <SearchOutlined className="admin-search-icon" />
                         <input
+                            ref={searchInputRef}
                             type="text"
-                            placeholder="搜索用户名、昵称或学号..."
+                            placeholder="搜索用户名、昵称或学号... (按回车键搜索)"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyPress={handleSearchKeyPress}
                             className="admin-search-input"
                         />
+                        {activeSearchTerm && (
+                            <button 
+                                ref={clearButtonRef}
+                                onClick={handleClearSearch}
+                                className="admin-search-clear-btn"
+                                title="清除搜索"
+                            >
+                                ×
+                            </button>
+                        )}
                     </div>
                     
                     <div className="admin-filter-box">
@@ -152,6 +213,13 @@ const AdminUsers = () => {
                     </div>
                 </div>
 
+                {/* 搜索状态 */}
+                {activeSearchTerm && (
+                    <div className="admin-search-status">
+                        正在搜索: "{activeSearchTerm}"
+                    </div>
+                )}
+
                 {/* 错误提示 */}
                 {error && (
                     <div className="admin-error-message">
@@ -175,12 +243,36 @@ const AdminUsers = () => {
                         filteredUsers.map(user => (
                             <div key={user.id} className="admin-user-item">
                                 <div className="admin-user-avatar">
-                                    {typeof getUserAvatar(user) === 'string' && getUserAvatar(user).includes('http') ? (
-                                        <img src={getUserAvatar(user)} alt="用户头像" />
+                                    {user.avatar && user.avatar.includes('http') ? (
+                                        <img 
+                                            src={user.avatar} 
+                                            alt="用户头像"
+                                            onError={(e) => {
+                                                // 图片加载失败时，隐藏img元素，显示Avatar组件
+                                                e.target.style.display = 'none';
+                                                e.target.nextSibling.style.display = 'block';
+                                            }}
+                                        />
+                                    ) : null}
+                                    {(!user.avatar || !user.avatar.includes('http')) ? (
+                                        <Avatar 
+                                            size={64} 
+                                            icon={<UserOutlined />}
+                                            style={{ backgroundColor: '#1890ff' }}
+                                        >
+                                            {user.username?.[0]?.toUpperCase() || 'U'}
+                                        </Avatar>
                                     ) : (
-                                        <span className="admin-user-avatar-text">
-                                            {getUserAvatar(user)}
-                                        </span>
+                                        <Avatar 
+                                            size={64} 
+                                            icon={<UserOutlined />}
+                                            style={{ 
+                                                backgroundColor: '#1890ff',
+                                                display: 'none' // 默认隐藏，只在图片加载失败时显示
+                                            }}
+                                        >
+                                            {user.username?.[0]?.toUpperCase() || 'U'}
+                                        </Avatar>
                                     )}
                                 </div>
                                 
@@ -242,4 +334,4 @@ const AdminUsers = () => {
     );
 };
 
-export default AdminUsers; 
+export default AdminUsers;

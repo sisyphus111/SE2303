@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { Pagination } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   WarningOutlined, 
   PhoneOutlined, 
@@ -8,116 +7,101 @@ import {
   SearchOutlined,
   ReloadOutlined
 } from '@ant-design/icons';
-import { 
-    getAlertList, 
-    updateAlertStatus, 
-    addFollowUpNotes,
-    getAlertStatistics,
-    getAlertTypes,
-    getAlertLevels,
-    getAlertStatuses
-} from '../service/adminAlertService';
+import { getCrisisUsers, markCrisisHandled } from '../service/adminService';
 import '../css/AdminCrisis.css';
-import AdminCrisisSearchBar from '../components/AdminCrisisSearchBar';
-import AdminCrisisStats from '../components/AdminCrisisStats';
-import AdminCrisisList from '../components/AdminCrisisList';
-import AdminCrisisPagination from '../components/AdminCrisisPagination';
 
 const AdminCrisis = () => {
-    const [alerts, setAlerts] = useState([]);
+    const [crisisUsers, setCrisisUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(''); // 输入框的值
+    const [activeSearchTerm, setActiveSearchTerm] = useState(''); // 实际用于搜索的值
     const [filterLevel, setFilterLevel] = useState('all');
     const [filterStatus, setFilterStatus] = useState('all');
-    const [filterType, setFilterType] = useState('all');
-    const [operatingAlertId, setOperatingAlertId] = useState(null);
-    const [pagination, setPagination] = useState({
-        current: 0,
-        pageSize: 10,
-        total: 0
-    });
-    const [alertTypes, setAlertTypes] = useState({});
-    const [alertLevels, setAlertLevels] = useState({});
-    const [alertStatuses, setAlertStatuses] = useState({});
+    const [operatingUserId, setOperatingUserId] = useState(null);
+    const searchInputRef = useRef(null);
+    const clearButtonRef = useRef(null);
 
-    // 获取警报列表
-    const fetchAlerts = async (page = 0, pageSize = 10) => {
+    // 处理搜索回车键
+    const handleSearchKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            setActiveSearchTerm(searchTerm.trim());
+        }
+    };
+
+    // 清除搜索
+    const handleClearSearch = () => {
+        setSearchTerm('');
+        setActiveSearchTerm('');
+    };
+
+    // 动态调整清除按钮位置
+    const updateClearButtonPosition = () => {
+        if (searchInputRef.current && clearButtonRef.current && activeSearchTerm) {
+            const input = searchInputRef.current;
+            const clearBtn = clearButtonRef.current;
+            
+            // 创建临时元素来测量文字宽度
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const computedStyle = window.getComputedStyle(input);
+            context.font = `${computedStyle.fontSize} ${computedStyle.fontFamily}`;
+            
+            // 使用当前输入框中显示的文字宽度
+            const displayedText = searchTerm || activeSearchTerm;
+            const textWidth = context.measureText(displayedText).width;
+            
+            // 计算按钮位置（左边距 + 搜索图标宽度 + 文字宽度 + 一点间隙）
+            const leftPosition = 40 + textWidth + 8;
+            
+            // 确保按钮不超出输入框右边界
+            const maxLeft = input.offsetWidth - 32;
+            const finalLeft = Math.min(leftPosition, maxLeft);
+            
+            clearBtn.style.left = `${finalLeft}px`;
+        }
+    };
+
+    // 监听搜索词变化，更新清除按钮位置
+    useEffect(() => {
+        updateClearButtonPosition();
+    }, [searchTerm, activeSearchTerm]);
+
+    // 获取危险用户列表
+    const fetchCrisisUsers = async () => {
         try {
             setLoading(true);
-            setError(null); // 每次请求前清空错误
-            
-            const params = {
-                page,
-                size: pageSize,
-                ...(searchTerm && { userId: searchTerm }),
-                ...(filterStatus !== 'all' && { status: filterStatus }),
-                ...(filterLevel !== 'all' && { alertLevel: filterLevel }),
-                ...(filterType !== 'all' && { alertType: filterType })
-            };
-            
-            const response = await getAlertList(params);
-            const data = response.data || response.object || response;
-            if (data && Array.isArray(data.content)) {
-                setAlerts(data.content);
-                setPagination({
-                    current: data.number,
-                    pageSize: data.size,
-                    total: data.totalElements
-                });
+            setError(null);
+            const response = await getCrisisUsers();
+            if (response.success) {
+                setCrisisUsers(response.data || []);
             } else {
-                setAlerts([]);
-                setPagination({
-                    current: 0,
-                    pageSize: pageSize,
-                    total: 0
-                });
+                setError(response.message || '获取危险用户列表失败');
             }
         } catch (err) {
-            setAlerts([]); // 异常时清空
-            setError('获取警报列表失败');
+            console.error('获取危险用户列表失败:', err);
+            setError('获取危险用户列表失败');
         } finally {
             setLoading(false);
         }
     };
 
-    // 获取枚举数据
-    const fetchEnums = async () => {
-        try {
-            const [typesRes, levelsRes, statusesRes] = await Promise.all([
-                getAlertTypes(),
-                getAlertLevels(),
-                getAlertStatuses()
-            ]);
-            setAlertTypes(typesRes);
-            setAlertLevels(levelsRes);
-            setAlertStatuses(statusesRes);
-        } catch (err) {
-            console.error('获取枚举数据失败:', err);
-        }
-    };
-
     useEffect(() => {
-        fetchEnums();
-        fetchAlerts();
+        fetchCrisisUsers();
     }, []);
 
-    // 当搜索条件或筛选条件改变时重新获取数据
-    useEffect(() => {
-        fetchAlerts(0, pagination.pageSize);
-    }, [searchTerm, filterLevel, filterStatus, filterType]);
-
-    // 更新警报状态
-    const handleUpdateStatus = async (alertId, status) => {
+    // 标记为已处理
+    const handleMarkHandled = async (userId, action) => {
         try {
-            setOperatingAlertId(alertId);
-            const response = await updateAlertStatus(alertId, status);
+            setOperatingUserId(userId);
+            const response = await markCrisisHandled(userId, action);
             if (response.success) {
-                setAlerts(alerts.map(alert => 
-                    alert.id === alertId 
-                        ? { ...alert, status: status }
-                        : alert
+                setCrisisUsers(crisisUsers.map(user => 
+                    user.id === userId 
+                        ? { ...user, status: action, handledAt: new Date().toISOString() }
+                        : user
                 ));
+                console.log(`用户 ${userId} 已标记为${action === 'contacted' ? '已联系' : '已解决'}`);
             } else {
                 setError(response.message || '更新状态失败');
             }
@@ -125,36 +109,18 @@ const AdminCrisis = () => {
             console.error('更新状态失败:', err);
             setError('更新状态失败');
         } finally {
-            setOperatingAlertId(null);
+            setOperatingUserId(null);
         }
     };
 
-    // 添加回访备注
-    const handleAddFollowUpNotes = async (alertId, notes) => {
-        try {
-            setOperatingAlertId(alertId);
-            const response = await addFollowUpNotes(alertId, notes);
-            if (response.success) {
-                setAlerts(alerts.map(alert => 
-                    alert.id === alertId 
-                        ? { ...alert, followUpNotes: notes, followUpDate: new Date().toISOString() }
-                        : alert
-                ));
-            } else {
-                setError(response.message || '添加回访备注失败');
-            }
-        } catch (err) {
-            console.error('添加回访备注失败:', err);
-            setError('添加回访备注失败');
-        } finally {
-            setOperatingAlertId(null);
-        }
-    };
-
-    // 处理分页变化
-    const handlePageChange = (page, pageSize) => {
-        fetchAlerts(page - 1, pageSize); // 后端从0开始，前端从1开始
-    };
+    // 过滤用户列表
+    const filteredUsers = crisisUsers.filter(user => {
+        const matchesSearch = user.username?.toLowerCase().includes(activeSearchTerm.toLowerCase()) ||
+                             user.nickname?.toLowerCase().includes(activeSearchTerm.toLowerCase());
+        const matchesLevel = filterLevel === 'all' || user.riskLevel === filterLevel;
+        const matchesStatus = filterStatus === 'all' || user.status === filterStatus;
+        return matchesSearch && matchesLevel && matchesStatus;
+    });
 
     return (
         <div className="admin-crisis-container">
@@ -163,32 +129,146 @@ const AdminCrisis = () => {
                     <WarningOutlined />
                     危险用户监控
                 </div>
-                {/* 搜索栏和筛选条件 */}
-                <AdminCrisisSearchBar
-                    searchTerm={searchTerm}
-                    filterLevel={filterLevel}
-                    filterType={filterType}
-                    filterStatus={filterStatus}
-                    alertLevels={alertLevels}
-                    alertTypes={alertTypes}
-                    alertStatuses={alertStatuses}
-                    onSearchTermChange={e => setSearchTerm(e.target.value)}
-                    onFilterLevelChange={e => setFilterLevel(e.target.value)}
-                    onFilterTypeChange={e => setFilterType(e.target.value)}
-                    onFilterStatusChange={e => setFilterStatus(e.target.value)}
-                    onRefresh={fetchAlerts}
-                    loading={loading}
-                    pagination={pagination}
-                />
+                
+                {/* 控制区域 */}
+                <div className="admin-crisis-controls">
+                    <div className="admin-search-box">
+                        <SearchOutlined className="admin-search-icon" />
+                        <input
+                            ref={searchInputRef}
+                            type="text"
+                            placeholder="搜索用户名... (按回车键搜索)"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyPress={handleSearchKeyPress}
+                            className="admin-search-input"
+                        />
+                        {activeSearchTerm && (
+                            <button 
+                                ref={clearButtonRef}
+                                onClick={handleClearSearch}
+                                className="admin-search-clear-btn"
+                                title="清除搜索"
+                            >
+                                ×
+                            </button>
+                        )}
+                    </div>
+                    
+                    <div className="admin-filter-box">
+                        <select 
+                            value={filterLevel} 
+                            onChange={(e) => setFilterLevel(e.target.value)}
+                            className="admin-filter-select"
+                        >
+                            <option value="all">全部风险等级</option>
+                            <option value="high">高风险</option>
+                            <option value="medium">中风险</option>
+                            <option value="low">低风险</option>
+                        </select>
+                    </div>
+                    
+                    <div className="admin-filter-box">
+                        <select 
+                            value={filterStatus} 
+                            onChange={(e) => setFilterStatus(e.target.value)}
+                            className="admin-filter-select"
+                        >
+                            <option value="all">全部状态</option>
+                            <option value="pending">待处理</option>
+                            <option value="contacted">已联系</option>
+                            <option value="resolved">已解决</option>
+                        </select>
+                    </div>
+                    
+                    <button 
+                        onClick={fetchCrisisUsers}
+                        disabled={loading}
+                        className="admin-btn admin-btn-primary"
+                    >
+                        <ReloadOutlined />
+                        刷新
+                    </button>
+                </div>
+
                 {/* 统计信息 */}
-                <AdminCrisisStats pagination={pagination} alerts={alerts} />
-                {/* 警报列表/空状态/加载中/错误 */}
-                <AdminCrisisList alerts={alerts} loading={loading} error={error} />
-                {/* 分页组件 */}
-                <AdminCrisisPagination pagination={pagination} onPageChange={handlePageChange} />
+                <div className="admin-crisis-stats">
+                    <div className="admin-stat-item">
+                        <span className="admin-stat-label">总计:</span>
+                        <span className="admin-stat-value">{crisisUsers.length}</span>
+                    </div>
+                    <div className="admin-stat-item">
+                        <span className="admin-stat-label">高风险:</span>
+                        <span className="admin-stat-value admin-stat-high">
+                            {crisisUsers.filter(u => u.riskLevel === 'high').length}
+                        </span>
+                    </div>
+                    <div className="admin-stat-item">
+                        <span className="admin-stat-label">待处理:</span>
+                        <span className="admin-stat-value admin-stat-pending">
+                            {crisisUsers.filter(u => u.status === 'pending').length}
+                        </span>
+                    </div>
+                </div>
+
+                {/* 用户列表 */}
+                <div className="admin-crisis-list">
+                    {loading ? (
+                        <div className="admin-loading">
+                            <div className="admin-loading-spinner"></div>
+                            <span>加载中...</span>
+                        </div>
+                    ) : filteredUsers.length === 0 ? (
+                        <div className="admin-empty-state">
+                            <WarningOutlined />
+                            <p>没有找到匹配的危险用户</p>
+                        </div>
+                    ) : (
+                        filteredUsers.map(user => (
+                            <div key={user.id} className="admin-crisis-item">
+                                <div className="admin-crisis-user">
+                                    <span className="admin-user-username">{user.username}</span>
+                                    <span className={`admin-risk-badge ${user.riskLevel}`}>
+                                        {user.riskLevel === 'high' ? '高风险' : 
+                                         user.riskLevel === 'medium' ? '中风险' : '低风险'}
+                                    </span>
+                                </div>
+                                
+                                <div className="admin-crisis-info">
+                                    <div>风险评分: {user.riskScore}/100</div>
+                                    <div>检测时间: {new Date(user.detectedAt).toLocaleDateString()}</div>
+                                </div>
+                                
+                                <div className="admin-crisis-actions">
+                                    {user.status === 'pending' && (
+                                        <>
+                                            <button
+                                                onClick={() => handleMarkHandled(user.id, 'contacted')}
+                                                disabled={operatingUserId === user.id}
+                                                className="admin-btn admin-btn-primary"
+                                            >
+                                                <PhoneOutlined />
+                                                已联系
+                                            </button>
+                                            <button
+                                                onClick={() => handleMarkHandled(user.id, 'resolved')}
+                                                disabled={operatingUserId === user.id}
+                                                className="admin-btn admin-btn-success"
+                                            >
+                                                <CheckCircleOutlined />
+                                                已解决
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
         </div>
     );
 };
+
 
 export default AdminCrisis; 

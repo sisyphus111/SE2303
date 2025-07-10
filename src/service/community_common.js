@@ -136,7 +136,7 @@ export async function post(url, data, options = {}) {
     return handleApiResponse(response);
 }
 
-export const BASEURL = 'https://12b56252.r10.vip.cpolar.cn';
+export const BASEURL = 'https://159b0b17.r5.cpolar.top';
 export const PREFIX = `${BASEURL}/api`;
 
 // ============ 管理员专用API方法 ============

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   FileTextOutlined, 
   CheckCircleOutlined, 
@@ -15,12 +15,15 @@ const AdminReview = () => {
     const [contents, setContents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(''); // 输入框的值
+    const [activeSearchTerm, setActiveSearchTerm] = useState(''); // 实际用于搜索的值
     const [filterStatus, setFilterStatus] = useState('all'); // all, PENDING, APPROVED, BANNED
     const [filterType, setFilterType] = useState('all'); // all, post, comment
     const [operatingContentId, setOperatingContentId] = useState(null);
     const [selectedContent, setSelectedContent] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
+    const searchInputRef = useRef(null);
+    const clearButtonRef = useRef(null);
 
     // 获取审核队列
     const fetchReviewQueue = async () => {
@@ -69,11 +72,56 @@ const AdminReview = () => {
         }
     };
 
+    // 处理搜索回车键
+    const handleSearchKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            setActiveSearchTerm(searchTerm.trim());
+        }
+    };
+
+    // 清除搜索
+    const handleClearSearch = () => {
+        setSearchTerm('');
+        setActiveSearchTerm('');
+    };
+
+    // 动态调整清除按钮位置
+    const updateClearButtonPosition = () => {
+        if (searchInputRef.current && clearButtonRef.current && activeSearchTerm) {
+            const input = searchInputRef.current;
+            const clearBtn = clearButtonRef.current;
+            
+            // 创建临时元素来测量文字宽度
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const computedStyle = window.getComputedStyle(input);
+            context.font = `${computedStyle.fontSize} ${computedStyle.fontFamily}`;
+            
+            // 使用当前输入框中显示的文字宽度
+            const displayedText = searchTerm || activeSearchTerm;
+            const textWidth = context.measureText(displayedText).width;
+            
+            // 计算按钮位置（左边距 + 搜索图标宽度 + 文字宽度 + 一点间隙）
+            const leftPosition = 40 + textWidth + 8;
+            
+            // 确保按钮不超出输入框右边界
+            const maxLeft = input.offsetWidth - 32;
+            const finalLeft = Math.min(leftPosition, maxLeft);
+            
+            clearBtn.style.left = `${finalLeft}px`;
+        }
+    };
+
+    // 监听搜索词变化，更新清除按钮位置
+    useEffect(() => {
+        updateClearButtonPosition();
+    }, [searchTerm, activeSearchTerm]);
+
     // 过滤内容列表
     const filteredContents = Array.isArray(contents) ? contents.filter(content => {
-        const matchesSearch = content.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             content.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             content.author?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = content.title?.toLowerCase().includes(activeSearchTerm.toLowerCase()) ||
+                             content.content?.toLowerCase().includes(activeSearchTerm.toLowerCase()) ||
+                             content.author?.toLowerCase().includes(activeSearchTerm.toLowerCase());
         
         const matchesStatus = filterStatus === 'all' || content.status === filterStatus;
         const matchesType = filterType === 'all' || content.type === filterType;
@@ -143,12 +191,24 @@ const AdminReview = () => {
                     <div className="admin-search-box">
                         <SearchOutlined className="admin-search-icon" />
                         <input
+                            ref={searchInputRef}
                             type="text"
-                            placeholder="搜索标题、内容、作者..."
+                            placeholder="搜索标题、内容、作者... (按回车键搜索)"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyPress={handleSearchKeyPress}
                             className="admin-search-input"
                         />
+                        {activeSearchTerm && (
+                            <button 
+                                ref={clearButtonRef}
+                                onClick={handleClearSearch}
+                                className="admin-search-clear-btn"
+                                title="清除搜索"
+                            >
+                                ×
+                            </button>
+                        )}
                     </div>
                     
                     <div className="admin-filter-box">
@@ -394,4 +454,4 @@ const AdminReview = () => {
     );
 };
 
-export default AdminReview; 
+export default AdminReview;

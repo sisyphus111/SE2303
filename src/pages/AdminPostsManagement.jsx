@@ -152,8 +152,6 @@ const AdminPostsManagement = () => {
         return <span className="status-badge success">已发布</span>;
       case 'PENDING':
         return <span className="status-badge warning">待审核</span>;
-      case 'REPORTED':
-        return <span className="status-badge danger">被举报</span>;
       case 'BANNED':
         return <span className="status-badge rejected">已拒绝</span>;
       default:
@@ -242,7 +240,6 @@ const AdminPostsManagement = () => {
               <option value="all">全部状态</option>
               <option value="published">已发布</option>
               <option value="pending">待审核</option>
-              <option value="reported">被举报</option>
               <option value="rejected">已拒绝</option>
             </select>
           </div>
@@ -284,10 +281,6 @@ const AdminPostsManagement = () => {
           <div className="admin-stat-item">
             <span className="admin-stat-label">待审核</span>
             <span className="admin-stat-value warning">{stats.pending}</span>
-          </div>
-          <div className="admin-stat-item">
-            <span className="admin-stat-label">被举报</span>
-            <span className="admin-stat-value danger">{stats.reported}</span>
           </div>
           <div className="admin-stat-item">
             <span className="admin-stat-label">已拒绝</span>

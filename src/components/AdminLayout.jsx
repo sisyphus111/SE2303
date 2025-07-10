@@ -44,8 +44,8 @@ const AdminLayout = ({ children }) => {
     // 管理员导航菜单项
     const adminNavItems = [
         { path: '/admin/users', label: '用户管理', icon: <UserOutlined /> },
-        { path: '/admin/posts-management', label: '帖子管理', icon: <FileTextOutlined /> },
-        { path: '/admin/comments-management', label: '评论管理', icon: <MessageOutlined /> },
+        { path: '/admin/posts', label: '帖子管理', icon: <FileTextOutlined /> },
+        { path: '/admin/comments', label: '评论管理', icon: <MessageOutlined /> },
         { path: '/admin/checkins', label: '打卡管理', icon: <CheckCircleOutlined /> },
         { path: '/admin/reports', label: '举报处理', icon: <ExclamationCircleOutlined /> },
         { path: '/admin/crisis', label: '危险用户', icon: <WarningOutlined /> },

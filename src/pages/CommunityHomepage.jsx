@@ -26,6 +26,7 @@ const CommunityHomepage = () => {
     const { userProfile, valid, identity, loading: contextLoading, getUserDisplayName} = useUser();
     const [selectedTag, setSelectedTag] = useState('全部');
     const [searchValue, setSearchValue] = useState('');
+    const [searchKeyword, setSearchKeyword] = useState(''); // 新增：实际用于搜索的关键词
     const [posts, setPosts] = useState({ content: [], totalElements: 0 });
     const [sortBy, setSortBy] = useState('latest');
     const [currentPage, setCurrentPage] = useState(1);
@@ -90,7 +91,7 @@ const CommunityHomepage = () => {
                 size: pageSize,
                 sortBy,
                 category: selectedTag !== '全部' ? selectedTag : undefined,
-                keyword: searchValue.trim() || undefined,
+                keyword: searchKeyword || undefined, // 修改：使用防抖后的关键词
             };
             console.log('🚀 发送请求参数:', JSON.stringify(params, null, 2));
             const response = await getPostList(params, auth);
@@ -108,12 +109,19 @@ const CommunityHomepage = () => {
         if (!contextLoading && valid && userProfile) {
             fetchPosts();
         }
-    }, [currentPage, pageSize, sortBy, selectedTag, searchValue, valid, userProfile, identity, contextLoading, navigate]);
+    }, [currentPage, pageSize, sortBy, selectedTag, searchKeyword, valid, userProfile, identity, contextLoading, navigate]); // 修改：依赖searchKeyword而不是searchValue
 
 
     const handleSearch = (e) => {
-        setSearchValue(e.target.value);
-        setCurrentPage(1);
+        setSearchValue(e.target.value); // 只更新输入框的值，不触发搜索
+    };
+
+    // 处理回车键搜索
+    const handleSearchKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            setSearchKeyword(searchValue.trim());
+            setCurrentPage(1);
+        }
     };
 
     const handleTagClick = (tag) => {
@@ -200,9 +208,10 @@ const CommunityHomepage = () => {
                             <SearchOutlined className="search-icon" />
                             <input
                                 type="text"
-                                placeholder="搜索感兴趣的话题..."
+                                placeholder="搜索感兴趣的话题... (按回车键搜索)"
                                 value={searchValue}
                                 onChange={handleSearch}
+                                onKeyPress={handleSearchKeyPress}
                                 className="search-input"
                             />
                         </div>
@@ -258,6 +267,29 @@ const CommunityHomepage = () => {
                                 {selectedTag === '全部' ? '所有帖子' : `${selectedTag} 相关帖子`}
                                 <span className="posts-count">（{posts.totalElements}条）</span>
                             </h3>
+                            {/* 显示当前搜索状态 */}
+                            {searchKeyword && (
+                                <div className="search-status" style={{ marginTop: '8px', fontSize: '14px', color: '#666' }}>
+                                    正在搜索: "{searchKeyword}" 
+                                    <button 
+                                        className="clear-search-btn"
+                                        onClick={() => {
+                                            setSearchValue('');
+                                            setSearchKeyword('');
+                                        }}
+                                        style={{ 
+                                            marginLeft: '8px', 
+                                            padding: '2px 8px', 
+                                            border: 'none', 
+                                            background: '#f0f0f0', 
+                                            borderRadius: '4px',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        清除
+                                    </button>
+                                </div>
+                            )}
                         </div>
                         <div className="posts-list-main">
                             {posts.content.length === 0 ? (

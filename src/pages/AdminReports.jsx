@@ -242,11 +242,12 @@ const AdminReports = () => {
                                 <div className="admin-report-content">
                                     <div className="admin-report-info">
                                         <div className="admin-report-reason">
-                                            <strong>举报原因:</strong> {report.reason}
+                                            <strong>举报类型:</strong> {report.reason}
                                         </div>
+                                    
                                         <div className="admin-report-users">
                                             <span className="admin-report-reporter">
-                                                举报人: {report.userId}
+                                                举报人Id: {report.userId}
                                             </span>
                                         </div>
                                     </div>
@@ -321,18 +322,18 @@ const AdminReports = () => {
                         </div>
                         <div className="admin-modal-body">
                             <div className="admin-detail-item">
-                                <strong>举报类型:</strong> 帖子举报
+                                <strong>举报类型:</strong> {selectedReport.report?.type === 'post' ? '帖子举报' : '评论举报'}
                             </div>
                             <div className="admin-detail-item">
                                 <strong>举报原因:</strong> {selectedReport.report?.reason}
                             </div>
-                            {selectedReport.report?.description && (
+                            {selectedReport.report?.detail && (
                                 <div className="admin-detail-item">
-                                    <strong>详细描述:</strong> {selectedReport.report.description}
+                                    <strong>详细描述:</strong> {selectedReport.report.detail}
                                 </div>
                             )}
                             <div className="admin-detail-item">
-                                <strong>举报人:</strong> {selectedReport.report?.userId}
+                                <strong>举报人Id:</strong> {selectedReport.report?.userId}
                             </div>
                             <div className="admin-detail-item">
                                 <strong>举报时间:</strong> {formatDate(selectedReport.report?.createdAt)}

@@ -323,53 +323,6 @@ export const sendCommentToPost = async (postId, content, auth = {}) => {
     }
 };
 
-// 收藏帖子
-export const collectPost = async (postId, auth = {}) => {
-    if (!auth.userId || auth.valid === false) {
-        message.error('请先登录');
-        throw new Error('用户未登录');
-    }
-    try {
-        const response = await post(`/community/posts/collect/${postId}`, {});
-        message.success('收藏成功');
-        return {
-            success: true,
-            data: response,
-            message: response.message,
-        };
-
-    } catch (error) {
-        message.error('收藏失败：' + error.message);
-        return {
-            success: false,
-            error: error.message || '收藏失败',
-        };
-    }
-};
-
-// 取消收藏帖子
-export const delCollectedPost = async (postId, auth = {}) => {
-    if (!auth.userId || auth.valid === false) {
-        message.error('请先登录');
-        throw new Error('用户未登录');
-    }
-    try {
-        const response = await del(`/community/posts/delete/collection/${postId}`, {});
-        message.success('取消收藏成功');
-        return {
-            success: true,
-            data: response,
-            message: response.message,
-        };
-
-    } catch (error) {
-        message.error('取消收藏失败：' + error.message);
-        return {
-            success: false,
-            error: error.message || '取消收藏失败',
-        };
-    }
-};
 
 // 审核通过帖子
 export const approvePost = async (postId, auth = {}) => {

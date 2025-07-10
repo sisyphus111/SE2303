@@ -134,7 +134,7 @@
 /* 作者信息区域 */
 .post-author-section {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   margin-bottom: 24px;
   padding: 20px;
@@ -145,7 +145,7 @@
 
 .post-detail-author-card {
   flex: 1;
-  padding: 12px;
+  padding: 0;
   box-shadow: none;
   background: transparent;
   border: none;
@@ -154,6 +154,44 @@
 .post-detail-author-card:hover {
   box-shadow: none;
   transform: none;
+}
+
+.post-detail-author-card .user-info-card {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.post-detail-author-card .user-info-card:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+.post-detail-author-card .user-avatar {
+  width: 60px;
+  height: 60px;
+}
+
+.post-detail-author-card .user-nickname {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-green);
+}
+
+.post-detail-author-card .user-username {
+  font-size: 14px;
+  color: var(--text-gray);
+}
+
+.post-detail-author-card .user-stats {
+  margin-top: 8px;
+}
+
+.post-detail-author-card .stat-item {
+  background: var(--white);
+  padding: 4px 8px;
+  border-radius: var(--radius-small);
+  border: 1px solid var(--border-color);
 }
 
 .author-info {

@@ -133,15 +133,9 @@ const PostDetail = ({ postData }) => {
             <div className="post-author-section">
                 <UserInfoCard 
                     userId={postData.userId} 
-                    showStats={true}
+                    showStats={false}
                     className="post-detail-author-card"
                 />
-                <div className="post-stats">
-                    <div className="stat-item">
-                        <HeartOutlined />
-                        <span>{likeCount}</span>
-                    </div>
-                </div>
             </div>
 
             <div className="post-content">

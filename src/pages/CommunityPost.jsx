@@ -14,6 +14,7 @@ import PostCommentList from '../components/CommunityPostCommentList';
 import { getPostDetail, getCommentOfPost, sendCommentToPost } from '../service/communityService';
 import { useUser } from '../lib/UserContext';
 import "../css/CommunityPostDetail.css";
+import UserInfoCard from '../components/UserInfoCard';
 
 const CommunityPostPage = () => {
     const { id } = useParams();
@@ -161,29 +162,7 @@ const CommunityPostPage = () => {
                             <UserOutlined className="sidebar-icon" />
                             <h4>作者信息</h4>
                         </div>
-                        <div className="author-info">
-                            {sidebarAvatarError ? (
-                                <Avatar 
-                                    size={50} 
-                                    icon={<UserOutlined />} 
-                                    className="author-avatar"
-                                />
-                            ) : (
-                                <img
-                                    src={getUserAvatar(postData.userId)}
-                                    alt={getUserDisplayName(postData.userId)}
-                                    className="author-avatar"
-                                    onError={handleSidebarAvatarError}
-                                />
-                            )}
-                            <div className="author-details">
-                                <div className="author-name">{getUserDisplayName(postData.userId)}</div>
-                                <div className="author-stats">
-                                    <span>帖子: {postData.postCount || 0}</span>
-                                    <span>获赞: {postData.likeCount || 0}</span>
-                                </div>
-                            </div>
-                        </div>
+                        <UserInfoCard userId={postData.userId} showStats={true} className="sidebar-author-info-card" />
                     </div>
 
                     <div className="sidebar-card related-posts">

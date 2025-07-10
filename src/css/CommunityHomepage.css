@@ -453,7 +453,8 @@
 }
 
 .post-author-card {
-    flex: 1;
+    flex: none;
+    width: auto;
     padding: 8px;
     box-shadow: none;
     background: transparent;

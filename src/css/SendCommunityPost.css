@@ -183,12 +183,12 @@
 }
 
 .cancel-button {
-  padding: 12px 24px;
+  padding: 16px 32px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
   background: var(--white);
   color: var(--text-gray);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -203,12 +203,12 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 24px;
+  padding: 16px 32px;
   background: var(--primary-green);
   color: var(--white);
   border: none;
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -412,6 +412,8 @@
   .submit-button {
     width: 100%;
     justify-content: center;
+    padding: 14px 24px;
+    font-size: 15px;
   }
   
   .stats-content {
@@ -439,6 +441,12 @@
   .stats-content {
     grid-template-columns: 1fr 1fr;
     gap: 12px;
+  }
+
+  .cancel-button,
+  .submit-button {
+    padding: 12px 20px;
+    font-size: 14px;
   }
 }
 

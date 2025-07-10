@@ -64,9 +64,9 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 12px 20px;
+    padding: 16px 28px;
     border-radius: var(--radius-medium);
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -250,13 +250,13 @@
 .sort-btn {
     display: flex;
     align-items: center;
-    gap: 3px;
-    padding: 4px 8px;
+    gap: 4px;
+    padding: 8px 16px;
     background: transparent;
     border: none;
     border-radius: var(--radius-small);
     color: var(--text-gray);
-    font-size: 11px;
+    font-size: 14px;
     cursor: pointer;
     transition: all 0.2s ease;
     opacity: 0.7;
@@ -286,9 +286,9 @@
     background: transparent;
     color: var(--text-gray);
     border: none;
-    padding: 4px 8px;
+    padding: 8px 16px;
     border-radius: var(--radius-small);
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -764,6 +764,11 @@
         width: 100%;
     }
 
+    .action-btn {
+        padding: 14px 24px;
+        font-size: 15px;
+    }
+
     .search-container {
         min-width: auto;
         width: 100%;
@@ -790,8 +795,8 @@
     }
 
     .sort-btn {
-        font-size: 11px;
-        padding: 5px 10px;
+        font-size: 13px;
+        padding: 7px 14px;
     }
 
     .sidebar {
@@ -803,8 +808,8 @@
     }
 
     .tag-btn {
-        padding: 6px 12px;
-        font-size: 12px;
+        padding: 7px 14px;
+        font-size: 13px;
     }
 
     .stats-grid {
@@ -829,6 +834,11 @@
     .welcome-section {
         padding: 16px;
         margin-bottom: 16px;
+    }
+
+    .action-btn {
+        padding: 12px 20px;
+        font-size: 14px;
     }
 
     .section-card,
@@ -867,6 +877,16 @@
         flex-direction: column;
         gap: 12px;
         align-items: flex-start;
+    }
+
+    .sort-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+
+    .tag-btn {
+        padding: 6px 12px;
+        font-size: 12px;
     }
 
     .post-card {

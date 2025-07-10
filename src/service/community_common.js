@@ -241,6 +241,47 @@ export async function banComment(commentId) {
 }
 
 /**
+ * 获取所有评论（管理员版本，包括所有状态的评论）
+ * @param {Object} options - 查询选项
+ * @param {string} options.keyword - 搜索关键词
+ * @param {string} options.status - 评论状态筛选
+ * @param {string} options.sortBy - 排序方式
+ * @param {number} options.page - 页码
+ * @param {number} options.size - 每页数量
+ */
+export async function getAdminComments(options = {}) {
+    try {
+        console.log('🚀 [管理员] 获取评论列表:', options);
+        
+        const queryParams = {};
+        if (options.keyword) queryParams.keyword = options.keyword;
+        if (options.sortBy) queryParams.sortBy = options.sortBy;
+        if (options.page) queryParams.page = options.page;
+        if (options.size) queryParams.size = options.size;
+        if (options.status) queryParams.status = options.status;
+        
+        return await get('/community/comments/admin', { queryParams });
+    } catch (error) {
+        console.error('❌ [管理员] 获取评论列表失败:', error);
+        throw error;
+    }
+}
+
+/**
+ * 删除评论（软删除）
+ * @param {number} commentId - 评论ID
+ */
+export async function deleteComment(commentId) {
+    try {
+        console.log('🚀 [管理员] 删除评论:', commentId);
+        return await put(`/community/comments/delete/${commentId}`);
+    } catch (error) {
+        console.error('❌ [管理员] 删除评论失败:', error);
+        throw error;
+    }
+}
+
+/**
  * 举报帖子
  * @param {number} postId - 帖子ID
  * @param {string} reason - 举报原因

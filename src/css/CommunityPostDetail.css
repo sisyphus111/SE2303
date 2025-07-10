@@ -28,11 +28,23 @@
   box-shadow: var(--shadow-light);
 }
 
+.community-post-page .back-btn {
+  color: var(--text-gray) !important;
+}
+
 .back-btn:hover {
   background: var(--light-gray);
   border-color: var(--accent-green);
-  color: var(--primary-green);
+  color: var(--primary-green) !important;
   transform: translateY(-1px);
+}
+
+.back-btn:focus {
+  color: var(--text-gray) !important;
+}
+
+.back-btn:active {
+  color: var(--text-gray) !important;
 }
 
 /* 页面布局 */

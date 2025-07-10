@@ -232,7 +232,7 @@ const CommunityHomepage = () => {
                             <SearchOutlined className="search-icon" />
                             <input
                                 type="text"
-                                placeholder="搜索感兴趣的话题... (按回车键搜索)"
+                                placeholder="搜索感兴趣的话题..."
                                 value={searchValue}
                                 onChange={handleSearch}
                                 onKeyPress={handleSearchKeyPress}

@@ -235,7 +235,7 @@
 }
 
 .community-user-content .ant-tabs-tab-active .ant-tabs-tab-btn {
-    color: white;
+    color: white !important;
 }
 
 .community-user-content .ant-tabs-content-holder {

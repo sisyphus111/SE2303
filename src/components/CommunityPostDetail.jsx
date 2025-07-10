@@ -14,6 +14,7 @@ import { reportPost } from '../service/community_common';
 import { message, Avatar } from 'antd';
 import { useUser } from '../lib/UserContext';
 import UserDisplayName from './UserDisplayName';
+import UserInfoCard from './UserInfoCard';
 import ReportModal from './ReportModal';
 import '../css/CommunityPostDetail.css';
 
@@ -130,28 +131,11 @@ const PostDetail = ({ postData }) => {
             </div>
 
             <div className="post-author-section">
-                <div className="author-info">
-                    {authorAvatarError ? (
-                        <Avatar 
-                            size={50} 
-                            icon={<UserOutlined />} 
-                            className="author-avatar"
-                        />
-                    ) : (
-                        <img
-                            src={getUserAvatar(postData.userId)}
-                            alt={getUserDisplayName(postData.userId)}
-                            className="author-avatar"
-                            onError={handleAuthorAvatarError}
-                        />
-                    )}
-                    <div className="author-details">
-                        <div className="author-name">
-                            <UserDisplayName userId={postData.userId} />
-                        </div>
-                        <div className="author-badge">活跃作者</div>
-                    </div>
-                </div>
+                <UserInfoCard 
+                    userId={postData.userId} 
+                    showStats={true}
+                    className="post-detail-author-card"
+                />
                 <div className="post-stats">
                     <div className="stat-item">
                         <HeartOutlined />

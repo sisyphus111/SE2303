@@ -143,6 +143,19 @@
   border: 1px solid var(--border-color);
 }
 
+.post-detail-author-card {
+  flex: 1;
+  padding: 12px;
+  box-shadow: none;
+  background: transparent;
+  border: none;
+}
+
+.post-detail-author-card:hover {
+  box-shadow: none;
+  transform: none;
+}
+
 .author-info {
   display: flex;
   align-items: center;

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { getUserStatus, getUserProfile, apiUpdateUserProfile, getUserPreferences, apiUpdateUserPreferences, getUserInfo } from '../service/userService';
+import { getUserStatus, getUserProfile, apiUpdateUserProfile, getUserPreferences, apiUpdateUserPreferences, getUserInfo, getUserCommunityInfo, getUserStatistics } from '../service/userService';
 
 // Context
 const UserContext = createContext();
@@ -35,6 +35,12 @@ export const UserProvider = ({ children }) => {
 
   // 使用useRef来存储用户缓存，避免在useCallback依赖中引起无限循环
   const userCacheRef = useRef(new Map());
+  
+  // 使用useRef来存储用户社区信息缓存
+  const userCommunityInfoCacheRef = useRef(new Map());
+  
+  // 使用useRef来存储用户统计数据缓存
+  const userStatisticsCacheRef = useRef(new Map());
 
   // ===== 计算属性 =====
   const isAuthenticated = !!(userProfile && identity !== null && valid !== null);
@@ -271,6 +277,78 @@ export const UserProvider = ({ children }) => {
     return `用户${userId}`;
   }, [userProfile, getUserDisplayInfoById]);
 
+  // 获取用户的社区信息（头像、昵称、用户名等）
+  const getUserCommunityInfoById = useCallback(async (userId) => {
+    // 如果是当前用户，直接使用当前用户信息
+    if (userProfile && userProfile.userId === userId) {
+      return {
+        userId: userProfile.userId,
+        username: userProfile.username,
+        nickname: userProfile.nickname,
+        avatar: userProfile.avatar,
+        valid: userProfile.valid
+      };
+    }
+    
+    // 检查缓存中是否有该用户社区信息
+    if (userCommunityInfoCacheRef.current.has(userId)) {
+      return userCommunityInfoCacheRef.current.get(userId);
+    }
+    
+    try {
+      // 从后端获取用户社区信息
+      const response = await getUserCommunityInfo(userId);
+      if (response) {
+        // 缓存用户社区信息
+        userCommunityInfoCacheRef.current.set(userId, response);
+        return response;
+      }
+    } catch (error) {
+      console.error('获取用户社区信息失败:', error);
+    }
+    
+    // 如果获取失败，返回默认值
+    return {
+      userId: userId,
+      username: `用户${userId}`,
+      nickname: null,
+      avatar: null,
+      valid: true
+    };
+  }, [userProfile]);
+
+  // 获取用户的统计数据（被点赞数、评论数等）
+  const getUserStatisticsById = useCallback(async (userId) => {
+    // 检查缓存中是否有该用户统计数据
+    if (userStatisticsCacheRef.current.has(userId)) {
+      return userStatisticsCacheRef.current.get(userId);
+    }
+    
+    try {
+      // 从后端获取用户统计数据
+      const response = await getUserStatistics(userId);
+      if (response) {
+        // 缓存用户统计数据
+        userStatisticsCacheRef.current.set(userId, response);
+        return response;
+      }
+    } catch (error) {
+      console.error('获取用户统计数据失败:', error);
+    }
+    
+    // 如果获取失败，返回默认值
+    return {
+      likedCount: 0,
+      commentCount: 0
+    };
+  }, []);
+
+  // 获取用户的头像URL
+  const getUserAvatarById = useCallback(async (userId) => {
+    const communityInfo = await getUserCommunityInfoById(userId);
+    return communityInfo?.avatar || null;
+  }, [getUserCommunityInfoById]);
+
 
   // ===== 用户偏好设置相关方法 =====
   const updateUserPreferences = useCallback(async (newPreferences, onlyUpdateSpecifiedFields = true) => {
@@ -466,6 +544,9 @@ export const UserProvider = ({ children }) => {
     getUserDisplayInfoById,
     getUserDisplayInfoByIdSync,
     getUserUsernameById,
+    getUserCommunityInfoById,
+    getUserStatisticsById,
+    getUserAvatarById,
     
     // 用户偏好设置相关方法
     updateUserPreferences,

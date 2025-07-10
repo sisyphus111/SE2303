@@ -452,6 +452,18 @@
     flex: 1;
 }
 
+.post-author-card {
+    flex: 1;
+    padding: 8px;
+    box-shadow: none;
+    background: transparent;
+}
+
+.post-author-card:hover {
+    box-shadow: none;
+    transform: none;
+}
+
 .author-avatar {
     width: 40px;
     height: 40px;

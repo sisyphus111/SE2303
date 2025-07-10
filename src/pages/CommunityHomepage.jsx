@@ -20,6 +20,7 @@ import { getPostList, getAllTags, getTodayCommentsCount, getTodayPostsCount, get
 import { getTotalUserCount } from '../service/userService';
 import { useUser } from '../lib/UserContext';
 import UserDisplayName from '../components/UserDisplayName';
+import UserInfoCard from '../components/UserInfoCard';
 import '../css/CommunityHomepage.css';
 
 const CommunityHomepage = () => {
@@ -328,25 +329,12 @@ const CommunityHomepage = () => {
                                     <div key={post.id} className="post-card" onClick={() => navigate(`/post/${post.id}`)}>
                                         <div className="post-header">
                                             <div className="post-author-info">
-                                                <div className="author-avatar">
-                                                    <img 
-                                                        src={getUserAvatar(post.userId)} 
-                                                        alt={getUserDisplayName(post.userId)}
-                                                        onError={(e) => {
-                                                            e.target.style.display = 'none';
-                                                            e.target.nextSibling.style.display = 'flex';
-                                                        }}
-                                                    />
-                                                    <div className="avatar-fallback">
-                                                        <UserOutlined />
-                                                    </div>
-                                                </div>
-                                                <div className="author-details">
-                                                    <div className="author-name">
-                                                        <UserDisplayName userId={post.userId} />
-                                                    </div>
-                                                    <div className="post-time">{formatTime(post.createdAt)}</div>
-                                                </div>
+                                                <UserInfoCard 
+                                                    userId={post.userId} 
+                                                    showStats={false}
+                                                    className="post-author-card"
+                                                />
+                                                <div className="post-time">{formatTime(post.createdAt)}</div>
                                             </div>
                                             <div className="post-stats">
                                                 <span className="stat-item">

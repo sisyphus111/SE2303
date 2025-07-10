@@ -207,3 +207,33 @@ export const getTotalUserCount = async () => {
     throw error;
   }
 };
+
+/**
+ * 获取用户在社区中的基本信息（头像、昵称、用户名等）
+ * @param {string} userId - 用户ID
+ * @returns {Promise<Object>} 用户社区信息
+ */
+export const getUserCommunityInfo = async (userId) => {
+  try {
+    const response = await get(`/user/community_info/${userId}`);
+    return response.data || response;
+  } catch (error) {
+    console.error('获取用户社区信息失败:', error);
+    throw error;
+  }
+};
+
+/**
+ * 获取用户在社区中的统计数据（被点赞数、评论数等）
+ * @param {string} userId - 用户ID
+ * @returns {Promise<Object>} 用户统计数据
+ */
+export const getUserStatistics = async (userId) => {
+  try {
+    const response = await get(`/community/posts/user_statistics/${userId}`);
+    return response.data || response;
+  } catch (error) {
+    console.error('获取用户统计数据失败:', error);
+    throw error;
+  }
+};

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Avatar } from 'antd';
 import { ArrowLeftOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
 import CommunityUserContent from '../components/CommunityUserContent';
+import UserDisplayName from '../components/UserDisplayName';
 import { useUser } from '../lib/UserContext';
 import '../css/CommunityUserPage.css';
 
@@ -40,14 +41,16 @@ const CommunityUserPage = () => {
                         />
                     ) : (
                         <img
-                            src={getUserAvatar(userProfile.id)}
-                            alt={getUserDisplayName(userProfile.id)}
+                            src={getUserAvatar(userProfile.userId)}
+                            alt={getUserDisplayName(userProfile.userId)}
                             className="user-avatar community-user-avatar"
                             onError={handleAvatarError}
                         />
                     )}
                     <div className="user-details">
-                        <h2>{getUserDisplayName(userProfile.id)}</h2>
+                        <h2>
+                            <UserDisplayName userId={userProfile.userId} />
+                        </h2>
                         <p>欢迎回来！查看你的帖子、点赞和收藏</p>
                     </div>
                 </div>

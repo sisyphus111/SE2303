@@ -3,6 +3,7 @@ import { HeartOutlined, HeartFilled, MessageOutlined, MoreOutlined, ExclamationC
 import { message, Avatar } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../lib/UserContext';
+import UserDisplayName from './UserDisplayName';
 import { post, del } from '../service/common';
 import { reportComment } from '../service/community_common';
 import ReportModal from './ReportModal';
@@ -127,7 +128,9 @@ const PostComment = ({ comment }) => {
             <div className="comment-content">
                 <div className="comment-header">
                     <div className="comment-user-info">
-                        <span className="comment-username">{getUserDisplayName(comment.userId)}</span>
+                        <span className="comment-username">
+                            <UserDisplayName userId={comment.userId} />
+                        </span>
                         <span className="comment-time">{formatDate(comment.createdAt)}</span>
                     </div>
                     <div className="comment-menu-container" ref={menuRef}>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {useAudio} from '../lib/GlobalAudioPlayer';
 import { useUser } from '../lib/UserContext';
+import UserDisplayName from './UserDisplayName';
 import { logout as authLogout } from '../service/authService';
 import NotificationDropdown from './NotificationDropdown';
 import { 
@@ -176,7 +177,9 @@ const Layout = ({children}) => {
                                                 <UserOutlined />
                                             </div>
                                         </div>
-                                        <span className="user-name">{getUserDisplayName()}</span>
+                                        <span className="user-name">
+                                            <UserDisplayName userId={userProfile.userId} />
+                                        </span>
                                         <DownOutlined className="dropdown-icon" />
                                     </button>
                                     

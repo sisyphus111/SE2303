@@ -13,6 +13,7 @@ import { LikePost, UnlikePost } from '../service/communityService';
 import { reportPost } from '../service/community_common';
 import { message, Avatar } from 'antd';
 import { useUser } from '../lib/UserContext';
+import UserDisplayName from './UserDisplayName';
 import ReportModal from './ReportModal';
 import '../css/CommunityPostDetail.css';
 
@@ -145,7 +146,9 @@ const PostDetail = ({ postData }) => {
                         />
                     )}
                     <div className="author-details">
-                        <div className="author-name">{getUserDisplayName(postData.userId)}</div>
+                        <div className="author-name">
+                            <UserDisplayName userId={postData.userId} />
+                        </div>
                         <div className="author-badge">活跃作者</div>
                     </div>
                 </div>

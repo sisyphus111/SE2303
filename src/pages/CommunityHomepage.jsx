@@ -19,6 +19,7 @@ import {
 import { getPostList, getAllTags, getTodayCommentsCount, getTodayPostsCount, getTotalPostsCount } from '../service/communityService';
 import { getTotalUserCount } from '../service/userService';
 import { useUser } from '../lib/UserContext';
+import UserDisplayName from '../components/UserDisplayName';
 import '../css/CommunityHomepage.css';
 
 const CommunityHomepage = () => {
@@ -341,7 +342,9 @@ const CommunityHomepage = () => {
                                                     </div>
                                                 </div>
                                                 <div className="author-details">
-                                                    <div className="author-name">{getUserDisplayName(post.userId)}</div>
+                                                    <div className="author-name">
+                                                        <UserDisplayName userId={post.userId} />
+                                                    </div>
                                                     <div className="post-time">{formatTime(post.createdAt)}</div>
                                                 </div>
                                             </div>
@@ -412,7 +415,9 @@ const CommunityHomepage = () => {
                                         <div className="hot-post-content">
                                             <h4 className="hot-post-title">{post.title}</h4>
                                             <div className="hot-post-meta">
-                                                <span className="author">@{getUserDisplayName(post.userId)}</span>
+                                                <span className="author">
+                                                    @<UserDisplayName userId={post.userId} forMention={true} />
+                                                </span>
                                                 <span className="likes">
                                                     <HeartOutlined /> {post.likeCount || 0}
                                                 </span>
@@ -437,7 +442,9 @@ const CommunityHomepage = () => {
                                         <div className="recent-post-content">
                                             <h4 className="recent-post-title">{post.title}</h4>
                                             <div className="recent-post-meta">
-                                                <span className="author">@{getUserDisplayName(post.userId)}</span>
+                                                <span className="author">
+                                                    @<UserDisplayName userId={post.userId} forMention={true} />
+                                                </span>
                                                 <span className="time">{formatTime(post.createdAt)}</span>
                                             </div>
                                         </div>

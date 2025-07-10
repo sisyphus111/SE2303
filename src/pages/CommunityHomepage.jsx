@@ -24,7 +24,7 @@ import '../css/CommunityHomepage.css';
 const CommunityHomepage = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { userProfile, valid, identity, loading: contextLoading, getUserDisplayName} = useUser();
+    const { userProfile, valid, identity, loading: contextLoading, getUserDisplayName, getUserAvatar} = useUser();
     const [selectedTag, setSelectedTag] = useState('全部');
     const [searchValue, setSearchValue] = useState('');
     const [searchKeyword, setSearchKeyword] = useState(''); 
@@ -325,12 +325,25 @@ const CommunityHomepage = () => {
                             ) : (
                                 posts.content.map(post => (
                                     <div key={post.id} className="post-card" onClick={() => navigate(`/post/${post.id}`)}>
-                                        <h4 className="post-title">{post.title}</h4>
-                                        <div className="post-meta">
-                                            <div className="post-tags">
-                                                {post.tags.map(tag => (
-                                                    <span key={tag} className="post-tag">#{tag}</span>
-                                                ))}
+                                        <div className="post-header">
+                                            <div className="post-author-info">
+                                                <div className="author-avatar">
+                                                    <img 
+                                                        src={getUserAvatar(post.userId)} 
+                                                        alt={getUserDisplayName(post.userId)}
+                                                        onError={(e) => {
+                                                            e.target.style.display = 'none';
+                                                            e.target.nextSibling.style.display = 'flex';
+                                                        }}
+                                                    />
+                                                    <div className="avatar-fallback">
+                                                        <UserOutlined />
+                                                    </div>
+                                                </div>
+                                                <div className="author-details">
+                                                    <div className="author-name">{getUserDisplayName(post.userId)}</div>
+                                                    <div className="post-time">{formatTime(post.createdAt)}</div>
+                                                </div>
                                             </div>
                                             <div className="post-stats">
                                                 <span className="stat-item">
@@ -342,8 +355,20 @@ const CommunityHomepage = () => {
                                                     {post.commentCount || 0}
                                                 </span>
                                             </div>
-                                            <div className="post-author">
-                                                <span className="author-name">{getUserDisplayName(post.userId)}</span>
+                                        </div>
+                                        <div className="post-content">
+                                            <h4 className="post-title">{post.title}</h4>
+                                            {post.content && (
+                                                <div className="post-excerpt">
+                                                    {post.content.length > 100 ? `${post.content.substring(0, 100)}...` : post.content}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="post-footer">
+                                            <div className="post-tags">
+                                                {post.tags && post.tags.map(tag => (
+                                                    <span key={tag} className="post-tag">#{tag}</span>
+                                                ))}
                                             </div>
                                         </div>
                                     </div>

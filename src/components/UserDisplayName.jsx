@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUser } from '../lib/UserContext';
 import '../css/UserDisplayName.css';
 
@@ -11,11 +11,35 @@ const UserDisplayName = ({
   style = {},
   forMention = false // 用于@提及场景，只显示用户名
 }) => {
-  const { getUserDisplayInfoByIdSync, getUserUsernameById } = useUser();
+  const { getUserCommunityInfoById } = useUser();
+  const [userInfo, setUserInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        setLoading(true);
+        const communityInfo = await getUserCommunityInfoById(userId);
+        setUserInfo(communityInfo);
+      } catch (error) {
+        console.error('获取用户信息失败:', error);
+        setUserInfo(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserInfo();
+  }, [userId, getUserCommunityInfoById]);
 
   // 如果是@提及场景，只显示用户名
   if (forMention) {
-    const username = getUserUsernameById(userId);
+    const username = userInfo?.username || `用户${userId}`;
     return (
       <span className={className} style={style}>
         {username}
@@ -23,10 +47,8 @@ const UserDisplayName = ({
     );
   }
 
-  // 获取用户显示信息
-  const userInfo = getUserDisplayInfoByIdSync(userId);
-  
-  if (!userInfo) {
+  // 加载状态或没有用户信息
+  if (loading || !userInfo) {
     return (
       <span className={className} style={style}>
         用户
@@ -34,7 +56,9 @@ const UserDisplayName = ({
     );
   }
 
-  const { nickname, username, hasNickname, hasUsername } = userInfo;
+  const { nickname, username } = userInfo;
+  const hasNickname = !!nickname;
+  const hasUsername = !!username;
 
   // 如果只有用户名，显示用户名
   if (!hasNickname && hasUsername) {

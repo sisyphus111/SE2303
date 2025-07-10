@@ -10,8 +10,8 @@
 .welcome-section {
     background: var(--white);
     border-radius: var(--radius-large);
-    padding: 20px;
-    margin-bottom: 24px;
+    padding: 20px !important;
+    margin-bottom: 24px !important;
     box-shadow: var(--shadow-light);
     border: 1px solid var(--border-color);
     position: relative;

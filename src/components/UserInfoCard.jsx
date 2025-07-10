@@ -16,6 +16,7 @@ const UserInfoCard = ({ userId, showStats = true, className = '', style = {} }) 
       
       try {
         setLoading(true);
+        setAvatarError(false); // 重置头像错误状态
         const [communityInfo, statistics] = await Promise.all([
           getUserCommunityInfoById(userId),
           showStats ? getUserStatisticsById(userId) : null

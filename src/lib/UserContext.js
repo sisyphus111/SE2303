@@ -35,12 +35,6 @@ export const UserProvider = ({ children }) => {
 
   // 使用useRef来存储用户缓存，避免在useCallback依赖中引起无限循环
   const userCacheRef = useRef(new Map());
-  
-  // 使用useRef来存储用户社区信息缓存
-  const userCommunityInfoCacheRef = useRef(new Map());
-  
-  // 使用useRef来存储用户统计数据缓存
-  const userStatisticsCacheRef = useRef(new Map());
 
   // ===== 计算属性 =====
   const isAuthenticated = !!(userProfile && identity !== null && valid !== null);
@@ -290,17 +284,10 @@ export const UserProvider = ({ children }) => {
       };
     }
     
-    // 检查缓存中是否有该用户社区信息
-    if (userCommunityInfoCacheRef.current.has(userId)) {
-      return userCommunityInfoCacheRef.current.get(userId);
-    }
-    
     try {
       // 从后端获取用户社区信息
       const response = await getUserCommunityInfo(userId);
       if (response) {
-        // 缓存用户社区信息
-        userCommunityInfoCacheRef.current.set(userId, response);
         return response;
       }
     } catch (error) {
@@ -319,17 +306,10 @@ export const UserProvider = ({ children }) => {
 
   // 获取用户的统计数据（被点赞数、评论数等）
   const getUserStatisticsById = useCallback(async (userId) => {
-    // 检查缓存中是否有该用户统计数据
-    if (userStatisticsCacheRef.current.has(userId)) {
-      return userStatisticsCacheRef.current.get(userId);
-    }
-    
     try {
       // 从后端获取用户统计数据
       const response = await getUserStatistics(userId);
       if (response) {
-        // 缓存用户统计数据
-        userStatisticsCacheRef.current.set(userId, response);
         return response;
       }
     } catch (error) {

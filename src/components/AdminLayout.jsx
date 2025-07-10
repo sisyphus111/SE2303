@@ -125,9 +125,6 @@ const AdminLayout = ({ children }) => {
                                     className="admin-user-button"
                                     onClick={() => setShowUserMenu(!showUserMenu)}
                                 >
-                                    <div className="admin-user-avatar">
-                                        <UserOutlined />
-                                    </div>
                                     <span className="admin-user-name">管理员</span>
                                     <DownOutlined className="admin-dropdown-icon" />
                                 </button>

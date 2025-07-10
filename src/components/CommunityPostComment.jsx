@@ -1,9 +1,11 @@
-import React, {useMemo, useState} from 'react';
-import { HeartOutlined, HeartFilled, MessageOutlined, MoreOutlined } from '@ant-design/icons';
+import React, {useMemo, useState, useEffect, useRef} from 'react';
+import { HeartOutlined, HeartFilled, MessageOutlined, MoreOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../lib/UserContext';
 import { post, del } from '../service/common';
+import { reportComment } from '../service/community_common';
+import ReportModal from './ReportModal';
 import '../css/CommunityPostComment.css';
 
 const PostComment = ({ comment }) => {
@@ -11,6 +13,9 @@ const PostComment = ({ comment }) => {
     const { userProfile, valid, identity,getUserDisplayName, getUserAvatar } = useUser();
     const [liked, setLiked] = useState(comment.isLiked || false);
     const [likeCount, setLikeCount] = useState(comment.likeCount || 0);
+    const [showReportModal, setShowReportModal] = useState(false);
+    const [showMenu, setShowMenu] = useState(false);
+    const menuRef = useRef(null);
     const auth = useMemo(() => ({
         userId: userProfile?.userId,
         valid,
@@ -49,6 +54,44 @@ const PostComment = ({ comment }) => {
         }
     };
 
+    // 处理举报
+    const handleReport = async (commentId, reportData) => {
+        try {
+            await reportComment(commentId, reportData);
+            return { success: true };
+        } catch (error) {
+            throw new Error(error.message || '举报失败');
+        }
+    };
+
+    // 打开举报弹窗
+    const openReportModal = () => {
+        if (!userProfile || !valid) {
+            message.error('请先登录');
+            navigate('/login');
+            return;
+        }
+        setShowMenu(false);
+        setShowReportModal(true);
+    };
+
+    // 点击外部关闭菜单
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setShowMenu(false);
+            }
+        };
+
+        if (showMenu) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showMenu]);
+
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('zh-CN', {
@@ -74,15 +117,31 @@ const PostComment = ({ comment }) => {
                         <span className="comment-username">{getUserDisplayName(comment.userId)}</span>
                         <span className="comment-time">{formatDate(comment.createdAt)}</span>
                     </div>
-                    <button className="comment-menu-btn">
-                        <MoreOutlined />
-                    </button>
+                    <div className="comment-menu-container" ref={menuRef}>
+                        <button 
+                            className="comment-menu-btn"
+                            onClick={() => setShowMenu(!showMenu)}
+                        >
+                            <MoreOutlined />
+                        </button>
+                        {showMenu && (
+                            <div className="comment-menu-dropdown">
+                                <button 
+                                    className="comment-menu-item"
+                                    onClick={openReportModal}
+                                >
+                                    <ExclamationCircleOutlined />
+                                    举报评论
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <div className="comment-text">
                     {comment.content}
                 </div>
                 <div className="comment-actions">
-                    <button
+                    {/* <button
                         className={`comment-action-btn like-btn ${liked ? 'liked' : ''}`}
                         // onClick={handleLike}
                     >
@@ -92,9 +151,19 @@ const PostComment = ({ comment }) => {
                     <button className="comment-action-btn reply-btn">
                         <MessageOutlined />
                         <span>回复</span>
-                    </button>
+                    </button> */}
                 </div>
             </div>
+
+            {/* 举报弹窗 */}
+            <ReportModal
+                visible={showReportModal}
+                onClose={() => setShowReportModal(false)}
+                onReport={handleReport}
+                contentType="comment"
+                contentId={comment.id}
+                contentTitle={comment.content.substring(0, 50) + (comment.content.length > 50 ? '...' : '')}
+            />
         </div>
     );
 };

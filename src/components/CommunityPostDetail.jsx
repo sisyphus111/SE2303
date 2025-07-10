@@ -5,19 +5,27 @@ import {
     HeartFilled,
     ShareAltOutlined,
     EyeOutlined,
-    ClockCircleOutlined
+    ClockCircleOutlined,
+    ExclamationCircleOutlined
 } from "@ant-design/icons";
 import { LikePost, UnlikePost } from '../service/communityService';
+import { reportPost } from '../service/community_common';
 import { message } from 'antd';
 import { useUser } from '../lib/UserContext';
+import ReportModal from './ReportModal';
 import '../css/CommunityPostDetail.css';
 
 const PostDetail = ({ postData }) => {
+    // 打印postData的liked
+    console.log("postData.liked:", postData.liked);
+
+
     const navigate = useNavigate();
     const { userProfile, valid, identity, getUserAvatar, loading: contextLoading, getUserDisplayName } = useUser();
-    const [liked, setLiked] = useState(postData.isLiked || false);
-    const [likeCount, setLikeCount] = useState(postData.postMetrics?.likeCount || 0);
+    const [liked, setLiked] = useState(postData.liked || false);
+    const [likeCount, setLikeCount] = useState(postData.likeCount || 0);
     const [loading, setLoading] = useState(false);
+    const [showReportModal, setShowReportModal] = useState(false);
     const auth = useMemo(() => ({
         userId: userProfile?.userId,
         valid,
@@ -25,16 +33,21 @@ const PostDetail = ({ postData }) => {
     }), [userProfile, valid, identity]);
 
     const handleLike = async () => {
+
+        console.log("like 按钮被点击");
         if (!userProfile || !valid) {
             message.error('请先登录');
             navigate('/login');
             return;
         }
+        // 日志输出liked和postData.id
+        console.log("当前liked状态:", liked);
+        console.log("当前postData.id:", postData.id);
         try {
             let response;
             if (liked) {
 
-                response = await UnlikePost(postData.id, auth);
+                response = await UnlikePost(postData.id);
                 if (response.success) {
                     setLiked(false);
                     setLikeCount(prev => prev - 1);
@@ -43,8 +56,9 @@ const PostDetail = ({ postData }) => {
                     message.error(response.error);
                 }
             } else {
-
-                response = await LikePost(postData.id, auth);
+                console.log("开始点赞操作");
+                response = await LikePost(postData.id);
+                console.log("点赞操作完成", response);
                 if (response.success) {
                     setLiked(true);
                     setLikeCount(prev => prev + 1);
@@ -56,6 +70,26 @@ const PostDetail = ({ postData }) => {
         } catch (error) {
             message.error('操作失败：' + error.message);
         }
+    };
+
+    // 处理举报
+    const handleReport = async (postId, reportData) => {
+        try {
+            await reportPost(postId, reportData);
+            return { success: true };
+        } catch (error) {
+            throw new Error(error.message || '举报失败');
+        }
+    };
+
+    // 打开举报弹窗
+    const openReportModal = () => {
+        if (!userProfile || !valid) {
+            message.error('请先登录');
+            navigate('/login');
+            return;
+        }
+        setShowReportModal(true);
     };
 
     const formatDate = (dateString) => {
@@ -102,10 +136,6 @@ const PostDetail = ({ postData }) => {
                 </div>
                 <div className="post-stats">
                     <div className="stat-item">
-                        <EyeOutlined />
-                        <span>{postData.postMetrics?.viewCount || 0}</span>
-                    </div>
-                    <div className="stat-item">
                         <HeartOutlined />
                         <span>{likeCount}</span>
                     </div>
@@ -125,11 +155,25 @@ const PostDetail = ({ postData }) => {
                     <span>{liked ? '已点赞' : '点赞'}</span>
                     <span className="like-count">({likeCount})</span>
                 </button>
-                <button className="action-btn share-btn">
-                    <ShareAltOutlined />
-                    <span>分享</span>
+                
+                <button
+                    className="action-btn report-btn"
+                    onClick={openReportModal}
+                >
+                    <ExclamationCircleOutlined />
+                    <span>举报</span>
                 </button>
             </div>
+
+            {/* 举报弹窗 */}
+            <ReportModal
+                visible={showReportModal}
+                onClose={() => setShowReportModal(false)}
+                onReport={handleReport}
+                contentType="post"
+                contentId={postData.id}
+                contentTitle={postData.title}
+            />
         </div>
     );
 };

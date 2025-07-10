@@ -49,23 +49,12 @@ export const defaultArticles = [
  * @returns {Promise<Array>} 文章列表
  */
 export const getRecommendedArticles = async (params = { page: 1, size: 10, category: 'mental-health' }) => {
-  try {
-    let url = '/notification/articles/recommended';
-    // 如果有参数，拼接到url
-    const queryString = new URLSearchParams(params).toString();
-    if (queryString) {
-      url += `?${queryString}`;
-    }
-    const response = await get(url);
-    // response 应该是数组
-    if (Array.isArray(response) && response.length > 0) {
-      return response;
-    }
-    return defaultArticles;
-  } catch (error) {
-    // 失败时兜底
-    return defaultArticles;
+  let url = '/notification/articles/recommended';
+  const queryString = new URLSearchParams(params).toString();
+  if (queryString) {
+    url += `?${queryString}`;
   }
+  return await get(url);
 };
 
 /**
@@ -75,6 +64,60 @@ export const getRecommendedArticles = async (params = { page: 1, size: 10, categ
  */
 export const getArticleDetail = async (articleId) => {
   return request(`/resources/articles/${articleId}`);
+};
+
+/**
+ * 删除文章
+ * @param {string} articleId - 文章ID
+ * @returns {Promise<Object>} 删除结果
+ */
+export const deleteArticle = async (articleId) => {
+  try {
+    const response = await request(`/notification/articles/${articleId}`, {
+      method: 'DELETE',
+    });
+    return response;
+  } catch (error) {
+    console.error('删除文章失败:', error);
+    throw error;
+  }
+};
+
+/**
+ * 更新文章
+ * @param {string} articleId - 文章ID
+ * @param {Object} articleData - 文章数据
+ * @returns {Promise<Object>} 更新结果
+ */
+export const updateArticle = async (articleId, articleData) => {
+  try {
+    const response = await request(`/notification/articles/${articleId}`, {
+      method: 'PUT',
+      body: JSON.stringify(articleData),
+    });
+    return response;
+  } catch (error) {
+    console.error('更新文章失败:', error);
+    throw error;
+  }
+};
+
+/**
+ * 创建文章
+ * @param {Object} articleData - 文章数据
+ * @returns {Promise<Object>} 创建结果
+ */
+export const createArticle = async (articleData) => {
+  try {
+    const response = await request('/notification/articles/create', {
+      method: 'POST',
+      body: JSON.stringify(articleData),
+    });
+    return response;
+  } catch (error) {
+    console.error('创建文章失败:', error);
+    throw error;
+  }
 };
 
 // 默认音乐数据

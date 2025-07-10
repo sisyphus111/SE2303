@@ -136,7 +136,7 @@ export async function post(url, data, options = {}) {
     return handleApiResponse(response);
 }
 
-export const BASEURL = 'https://738a5622.r5.cpolar.top';
+export const BASEURL = 'https://12b56252.r10.vip.cpolar.cn';
 export const PREFIX = `${BASEURL}/api`;
 
 // ============ 管理员专用API方法 ============
@@ -241,6 +241,47 @@ export async function banComment(commentId) {
 }
 
 /**
+ * 获取所有评论（管理员版本，包括所有状态的评论）
+ * @param {Object} options - 查询选项
+ * @param {string} options.keyword - 搜索关键词
+ * @param {string} options.status - 评论状态筛选
+ * @param {string} options.sortBy - 排序方式
+ * @param {number} options.page - 页码
+ * @param {number} options.size - 每页数量
+ */
+export async function getAdminComments(options = {}) {
+    try {
+        console.log('🚀 [管理员] 获取评论列表:', options);
+        
+        const queryParams = {};
+        if (options.keyword) queryParams.keyword = options.keyword;
+        if (options.sortBy) queryParams.sortBy = options.sortBy;
+        if (options.page) queryParams.page = options.page;
+        if (options.size) queryParams.size = options.size;
+        if (options.status) queryParams.status = options.status;
+        
+        return await get('/community/comments/admin', { queryParams });
+    } catch (error) {
+        console.error('❌ [管理员] 获取评论列表失败:', error);
+        throw error;
+    }
+}
+
+/**
+ * 删除评论（软删除）
+ * @param {number} commentId - 评论ID
+ */
+export async function deleteComment(commentId) {
+    try {
+        console.log('🚀 [管理员] 删除评论:', commentId);
+        return await put(`/community/comments/delete/${commentId}`);
+    } catch (error) {
+        console.error('❌ [管理员] 删除评论失败:', error);
+        throw error;
+    }
+}
+
+/**
  * 举报帖子
  * @param {number} postId - 帖子ID
  * @param {string} reason - 举报原因
@@ -251,6 +292,22 @@ export async function reportPost(postId, reason) {
         return await post(`/community/posts/report/${postId}`, reason);
     } catch (error) {
         console.error('❌ 举报帖子失败:', error);
+        throw error;
+    }
+}
+
+/**
+ * 举报评论
+ * @param {number} commentId - 评论ID
+ * @param {string} reason - 举报原因
+ */
+export async function reportComment(commentId, reason) {
+    try {
+        console.log('🚀 举报评论:', commentId, reason);
+        // 注意：后端可能还没有实现评论举报API，这里先预留接口
+        return await post(`/community/comments/report/${commentId}`, reason);
+    } catch (error) {
+        console.error('❌ 举报评论失败:', error);
         throw error;
     }
 }
@@ -367,14 +424,15 @@ export async function getContentDetail(contentId, type = null) {
 /**
  * 审核内容
  * @param {number} contentId - 内容ID
- * @param {string} action - 审核动作 (approved/rejected)
+ * @param {string} action - 审核动作 (APPROVED/BANNED)
+ * @param {string} type - 内容类型 (post/comment)
  * @param {string} reason - 审核原因
  */
-export async function reviewContent(contentId, action, reason = '') {
+export async function reviewContent(contentId, action, type, reason = '') {
     try {
-        console.log('🚀 [管理员] 审核内容:', contentId, action, reason);
+        console.log('🚀 [管理员] 审核内容:', contentId, action, type, reason);
         
-        const data = { action, reason };
+        const data = { action, type, reason };
         return await put(`/community/review/${contentId}`, data);
     } catch (error) {
         console.error('❌ [管理员] 审核内容失败:', error);

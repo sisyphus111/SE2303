@@ -165,8 +165,8 @@ const CommunityPostPage = () => {
                             <div className="author-details">
                                 <div className="author-name">{getUserDisplayName(postData.userId)}</div>
                                 <div className="author-stats">
-                                    <span>帖子: {postData.postMetrics?.postCount || 0}</span>
-                                    <span>获赞: {postData.postMetrics?.likeCount || 0}</span>
+                                    <span>帖子: {postData.postCount || 0}</span>
+                                    <span>获赞: {postData.likeCount || 0}</span>
                                 </div>
                             </div>
                         </div>

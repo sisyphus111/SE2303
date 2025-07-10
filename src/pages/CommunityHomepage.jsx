@@ -16,7 +16,8 @@ import {
     EyeOutlined,
     CommentOutlined
 } from '@ant-design/icons';
-import { getPostList, getAllTags } from '../service/communityService';
+import { getPostList, getAllTags, getTodayCommentsCount, getTodayPostsCount, getTotalPostsCount } from '../service/communityService';
+import { getTotalUserCount } from '../service/userService';
 import { useUser } from '../lib/UserContext';
 import '../css/CommunityHomepage.css';
 
@@ -26,25 +27,25 @@ const CommunityHomepage = () => {
     const { userProfile, valid, identity, loading: contextLoading, getUserDisplayName} = useUser();
     const [selectedTag, setSelectedTag] = useState('全部');
     const [searchValue, setSearchValue] = useState('');
+    const [searchKeyword, setSearchKeyword] = useState(''); 
     const [posts, setPosts] = useState({ content: [], totalElements: 0 });
     const [sortBy, setSortBy] = useState('latest');
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [tags, setTags] = useState(['全部']);
     const [loading, setLoading] = useState(false);
+    const [communityStats, setCommunityStats] = useState({
+        totalPosts: 0,
+        totalUsers: 0,
+        todayPosts: 0,
+        todayComments: 0
+    });
 
     const auth = useMemo(() => ({
         userId: userProfile?.userId,
         valid,
         identity,
     }), [userProfile, valid, identity]);
-
-    const communityStats = {
-        totalPosts: 1248,
-        totalUsers: 356,
-        todayPosts: 12,
-        onlineUsers: 28
-    };
 
     useEffect(() => {
         const fetchTags = async () => {
@@ -90,7 +91,7 @@ const CommunityHomepage = () => {
                 size: pageSize,
                 sortBy,
                 category: selectedTag !== '全部' ? selectedTag : undefined,
-                keyword: searchValue.trim() || undefined,
+                keyword: searchKeyword || undefined, // 修改：使用防抖后的关键词
             };
             console.log('🚀 发送请求参数:', JSON.stringify(params, null, 2));
             const response = await getPostList(params, auth);
@@ -108,12 +109,45 @@ const CommunityHomepage = () => {
         if (!contextLoading && valid && userProfile) {
             fetchPosts();
         }
-    }, [currentPage, pageSize, sortBy, selectedTag, searchValue, valid, userProfile, identity, contextLoading, navigate]);
+    }, [currentPage, pageSize, sortBy, selectedTag, searchKeyword, valid, userProfile, identity, contextLoading, navigate]); // 修改：依赖searchKeyword而不是searchValue
+
+    useEffect(() => {
+        // 只有在UserContext加载完成且用户已认证时才获取社区统计数据
+        const fetchCommunityStats = async () => {
+            if (!userProfile || !valid || identity === null) return;
+            try {
+                const [totalPostsRes, todayPostsRes, todayCommentsRes, totalUsersRes] = await Promise.all([
+                    getTotalPostsCount(auth),
+                    getTodayPostsCount(auth),
+                    getTodayCommentsCount(auth),
+                    getTotalUserCount()
+                ]);
+                setCommunityStats({
+                    totalPosts: totalPostsRes.success ? (totalPostsRes.data?.totalPosts || totalPostsRes.data || 0) : 0,
+                    todayPosts: todayPostsRes.success ? (todayPostsRes.data?.todayPosts || todayPostsRes.data || 0) : 0,
+                    todayComments: todayCommentsRes.success ? (todayCommentsRes.data?.todayComments || todayCommentsRes.data || 0) : 0,
+                    totalUsers: typeof totalUsersRes === 'number' ? totalUsersRes : (totalUsersRes?.totalUsers || 0)
+                });
+            } catch (err) {
+                message.error('获取社区统计数据失败');
+            }
+        };
+        if (!contextLoading && valid && userProfile) {
+            fetchCommunityStats();
+        }
+    }, [valid, userProfile, identity, contextLoading, auth]);
 
 
     const handleSearch = (e) => {
-        setSearchValue(e.target.value);
-        setCurrentPage(1);
+        setSearchValue(e.target.value); // 只更新输入框的值，不触发搜索
+    };
+
+    // 处理回车键搜索
+    const handleSearchKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            setSearchKeyword(searchValue.trim());
+            setCurrentPage(1);
+        }
     };
 
     const handleTagClick = (tag) => {
@@ -200,9 +234,10 @@ const CommunityHomepage = () => {
                             <SearchOutlined className="search-icon" />
                             <input
                                 type="text"
-                                placeholder="搜索感兴趣的话题..."
+                                placeholder="搜索感兴趣的话题... (按回车键搜索)"
                                 value={searchValue}
                                 onChange={handleSearch}
+                                onKeyPress={handleSearchKeyPress}
                                 className="search-input"
                             />
                         </div>
@@ -226,10 +261,10 @@ const CommunityHomepage = () => {
                                     <ClockCircleOutlined /> 最新
                                 </button>
                                 <button
-                                    className={`sort-btn ${sortBy === 'mostViewed' ? 'active' : ''}`}
-                                    onClick={() => handleSortChange('mostViewed')}
+                                    className={`sort-btn ${sortBy === 'mostLiked' ? 'active' : ''}`}
+                                    onClick={() => handleSortChange('mostLiked')}
                                 >
-                                    <FireOutlined /> 最多浏览
+                                    <FireOutlined /> 最多点赞
                                 </button>
                                 <button
                                     className={`sort-btn ${sortBy === 'mostCommented' ? 'active' : ''}`}
@@ -258,6 +293,29 @@ const CommunityHomepage = () => {
                                 {selectedTag === '全部' ? '所有帖子' : `${selectedTag} 相关帖子`}
                                 <span className="posts-count">（{posts.totalElements}条）</span>
                             </h3>
+                            {/* 显示当前搜索状态 */}
+                            {searchKeyword && (
+                                <div className="search-status" style={{ marginTop: '8px', fontSize: '14px', color: '#666' }}>
+                                    正在搜索: "{searchKeyword}" 
+                                    <button 
+                                        className="clear-search-btn"
+                                        onClick={() => {
+                                            setSearchValue('');
+                                            setSearchKeyword('');
+                                        }}
+                                        style={{ 
+                                            marginLeft: '8px', 
+                                            padding: '2px 8px', 
+                                            border: 'none', 
+                                            background: '#f0f0f0', 
+                                            borderRadius: '4px',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        清除
+                                    </button>
+                                </div>
+                            )}
                         </div>
                         <div className="posts-list-main">
                             {posts.content.length === 0 ? (
@@ -278,15 +336,11 @@ const CommunityHomepage = () => {
                                             <div className="post-stats">
                                                 <span className="stat-item">
                                                     <HeartOutlined className={post.isLiked ? 'liked' : ''} />
-                                                    {post.postMetrics?.likeCount || 0}
+                                                    {post.likeCount || 0}
                                                 </span>
                                                 <span className="stat-item">
                                                     <CommentOutlined />
-                                                    {post.postMetrics?.commentCount || 0}
-                                                </span>
-                                                <span className="stat-item">
-                                                    <EyeOutlined />
-                                                    {post.postMetrics?.viewCount || 0}
+                                                    {post.commentCount || 0}
                                                 </span>
                                             </div>
                                             <div className="post-author">
@@ -387,8 +441,8 @@ const CommunityHomepage = () => {
                                 <div className="stat-label">今日发帖</div>
                             </div>
                             <div className="stat-item">
-                                <div className="stat-number">{communityStats.onlineUsers}</div>
-                                <div className="stat-label">在线用户</div>
+                                <div className="stat-number">{communityStats.todayComments}</div>
+                                <div className="stat-label">今日评论</div>
                             </div>
                         </div>
                     </div>
@@ -408,15 +462,9 @@ const CommunityHomepage = () => {
                                 </button>
                                 <button
                                     className="user-action-btn"
-                                    onClick={() => navigate('/send_community_post')}
+                                    onClick={() => navigate('/community_user_page?tab=liked')}
                                 >
-                                    <PlusOutlined /> 发布新帖
-                                </button>
-                                <button
-                                    className="user-action-btn"
-                                    onClick={() => navigate('/community?filter=liked')}
-                                >
-                                    <HeartOutlined /> 我的收藏
+                                    <HeartOutlined /> 我的点赞
                                 </button>
                             </div>
                         </div>

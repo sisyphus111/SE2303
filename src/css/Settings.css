@@ -88,6 +88,7 @@
 }
 
 /* 确保选中项及其所有子元素都是白色字体 */
+/* 只影响设置页的tab，不影响全局 */
 .settings-tabs .ant-tabs-tab-active,
 .settings-tabs .ant-tabs-tab-active *,
 .settings-tabs .ant-tabs-tab-active:hover,
@@ -96,6 +97,11 @@
 .settings-tabs .ant-tabs-tab-active:focus *,
 .settings-tabs .ant-tabs-tab-active:active,
 .settings-tabs .ant-tabs-tab-active:active * {
+  color: var(--white) !important;
+}
+
+.settings-tabs div[role="tab"][aria-selected="true"],
+.settings-tabs div[role="tab"][aria-selected="true"] * {
   color: var(--white) !important;
 }
 
@@ -740,15 +746,6 @@
 }
 
 /* 额外的选中项白色字体强制规则 */
-.ant-tabs-left .ant-tabs-tab-active,
-.ant-tabs-left .ant-tabs-tab-active .ant-tabs-tab-btn,
-div[role="tab"][aria-selected="true"],
-div[role="tab"][aria-selected="true"] *,
-.settings-tabs div[role="tab"][aria-selected="true"],
-.settings-tabs div[role="tab"][aria-selected="true"] * {
-  color: var(--white) !important;
-}
-
 .settings-page {
   background: var(--background-green) !important;
 }

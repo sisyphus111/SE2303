@@ -246,6 +246,17 @@
   font-size: 12px;
 }
 
+.report-btn {
+  background: var(--light-gray);
+  color: var(--text-gray);
+}
+
+.report-btn:hover {
+  background: var(--error);
+  color: var(--white);
+  border-color: var(--error);
+}
+
 .share-btn:hover {
   background: var(--light-gray);
   border-color: var(--accent-green);

@@ -16,6 +16,10 @@ import {
 } from '@ant-design/icons';
 import { fetchAllCheckins, fetchMoodStats, fetchMoodLabels, getMoodLabelDisplay, getMoodCategoryStats, deleteCheckin } from '../service/adminCheckInService';
 import '../css/AdminCheckins.css';
+import AdminCheckinList from '../components/AdminCheckinList';
+import AdminCheckinModal from '../components/AdminCheckinModal';
+import AdminCheckinsStats from '../components/AdminCheckinsStats';
+import AdminMoodStats from '../components/AdminMoodStats';
 
 const AdminCheckins = () => {
   const [checkins, setCheckins] = useState([]);
@@ -266,122 +270,20 @@ const AdminCheckins = () => {
         </div>
 
         {/* 统计信息 */}
-        <div className="admin-checkins-stats">
-          <div className="admin-stat-item">
-            <div className="admin-stat-label">总打卡数</div>
-            <div className="admin-stat-value">{stats.total}</div>
-          </div>
-          <div className="admin-stat-item">
-            <div className="admin-stat-label">今日打卡</div>
-            <div className="admin-stat-value admin-stat-today">{stats.today}</div>
-          </div>
-          <div className="admin-stat-item">
-            <div className="admin-stat-label">积极情绪</div>
-            <div className="admin-stat-value admin-stat-happy">{stats.happy}</div>
-          </div>
-          <div className="admin-stat-item">
-            <div className="admin-stat-label">消极情绪</div>
-            <div className="admin-stat-value admin-stat-sad">{stats.sad}</div>
-          </div>
-          <div className="admin-stat-item">
-            <div className="admin-stat-label">平均心情</div>
-            <div className="admin-stat-value admin-stat-average">{stats.averageMood}</div>
-          </div>
-        </div>
+        <AdminCheckinsStats stats={stats} />
 
         {/* 心情分布统计 */}
-        {showStats && (
-          <div className="admin-mood-stats">
-            <h4>心情分布统计</h4>
-            <div className="admin-mood-chart">
-              {Object.entries(moodDistribution).map(([mood, count]) => (
-                <div key={mood} className="admin-mood-item">
-                  <div className="admin-mood-label">
-                    {/* Removed getMoodIcon(mood) */}
-                    <span>{getMoodText(mood)}</span>
-                  </div>
-                  <div className="admin-mood-bar">
-                    <div 
-                      className="admin-mood-fill"
-                      style={{ 
-                        width: `${stats.total > 0 ? (count / stats.total) * 100 : 0}%`,
-                        backgroundColor: ['开心', '兴奋', '满足', '宁静', '感恩', '自信', '充满活力', '乐观'].includes(mood) ? '#52c41a' :
-                                       ['平静', '冷静', '专注', '放松'].includes(mood) ? '#faad14' : '#ff4d4f'
-                      }}
-                    ></div>
-                  </div>
-                  <div className="admin-mood-count">{count}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <AdminMoodStats showStats={showStats} moodDistribution={moodDistribution} stats={stats} getMoodText={getMoodText} />
 
         {/* 打卡记录列表 */}
-        <div className="admin-checkins-list">
-          {currentCheckins.length === 0 ? (
-            <div className="admin-empty-state">
-              <CheckCircleOutlined />
-              <p>暂无打卡数据</p>
-            </div>
-          ) : (
-            currentCheckins.map((checkin) => (
-              <div key={checkin.id} className="admin-checkin-item">
-                <div className="admin-checkin-header">
-                  <div className="admin-checkin-user">
-                    <UserOutlined />
-                    <span className="admin-checkin-username">用户ID: {checkin.userId}</span>
-                    <span className="admin-checkin-mood">
-                      {checkin.moodLabels && checkin.moodLabels.length > 0 ? (
-                        <span className="admin-mood-tag">
-                          {getMoodLabelDisplay(checkin.moodLabels)}
-                        </span>
-                      ) : (
-                        <span className="admin-mood-tag admin-mood-empty">
-                          无心情记录
-                        </span>
-                      )}
-                      <span style={{ marginLeft: '8px', fontSize: '12px', color: '#666' }}>
-                        ({checkin.score || 0}/5)
-                      </span>
-                    </span>
-                  </div>
-                  <div className="admin-checkin-time">
-                    <CalendarOutlined /> {formatDateOnly(checkin.date || checkin.checkinDate || checkin.createdAt)}
-                  </div>
-                </div>
-                
-                <div className="admin-checkin-content">
-                  <div className="admin-checkin-info">
-                    <p className="admin-checkin-text">{checkin.diaryDescription || '无日记内容'}</p>
-                    
-                    <div className="admin-checkin-details">
-                      <div className="admin-checkin-weather">
-                        <strong>天气:</strong> {checkin.weather || '未知'}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="admin-checkin-actions">
-                    <button
-                      onClick={() => handleViewCheckin(checkin)}
-                      className="admin-btn admin-btn-primary"
-                    >
-                      <EyeOutlined /> 查看详情
-                    </button>
-                    
-                    <button
-                      onClick={() => handleDeleteCheckin(checkin.id)}
-                      className="admin-btn admin-btn-danger"
-                    >
-                      <DeleteOutlined /> 删除
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+        <AdminCheckinList
+          currentCheckins={currentCheckins}
+          onView={handleViewCheckin}
+          onDelete={handleDeleteCheckin}
+          getMoodLabelDisplay={getMoodLabelDisplay}
+          getMoodText={getMoodText}
+          formatDateOnly={formatDateOnly}
+        />
 
         {/* 分页 */}
         {totalPages > 1 && (
@@ -408,66 +310,14 @@ const AdminCheckins = () => {
           </div>
         )}
       </div>
-
       {/* 打卡详情模态框 */}
-      {showModal && selectedCheckin && (
-        <div className="admin-modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="admin-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h3>打卡详情</h3>
-              <button 
-                onClick={() => setShowModal(false)}
-                className="admin-modal-close"
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="admin-modal-body">
-              <div className="admin-detail-item">
-                <strong>用户:</strong> 用户ID: {selectedCheckin.userId}
-              </div>
-              
-              <div className="admin-detail-item">
-                <strong>心情:</strong> 
-                <span className="admin-mood-display">
-                  {selectedCheckin.moodLabels && selectedCheckin.moodLabels.length > 0 ? (
-                    selectedCheckin.moodLabels.map((mood, index) => (
-                      <span key={index} className="admin-mood-tag">
-                        {getMoodText(mood)}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="admin-mood-tag admin-mood-empty">
-                      无心情记录
-                    </span>
-                  )}
-                  <span style={{ marginLeft: '8px', fontSize: '12px', color: '#666' }}>
-                    ({selectedCheckin.score || 5}/5)
-                  </span>
-                </span>
-              </div>
-              
-              <div className="admin-detail-item">
-                <strong>打卡时间:</strong> {formatDateOnly(selectedCheckin.date || selectedCheckin.checkinDate || selectedCheckin.createdAt)}
-              </div>
-              
-              <div className="admin-detail-item">
-                <div className="admin-checkin-weather">
-                  <strong>天气:</strong> {selectedCheckin.weather || '未知'}
-                </div>
-              </div>
-              
-              <div className="admin-detail-item">
-                <strong>内容:</strong>
-                <div className="admin-checkin-full-content">
-                  {selectedCheckin.diaryDescription || '无日记内容'}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <AdminCheckinModal
+        show={showModal}
+        checkin={selectedCheckin}
+        onClose={() => setShowModal(false)}
+        getMoodText={getMoodText}
+        formatDateOnly={formatDateOnly}
+      />
     </div>
   );
 };

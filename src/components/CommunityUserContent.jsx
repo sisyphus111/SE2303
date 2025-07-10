@@ -1,18 +1,18 @@
 import React, {useState, useEffect, useMemo} from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Tabs, message } from 'antd';
 import { EditOutlined, HeartOutlined, StarOutlined } from '@ant-design/icons';
-import { getPostList, MyPost, collectPost, delCollectedPost } from '../service/communityService';
+import { getPostList, MyPost } from '../service/communityService';
 import { useUser } from '../lib/UserContext';
 import '../css/CommunityUserContent.css';
 
 const CommunityUserContent = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { userProfile, valid, identity, getUserDisplayName } = useUser();
     const [activeTab, setActiveTab] = useState('myPosts');
     const [userPosts, setUserPosts] = useState([]);
     const [likedPosts, setLikedPosts] = useState([]);
-    const [collectedPosts, setCollectedPosts] = useState([]);
     const [loading, setLoading] = useState(false);
 
     const auth = useMemo(() => ({
@@ -20,6 +20,15 @@ const CommunityUserContent = () => {
         valid,
         identity,
     }), [userProfile, valid, identity]);
+
+    // 读取URL参数并设置activeTab
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const tab = searchParams.get('tab');
+        if (tab && ['myPosts', 'liked'].includes(tab)) {
+            setActiveTab(tab);
+        }
+    }, [location.search]);
 
     useEffect(() => {
         if (!userProfile || !valid) {
@@ -44,13 +53,6 @@ const CommunityUserContent = () => {
                 } else {
                     message.error(response.error);
                 }
-            } else if (activeTab === 'collected') {
-                const response = await getPostList({ filter: 'collected' }, auth);
-                if (response.success) {
-                    setCollectedPosts(response.data.content);
-                } else {
-                    message.error(response.error);
-                }
             }
             setLoading(false);
         };
@@ -60,27 +62,12 @@ const CommunityUserContent = () => {
 
     const handleTabChange = (key) => {
         setActiveTab(key);
+        // 更新URL参数，但不刷新页面
+        const searchParams = new URLSearchParams(location.search);
+        searchParams.set('tab', key);
+        navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
     };
 
-    const handleToggleCollect = async (postId, isCollected) => {
-        try {
-            const response = isCollected
-                ? await delCollectedPost(postId, auth)
-                : await collectPost(postId, auth);
-            if (response.success) {
-                setCollectedPosts(prev =>
-                    isCollected
-                        ? prev.filter(post => post.id !== postId)
-                        : [...prev, { id: postId, ...response.data }]
-                );
-                message.success(isCollected ? '取消收藏成功' : '收藏成功');
-            } else {
-                message.error(response.error);
-            }
-        } catch (error) {
-            message.error('操作失败：' + error.message);
-        }
-    };
 
     const renderPostList = (posts) => {
         if (loading) {
@@ -98,9 +85,6 @@ const CommunityUserContent = () => {
                             <span className="post-time">{new Date(post.createdAt).toLocaleDateString()}</span>
                             <div className="post-stats">
                                 <span><HeartOutlined /> {post.postMetrics?.likeCount || 0}</span>
-                                <span><StarOutlined onClick={(e) => { e.stopPropagation(); handleToggleCollect(post.id, collectedPosts.some(p => p.id === post.id)); }} />
-                                    {collectedPosts.some(p => p.id === post.id) ? '已收藏' : '收藏'}
-                                </span>
                             </div>
                         </div>
                     </div>
@@ -130,16 +114,7 @@ const CommunityUserContent = () => {
             ),
             children: renderPostList(likedPosts),
         },
-        {
-            key: 'collected',
-            label: (
-                <span>
-                    <StarOutlined />
-                    我的收藏
-                </span>
-            ),
-            children: renderPostList(collectedPosts),
-        },
+
     ];
 
     return (

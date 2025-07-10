@@ -19,12 +19,15 @@ import {
 import { getPostList, getAllTags, getTodayCommentsCount, getTodayPostsCount, getTotalPostsCount } from '../service/communityService';
 import { getTotalUserCount } from '../service/userService';
 import { useUser } from '../lib/UserContext';
+import UserDisplayName from '../components/UserDisplayName';
+import UserInfoCard from '../components/UserInfoCard';
+import CommunitySidebar from '../components/CommunitySidebar';
 import '../css/CommunityHomepage.css';
 
 const CommunityHomepage = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { userProfile, valid, identity, loading: contextLoading, getUserDisplayName} = useUser();
+    const { userProfile, valid, identity, loading: contextLoading, getUserDisplayName, getUserAvatar} = useUser();
     const [selectedTag, setSelectedTag] = useState('全部');
     const [searchValue, setSearchValue] = useState('');
     const [searchKeyword, setSearchKeyword] = useState(''); 
@@ -126,7 +129,7 @@ const CommunityHomepage = () => {
                     totalPosts: totalPostsRes.success ? (totalPostsRes.data?.totalPosts || totalPostsRes.data || 0) : 0,
                     todayPosts: todayPostsRes.success ? (todayPostsRes.data?.todayPosts || todayPostsRes.data || 0) : 0,
                     todayComments: todayCommentsRes.success ? (todayCommentsRes.data?.todayComments || todayCommentsRes.data || 0) : 0,
-                    totalUsers: typeof totalUsersRes === 'number' ? totalUsersRes : (totalUsersRes?.totalUsers || 0)
+                    totalUsers: typeof totalUsersRes === 'number' ? totalUsersRes : (totalUsersRes?.totalUsers || totalUsersRes?.data || 0)
                 });
             } catch (err) {
                 message.error('获取社区统计数据失败');
@@ -202,9 +205,7 @@ const CommunityHomepage = () => {
         );
     }
 
-    if (loading) {
-        return <div className="loading">加载中...</div>;
-    }
+    
 
     return (
         <div className="community-homepage">
@@ -234,7 +235,7 @@ const CommunityHomepage = () => {
                             <SearchOutlined className="search-icon" />
                             <input
                                 type="text"
-                                placeholder="搜索感兴趣的话题... (按回车键搜索)"
+                                placeholder="搜索感兴趣的话题..."
                                 value={searchValue}
                                 onChange={handleSearch}
                                 onKeyPress={handleSearchKeyPress}
@@ -286,7 +287,7 @@ const CommunityHomepage = () => {
                             ))}
                         </div>
                     </div>
-
+                    
                     <div className="posts-section">
                         <div className="posts-header">
                             <h3>
@@ -317,7 +318,8 @@ const CommunityHomepage = () => {
                                 </div>
                             )}
                         </div>
-                        <div className="posts-list-main">
+                        {loading && <div className="loading">加载中...</div>}
+                        {!loading && <div className="posts-list-main">
                             {posts.content.length === 0 ? (
                                 <div className="no-posts">
                                     <p>暂无匹配的帖子</p>
@@ -326,31 +328,49 @@ const CommunityHomepage = () => {
                             ) : (
                                 posts.content.map(post => (
                                     <div key={post.id} className="post-card" onClick={() => navigate(`/post/${post.id}`)}>
-                                        <h4 className="post-title">{post.title}</h4>
-                                        <div className="post-meta">
-                                            <div className="post-tags">
-                                                {post.tags.map(tag => (
-                                                    <span key={tag} className="post-tag">#{tag}</span>
-                                                ))}
+                                        <div className="post-header">
+                                            <div className="post-author-info">
+                                                <UserInfoCard 
+                                                    userId={post.userId} 
+                                                    showStats={false}
+                                                    className="post-author-card"
+                                                />
+                                                <div className="post-time">{formatTime(post.createdAt)}</div>
                                             </div>
                                             <div className="post-stats">
-                                                <span className="stat-item">
-                                                    <HeartOutlined className={post.isLiked ? 'liked' : ''} />
-                                                    {post.likeCount || 0}
+                                                <span className="stat-item">                                
+                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                        <HeartOutlined className={post.isLiked ? 'liked' : ''} />
+                                                        {post.likeCount || 0}
+                                                    </span>
                                                 </span>
                                                 <span className="stat-item">
-                                                    <CommentOutlined />
-                                                    {post.commentCount || 0}
+                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                        <CommentOutlined />
+                                                        {post.commentCount || 0}
+                                                    </span>
                                                 </span>
                                             </div>
-                                            <div className="post-author">
-                                                <span className="author-name">{getUserDisplayName(post.userId)}</span>
+                                        </div>
+                                        <div className="post-content">
+                                            <h4 className="post-title">{post.title}</h4>
+                                            {post.content && (
+                                                <div className="post-excerpt">
+                                                    {post.content.length > 100 ? `${post.content.substring(0, 100)}...` : post.content}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="post-footer">
+                                            <div className="post-tags">
+                                                {post.tags && post.tags.map(tag => (
+                                                    <span key={tag} className="post-tag">#{tag}</span>
+                                                ))}
                                             </div>
                                         </div>
                                     </div>
                                 ))
                             )}
-                        </div>
+                        </div>}
 
                         {posts.totalElements > 0 && (
                             <div className="pagination-container">
@@ -372,125 +392,13 @@ const CommunityHomepage = () => {
                     </div>
                 </div>
 
-                <div className="sidebar">
-                    <div className="sidebar-card">
-                        <div className="sidebar-header">
-                            <FireOutlined className="sidebar-icon" />
-                            <h3>热门帖子</h3>
-                        </div>
-                        <div className="hot-posts-list">
-                            {posts.content
-                                .sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0))
-                                .slice(0, 3)
-                                .map((post, index) => (
-                                    <div key={post.id} className="hot-post-item" onClick={() => navigate(`/post/${post.id}`)}>
-                                        <div className="hot-post-rank">{index + 1}</div>
-                                        <div className="hot-post-content">
-                                            <h4 className="hot-post-title">{post.title}</h4>
-                                            <div className="hot-post-meta">
-                                                <span className="author">@{getUserDisplayName(post.userId)}</span>
-                                                <span className="likes">
-                                                    <HeartOutlined /> {post.likeCount || 0}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                        </div>
-                    </div>
-
-                    <div className="sidebar-card">
-                        <div className="sidebar-header">
-                            <ClockCircleOutlined className="sidebar-icon" />
-                            <h3>最新动态</h3>
-                        </div>
-                        <div className="recent-posts-list">
-                            {posts.content
-                                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                                .slice(0, 3)
-                                .map(post => (
-                                    <div key={post.id} className="recent-post-item" onClick={() => navigate(`/post/${post.id}`)}>
-                                        <div className="recent-post-content">
-                                            <h4 className="recent-post-title">{post.title}</h4>
-                                            <div className="recent-post-meta">
-                                                <span className="author">@{getUserDisplayName(post.userId)}</span>
-                                                <span className="time">{formatTime(post.createdAt)}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                        </div>
-                    </div>
-
-                    <div className="sidebar-card">
-                        <div className="sidebar-header">
-                            <TrophyOutlined className="sidebar-icon" />
-                            <h3>社区数据</h3>
-                        </div>
-                        <div className="stats-grid">
-                            <div className="stat-item">
-                                <div className="stat-number">{communityStats.totalPosts}</div>
-                                <div className="stat-label">总帖子数</div>
-                            </div>
-                            <div className="stat-item">
-                                <div className="stat-number">{communityStats.totalUsers}</div>
-                                <div className="stat-label">社区成员</div>
-                            </div>
-                            <div className="stat-item">
-                                <div className="stat-number">{communityStats.todayPosts}</div>
-                                <div className="stat-label">今日发帖</div>
-                            </div>
-                            <div className="stat-item">
-                                <div className="stat-number">{communityStats.todayComments}</div>
-                                <div className="stat-label">今日评论</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {userProfile && valid && (
-                        <div className="sidebar-card">
-                            <div className="sidebar-header">
-                                <UserOutlined className="sidebar-icon" />
-                                <h3>我的</h3>
-                            </div>
-                            <div className="user-actions">
-                                <button
-                                    className="user-action-btn"
-                                    onClick={() => navigate('/community_user_page')}
-                                >
-                                    <EditOutlined /> 我的帖子
-                                </button>
-                                <button
-                                    className="user-action-btn"
-                                    onClick={() => navigate('/community_user_page?tab=liked')}
-                                >
-                                    <HeartOutlined /> 我的点赞
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="sidebar-card">
-                        <div className="sidebar-header">
-                            <TeamOutlined className="sidebar-icon" />
-                            <h3>社区指南</h3>
-                        </div>
-                        <div className="guide-content">
-                            <div className="guide-item">
-                                <h4>💚 友善交流</h4>
-                                <p>用温暖的话语互相支持</p>
-                            </div>
-                            <div className="guide-item">
-                                <h4>🤝 互助成长</h4>
-                                <p>分享经验，共同进步</p>
-                            </div>
-                            <div className="guide-item">
-                                <h4>🌱 积极向上</h4>
-                                <p>传播正能量，保持乐观</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <CommunitySidebar 
+                    posts={posts}
+                    communityStats={communityStats}
+                    userProfile={userProfile}
+                    valid={valid}
+                    loading={loading}
+                />
             </div>
         </div>
     );

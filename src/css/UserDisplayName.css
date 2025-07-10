@@ -1,0 +1,66 @@
+/* 用户显示名称组件样式 */
+.user-nickname {
+  font-weight: 600;
+  color: #333;
+  margin-right: 4px;
+}
+
+.user-username {
+  font-size: 0.9em;
+  color: #666;
+  font-weight: normal;
+}
+
+/* 在社区帖子中的样式 */
+.community-post .user-nickname {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.community-post .user-username {
+  font-size: 0.85em;
+  color: #7f8c8d;
+}
+
+/* 在评论中的样式 */
+.comment-item .user-nickname {
+  font-weight: 500;
+  color: #34495e;
+}
+
+.comment-item .user-username {
+  font-size: 0.8em;
+  color: #95a5a6;
+}
+
+/* 在用户页面中的样式 */
+.user-page .user-nickname {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1.1em;
+}
+
+.user-page .user-username {
+  font-size: 0.9em;
+  color: #7f8c8d;
+  margin-top: 2px;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .user-nickname {
+    font-size: 0.95em;
+  }
+  
+  .user-username {
+    font-size: 0.8em;
+  }
+  
+  .user-page .user-nickname {
+    font-size: 1em;
+  }
+  
+  .user-page .user-username {
+    font-size: 0.85em;
+  }
+} 

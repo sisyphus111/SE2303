@@ -1,5 +1,9 @@
 /* 我的帖子内容样式 */
 
+.community-user-content {
+    padding: 0;
+}
+
 .user-content {
     padding: 0;
 }
@@ -198,8 +202,158 @@
     text-decoration: underline;
 }
 
+/* Tabs 样式 */
+.community-user-content .ant-tabs {
+    width: 100%;
+}
+
+.community-user-content .ant-tabs-nav {
+    margin-bottom: 24px;
+    background: rgba(45, 80, 22, 0.02);
+    border-radius: 12px;
+    padding: 4px;
+}
+
+.community-user-content .ant-tabs-tab {
+    border-radius: 8px;
+    margin: 0 4px;
+    padding: 12px 20px;
+    transition: all 0.3s ease;
+    border: none;
+    background: transparent;
+}
+
+.community-user-content .ant-tabs-tab:hover {
+    background: rgba(45, 80, 22, 0.05);
+    color: var(--primary-green);
+}
+
+.community-user-content .ant-tabs-tab-active {
+    background: var(--primary-green);
+    color: white;
+    box-shadow: 0 2px 8px rgba(45, 80, 22, 0.2);
+}
+
+.community-user-content .ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: white !important;
+}
+
+.community-user-content .ant-tabs-content-holder {
+    padding: 0;
+}
+
+/* 帖子列表样式 */
+.post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.post-item {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(45, 80, 22, 0.06);
+}
+
+.post-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(45, 80, 22, 0.12);
+    border-color: var(--primary-green);
+}
+
+.post-title {
+    color: var(--text-dark);
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+}
+
+.post-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-gray);
+}
+
+.post-author {
+    color: var(--primary-green);
+    font-weight: 500;
+}
+
+.post-time {
+    color: var(--text-gray);
+    opacity: 0.8;
+}
+
+.post-stats {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.post-stats span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-gray);
+}
+
+.post-stats .anticon {
+    color: var(--primary-green);
+    font-size: 14px;
+}
+
+/* 加载和空状态 */
+.loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-gray);
+}
+
+.no-posts {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-gray);
+    background: rgba(45, 80, 22, 0.02);
+    border-radius: 12px;
+    border: 2px dashed rgba(45, 80, 22, 0.1);
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
+    .community-user-content {
+        padding: 16px;
+    }
+    
+    .community-user-content .ant-tabs-nav {
+        margin-bottom: 20px;
+    }
+    
+    .community-user-content .ant-tabs-tab {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+    
+    .post-item {
+        padding: 16px;
+    }
+    
+    .post-title {
+        font-size: 15px;
+    }
+    
+    .post-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
     .user-content-header {
         flex-direction: column;
         gap: 16px;
@@ -238,35 +392,41 @@
 }
 
 @media (max-width: 480px) {
-    .content-title {
-        font-size: 1.2rem !important;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-    
-    .post-count-badge {
-        margin-left: 0;
-        align-self: flex-start;
-    }
-    
-    .stats-section {
+    .community-user-content {
         padding: 12px;
     }
     
-    .stat-card {
-        padding: 8px 6px;
+    .community-user-content .ant-tabs-nav {
+        margin-bottom: 16px;
+        padding: 2px;
     }
     
-    .stat-card .ant-statistic-content {
-        font-size: 1rem !important;
+    .community-user-content .ant-tabs-tab {
+        padding: 8px 12px;
+        font-size: 13px;
+        margin: 0 2px;
     }
     
-    .stat-card .ant-statistic-title {
-        font-size: 0.75rem !important;
+    .post-item {
+        padding: 12px;
     }
     
-    .empty-state {
+    .post-title {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .post-meta {
+        font-size: 12px;
+    }
+    
+    .loading {
+        padding: 30px 16px;
+    }
+    
+    .no-posts {
         padding: 40px 16px;
     }
 }
+
+

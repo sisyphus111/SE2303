@@ -4,6 +4,7 @@ import { Tabs, message } from 'antd';
 import { EditOutlined, HeartOutlined, StarOutlined } from '@ant-design/icons';
 import { getPostList, MyPost } from '../service/communityService';
 import { useUser } from '../lib/UserContext';
+import UserDisplayName from './UserDisplayName';
 import '../css/CommunityUserContent.css';
 
 const CommunityUserContent = () => {
@@ -81,7 +82,9 @@ const CommunityUserContent = () => {
                     <div key={post.id} className="post-item" onClick={() => navigate(`/post/${post.id}`)}>
                         <h4 className="post-title">{post.title}</h4>
                         <div className="post-meta">
-                            <span className="post-author">{getUserDisplayName(post.userId)}</span>
+                            <span className="post-author">
+                                <UserDisplayName userId={post.userId} />
+                            </span>
                             <span className="post-time">{new Date(post.createdAt).toLocaleDateString()}</span>
                             <div className="post-stats">
                                 <span><HeartOutlined /> {post.postMetrics?.likeCount || 0}</span>

@@ -1,8 +1,9 @@
 import React, {useMemo, useState, useEffect, useRef} from 'react';
-import { HeartOutlined, HeartFilled, MessageOutlined, MoreOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { message } from 'antd';
+import { HeartOutlined, HeartFilled, MessageOutlined, MoreOutlined, ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { message, Avatar } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../lib/UserContext';
+import UserDisplayName from './UserDisplayName';
 import { post, del } from '../service/common';
 import { reportComment } from '../service/community_common';
 import ReportModal from './ReportModal';
@@ -15,6 +16,7 @@ const PostComment = ({ comment }) => {
     const [likeCount, setLikeCount] = useState(comment.likeCount || 0);
     const [showReportModal, setShowReportModal] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
+    const [avatarError, setAvatarError] = useState(false);
     const menuRef = useRef(null);
     const auth = useMemo(() => ({
         userId: userProfile?.userId,
@@ -103,18 +105,32 @@ const PostComment = ({ comment }) => {
         });
     };
 
+    const handleAvatarError = () => {
+        setAvatarError(true);
+    };
+
     return (
         <div className="comment-card">
             <div className="comment-avatar">
-                <img
-                    src={getUserAvatar(comment.userId)}
-                    alt={getUserDisplayName(comment.userId)}
-                />
+                {avatarError ? (
+                    <Avatar 
+                        size={40} 
+                        icon={<UserOutlined />} 
+                    />
+                ) : (
+                    <img
+                        src={getUserAvatar(comment.userId)}
+                        alt={getUserDisplayName(comment.userId)}
+                        onError={handleAvatarError}
+                    />
+                )}
             </div>
             <div className="comment-content">
                 <div className="comment-header">
                     <div className="comment-user-info">
-                        <span className="comment-username">{getUserDisplayName(comment.userId)}</span>
+                        <span className="comment-username">
+                            <UserDisplayName userId={comment.userId} />
+                        </span>
                         <span className="comment-time">{formatDate(comment.createdAt)}</span>
                     </div>
                     <div className="comment-menu-container" ref={menuRef}>

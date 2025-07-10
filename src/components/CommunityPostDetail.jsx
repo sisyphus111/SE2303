@@ -6,12 +6,15 @@ import {
     ShareAltOutlined,
     EyeOutlined,
     ClockCircleOutlined,
-    ExclamationCircleOutlined
+    ExclamationCircleOutlined,
+    UserOutlined
 } from "@ant-design/icons";
 import { LikePost, UnlikePost } from '../service/communityService';
 import { reportPost } from '../service/community_common';
-import { message } from 'antd';
+import { message, Avatar } from 'antd';
 import { useUser } from '../lib/UserContext';
+import UserDisplayName from './UserDisplayName';
+import UserInfoCard from './UserInfoCard';
 import ReportModal from './ReportModal';
 import '../css/CommunityPostDetail.css';
 
@@ -26,6 +29,7 @@ const PostDetail = ({ postData }) => {
     const [likeCount, setLikeCount] = useState(postData.likeCount || 0);
     const [loading, setLoading] = useState(false);
     const [showReportModal, setShowReportModal] = useState(false);
+    const [authorAvatarError, setAuthorAvatarError] = useState(false);
     const auth = useMemo(() => ({
         userId: userProfile?.userId,
         valid,
@@ -103,6 +107,10 @@ const PostDetail = ({ postData }) => {
         });
     };
 
+    const handleAuthorAvatarError = () => {
+        setAuthorAvatarError(true);
+    };
+
     return (
         <div className="post-detail-container">
             <div className="post-header">
@@ -123,23 +131,11 @@ const PostDetail = ({ postData }) => {
             </div>
 
             <div className="post-author-section">
-                <div className="author-info">
-                    <img
-                        src={getUserAvatar(postData.userId)}
-                        alt={getUserDisplayName(postData.userId)}
-                        className="author-avatar"
-                    />
-                    <div className="author-details">
-                        <div className="author-name">{getUserDisplayName(postData.userId)}</div>
-                        <div className="author-badge">活跃作者</div>
-                    </div>
-                </div>
-                <div className="post-stats">
-                    <div className="stat-item">
-                        <HeartOutlined />
-                        <span>{likeCount}</span>
-                    </div>
-                </div>
+                <UserInfoCard 
+                    userId={postData.userId} 
+                    showStats={false}
+                    className="post-detail-author-card"
+                />
             </div>
 
             <div className="post-content">

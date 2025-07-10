@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   MessageOutlined, 
   SearchOutlined, 
@@ -28,13 +28,69 @@ const AdminCommentsManagement = () => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(''); // 输入框的值
+  const [activeSearchTerm, setActiveSearchTerm] = useState(''); // 实际用于搜索的值
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [commentsPerPage] = useState(15);
   const [totalPages, setTotalPages] = useState(0);
   const [operatingCommentId, setOperatingCommentId] = useState(null);
   const [expandedCommentId, setExpandedCommentId] = useState(null);
+  const searchInputRef = useRef(null);
+  const clearButtonRef = useRef(null);
+
+  // 处理搜索回车键
+  const handleSearchKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      setActiveSearchTerm(searchTerm.trim());
+      setCurrentPage(1); // 重置到第一页
+    }
+  };
+
+  // 清除搜索
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setActiveSearchTerm('');
+    setCurrentPage(1);
+  };
+
+  // 动态调整清除按钮位置
+  const updateClearButtonPosition = () => {
+    // 使用 setTimeout 确保组件重新渲染完成后再计算位置
+    setTimeout(() => {
+      if (searchInputRef.current && clearButtonRef.current && activeSearchTerm) {
+        const input = searchInputRef.current;
+        const clearBtn = clearButtonRef.current;
+        
+        // 创建临时元素来测量文字宽度
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        const computedStyle = window.getComputedStyle(input);
+        context.font = `${computedStyle.fontSize} ${computedStyle.fontFamily}`;
+        
+        // 使用当前输入框中显示的文字宽度
+        const displayedText = searchTerm || activeSearchTerm;
+        const textWidth = context.measureText(displayedText).width;
+        
+        // 计算按钮位置（左边距 + 搜索图标宽度 + 文字宽度 + 一点间隙）
+        const leftPosition = 40 + textWidth + 8;
+        
+        // 确保按钮不超出输入框右边界
+        const maxLeft = input.offsetWidth - 32;
+        const finalLeft = Math.min(leftPosition, maxLeft);
+        
+        clearBtn.style.left = `${finalLeft}px`;
+      }
+    }, 50); // 给一个小的延迟确保DOM渲染完成
+  };
+
+  // 监听搜索词变化，更新清除按钮位置
+  useEffect(() => {
+    // 确保在数据加载完成后更新按钮位置
+    if (!loading) {
+      updateClearButtonPosition();
+    }
+  }, [searchTerm, activeSearchTerm, loading]);
 
   // 获取评论数据
   const fetchComments = async () => {
@@ -48,7 +104,7 @@ const AdminCommentsManagement = () => {
         sortBy: 'latest'
       };
       
-      if (searchTerm) options.keyword = searchTerm;
+      if (activeSearchTerm) options.keyword = activeSearchTerm;
       
       const data = await getAdminComments(options);
       const commentsArray = Array.isArray(data) ? data : (data?.content || []);
@@ -64,7 +120,7 @@ const AdminCommentsManagement = () => {
 
   useEffect(() => {
     fetchComments();
-  }, [currentPage, searchTerm]);
+  }, [currentPage, activeSearchTerm]);
 
   // 筛选评论
   const filteredComments = Array.isArray(comments) ? comments.filter(comment => {
@@ -202,12 +258,24 @@ const AdminCommentsManagement = () => {
           <div className="admin-search-box">
             <SearchOutlined className="admin-search-icon" />
             <input
+              ref={searchInputRef}
               type="text"
-              placeholder="搜索评论内容或作者..."
+              placeholder="搜索评论内容或作者... (按回车键搜索)"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={handleSearchKeyPress}
               className="admin-search-input"
             />
+            {activeSearchTerm && (
+              <button 
+                ref={clearButtonRef}
+                onClick={handleClearSearch}
+                className="admin-search-clear-btn"
+                title="清除搜索"
+              >
+                ×
+              </button>
+            )}
           </div>
           
           <div className="admin-filter-group">
@@ -284,7 +352,7 @@ const AdminCommentsManagement = () => {
                     <div className="admin-comment-details">
                       <span className="admin-comment-author">
                         <UserOutlined />
-                        {comment.userDisplayName || comment.author || '未知用户'}
+                        {`用户${comment.userId}` || '未知用户'}
                       </span>
                       <div className="admin-comment-stats">
                         <span>

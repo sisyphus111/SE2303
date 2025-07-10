@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   CheckCircleOutlined, 
   SearchOutlined, 
@@ -24,7 +24,8 @@ import AdminMoodStats from '../components/AdminMoodStats';
 const AdminCheckins = () => {
   const [checkins, setCheckins] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(''); // 输入框的值
+  const [activeSearchTerm, setActiveSearchTerm] = useState(''); // 实际用于搜索的值
   const [moodFilter, setMoodFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
   const [selectedCheckin, setSelectedCheckin] = useState(null);
@@ -33,6 +34,8 @@ const AdminCheckins = () => {
   const [checkinsPerPage] = useState(15);
   const [showStats, setShowStats] = useState(false);
   const [moodLabels, setMoodLabels] = useState([]);
+  const searchInputRef = useRef(null);
+  const clearButtonRef = useRef(null);
 
 
 
@@ -49,6 +52,7 @@ const AdminCheckins = () => {
         
         setCheckins(checkinsData || []);
         setMoodLabels(labelsData || []);
+        console.log("checkins:", checkins);
       } catch (error) {
         console.error('获取数据失败:', error);
         setCheckins([]);
@@ -63,8 +67,8 @@ const AdminCheckins = () => {
 
   // 筛选打卡记录
   const filteredCheckins = checkins.filter(checkin => {
-    const matchesSearch = checkin.userId.toString().includes(searchTerm) ||
-                         (checkin.diaryDescription && checkin.diaryDescription.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesSearch = checkin.userId.toString().includes(activeSearchTerm) ||
+                         (checkin.diaryDescription && checkin.diaryDescription.toLowerCase().includes(activeSearchTerm.toLowerCase()));
     
     // 根据moodLabels判断心情类型 - 匹配任何一个标签，没有心情时不匹配任何筛选
     const checkinMoods = checkin.moodLabels && checkin.moodLabels.length > 0 ? checkin.moodLabels : [];
@@ -157,6 +161,53 @@ const AdminCheckins = () => {
     }
   };
 
+  // 处理搜索回车键
+  const handleSearchKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      setActiveSearchTerm(searchTerm.trim());
+      setCurrentPage(1); // 重置到第一页
+    }
+  };
+
+  // 清除搜索
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setActiveSearchTerm('');
+    setCurrentPage(1);
+  };
+
+  // 动态调整清除按钮位置
+  const updateClearButtonPosition = () => {
+    if (searchInputRef.current && clearButtonRef.current && activeSearchTerm) {
+      const input = searchInputRef.current;
+      const clearBtn = clearButtonRef.current;
+      
+      // 创建临时元素来测量文字宽度
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      const computedStyle = window.getComputedStyle(input);
+      context.font = `${computedStyle.fontSize} ${computedStyle.fontFamily}`;
+      
+      // 使用当前输入框中显示的文字宽度
+      const displayedText = searchTerm || activeSearchTerm;
+      const textWidth = context.measureText(displayedText).width;
+      
+      // 计算按钮位置（左边距 + 搜索图标宽度 + 文字宽度 + 一点间隙）
+      const leftPosition = 40 + textWidth + 8;
+      
+      // 确保按钮不超出输入框右边界
+      const maxLeft = input.offsetWidth - 32;
+      const finalLeft = Math.min(leftPosition, maxLeft);
+      
+      clearBtn.style.left = `${finalLeft}px`;
+    }
+  };
+
+  // 监听搜索词变化，更新清除按钮位置
+  useEffect(() => {
+    updateClearButtonPosition();
+  }, [searchTerm, activeSearchTerm]);
+
   // 获取心情图标
   const getMoodIcon = (mood) => {
     // 根据中文心情标签返回对应图标
@@ -223,12 +274,24 @@ const AdminCheckins = () => {
           <div className="admin-search-box">
             <SearchOutlined className="admin-search-icon" />
             <input
+              ref={searchInputRef}
               type="text"
-              placeholder="搜索用户ID..."
+              placeholder="搜索用户ID... (按回车键搜索)"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={handleSearchKeyPress}
               className="admin-search-input"
             />
+            {activeSearchTerm && (
+              <button 
+                ref={clearButtonRef}
+                onClick={handleClearSearch}
+                className="admin-search-clear-btn"
+                title="清除搜索"
+              >
+                ×
+              </button>
+            )}
           </div>
           
           <div className="admin-filter-box">
@@ -322,4 +385,4 @@ const AdminCheckins = () => {
   );
 };
 
-export default AdminCheckins; 
+export default AdminCheckins;

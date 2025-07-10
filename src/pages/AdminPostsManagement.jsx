@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   FileTextOutlined, 
   SearchOutlined, 
@@ -15,7 +15,8 @@ import {
   FlagOutlined,
   ReloadOutlined,
   DownOutlined,
-  UpOutlined
+  UpOutlined,
+  TagOutlined
 } from '@ant-design/icons';
 import { 
   getAdminPosts, 
@@ -29,9 +30,10 @@ const AdminPostsManagement = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(''); // 输入框的值
+  const [activeSearchTerm, setActiveSearchTerm] = useState(''); // 实际用于搜索的值
   const [statusFilter, setStatusFilter] = useState('all');
-  const [typeFilter, setTypeFilter] = useState('all');
+  const [selectedTags, setSelectedTags] = useState([]); // 修改：多选标签
   const [selectedPost, setSelectedPost] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,6 +41,17 @@ const AdminPostsManagement = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [operatingPostId, setOperatingPostId] = useState(null);
   const [expandedPostId, setExpandedPostId] = useState(null);
+  const searchInputRef = useRef(null);
+  const clearButtonRef = useRef(null);
+
+  // 定义标签选项
+  const tagOptions = [
+    { value: '情感', label: '情感' },
+    { value: '学习', label: '学习' },
+    { value: '生活', label: '生活' },
+    { value: '健康', label: '健康' },
+    { value: '成长', label: '成长' }
+  ];
 
   // 获取帖子数据
   const fetchPosts = async () => {
@@ -52,8 +65,8 @@ const AdminPostsManagement = () => {
         sortBy: 'latest'
       };
       
-      if (searchTerm) options.keyword = searchTerm;
-      if (typeFilter !== 'all') options.category = typeFilter;
+      if (activeSearchTerm) options.keyword = activeSearchTerm;
+      if (selectedTags.length > 0) options.category = selectedTags.join(',');
       
       const data = await getAdminPosts(options);
       const postsArray = Array.isArray(data) ? data : (data?.content || []);
@@ -69,9 +82,9 @@ const AdminPostsManagement = () => {
 
   useEffect(() => {
     fetchPosts();
-  }, [currentPage, searchTerm, typeFilter]);
+  }, [currentPage, activeSearchTerm, selectedTags]);
 
-  // 筛选帖子
+  // 筛选帖子（仅状态筛选，标签筛选已通过后端实现）
   const filteredPosts = Array.isArray(posts) ? posts.filter(post => {
     const matchesStatus = statusFilter === 'all' || 
       (statusFilter === 'published' && post.reviewStatus === 'APPROVED') ||
@@ -160,19 +173,20 @@ const AdminPostsManagement = () => {
   };
 
   // 获取类型显示
-  const getTypeDisplay = (category) => {
-    switch (category) {
-      case 'mood':
-        return '心情分享';
-      case 'help':
-        return '求助互助';
-      case 'share':
-        return '经验分享';
-      case 'other':
-        return '其他';
-      default:
-        return category || '未知';
+  const getTypeDisplay = (tags) => {
+    if (!tags) return '未分类';
+    
+    // 如果tags是数组，显示所有标签
+    if (Array.isArray(tags)) {
+      return tags.join(', ');
     }
+    
+    // 如果tags是字符串，直接返回
+    if (typeof tags === 'string') {
+      return tags;
+    }
+    
+    return '未分类';
   };
 
   // 格式化时间
@@ -191,6 +205,75 @@ const AdminPostsManagement = () => {
   // 展开/收起帖子内容
   const togglePostExpansion = (postId) => {
     setExpandedPostId(expandedPostId === postId ? null : postId);
+  };
+
+  // 处理搜索回车键
+  const handleSearchKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      setActiveSearchTerm(searchTerm.trim());
+      setCurrentPage(1); // 重置到第一页
+    }
+  };
+
+  // 清除搜索
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setActiveSearchTerm('');
+    setCurrentPage(1);
+  };
+
+  // 动态调整清除按钮位置
+  const updateClearButtonPosition = () => {
+    // 使用 setTimeout 确保组件重新渲染完成后再计算位置
+    setTimeout(() => {
+      if (searchInputRef.current && clearButtonRef.current && activeSearchTerm) {
+        const input = searchInputRef.current;
+        const clearBtn = clearButtonRef.current;
+        
+        // 创建临时元素来测量文字宽度
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        const computedStyle = window.getComputedStyle(input);
+        context.font = `${computedStyle.fontSize} ${computedStyle.fontFamily}`;
+        
+        // 使用当前输入框中显示的文字宽度
+        const displayedText = searchTerm || activeSearchTerm;
+        const textWidth = context.measureText(displayedText).width;
+        
+        // 计算按钮位置（左边距 + 搜索图标宽度 + 文字宽度 + 一点间隙）
+        const leftPosition = 40 + textWidth + 8;
+        
+        // 确保按钮不超出输入框右边界
+        const maxLeft = input.offsetWidth - 32;
+        const finalLeft = Math.min(leftPosition, maxLeft);
+        
+        clearBtn.style.left = `${finalLeft}px`;
+      }
+    }, 50); // 给一个小的延迟确保DOM渲染完成
+  };
+
+  // 监听搜索词变化，更新清除按钮位置
+  useEffect(() => {
+    // 确保在数据加载完成后更新按钮位置
+    if (!loading) {
+      updateClearButtonPosition();
+    }
+  }, [searchTerm, activeSearchTerm, loading]);
+
+  // 处理标签选择
+  const handleTagToggle = (tag) => {
+    setSelectedTags(prev => 
+      prev.includes(tag) 
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    );
+    setCurrentPage(1); // 重置到第一页
+  };
+
+  // 清除所有标签筛选
+  const clearTagFilters = () => {
+    setSelectedTags([]);
+    setCurrentPage(1);
   };
 
   if (loading) {
@@ -223,12 +306,24 @@ const AdminPostsManagement = () => {
           <div className="admin-search-box">
             <SearchOutlined className="admin-search-icon" />
             <input
+              ref={searchInputRef}
               type="text"
-              placeholder="搜索帖子标题、内容或作者..."
+              placeholder="搜索帖子标题、用户ID... (按回车键搜索)"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={handleSearchKeyPress}
               className="admin-search-input"
             />
+            {activeSearchTerm && (
+              <button 
+                ref={clearButtonRef}
+                onClick={handleClearSearch}
+                className="admin-search-clear-btn"
+                title="清除搜索"
+              >
+                ×
+              </button>
+            )}
           </div>
           
           <div className="admin-filter-group">
@@ -244,28 +339,44 @@ const AdminPostsManagement = () => {
             </select>
           </div>
           
-          <div className="admin-filter-group">
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="admin-filter-select"
-            >
-              <option value="all">全部类型</option>
-              <option value="mood">心情分享</option>
-              <option value="help">求助互助</option>
-              <option value="share">经验分享</option>
-              <option value="other">其他</option>
-            </select>
+          {/* 多选标签筛选 */}
+          <div className="admin-tags-filter">
+            <div className="admin-tags-header">
+              <TagOutlined />
+              <span>标签筛选:</span>
+              {selectedTags.length > 0 && (
+                <button 
+                  onClick={clearTagFilters}
+                  className="admin-clear-tags-btn"
+                  title="清除所有标签"
+                >
+                  清除 ({selectedTags.length})
+                </button>
+              )}
+            </div>
+            <div className="admin-tags-list">
+              {tagOptions.map(tag => (
+                <button
+                  key={tag.value}
+                  onClick={() => handleTagToggle(tag.value)}
+                  className={`admin-tag-btn ${selectedTags.includes(tag.value) ? 'selected' : ''}`}
+                >
+                  {tag.label}
+                </button>
+              ))}
+            </div>
           </div>
           
-          <button 
-            onClick={fetchPosts}
-            disabled={loading}
-            className="admin-btn admin-btn-primary"
-          >
-            <ReloadOutlined />
-            刷新
-          </button>
+          <div className="admin-filter-group">
+            <button 
+              onClick={fetchPosts}
+              disabled={loading}
+              className="admin-btn admin-btn-primary"
+            >
+              <ReloadOutlined />
+              刷新
+            </button>
+          </div>
         </div>
         
         {/* 统计信息 */}
@@ -300,7 +411,7 @@ const AdminPostsManagement = () => {
               <div key={post.id} className="admin-post-item">
                 <div className="admin-post-header">
                   <div className="admin-post-meta">
-                    <span className="admin-post-type">{getTypeDisplay(post.category)}</span>
+                    <span className="admin-post-type">{getTypeDisplay(post.tags)}</span>
                     <span className="admin-post-time">
                       <CalendarOutlined />
                       {formatDate(post.createdAt)}
@@ -318,7 +429,7 @@ const AdminPostsManagement = () => {
                     <div className="admin-post-details">
                       <span className="admin-post-author">
                         <UserOutlined />
-                        {post.userDisplayName || post.author || '未知用户'}
+                        {`用户${post.userId}` || '未知用户'}
                       </span>
                       <div className="admin-post-stats">
                         <span>
@@ -455,4 +566,4 @@ const AdminPostsManagement = () => {
   );
 };
 
-export default AdminPostsManagement; 
+export default AdminPostsManagement;

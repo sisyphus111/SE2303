@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   ExclamationCircleOutlined, 
   CheckCircleOutlined, 
@@ -16,12 +16,62 @@ const AdminReports = () => {
     const [reports, setReports] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(''); // 输入框的值
+    const [activeSearchTerm, setActiveSearchTerm] = useState(''); // 实际用于搜索的值
     const [filterStatus, setFilterStatus] = useState('all'); // all, pending, approved, rejected
     const [filterType, setFilterType] = useState('all'); // all, post, comment
     const [operatingReportId, setOperatingReportId] = useState(null);
     const [selectedReport, setSelectedReport] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
+    const searchInputRef = useRef(null);
+    const clearButtonRef = useRef(null);
+
+    // 举报原因映射
+    const reportReasons = {
+        'spam': '垃圾信息/广告',
+        'inappropriate': '不当内容',
+        'harassment': '骚扰/攻击',
+        'copyright': '版权侵犯',
+        'fake': '虚假信息',
+        'other': '其他原因'
+    };
+
+    // 获取举报原因的中文显示
+    const getReasonLabel = (reason) => {
+        return reportReasons[reason] || reason || '未知原因';
+    };
+
+    // 动态调整清除按钮位置
+    const updateClearButtonPosition = () => {
+        if (searchInputRef.current && clearButtonRef.current && activeSearchTerm) {
+            const input = searchInputRef.current;
+            const clearBtn = clearButtonRef.current;
+            
+            // 创建临时元素来测量文字宽度
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const computedStyle = window.getComputedStyle(input);
+            context.font = `${computedStyle.fontSize} ${computedStyle.fontFamily}`;
+            
+            // 使用当前输入框中显示的文字宽度
+            const displayedText = searchTerm || activeSearchTerm;
+            const textWidth = context.measureText(displayedText).width;
+            
+            // 计算按钮位置（左边距 + 搜索图标宽度 + 文字宽度 + 一点间隙）
+            const leftPosition = 40 + textWidth + 8;
+            
+            // 确保按钮不超出输入框右边界
+            const maxLeft = input.offsetWidth - 32;
+            const finalLeft = Math.min(leftPosition, maxLeft);
+            
+            clearBtn.style.left = `${finalLeft}px`;
+        }
+    };
+
+    // 监听搜索词变化，更新清除按钮位置
+    useEffect(() => {
+        updateClearButtonPosition();
+    }, [searchTerm, activeSearchTerm]);
 
     // 获取举报列表
     const fetchReports = async () => {
@@ -73,8 +123,10 @@ const AdminReports = () => {
 
     // 过滤举报列表
     const filteredReports = Array.isArray(reports) ? reports.filter(report => {
-        const matchesSearch = report.reason?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             report.userId?.toLowerCase().includes(searchTerm.toLowerCase());
+        const reasonLabel = getReasonLabel(report.reason);
+        const matchesSearch = report.reason?.toLowerCase().includes(activeSearchTerm.toLowerCase()) ||
+                             reasonLabel?.toLowerCase().includes(activeSearchTerm.toLowerCase()) ||
+                             report.userId?.toLowerCase().includes(activeSearchTerm.toLowerCase());
         
         const matchesStatus = filterStatus === 'all' || report.status === filterStatus;
         const matchesType = filterType === 'all' || report.type === filterType;
@@ -125,6 +177,19 @@ const AdminReports = () => {
         }
     };
 
+    // 处理搜索回车键
+    const handleSearchKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            setActiveSearchTerm(searchTerm.trim());
+        }
+    };
+
+    // 清除搜索
+    const handleClearSearch = () => {
+        setSearchTerm('');
+        setActiveSearchTerm('');
+    };
+
     return (
         <div className="admin-reports-container">
             <div className="admin-card">
@@ -138,12 +203,24 @@ const AdminReports = () => {
                     <div className="admin-search-box">
                         <SearchOutlined className="admin-search-icon" />
                         <input
+                            ref={searchInputRef}
                             type="text"
-                            placeholder="搜索举报原因、用户名..."
+                            placeholder="搜索举报原因、用户名... (按回车键搜索)"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyPress={handleSearchKeyPress}
                             className="admin-search-input"
                         />
+                        {activeSearchTerm && (
+                            <button 
+                                ref={clearButtonRef}
+                                onClick={handleClearSearch}
+                                className="admin-search-clear-btn"
+                                title="清除搜索"
+                            >
+                                ×
+                            </button>
+                        )}
                     </div>
                     
                     <div className="admin-filter-box">
@@ -242,7 +319,7 @@ const AdminReports = () => {
                                 <div className="admin-report-content">
                                     <div className="admin-report-info">
                                         <div className="admin-report-reason">
-                                            <strong>举报类型:</strong> {report.reason}
+                                            <strong>举报原因:</strong> {getReasonLabel(report.reason)}
                                         </div>
                                     
                                         <div className="admin-report-users">
@@ -325,7 +402,7 @@ const AdminReports = () => {
                                 <strong>举报类型:</strong> {selectedReport.report?.type === 'post' ? '帖子举报' : '评论举报'}
                             </div>
                             <div className="admin-detail-item">
-                                <strong>举报原因:</strong> {selectedReport.report?.reason}
+                                <strong>举报原因:</strong> {getReasonLabel(selectedReport.report?.reason)}
                             </div>
                             {selectedReport.report?.detail && (
                                 <div className="admin-detail-item">
@@ -380,4 +457,4 @@ const AdminReports = () => {
     );
 };
 
-export default AdminReports; 
+export default AdminReports;

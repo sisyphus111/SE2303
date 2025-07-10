@@ -1,92 +1,103 @@
 .admin-mental-resource {
   padding: 24px;
-  background: #f5f5f5;
+  background: #f4f6fa;
   min-height: 100vh;
 }
 
 .admin-mental-resource-header {
   margin-bottom: 24px;
-  padding: 24px;
+  padding: 24px 32px;
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .admin-mental-resource-header h2 {
-  margin: 0 0 8px 0;
+  margin: 0;
   color: #1890ff;
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 26px;
+  font-weight: 700;
 }
 
 .admin-mental-resource-tabs {
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.06);
+  overflow: visible;
+  margin-bottom: 24px;
 }
 
 .admin-mental-resource-tabs .ant-tabs-nav {
-  background: #fafafa;
-  margin: 0;
+  background: #f7faff;
+  border-radius: 10px 10px 0 0;
   padding: 0 24px;
 }
 
 .admin-mental-resource-tabs .ant-tabs-tab {
-  padding: 16px 24px;
-  font-weight: 500;
+  padding: 16px 32px;
+  font-weight: 600;
+  font-size: 16px;
+  color: #222;
 }
 
 .admin-mental-resource-tabs .ant-tabs-tab-active {
   background: #fff;
   border-bottom: 2px solid #1890ff;
+  color: #1890ff !important;
 }
 
 .admin-mental-resource-tabs .ant-tabs-content-holder {
-  padding: 24px;
+  padding: 24px 0 0 0;
 }
 
 .admin-mental-resource-toolbar {
   margin-bottom: 16px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
 }
 
 .admin-mental-resource-toolbar .ant-btn {
   height: 40px;
-  padding: 0 20px;
-  font-weight: 500;
+  padding: 0 28px;
+  font-weight: 600;
   border-radius: 6px;
+  font-size: 15px;
+  box-shadow: 0 1px 4px rgba(24, 144, 255, 0.08);
 }
 
 .admin-mental-resource .ant-table {
   background: #fff;
-  border-radius: 8px;
-  overflow: hidden;
+  border-radius: 10px;
+  overflow-x: auto;
 }
 
 .admin-mental-resource .ant-table-thead > tr > th {
-  background: #fafafa;
-  font-weight: 600;
-  color: #333;
+  background: #f7faff;
+  font-weight: 700;
+  color: #222;
   border-bottom: 2px solid #e8e8e8;
+  font-size: 15px;
 }
 
 .admin-mental-resource .ant-table-tbody > tr > td {
-  padding: 16px;
+  padding: 14px 12px;
   border-bottom: 1px solid #f0f0f0;
+  font-size: 15px;
 }
 
 .admin-mental-resource .ant-table-tbody > tr:hover > td {
-  background: #f5f5f5;
+  background: #f0f7ff;
 }
 
 .admin-mental-resource .ant-btn-sm {
   height: 32px;
-  padding: 0 12px;
-  font-size: 12px;
-  border-radius: 4px;
+  padding: 0 14px;
+  font-size: 13px;
+  border-radius: 5px;
 }
 
 .admin-mental-resource .ant-btn-primary {
@@ -110,27 +121,27 @@
 }
 
 .admin-mental-resource .ant-modal {
-  top: 50px;
+  top: 60px;
 }
 
 .admin-mental-resource .ant-modal-header {
-  background: #fafafa;
+  background: #f7faff;
   border-bottom: 1px solid #e8e8e8;
 }
 
 .admin-mental-resource .ant-modal-title {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
   color: #1890ff;
 }
 
 .admin-mental-resource .ant-modal-body {
-  padding: 24px;
+  padding: 28px 24px;
 }
 
 .admin-mental-resource .ant-form-item-label > label {
-  font-weight: 500;
-  color: #333;
+  font-weight: 600;
+  color: #222;
 }
 
 .admin-mental-resource .ant-input,
@@ -138,6 +149,7 @@
 .admin-mental-resource .ant-select-selector {
   border-radius: 6px;
   border: 1px solid #d9d9d9;
+  font-size: 15px;
 }
 
 .admin-mental-resource .ant-input:focus,
@@ -145,7 +157,7 @@
 .admin-mental-resource .ant-input-number:focus,
 .admin-mental-resource .ant-select-focused .ant-select-selector {
   border-color: #1890ff;
-  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.15);
 }
 
 .admin-mental-resource .ant-pagination {
@@ -167,33 +179,27 @@
 }
 
 /* 响应式设计 */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .admin-mental-resource {
-    padding: 16px;
+    padding: 10px;
   }
-  
   .admin-mental-resource-header {
-    padding: 16px;
+    padding: 12px;
   }
-  
   .admin-mental-resource-tabs .ant-tabs-content-holder {
-    padding: 16px;
+    padding: 8px 0 0 0;
   }
-  
   .admin-mental-resource-toolbar {
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
     align-items: stretch;
   }
-  
   .admin-mental-resource .ant-table {
     font-size: 12px;
   }
-  
   .admin-mental-resource .ant-table-tbody > tr > td {
     padding: 8px;
   }
-  
   .admin-mental-resource .ant-btn-sm {
     height: 28px;
     padding: 0 8px;
@@ -204,36 +210,13 @@
 /* 图片样式优化 */
 .admin-mental-resource .ant-table img {
   border: 1px solid #e8e8e8;
-  transition: all 0.3s ease;
+  border-radius: 6px;
+  transition: all 0.3s;
 }
 
 .admin-mental-resource .ant-table img:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* 加载状态 */
-.admin-mental-resource .ant-spin-container {
-  min-height: 200px;
-}
-
-/* 空状态 */
-.admin-mental-resource .ant-empty {
-  margin: 40px 0;
-}
-
-/* 音乐播放按钮特殊样式 */
-.admin-mental-resource .ant-btn[aria-label*="播放"],
-.admin-mental-resource .ant-btn[aria-label*="暂停"] {
-  background: #52c41a;
-  border-color: #52c41a;
-  color: #fff;
-}
-
-.admin-mental-resource .ant-btn[aria-label*="播放"]:hover,
-.admin-mental-resource .ant-btn[aria-label*="暂停"]:hover {
-  background: #73d13d;
-  border-color: #73d13d;
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.12);
 }
 
 /* 标签页图标间距 */
@@ -265,24 +248,10 @@
   color: #bfbfbf;
 }
 
-/* 成功和错误状态 */
-.admin-mental-resource .ant-message {
-  top: 80px;
-}
-
-/* 确认弹窗样式 */
-.admin-mental-resource .ant-popconfirm {
-  z-index: 1050;
-}
-
-.admin-mental-resource .ant-popconfirm-inner {
-  border-radius: 6px;
-}
-
 /* 卡片样式 */
 .admin-mental-resource .ant-card {
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.06);
 }
 
 .admin-mental-resource .ant-card-body {
@@ -295,11 +264,6 @@
   height: 8px;
 }
 
-.admin-mental-resource .ant-table-body::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
 .admin-mental-resource .ant-table-body::-webkit-scrollbar-thumb {
   background: #c1c1c1;
   border-radius: 4px;
@@ -307,4 +271,4 @@
 
 .admin-mental-resource .ant-table-body::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
-} 
+}

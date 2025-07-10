@@ -409,3 +409,75 @@ export const reportPost = async (postId, reason, auth = {}) => {
         };
     }
 };
+
+// 获取总帖子数
+export const getTotalPostsCount = async (auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    try {
+        const response = await get(`/community/posts/total_count`, {});
+
+        return {
+            success: true,
+            data: response,
+            message: "总帖子数获取成功",
+        };
+
+    } catch (error) {
+        message.error('获取总帖子数失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '获取总帖子数失败',
+        };
+    }
+};
+
+// 获取今日总发帖数
+export const getTodayPostsCount = async (auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    try {
+        const response = await get(`/community/posts/today_count`, {});
+
+        return {
+            success: true,
+            data: response,
+            message: "今日总发帖数获取成功",
+        };
+
+    } catch (error) {
+        message.error('获取今日总发帖数失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '获取今日总发帖数失败',
+        };
+    }
+};
+
+// 获取今日总评论数
+export const getTodayCommentsCount = async (auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    try {
+        const response = await get(`/community/comments/today_count`, {});
+
+        return {
+            success: true,
+            data: response,
+            message: "今日总评论数获取成功",
+        };
+
+    } catch (error) {
+        message.error('获取今日总评论数失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '获取今日总评论数失败',
+        };
+    }
+};

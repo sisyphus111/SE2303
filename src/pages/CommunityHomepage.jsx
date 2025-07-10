@@ -16,7 +16,8 @@ import {
     EyeOutlined,
     CommentOutlined
 } from '@ant-design/icons';
-import { getPostList, getAllTags } from '../service/communityService';
+import { getPostList, getAllTags, getTodayCommentsCount, getTodayPostsCount, getTotalPostsCount } from '../service/communityService';
+import { getTotalUserCount } from '../service/userService';
 import { useUser } from '../lib/UserContext';
 import '../css/CommunityHomepage.css';
 
@@ -26,26 +27,25 @@ const CommunityHomepage = () => {
     const { userProfile, valid, identity, loading: contextLoading, getUserDisplayName} = useUser();
     const [selectedTag, setSelectedTag] = useState('全部');
     const [searchValue, setSearchValue] = useState('');
-    const [searchKeyword, setSearchKeyword] = useState(''); // 新增：实际用于搜索的关键词
+    const [searchKeyword, setSearchKeyword] = useState(''); 
     const [posts, setPosts] = useState({ content: [], totalElements: 0 });
     const [sortBy, setSortBy] = useState('latest');
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [tags, setTags] = useState(['全部']);
     const [loading, setLoading] = useState(false);
+    const [communityStats, setCommunityStats] = useState({
+        totalPosts: 0,
+        totalUsers: 0,
+        todayPosts: 0,
+        todayComments: 0
+    });
 
     const auth = useMemo(() => ({
         userId: userProfile?.userId,
         valid,
         identity,
     }), [userProfile, valid, identity]);
-
-    const communityStats = {
-        totalPosts: 1248,
-        totalUsers: 356,
-        todayPosts: 12,
-        onlineUsers: 28
-    };
 
     useEffect(() => {
         const fetchTags = async () => {
@@ -110,6 +110,32 @@ const CommunityHomepage = () => {
             fetchPosts();
         }
     }, [currentPage, pageSize, sortBy, selectedTag, searchKeyword, valid, userProfile, identity, contextLoading, navigate]); // 修改：依赖searchKeyword而不是searchValue
+
+    useEffect(() => {
+        // 只有在UserContext加载完成且用户已认证时才获取社区统计数据
+        const fetchCommunityStats = async () => {
+            if (!userProfile || !valid || identity === null) return;
+            try {
+                const [totalPostsRes, todayPostsRes, todayCommentsRes, totalUsersRes] = await Promise.all([
+                    getTotalPostsCount(auth),
+                    getTodayPostsCount(auth),
+                    getTodayCommentsCount(auth),
+                    getTotalUserCount()
+                ]);
+                setCommunityStats({
+                    totalPosts: totalPostsRes.success ? (totalPostsRes.data?.totalPosts || totalPostsRes.data || 0) : 0,
+                    todayPosts: todayPostsRes.success ? (todayPostsRes.data?.todayPosts || todayPostsRes.data || 0) : 0,
+                    todayComments: todayCommentsRes.success ? (todayCommentsRes.data?.todayComments || todayCommentsRes.data || 0) : 0,
+                    totalUsers: typeof totalUsersRes === 'number' ? totalUsersRes : (totalUsersRes?.totalUsers || 0)
+                });
+            } catch (err) {
+                message.error('获取社区统计数据失败');
+            }
+        };
+        if (!contextLoading && valid && userProfile) {
+            fetchCommunityStats();
+        }
+    }, [valid, userProfile, identity, contextLoading, auth]);
 
 
     const handleSearch = (e) => {
@@ -415,8 +441,8 @@ const CommunityHomepage = () => {
                                 <div className="stat-label">今日发帖</div>
                             </div>
                             <div className="stat-item">
-                                <div className="stat-number">{communityStats.onlineUsers}</div>
-                                <div className="stat-label">在线用户</div>
+                                <div className="stat-number">{communityStats.todayComments}</div>
+                                <div className="stat-label">今日评论</div>
                             </div>
                         </div>
                     </div>

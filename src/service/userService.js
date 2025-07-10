@@ -194,3 +194,14 @@ export const uploadUserAvatar = async (avatarFile) => {
     throw error;
   }
 };
+
+// 获取用户总个数
+export const getTotalUserCount = async () => {
+  try {
+    const response = await get('/user/count');
+    return response.data || response;
+  } catch (error) {
+    console.error('获取用户总个数失败:', error);
+    throw error;
+  }
+};

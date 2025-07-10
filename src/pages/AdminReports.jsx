@@ -47,7 +47,7 @@ const AdminReports = () => {
         fetchReports();
     }, []);
 
-    // 处理举报
+    // 通过/拒绝举报
     const handleReportAction = async (reportId, action, reason = '') => {
         try {
             setOperatingReportId(reportId);

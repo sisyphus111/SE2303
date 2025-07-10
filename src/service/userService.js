@@ -1,5 +1,6 @@
 // 用户信息相关API服务
-import { get, post, put, del } from './common';
+import { get, post, put, del, BASEURL } from './common';
+
 
 /**
  * 获取用户身份、是否启用信息
@@ -158,7 +159,8 @@ export const uploadUserAvatar = async (avatarFile) => {
     formData.append('avatar', avatarFile);
     
     // 2. 发送POST请求到后端头像上传接口
-    const response = await fetch('http://localhost:8080/api/user/avatar', {
+    // 将localhost:8080改为BASEURL
+    const response = await fetch(`${BASEURL}/api/user/avatar`, {
       method: 'POST',
       body: formData,
       credentials: 'include' // 包含cookie中的JWT token用于身份验证

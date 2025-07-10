@@ -380,7 +380,7 @@ const CommunityHomepage = () => {
                         </div>
                         <div className="hot-posts-list">
                             {posts.content
-                                .sort((a, b) => (b.postMetrics?.likeCount || 0) - (a.postMetrics?.likeCount || 0))
+                                .sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0))
                                 .slice(0, 3)
                                 .map((post, index) => (
                                     <div key={post.id} className="hot-post-item" onClick={() => navigate(`/post/${post.id}`)}>
@@ -390,7 +390,7 @@ const CommunityHomepage = () => {
                                             <div className="hot-post-meta">
                                                 <span className="author">@{getUserDisplayName(post.userId)}</span>
                                                 <span className="likes">
-                                                    <HeartOutlined /> {post.postMetrics?.likeCount || 0}
+                                                    <HeartOutlined /> {post.likeCount || 0}
                                                 </span>
                                             </div>
                                         </div>

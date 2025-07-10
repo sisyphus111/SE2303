@@ -57,7 +57,7 @@ const PostComment = ({ comment }) => {
     // 处理举报
     const handleReport = async (commentId, reportData) => {
         try {
-            await reportComment(commentId, reportData.reason);
+            await reportComment(commentId, reportData);
             return { success: true };
         } catch (error) {
             throw new Error(error.message || '举报失败');

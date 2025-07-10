@@ -1,0 +1,608 @@
+/* 评论管理与审核页面样式 - 白-深蓝简约风格 */
+
+.admin-comments-management-container {
+  padding: 24px;
+  background: #f8fafc;
+  min-height: 100vh;
+  color: #1e293b;
+}
+
+.admin-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.admin-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.admin-card-title .anticon {
+  font-size: 20px;
+}
+
+/* 控制面板样式 */
+.admin-controls {
+  display: flex;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.admin-search-box {
+  position: relative;
+  flex: 1;
+  min-width: 300px;
+}
+
+.admin-search-input {
+  width: 100%;
+  padding: 10px 16px 10px 40px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.admin-search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.admin-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 16px;
+}
+
+.admin-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-filter-select {
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-filter-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* 统计信息样式 */
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  background: white;
+}
+
+.admin-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.admin-stat-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.admin-stat-label {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.admin-stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.admin-stat-value.success {
+  color: #059669;
+}
+
+.admin-stat-value.warning {
+  color: #d97706;
+}
+
+.admin-stat-value.danger {
+  color: #dc2626;
+}
+
+.admin-stat-value.rejected {
+  color: #7c3aed;
+}
+
+/* 评论列表样式 */
+.admin-comments-list {
+  max-height: 800px;
+  overflow-y: auto;
+}
+
+.admin-comment-item {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.admin-comment-item:hover {
+  background: #f8fafc;
+}
+
+.admin-comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.admin-comment-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.admin-comment-type {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: #e0f2fe;
+  color: #0369a1;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.admin-comment-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.admin-comment-status {
+  display: flex;
+  align-items: center;
+}
+
+/* 状态标签样式 */
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.success {
+  background: #dcfce7;
+  color: #059669;
+}
+
+.status-badge.warning {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.status-badge.danger {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.status-badge.rejected {
+  background: #ede9fe;
+  color: #7c3aed;
+}
+
+.status-badge.default {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* 评论内容样式 */
+.admin-comment-content {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.admin-comment-info {
+  flex: 1;
+}
+
+.admin-comment-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.admin-comment-author {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #1e40af;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.admin-comment-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.admin-comment-stats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.admin-comment-reports {
+  color: #dc2626 !important;
+  font-weight: 600;
+}
+
+.admin-comment-post {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: #f0f9ff;
+  border: 1px solid #e0f2fe;
+  border-radius: 6px;
+  color: #075985;
+  font-size: 12px;
+}
+
+.admin-comment-post .anticon {
+  font-size: 14px;
+}
+
+.admin-comment-text {
+  color: #475569;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.admin-comment-full-content {
+  margin-top: 12px;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.admin-toggle-btn {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-toggle-btn:hover {
+  background: #dbeafe;
+}
+
+/* 操作按钮样式 */
+.admin-comment-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.admin-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  text-align: center;
+  justify-content: center;
+}
+
+.admin-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.admin-btn-primary:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.admin-btn-success {
+  background: #10b981;
+  color: white;
+}
+
+.admin-btn-success:hover:not(:disabled) {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.admin-btn-warning {
+  background: #f59e0b;
+  color: white;
+}
+
+.admin-btn-warning:hover:not(:disabled) {
+  background: #d97706;
+  transform: translateY(-1px);
+}
+
+.admin-btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.admin-btn-danger:hover:not(:disabled) {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.admin-btn-secondary {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.admin-btn-secondary:hover:not(:disabled) {
+  background: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+/* 分页样式 */
+.admin-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+.admin-page-info {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* 加载和错误状态样式 */
+.admin-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  color: #64748b;
+}
+
+.admin-loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e2e8f0;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.admin-error-message {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  margin: 20px 24px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 14px;
+}
+
+.admin-error-close {
+  background: none;
+  border: none;
+  color: #dc2626;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 0 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.admin-error-close:hover {
+  background: #fee2e2;
+}
+
+.admin-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  color: #64748b;
+  text-align: center;
+}
+
+.admin-empty-state .anticon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  color: #cbd5e1;
+}
+
+.admin-empty-state p {
+  font-size: 16px;
+  margin: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .admin-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .admin-search-box {
+    min-width: unset;
+  }
+  
+  .admin-stats {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+  
+  .admin-comment-content {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .admin-comment-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-comments-management-container {
+    padding: 16px;
+  }
+  
+  .admin-card-title {
+    padding: 16px 20px;
+    font-size: 16px;
+  }
+  
+  .admin-controls {
+    padding: 16px 20px;
+  }
+  
+  .admin-stats {
+    padding: 16px 20px;
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .admin-comment-item {
+    padding: 16px 20px;
+  }
+  
+  .admin-comment-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .admin-comment-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .admin-comment-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .admin-btn {
+    width: 100%;
+  }
+  
+  .admin-comment-details {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .admin-comment-stats {
+    flex-wrap: wrap;
+  }
+  
+  .admin-pagination {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .admin-comment-post {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+} 

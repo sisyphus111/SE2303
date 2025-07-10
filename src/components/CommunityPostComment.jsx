@@ -1,6 +1,6 @@
 import React, {useMemo, useState, useEffect, useRef} from 'react';
-import { HeartOutlined, HeartFilled, MessageOutlined, MoreOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { message } from 'antd';
+import { HeartOutlined, HeartFilled, MessageOutlined, MoreOutlined, ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { message, Avatar } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../lib/UserContext';
 import { post, del } from '../service/common';
@@ -15,6 +15,7 @@ const PostComment = ({ comment }) => {
     const [likeCount, setLikeCount] = useState(comment.likeCount || 0);
     const [showReportModal, setShowReportModal] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
+    const [avatarError, setAvatarError] = useState(false);
     const menuRef = useRef(null);
     const auth = useMemo(() => ({
         userId: userProfile?.userId,
@@ -103,13 +104,25 @@ const PostComment = ({ comment }) => {
         });
     };
 
+    const handleAvatarError = () => {
+        setAvatarError(true);
+    };
+
     return (
         <div className="comment-card">
             <div className="comment-avatar">
-                <img
-                    src={getUserAvatar(comment.userId)}
-                    alt={getUserDisplayName(comment.userId)}
-                />
+                {avatarError ? (
+                    <Avatar 
+                        size={40} 
+                        icon={<UserOutlined />} 
+                    />
+                ) : (
+                    <img
+                        src={getUserAvatar(comment.userId)}
+                        alt={getUserDisplayName(comment.userId)}
+                        onError={handleAvatarError}
+                    />
+                )}
             </div>
             <div className="comment-content">
                 <div className="comment-header">

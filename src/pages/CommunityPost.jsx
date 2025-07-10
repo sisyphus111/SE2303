@@ -7,7 +7,7 @@ import {
     FireOutlined,
     ClockCircleOutlined
 } from '@ant-design/icons';
-import { message } from 'antd';
+import { message, Avatar } from 'antd';
 import PostDetail from '../components/CommunityPostDetail';
 import CommentInput from '../components/CommentIinput';
 import PostCommentList from '../components/CommunityPostCommentList';
@@ -24,6 +24,7 @@ const CommunityPostPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize] = useState(10);
     const [loading, setLoading] = useState(false);
+    const [sidebarAvatarError, setSidebarAvatarError] = useState(false);
 
     const auth = useMemo(() => ({
         userId: userProfile?.userId,
@@ -123,6 +124,10 @@ const CommunityPostPage = () => {
         );
     }
 
+    const handleSidebarAvatarError = () => {
+        setSidebarAvatarError(true);
+    };
+
     return (
         <div className="community-post-page">
             <div className="post-back-section">
@@ -157,11 +162,20 @@ const CommunityPostPage = () => {
                             <h4>作者信息</h4>
                         </div>
                         <div className="author-info">
-                            <img
-                                src={getUserAvatar(postData.userId)}
-                                alt={getUserDisplayName(postData.userId)}
-                                className="author-avatar"
-                            />
+                            {sidebarAvatarError ? (
+                                <Avatar 
+                                    size={50} 
+                                    icon={<UserOutlined />} 
+                                    className="author-avatar"
+                                />
+                            ) : (
+                                <img
+                                    src={getUserAvatar(postData.userId)}
+                                    alt={getUserDisplayName(postData.userId)}
+                                    className="author-avatar"
+                                    onError={handleSidebarAvatarError}
+                                />
+                            )}
                             <div className="author-details">
                                 <div className="author-name">{getUserDisplayName(postData.userId)}</div>
                                 <div className="author-stats">

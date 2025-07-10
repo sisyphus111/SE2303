@@ -37,7 +37,7 @@ export const Home = () => {
       // const moodRes = await getMoodData();
       
       // API调用注释：获取分析数据
-      // const analysisRes = await getAnalysisData();
+      // const analysisRes = await getAnalysisData(userProfile?.id || 1);
       
       // API调用注释：获取预警状态
       // const emergencyRes = await getEmergencyStatus();
@@ -45,7 +45,7 @@ export const Home = () => {
       const [articlesRes, moodRes, analysisRes] = await Promise.all([
         getArticles(),
         getMoodData(userProfile?.id || 1), // 使用真实用户ID，如果没有则使用1作为后备
-        getAnalysisData()
+        getAnalysisData(userProfile?.id || 1) // 使用真实用户ID，如果没有则使用1作为后备
       ]);
       
       setArticles(articlesRes || []);

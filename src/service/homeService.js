@@ -172,15 +172,22 @@ export const getMoodData = async (userId) => {
   }
 };
 
-export const getAnalysisData = async () => {
+export const getAnalysisData = async (userId) => {
   try {
-    // 实际API调用
-    // const response = await get(`${PREFIX}/analysis`);
-    // return response.data;
+    if (!userId) {
+      console.warn('未提供用户ID，返回模拟数据');
+      return mockAnalysisData;
+    }
+
+    // 调用后端API获取分析数据
+    const response = await get(`/mood/analysis/${userId}`);
     
-    return mockAnalysisData;
+    // 检查响应格式
+    let analysisData = response.analysis;
+    return analysisData;
+    
   } catch (error) {
-    console.error('获取分析数据失败:', error);
+    console.error('❌ 获取分析数据失败:', error);
     return mockAnalysisData;
   }
 };

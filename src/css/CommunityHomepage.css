@@ -63,8 +63,8 @@
 .action-btn {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 16px 28px;
+    gap: 16px;
+    padding: 20px 58px !important; 
     border-radius: var(--radius-medium);
     font-size: 16px;
     font-weight: 500;

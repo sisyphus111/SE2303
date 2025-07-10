@@ -202,9 +202,7 @@ const CommunityHomepage = () => {
         );
     }
 
-    if (loading) {
-        return <div className="loading">加载中...</div>;
-    }
+    
 
     return (
         <div className="community-homepage">
@@ -286,7 +284,7 @@ const CommunityHomepage = () => {
                             ))}
                         </div>
                     </div>
-
+                    
                     <div className="posts-section">
                         <div className="posts-header">
                             <h3>
@@ -317,7 +315,8 @@ const CommunityHomepage = () => {
                                 </div>
                             )}
                         </div>
-                        <div className="posts-list-main">
+                        {loading && <div className="loading">加载中...</div>}
+                        {!loading && <div className="posts-list-main">
                             {posts.content.length === 0 ? (
                                 <div className="no-posts">
                                     <p>暂无匹配的帖子</p>
@@ -350,7 +349,7 @@ const CommunityHomepage = () => {
                                     </div>
                                 ))
                             )}
-                        </div>
+                        </div>}
 
                         {posts.totalElements > 0 && (
                             <div className="pagination-container">

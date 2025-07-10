@@ -520,7 +520,7 @@
 .stat-item {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 4px !important;
     color: var(--text-gray);
     font-size: 13px;
     font-weight: 500;
@@ -546,11 +546,12 @@
 /* 帖子内容区域 */
 .post-content {
     margin-bottom: 16px !important;
+    font-size: 16px !important;
 }
 
 .post-title {
     color: var(--text-dark);
-    font-size: 18px;
+    font-size: 18px !important;
     font-weight: 600;
     margin: 0 0 12px 0;
     line-height: 1.4;

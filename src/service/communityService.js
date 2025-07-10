@@ -15,8 +15,8 @@ export const getPostList = async (params = {}, auth = {}) => {
     if (params.size < 1 || params.size > 100) {
         throw new Error('每页大小必须在1到100之间');
     }
-    if (params.sortBy && !['latest', 'mostCommented', 'mostViewed'].includes(params.sortBy)) {
-        throw new Error('排序方式必须是 latest、mostCommented 或 mostViewed');
+    if (params.sortBy && !['latest', 'mostCommented', 'mostLiked'].includes(params.sortBy)) {
+        throw new Error('排序方式必须是 latest、mostCommented 或 mostLiked');
     }
 
     const queryParams = {

@@ -226,10 +226,10 @@ const CommunityHomepage = () => {
                                     <ClockCircleOutlined /> 最新
                                 </button>
                                 <button
-                                    className={`sort-btn ${sortBy === 'mostViewed' ? 'active' : ''}`}
-                                    onClick={() => handleSortChange('mostViewed')}
+                                    className={`sort-btn ${sortBy === 'mostLiked' ? 'active' : ''}`}
+                                    onClick={() => handleSortChange('mostLiked')}
                                 >
-                                    <FireOutlined /> 最多浏览
+                                    <FireOutlined /> 最多点赞
                                 </button>
                                 <button
                                     className={`sort-btn ${sortBy === 'mostCommented' ? 'active' : ''}`}

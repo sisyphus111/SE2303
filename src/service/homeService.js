@@ -172,15 +172,34 @@ export const getMoodData = async (userId) => {
   }
 };
 
-export const getAnalysisData = async () => {
+export const getAnalysisData = async (userId) => {
   try {
-    // 实际API调用
-    // const response = await get(`${PREFIX}/analysis`);
-    // return response.data;
+    if (!userId) {
+      console.warn('未提供用户ID，返回模拟数据');
+      return mockAnalysisData;
+    }
+
+    // 调用后端API获取分析数据
+    const response = await get(`/mood/analysis/${userId}`);
     
-    return mockAnalysisData;
+    // 检查响应格式
+    let analysisData;
+    if (response && response.object && response.object.analysis) {
+      // 包装在object中的情况
+      analysisData = response.object.analysis;
+    } else if (typeof response === 'string') {
+      // 直接返回字符串的情况
+      analysisData = response;
+    } else {
+      console.warn('⚠️ 未知的分析数据响应格式:', response);
+      return mockAnalysisData;
+    }
+
+    console.log('✅ 获取到分析数据:', analysisData);
+    return analysisData;
+    
   } catch (error) {
-    console.error('获取分析数据失败:', error);
+    console.error('❌ 获取分析数据失败:', error);
     return mockAnalysisData;
   }
 };

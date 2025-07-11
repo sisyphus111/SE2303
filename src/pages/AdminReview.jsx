@@ -193,7 +193,7 @@ const AdminReview = () => {
                         <input
                             ref={searchInputRef}
                             type="text"
-                            placeholder="搜索标题、内容、作者... (按回车键搜索)"
+                            placeholder="搜索标题、内容、作者..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             onKeyPress={handleSearchKeyPress}

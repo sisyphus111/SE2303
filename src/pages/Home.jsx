@@ -43,7 +43,7 @@ export const Home = () => {
 
       const [articlesRes, moodRes] = await Promise.all([
         getArticles(),
-        getMoodData(userProfile?.id || 1), // 使用真实用户ID，如果没有则使用1作为后备
+        getMoodData(userProfile?.userId || 1), // 使用真实用户ID，如果没有则使用1作为后备
       ]);
       
       setArticles(articlesRes || []);
@@ -64,7 +64,7 @@ export const Home = () => {
       // API调用注释：获取分析数据
       // const analysisRes = await getAnalysisData(userProfile?.id || 1);
       
-      const analysisRes = await getAnalysisData(userProfile?.id || 1);
+      const analysisRes = await getAnalysisData(userProfile?.userId || 1);
       setAnalysisData(analysisRes || '');
     } catch (error) {
       console.error('获取分析数据失败:', error);

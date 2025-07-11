@@ -260,7 +260,9 @@ const AdminCommentsManagement = () => {
             <input
               ref={searchInputRef}
               type="text"
-              placeholder="搜索评论内容或用户ID... (按回车键搜索)"
+
+              placeholder="搜索评论内容或作者..."
+
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyPress={handleSearchKeyPress}

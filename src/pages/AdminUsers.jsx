@@ -278,7 +278,7 @@ const AdminUsers = () => {
                                 
                                 <div className="admin-user-info">
                                     <div className="admin-user-name">
-                                        <span className="admin-user-username">{user.username}</span>
+                                        <span className="admin-user-username">{`${user.username}（真实姓名:${user.realname} 手机号码:${user.phone}）`}</span>
                                         {user.nickname && (
                                             <span className="admin-user-nickname">({user.nickname})</span>
                                         )}

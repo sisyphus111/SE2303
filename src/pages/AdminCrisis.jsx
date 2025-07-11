@@ -183,7 +183,14 @@ const AdminCrisis = () => {
                 {/* 统计信息 */}
                 <AdminCrisisStats pagination={pagination} alerts={alerts} />
                 {/* 警报列表/空状态/加载中/错误 */}
-                <AdminCrisisList alerts={alerts} loading={loading} error={error} />
+                <AdminCrisisList 
+                    alerts={alerts} 
+                    loading={loading} 
+                    error={error}
+                    onUpdateStatus={handleUpdateStatus}
+                    onAddFollowUpNotes={handleAddFollowUpNotes}
+                    operatingAlertId={operatingAlertId}
+                />
                 {/* 分页组件 */}
                 <AdminCrisisPagination pagination={pagination} onPageChange={handlePageChange} />
             </div>

@@ -15,6 +15,8 @@ import { message } from 'antd';
 import { createPost } from '../service/communityService'; // Import createPost from communityService
 import { useUser } from '../lib/UserContext'; // Import useUser hook from UserContext
 import TagSelector from '../components/TagSelector';
+import ContentWarningModal from '../components/ContentWarningModal';
+import { ContentInspectionClient } from '../service/diaryService';
 import '../css/SendCommunityPost.css';
 
 const SendCommunityPostPage = () => {
@@ -27,6 +29,7 @@ const SendCommunityPostPage = () => {
     });
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
+    const [showWarningModal, setShowWarningModal] = useState(false);
 
     const tagIcons = {
         '情感': <HeartOutlined />,
@@ -109,6 +112,45 @@ const SendCommunityPostPage = () => {
         setLoading(true);
 
         try {
+            // 内容审查
+            const contentInspector = new ContentInspectionClient();
+            const titleToInspect = formData.title;
+            const contentToInspect = formData.content;
+            
+            const [titleSafe, contentSafe] = await Promise.all([
+                contentInspector.validateContent(titleToInspect),
+                contentInspector.validateContent(contentToInspect)
+            ]);
+            
+            // 添加调试信息
+            console.log('内容审查结果:');
+            console.log('标题安全:', titleSafe, '类型:', typeof titleSafe);
+            console.log('内容安全:', contentSafe, '类型:', typeof contentSafe);
+            console.log('标题内容:', titleToInspect);
+            console.log('内容内容:', contentToInspect);
+            
+            // 如果内容不安全，显示通知框并停止发送
+            if (!titleSafe || !contentSafe) {
+                // 创建内容审查警报
+                try {
+                    if (!titleSafe) {
+                        await contentInspector.createContentAlert(userProfile.userId, titleToInspect, '标题');
+                        console.log('🚨 已创建标题内容审查警报');
+                    }
+                    if (!contentSafe) {
+                        await contentInspector.createContentAlert(userProfile.userId, contentToInspect, '内容');
+                        console.log('🚨 已创建内容审查警报');
+                    }
+                } catch (alertError) {
+                    console.error('创建内容审查警报失败:', alertError);
+                }
+                
+                // 显示安慰用户的模态框
+                setShowWarningModal(true);
+                setLoading(false);
+                return; // 停止发送帖子
+            }
+
             // Prepare post data
             const postData = {
                 title: formData.title,
@@ -164,6 +206,10 @@ const SendCommunityPostPage = () => {
 
     return (
         <div className="send-post-page">
+            <ContentWarningModal 
+                isOpen={showWarningModal} 
+                onClose={() => setShowWarningModal(false)} 
+            />
             {/* 头部导航 */}
             <div className="send-post-header">
                 <button

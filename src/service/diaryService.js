@@ -1,6 +1,58 @@
 // 日记相关API服务
 import { get, post, put, del } from './common';
 
+export class ContentInspectionClient {
+    constructor() {
+        // 使用网关端口8080，通过API路径访问
+        this.inspectUrl = '/inspect';
+    }
+    
+    async validateContent(content) {
+        try {
+            // 使用 common.js 中的 post 方法
+            const response = await post(this.inspectUrl, {
+                content: content
+            });
+            
+            return response.isSafe;
+            
+        } catch (error) {
+            console.error('调用审查服务失败:', error.message);
+            return true; // 默认认为安全
+        }
+    }
+    
+    /**
+     * 创建内容审查警报
+     * @param {string} userId - 用户ID
+     * @param {string} content - 不当内容
+     * @param {string} contentType - 内容类型（title/content）
+     * @returns {Promise<Object>} 警报创建结果
+     */
+    async createContentAlert(userId, content, contentType) {
+        try {
+            const alertData = {
+                userId: userId,
+                alertType: 'OTHER', // 使用现有的枚举值
+                alertLevel: 'HIGH',
+                description: `用户${userId}的日记${contentType}包含不当内容: ${content.substring(0, 100)}${content.length > 100 ? '...' : ''}`,
+                operationDetails: JSON.stringify({
+                    contentType: contentType,
+                    originalContent: content,
+                    timestamp: new Date().toISOString(),
+                    source: 'DIARY_CONTENT_INSPECTION'
+                })
+            };
+            
+            const response = await post('/alert/create', alertData);
+            return response;
+            
+        } catch (error) {
+            throw error;
+        }
+    }
+}
+
 /**
  * 创建日记
  * @param {Object} diaryData - 日记数据

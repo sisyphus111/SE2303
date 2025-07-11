@@ -4,7 +4,7 @@ import { useUser } from '../lib/UserContext';
 import '../css/DiaryDetail.css';
 
 // API服务导入
-import { getDiaryDetail, updateDiary, deleteDiary } from '../service/diaryService';
+import { getDiaryDetail, updateDiary, deleteDiary, ContentInspectionClient } from '../service/diaryService';
 
 export const DiaryDetail = () => {
   const { id } = useParams();
@@ -106,6 +106,36 @@ export const DiaryDetail = () => {
 
   const handleSaveEdit = async () => {
     try {
+      // 内容审查
+      const contentInspector = new ContentInspectionClient();
+      const titleToInspect = editForm.title;
+      const contentToInspect = editForm.content;
+      
+      const [titleSafe, contentSafe] = await Promise.all([
+        contentInspector.validateContent(titleToInspect),
+        contentInspector.validateContent(contentToInspect)
+      ]);
+      
+      if (!titleSafe) {
+        // 创建内容审查警报
+        try {
+          await contentInspector.createContentAlert(userProfile.userId, titleToInspect, '标题');
+          console.log('🚨 已创建标题内容审查警报（编辑模式）');
+        } catch (alertError) {
+          console.error('创建标题内容审查警报失败:', alertError);
+        }
+      }
+      
+      if (!contentSafe) {
+        // 创建内容审查警报
+        try {
+          await contentInspector.createContentAlert(userProfile.userId, contentToInspect, '内容');
+          console.log('🚨 已创建内容审查警报（编辑模式）');
+        } catch (alertError) {
+          console.error('创建内容审查警报失败:', alertError);
+        }
+      }
+      
       // 将小写天气值转换为大写枚举值
       const weatherMap = {
         sunny: 'SUNNY',

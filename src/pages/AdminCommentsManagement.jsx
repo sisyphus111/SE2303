@@ -260,7 +260,7 @@ const AdminCommentsManagement = () => {
             <input
               ref={searchInputRef}
               type="text"
-              placeholder="搜索评论内容或作者... (按回车键搜索)"
+              placeholder="搜索评论内容或用户ID... (按回车键搜索)"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyPress={handleSearchKeyPress}
@@ -352,7 +352,7 @@ const AdminCommentsManagement = () => {
                     <div className="admin-comment-details">
                       <span className="admin-comment-author">
                         <UserOutlined />
-                        {`用户${comment.userId}` || '未知用户'}
+                        {`用户ID:${comment.userId}` || '未知用户'}
                       </span>
                       <div className="admin-comment-stats">
                         <span>

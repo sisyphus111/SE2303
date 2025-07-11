@@ -6,6 +6,7 @@
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
+  height: 620px !important; /* 确保固定高度 */
 }
 
 .diary-card::before {
@@ -93,6 +94,10 @@
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+  .diary-card {
+    height: 520px !important;
+  }
+  
   .diary-card .card-content h2 {
     font-size: 20px;
     margin-bottom: 14px;
@@ -116,6 +121,10 @@
 }
 
 @media (max-width: 480px) {
+  .diary-card {
+    height: 480px !important;
+  }
+  
   .diary-card .card-content h2 {
     font-size: 18px;
     margin-bottom: 12px;

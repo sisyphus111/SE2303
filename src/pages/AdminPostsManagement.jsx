@@ -308,7 +308,7 @@ const AdminPostsManagement = () => {
             <input
               ref={searchInputRef}
               type="text"
-              placeholder="搜索帖子标题、用户ID..."
+              placeholder="搜索帖子标题、内容"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyPress={handleSearchKeyPress}

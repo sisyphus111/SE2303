@@ -13,7 +13,7 @@ export class ContentInspectionClient {
             const response = await post(this.inspectUrl, {
                 content: content
             });
-            
+            console.log("审查服务得到的结果是", response);
             return response.isSafe;
             
         } catch (error) {

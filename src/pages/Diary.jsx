@@ -147,6 +147,13 @@ export const Diary = () => {
         contentInspector.validateContent(contentToInspect)
       ]);
       
+      // 添加调试信息
+      console.log('内容审查结果:');
+      console.log('标题安全:', titleSafe, '类型:', typeof titleSafe);
+      console.log('内容安全:', contentSafe, '类型:', typeof contentSafe);
+      console.log('标题内容:', titleToInspect);
+      console.log('内容内容:', contentToInspect);
+      
       // 如果内容不安全，显示通知框并停止保存
       if (!titleSafe || !contentSafe) {
         // 创建内容审查警报

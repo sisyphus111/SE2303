@@ -3,10 +3,13 @@ import { SendOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import { useUser } from '../lib/UserContext';
 import { sendCommentToPost } from '../service/communityService';
+import ContentWarningModal from './ContentWarningModal';
+import { ContentInspectionClient } from '../service/diaryService';
 import '../css/CommentIinput.css';
 
 const CommentInput = ({ onSubmit, postId }) => {
     const [comment, setComment] = useState('');
+    const [showWarningModal, setShowWarningModal] = useState(false);
     const { userProfile, valid, identity } = useUser();
     const auth = useMemo(() => ({
         userId: userProfile?.userId,
@@ -20,13 +23,45 @@ const CommentInput = ({ onSubmit, postId }) => {
             return;
         }
         if (comment.trim()) {
-            const response = await sendCommentToPost(postId, comment, auth);
-            if (response.success) {
-                onSubmit(response.data);
-                setComment('');
-                message.success('评论发表成功');
-            } else {
-                message.error(response.error);
+            try {
+                // 内容审查
+                const contentInspector = new ContentInspectionClient();
+                const contentToInspect = comment;
+                
+                const contentSafe = await contentInspector.validateContent(contentToInspect);
+                
+                // 添加调试信息
+                console.log('评论内容审查结果:');
+                console.log('内容安全:', contentSafe, '类型:', typeof contentSafe);
+                console.log('内容内容:', contentToInspect);
+                
+                // 如果内容不安全，显示通知框并停止发送
+                if (!contentSafe) {
+                    // 创建内容审查警报
+                    try {
+                        await contentInspector.createContentAlert(userProfile.userId, contentToInspect, '评论');
+                        console.log('🚨 已创建评论内容审查警报');
+                    } catch (alertError) {
+                        console.error('创建内容审查警报失败:', alertError);
+                    }
+                    
+                    // 显示安慰用户的模态框
+                    setShowWarningModal(true);
+                    return; // 停止发送评论
+                }
+
+                // 内容安全，继续发送评论
+                const response = await sendCommentToPost(postId, comment, auth);
+                if (response.success) {
+                    onSubmit(response.data);
+                    setComment('');
+                    message.success('评论发表成功');
+                } else {
+                    message.error(response.error);
+                }
+            } catch (error) {
+                console.error('发送评论失败:', error);
+                message.error('发送评论失败，请稍后重试');
             }
         }
     };
@@ -39,6 +74,10 @@ const CommentInput = ({ onSubmit, postId }) => {
 
     return (
         <div className="comment-input-container">
+            <ContentWarningModal 
+                isOpen={showWarningModal} 
+                onClose={() => setShowWarningModal(false)} 
+            />
             <div className="input-header">
                 <h4>发表评论</h4>
                 <span className="input-tip">Ctrl + Enter 快速发送</span>

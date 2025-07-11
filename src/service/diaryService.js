@@ -14,7 +14,7 @@ export class ContentInspectionClient {
                 content: content
             });
             console.log("审查服务得到的结果是", response);
-            return response.isSafe;
+            return response.safe;
             
         } catch (error) {
             console.error('调用审查服务失败:', error.message);

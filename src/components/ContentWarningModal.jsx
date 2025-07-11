@@ -1,50 +1,59 @@
 import React from 'react';
-import '../css/ContentWarningModal.css';
+import { Modal } from 'antd';
+import { HeartOutlined, SafetyOutlined, TeamOutlined } from '@ant-design/icons';
+import './ContentWarningModal.css';
 
 const ContentWarningModal = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
-
   return (
-    <div className="content-warning-overlay">
-      <div className="content-warning-modal">
-        <div className="warning-header">
-          <div className="warning-icon">💚</div>
-          <h2>我们关心你的感受</h2>
+    <Modal
+      title={
+        <div className="modal-title">
+          <SafetyOutlined className="title-icon" />
+          <span>内容安全提醒</span>
+        </div>
+      }
+      open={isOpen}
+      onCancel={onClose}
+      footer={null}
+      width={500}
+      centered
+      className="content-warning-modal"
+    >
+      <div className="modal-content">
+        <div className="warning-icon">
+          <HeartOutlined />
         </div>
         
-        <div className="warning-content">
-          <p className="warning-message">
-            亲爱的朋友，我们注意到你的日记内容可能需要一些关注。
-          </p>
-          
-          <div className="support-message">
-            <h3>请记住：</h3>
-            <ul>
-              <li>你并不孤单，我们都在这里支持你</li>
-              <li>专业的心理咨询师即将与你联系</li>
-              <li>你的感受是重要的，值得被倾听和理解</li>
-            </ul>
-          </div>
-          
-          <div className="contact-info">
-            <h3>立即获得帮助：</h3>
-            <div className="phone-number">
-              <span className="phone-icon">📞</span>
-              <span className="phone-text">心理咨询热线：400-123-4567</span>
+        <h3 className="warning-title">我们关心你的心理健康</h3>
+        
+        <div className="warning-message">
+          <p>我们检测到你的内容可能包含一些需要关注的内容。</p>
+          <p>请记住，你并不孤单，我们都在这里支持你。</p>
+        </div>
+        
+        <div className="support-info">
+          <div className="support-item">
+            <TeamOutlined className="support-icon" />
+            <div className="support-text">
+              <strong>专业心理咨询师</strong>
+              <span>将在24小时内联系你</span>
             </div>
-            <p className="contact-note">
-              我们会尽快安排专业的心理咨询师与你联系，为你提供支持和帮助。
-            </p>
           </div>
         </div>
         
-        <div className="warning-actions">
-          <button className="close-btn" onClick={onClose}>
+        <div className="encouragement">
+          <p>💝 每一个困难都是成长的机会</p>
+          <p>🌟 你比想象中更坚强</p>
+          <p>🤝 我们与你同在</p>
+        </div>
+        
+        <div className="modal-actions">
+          <button className="close-button" onClick={onClose}>
             我知道了
           </button>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 

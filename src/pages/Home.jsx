@@ -64,7 +64,7 @@ export const Home = () => {
       // API调用注释：获取分析数据
       // const analysisRes = await getAnalysisData(userProfile?.id || 1);
       
-      const analysisRes = await getAnalysisData(userProfile?.id || 1);
+      const analysisRes = await getAnalysisData(userProfile?.userId || 1);
       setAnalysisData(analysisRes || '');
     } catch (error) {
       console.error('获取分析数据失败:', error);

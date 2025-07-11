@@ -82,6 +82,17 @@ const AdminPostsManagement = () => {
         options.reviewStatus = 'BANNED';
       }
       
+      // 根据状态筛选器设置reviewStatus参数
+      if (statusFilter === 'all') {
+        options.reviewStatus = 'ALL'; // 获取所有状态的帖子
+      } else if (statusFilter === 'published') {
+        options.reviewStatus = 'APPROVED';
+      } else if (statusFilter === 'pending') {
+        options.reviewStatus = 'PENDING';
+      } else if (statusFilter === 'rejected') {
+        options.reviewStatus = 'BANNED';
+      }
+      
       const data = await getAdminPosts(options);
       console.log('获取的帖子数据:', data);
       const postsArray = Array.isArray(data) ? data : (data?.content || []);
@@ -97,26 +108,18 @@ const AdminPostsManagement = () => {
 
   useEffect(() => {
     fetchPosts();
-  }, [currentPage, activeSearchTerm, selectedTags]);
+  }, [currentPage, activeSearchTerm, selectedTags, statusFilter]);
 
-  // 筛选帖子（仅状态筛选，标签筛选已通过后端实现）
-  const filteredPosts = Array.isArray(posts) ? posts.filter(post => {
-    const matchesStatus = statusFilter === 'all' || 
-      (statusFilter === 'published' && post.reviewStatus === 'APPROVED') ||
-      (statusFilter === 'pending' && post.reviewStatus === 'PENDING') ||
-      (statusFilter === 'reported' && post.reviewStatus === 'REPORTED') ||
-      (statusFilter === 'rejected' && post.reviewStatus === 'BANNED');
-    
-    return matchesStatus;
-  }) : [];
+  // 帖子列表（状态筛选已通过后端实现）
+  const filteredPosts = Array.isArray(posts) ? posts : [];
 
-  // 统计数据
+  // 统计数据（基于当前筛选后的帖子列表）
   const stats = {
-    total: Array.isArray(posts) ? posts.length : 0,
-    published: Array.isArray(posts) ? posts.filter(p => p.reviewStatus === 'APPROVED').length : 0,
-    pending: Array.isArray(posts) ? posts.filter(p => p.reviewStatus === 'PENDING').length : 0,
-    reported: Array.isArray(posts) ? posts.filter(p => p.reviewStatus === 'REPORTED').length : 0,
-    rejected: Array.isArray(posts) ? posts.filter(p => p.reviewStatus === 'BANNED').length : 0
+    total: filteredPosts.length,
+    published: filteredPosts.filter(p => p.reviewStatus === 'APPROVED').length,
+    pending: filteredPosts.filter(p => p.reviewStatus === 'PENDING').length,
+    reported: filteredPosts.filter(p => p.reviewStatus === 'REPORTED').length,
+    rejected: filteredPosts.filter(p => p.reviewStatus === 'BANNED').length
   };
 
   // 审核通过

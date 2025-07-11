@@ -2,7 +2,7 @@ import React from 'react';
 import { UserOutlined, CalendarOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import '../css/AdminCheckins.css';
 
-const AdminCheckinList = ({ currentCheckins, onView, onDelete, getMoodLabelDisplay, getMoodText, formatDateOnly }) => (
+const AdminCheckinList = ({ currentCheckins, onView, onDelete, getMoodLabelDisplay, getMoodText, formatDateOnly, onViewUserDetail }) => (
   <div className="admin-checkins-list">
     {currentCheckins.length === 0 ? (
       <div className="admin-empty-state">
@@ -39,8 +39,17 @@ const AdminCheckinList = ({ currentCheckins, onView, onDelete, getMoodLabelDispl
             <div className="admin-checkin-info">
               <p className="admin-checkin-text">{checkin.diaryDescription || '无日记内容'}</p>
               <div className="admin-checkin-details">
-                <div className="admin-checkin-weather">
-                  <strong>天气:</strong> {checkin.weather || '未知'}
+                <div className="admin-checkin-weather-row" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <div className="admin-checkin-weather">
+                    <strong>天气:</strong> {checkin.weather || '未知'}
+                  </div>
+                  <button
+                    onClick={() => onViewUserDetail && onViewUserDetail(checkin.userId)}
+                    className="admin-btn admin-btn-info"
+                    style={{ height: 32, padding: '0 14px', fontSize: 14 }}
+                  >
+                    <EyeOutlined style={{ fontSize: 13, marginRight: 2 }} />查看用户详情
+                  </button>
                 </div>
               </div>
             </div>

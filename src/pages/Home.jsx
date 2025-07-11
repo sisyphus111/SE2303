@@ -44,7 +44,7 @@ export const Home = () => {
 
       const [articlesRes, moodRes, analysisRes] = await Promise.all([
         getArticles(),
-        getMoodData(userProfile?.id || 1), // 使用真实用户ID，如果没有则使用1作为后备
+        getMoodData(userProfile?.userId || 1), // 使用真实用户ID，如果没有则使用1作为后备
         getAnalysisData()
       ]);
       

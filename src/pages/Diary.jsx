@@ -23,7 +23,7 @@ export const Diary = () => {
   }, [userProfile]);
 
   const loadDiaryEntries = async () => {
-    /*if (!userProfile?.id) {
+    /*if (!userProfile?.userId) {
       console.log('用户未登录，使用模拟数据');
       // 使用模拟数据作为备选
       const mockEntries = [
@@ -55,7 +55,7 @@ export const Diary = () => {
 
     try {
       setLoading(true);
-      const response = await getDiaryList(/*userProfile.id*/1, {
+      const response = await getDiaryList(userProfile.userId, {
         startDate: '2024-01-01',
         endDate: new Date().toISOString().split('T')[0]
       });
@@ -126,11 +126,11 @@ export const Diary = () => {
       alert('请输入日记内容');
       return;
     }
-    
-    /*if (!userProfile?.id) {
+
+    if (!userProfile?.userId) {
       alert('请先登录');
       return;
-    }*/
+    }
 
     try {
       setLoading(true);
@@ -152,7 +152,7 @@ export const Diary = () => {
         date: new Date().toISOString().split('T')[0]
       };
       
-      await createDiary(diaryData, /*userProfile.id*/1, identity || false);
+      await createDiary(diaryData, userProfile.userId, identity || false);
       setNewEntry({ title: '', content: '', weather: 'sunny' });
       alert('日记保存成功！');
       // 重新加载日记列表
@@ -193,12 +193,13 @@ export const Diary = () => {
 
   // 获取心情统计的函数
   const loadMoodStats = async () => {
-    //if (!userProfile?.id) return;
+    if (!userProfile?.userId)
+      return;
     
     try {
       const startDate = '2024-01-01';
       const endDate = new Date().toISOString().split('T')[0];
-      const stats = await getMoodStats(/*userProfile.id*/1, startDate, endDate);
+      const stats = await getMoodStats(userProfile.userId, startDate, endDate);
       // 这里可以用于显示心情统计图表
     } catch (error) {
       console.error('获取心情统计失败:', error);

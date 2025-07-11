@@ -90,6 +90,30 @@ const mockEmergencyStatus = {
   message: ''
 };
 
+// 生成动态模拟数据的辅助函数
+const generateDynamicMockData = () => {
+  const today = new Date();
+  const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  const dynamicMockData = [];
+  
+  // 生成最近7天的数据，从7天前开始到今天
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    const dayName = dayNames[date.getDay()];
+    
+    // 生成随机的情绪评分（1-5分）
+    const randomValue = Math.floor(Math.random() * 5) + 1;
+    
+    dynamicMockData.push({
+      date: dayName,
+      value: randomValue
+    });
+  }
+  
+  return dynamicMockData;
+};
+
 // API调用函数
 export const getArticles = async () => {
   try {
@@ -107,8 +131,8 @@ export const getArticles = async () => {
 export const getMoodData = async (userId) => {
   try {
     if (!userId) {
-      console.warn('未提供用户ID，返回模拟数据');
-      return mockMoodData;
+      console.warn('未提供用户ID，返回动态生成的模拟数据');
+      return generateDynamicMockData();
     }
 
     // 计算最近7天的日期范围
@@ -137,14 +161,14 @@ export const getMoodData = async (userId) => {
       moodRecords = response.object;
     } else {
       console.warn('⚠️ 未知的响应格式:', response);
-      return mockMoodData;
+      return generateDynamicMockData();
     }
 
     // 先按日期升序排列（最早的在前）
     const sortedRecords = [...moodRecords].sort((a, b) => new Date(a.date) - new Date(b.date));
     
-    // 将后端数据转换为前端需要的格式
-    const moodData = sortedRecords.map(record => {
+    // 将后端数据转换为前端需要的格式，并记录原始日期信息
+    const moodDataWithDates = sortedRecords.map(record => {
       
       // 确保日期格式正确
       let date;
@@ -168,28 +192,61 @@ export const getMoodData = async (userId) => {
       
       const dataPoint = {
         date: dayName,
-        value: score
+        value: score,
+        originalDate: date // 保留原始日期用于排序
       };
 
       return dataPoint;
     }).filter(item => item !== null); // 过滤掉无效的记录
 
-    // 如果数据不足7天，用默认值填充
-    while (moodData.length < 7) {
-      const missingDayIndex = moodData.length;
-      const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-      moodData.push({
-        date: dayNames[missingDayIndex],
-        value: 1 // 默认值
+    // 获取今天和最近7天的日期信息
+    const today = new Date();
+    const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+    
+    // 生成最近7天的完整日期数组
+    const last7Days = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      last7Days.push({
+        date: date,
+        dayName: dayNames[date.getDay()],
+        isToday: i === 0 // 最后一天是今天
       });
     }
 
-    console.log('✅ 最终情绪数据:', moodData);
-    return moodData;
+    // 创建完整的数据数组，确保今天的数据在最后位置
+    const completeMoodData = [];
+    
+    for (let i = 0; i < 7; i++) {
+      const targetDate = last7Days[i];
+      
+      // 查找是否有对应日期的数据
+      const existingData = moodDataWithDates.find(item => {
+        return item.originalDate.toDateString() === targetDate.date.toDateString();
+      });
+      
+      if (existingData) {
+        // 使用现有数据
+        completeMoodData.push({
+          date: existingData.date,
+          value: existingData.value
+        });
+      } else {
+        // 填充默认数据
+        completeMoodData.push({
+          date: targetDate.dayName,
+          value: 1 // 默认值
+        });
+      }
+    }
+
+    console.log('✅ 最终情绪数据:', completeMoodData);
+    return completeMoodData;
     
   } catch (error) {
     console.error('❌ 获取心情数据失败:', error);
-    return mockMoodData;
+    return generateDynamicMockData();
   }
 };
 

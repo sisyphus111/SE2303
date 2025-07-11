@@ -110,7 +110,7 @@ export const Home = () => {
 
       {/* 功能列表区域 */}
       <div className="features-section">
-        <EmergencyAlert status={emergencyStatus} />
+        {/* <EmergencyAlert status={emergencyStatus} /> */}
         <EmotionChart data={moodData} />
         <AnalysisPanel analysisData={analysisData} analysisLoading={analysisLoading} />
       </div>

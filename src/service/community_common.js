@@ -162,6 +162,7 @@ export async function getAdminPosts(options = {}) {
         if (options.page) queryParams.page = options.page;
         if (options.size) queryParams.size = options.size;
         if (options.status) queryParams.status = options.status;
+        if (options.reviewStatus) queryParams.reviewStatus = options.reviewStatus;
         
         return await get('/community/posts/get_posts', { queryParams });
     } catch (error) {

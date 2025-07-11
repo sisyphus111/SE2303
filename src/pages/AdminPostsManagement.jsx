@@ -70,6 +70,16 @@ const AdminPostsManagement = () => {
       
       if (activeSearchTerm) options.keyword = activeSearchTerm;
       if (selectedTags.length > 0) options.category = selectedTags.join(',');
+      // 新增：根据statusFilter设置reviewStatus
+      if (statusFilter === 'all') {
+        options.reviewStatus = 'ALL';
+      } else if (statusFilter === 'published') {
+        options.reviewStatus = 'APPROVED';
+      } else if (statusFilter === 'pending') {
+        options.reviewStatus = 'PENDING';
+      } else if (statusFilter === 'rejected') {
+        options.reviewStatus = 'BANNED';
+      }
       
       const data = await getAdminPosts(options);
       const postsArray = Array.isArray(data) ? data : (data?.content || []);

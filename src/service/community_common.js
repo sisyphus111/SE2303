@@ -161,8 +161,9 @@ export async function getAdminPosts(options = {}) {
         if (options.sortBy) queryParams.sortBy = options.sortBy;
         if (options.page) queryParams.page = options.page;
         if (options.size) queryParams.size = options.size;
-        if (options.status) queryParams.status = options.status;
+        if (options.reviewStatus) queryParams.reviewStatus = options.reviewStatus;
         
+        console.log('🚀 [管理员] 查询参数:', queryParams);
         return await get('/community/posts/get_posts', { queryParams });
     } catch (error) {
         console.error('❌ [管理员] 获取帖子列表失败:', error);

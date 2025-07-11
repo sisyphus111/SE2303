@@ -15,6 +15,8 @@ import {
   TrophyOutlined
 } from '@ant-design/icons';
 import { fetchAllCheckins, fetchMoodStats, fetchMoodLabels, getMoodLabelDisplay, getMoodCategoryStats, deleteCheckin } from '../service/adminCheckInService';
+import { getUserAdminInfo } from '../service/userService';
+import { Modal, Spin } from 'antd';
 import '../css/AdminCheckins.css';
 import AdminCheckinList from '../components/AdminCheckinList';
 import AdminCheckinModal from '../components/AdminCheckinModal';
@@ -36,7 +38,7 @@ const AdminCheckins = () => {
   const [moodLabels, setMoodLabels] = useState([]);
   const searchInputRef = useRef(null);
   const clearButtonRef = useRef(null);
-
+  const [userDetailModal, setUserDetailModal] = useState({ visible: false, loading: false, user: null });
 
 
   useEffect(() => {
@@ -158,6 +160,17 @@ const AdminCheckins = () => {
         alert('删除打卡记录失败，请重试！');
         console.error('删除打卡记录失败:', error);
       }
+    }
+  };
+
+  // 查看用户详情
+  const handleViewUserDetail = async (userId) => {
+    setUserDetailModal({ visible: true, loading: true, user: null });
+    try {
+      const user = await getUserAdminInfo(userId);
+      setUserDetailModal({ visible: true, loading: false, user });
+    } catch (err) {
+      setUserDetailModal({ visible: true, loading: false, user: { error: '获取用户信息失败' } });
     }
   };
 
@@ -346,6 +359,7 @@ const AdminCheckins = () => {
           getMoodLabelDisplay={getMoodLabelDisplay}
           getMoodText={getMoodText}
           formatDateOnly={formatDateOnly}
+          onViewUserDetail={handleViewUserDetail}
         />
 
         {/* 分页 */}
@@ -381,6 +395,30 @@ const AdminCheckins = () => {
         getMoodText={getMoodText}
         formatDateOnly={formatDateOnly}
       />
+      <Modal
+        open={userDetailModal.visible}
+        title="用户详细信息"
+        onCancel={() => setUserDetailModal({ visible: false, loading: false, user: null })}
+        footer={null}
+        width={400}
+      >
+        {userDetailModal.loading ? (
+          <div style={{ textAlign: 'center', padding: '32px 0' }}><Spin /> 加载中...</div>
+        ) : userDetailModal.user && !userDetailModal.user.error ? (
+          <div style={{ fontSize: 14 }}>
+            <div><b>用户名：</b>{userDetailModal.user.username}</div>
+            <div><b>真实姓名：</b>{userDetailModal.user.realname}</div>
+            <div><b>手机号：</b>{userDetailModal.user.phone}</div>
+            <div><b>学号：</b>{userDetailModal.user.sjtuId}</div>
+            <div><b>Jaccount：</b>{userDetailModal.user.jaccount}</div>
+            <div><b>注册时间：</b>{userDetailModal.user.registrationDate ? new Date(userDetailModal.user.registrationDate).toLocaleString() : '-'}</div>
+            <div><b>身份：</b>{userDetailModal.user.isUser ? '普通用户' : '管理员'}</div>
+            <div><b>状态：</b>{userDetailModal.user.valid ? '启用' : '禁用'}</div>
+          </div>
+        ) : (
+          <div style={{ color: 'red', textAlign: 'center' }}>{userDetailModal.user?.error || '未找到用户信息'}</div>
+        )}
+      </Modal>
     </div>
   );
 };

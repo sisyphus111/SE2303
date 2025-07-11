@@ -237,3 +237,13 @@ export const getUserStatistics = async (userId) => {
     throw error;
   }
 };
+
+/**
+ * 获取用户信息
+ * @param {string} userId - 用户ID（可选，不传则获取当前用户）
+ * @returns {Promise<Object>} 用户信息
+ */
+export const getUserAdminInfo = async (userId = null) => {
+  const endpoint = `/user/admin/users/user 
+  return get(endpoint);
+};

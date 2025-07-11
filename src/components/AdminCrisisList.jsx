@@ -11,7 +11,7 @@ import {
   ExclamationCircleOutlined
 } from '@ant-design/icons';
 
-const AdminCrisisList = ({ alerts, loading, error, onUpdateStatus, onAddFollowUpNotes, operatingAlertId }) => {
+const AdminCrisisList = ({ alerts, loading, error, onUpdateStatus, onAddFollowUpNotes, operatingAlertId, onViewUserDetail }) => {
   const [expandedAlertId, setExpandedAlertId] = useState(null);
 
   const toggleAlertExpansion = (alertId) => {
@@ -90,9 +90,16 @@ const AdminCrisisList = ({ alerts, loading, error, onUpdateStatus, onAddFollowUp
             <div className="admin-crisis-content">
               <div className="admin-crisis-info">
                 <div className="admin-crisis-details">
-                  <div className="admin-crisis-author">
+                  <div className="admin-crisis-author" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <UserOutlined />
                     用户ID: {alert.userId}
+                    <button
+                      onClick={() => onViewUserDetail && onViewUserDetail(alert.userId)}
+                      className="admin-btn admin-btn-info"
+                      style={{ height: 28, padding: '0 12px', fontSize: 13 }}
+                    >
+                      <EyeOutlined style={{ fontSize: 13, marginRight: 2 }} />查看用户详情
+                    </button>
                   </div>
                   <div className="admin-crisis-stats">
                     {/* <span>

@@ -10,6 +10,8 @@ import {
   MessageOutlined
 } from '@ant-design/icons';
 import { getReportsList, handleReport, getReportDetail } from '../service/community_common';
+import { getUserAdminInfo } from '../service/userService';
+import { Modal, Spin } from 'antd';
 import '../css/AdminReports.css';
 
 const AdminReports = () => {
@@ -23,6 +25,7 @@ const AdminReports = () => {
     const [operatingReportId, setOperatingReportId] = useState(null);
     const [selectedReport, setSelectedReport] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
+    const [userDetailModal, setUserDetailModal] = useState({ visible: false, loading: false, user: null });
     const searchInputRef = useRef(null);
     const clearButtonRef = useRef(null);
 
@@ -177,6 +180,17 @@ const AdminReports = () => {
         }
     };
 
+    // 查看用户详情
+    const handleViewUserDetail = async (userId) => {
+        setUserDetailModal({ visible: true, loading: true, user: null });
+        try {
+            const user = await getUserAdminInfo(userId);
+            setUserDetailModal({ visible: true, loading: false, user });
+        } catch (err) {
+            setUserDetailModal({ visible: true, loading: false, user: { error: '获取用户信息失败' } });
+        }
+    };
+
     // 处理搜索回车键
     const handleSearchKeyPress = (e) => {
         if (e.key === 'Enter') {
@@ -327,6 +341,12 @@ const AdminReports = () => {
                                         <div className="admin-report-users">
                                             <span className="admin-report-reporter">
                                                 举报人Id: {report.userId}
+                                                <span
+                                                    style={{ marginLeft: 8, color: '#1677ff', cursor: 'pointer', fontSize: 12, display: 'inline-flex', alignItems: 'center' }}
+                                                    onClick={() => handleViewUserDetail(report.userId)}
+                                                >
+                                                    <EyeOutlined style={{ fontSize: 13, marginRight: 2 }} />查看用户详情
+                                                </span>
                                             </span>
                                         </div>
                                     </div>
@@ -455,6 +475,32 @@ const AdminReports = () => {
                     </div>
                 </div>
             )}
+
+            {/* 用户详情弹窗 */}
+            <Modal
+                open={userDetailModal.visible}
+                title="用户详细信息"
+                onCancel={() => setUserDetailModal({ visible: false, loading: false, user: null })}
+                footer={null}
+                width={400}
+            >
+                {userDetailModal.loading ? (
+                    <div style={{ textAlign: 'center', padding: '32px 0' }}><Spin /> 加载中...</div>
+                ) : userDetailModal.user && !userDetailModal.user.error ? (
+                    <div style={{ fontSize: 14 }}>
+                        <div><b>用户名：</b>{userDetailModal.user.username}</div>
+                        <div><b>真实姓名：</b>{userDetailModal.user.realname}</div>
+                        <div><b>手机号：</b>{userDetailModal.user.phone}</div>
+                        <div><b>学号：</b>{userDetailModal.user.sjtuId}</div>
+                        <div><b>Jaccount：</b>{userDetailModal.user.jaccount}</div>
+                        <div><b>注册时间：</b>{userDetailModal.user.registrationDate ? new Date(userDetailModal.user.registrationDate).toLocaleString() : '-'}</div>
+                        <div><b>身份：</b>{userDetailModal.user.isUser ? '普通用户' : '管理员'}</div>
+                        <div><b>状态：</b>{userDetailModal.user.valid ? '启用' : '禁用'}</div>
+                    </div>
+                ) : (
+                    <div style={{ color: 'red', textAlign: 'center' }}>{userDetailModal.user?.error || '未找到用户信息'}</div>
+                )}
+            </Modal>
         </div>
     );
 };

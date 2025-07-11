@@ -196,17 +196,17 @@ const AdminUsers = () => {
                 {/* 用户统计 */}
                 <div className="admin-users-stats">
                     <div className="admin-stat-item">
-                        <span className="admin-stat-label">总用户数:</span>
+                        <span className="admin-stat-label">总用户数</span>
                         <span className="admin-stat-value">{users.length}</span>
                     </div>
                     <div className="admin-stat-item">
-                        <span className="admin-stat-label">启用用户:</span>
+                        <span className="admin-stat-label">启用用户</span>
                         <span className="admin-stat-value admin-stat-active">
                             {users.filter(u => u.valid).length}
                         </span>
                     </div>
                     <div className="admin-stat-item">
-                        <span className="admin-stat-label">禁用用户:</span>
+                        <span className="admin-stat-label">禁用用户</span>
                         <span className="admin-stat-value admin-stat-inactive">
                             {users.filter(u => !u.valid).length}
                         </span>
@@ -286,6 +286,9 @@ const AdminUsers = () => {
                                     <div className="admin-user-details">
                                         <span className="admin-user-detail">
                                             学号: {user.sjtuId || '未知'}
+                                        </span>
+                                        <span className="admin-user-detail">
+                                            Jaccount: {user.jaccount || '未知'}
                                         </span>
                                         <span className="admin-user-detail">
                                             注册时间: {formatDate(user.registrationDate)}

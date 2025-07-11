@@ -429,7 +429,7 @@ const AdminPostsManagement = () => {
                     <div className="admin-post-details">
                       <span className="admin-post-author">
                         <UserOutlined />
-                        {`用户${post.userId}` || '未知用户'}
+                        {`用户ID:${post.userId}` || '未知用户'}
                       </span>
                       <div className="admin-post-stats">
                         <span>

@@ -205,7 +205,9 @@ const AdminReports = () => {
                         <input
                             ref={searchInputRef}
                             type="text"
-                            placeholder="搜索举报原因、用户ID... (按回车键搜索)"
+                            
+                            placeholder="搜索举报原因、用户名..."
+
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             onKeyPress={handleSearchKeyPress}

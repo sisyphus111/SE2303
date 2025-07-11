@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   FileTextOutlined, 
   CheckCircleOutlined, 
@@ -15,12 +15,15 @@ const AdminReview = () => {
     const [contents, setContents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filterStatus, setFilterStatus] = useState('all'); // all, pending, approved, rejected
+    const [searchTerm, setSearchTerm] = useState(''); // 输入框的值
+    const [activeSearchTerm, setActiveSearchTerm] = useState(''); // 实际用于搜索的值
+    const [filterStatus, setFilterStatus] = useState('all'); // all, PENDING, APPROVED, BANNED
     const [filterType, setFilterType] = useState('all'); // all, post, comment
     const [operatingContentId, setOperatingContentId] = useState(null);
     const [selectedContent, setSelectedContent] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
+    const searchInputRef = useRef(null);
+    const clearButtonRef = useRef(null);
 
     // 获取审核队列
     const fetchReviewQueue = async () => {
@@ -29,8 +32,7 @@ const AdminReview = () => {
             setError(null);
             const data = await getReviewQueue();
             // 确保 contents 是数组
-            const contentsArray = Array.isArray(data) ? data : (data?.content || []);
-            setContents(contentsArray);
+            setContents(data.content || []);
         } catch (err) {
             console.error('获取审核队列失败:', err);
             setError('获取审核队列失败');
@@ -47,10 +49,10 @@ const AdminReview = () => {
     }, []);
 
     // 审核内容
-    const handleReviewAction = async (contentId, action, reason = '') => {
+    const handleReviewAction = async (contentId, action, type, reason = '') => {
         try {
             setOperatingContentId(contentId);
-            await reviewContent(contentId, action, reason);
+            await reviewContent(contentId, action, type, reason);
             
             // 更新本地状态
             setContents(prevContents => {
@@ -61,7 +63,7 @@ const AdminReview = () => {
                         : content
                 );
             });
-            console.log(`内容 ${contentId} 已${action === 'approved' ? '通过' : '拒绝'}审核`);
+            console.log(`内容 ${contentId} 已${action === 'APPROVED' ? '通过' : '拒绝'}审核`);
         } catch (err) {
             console.error('审核内容失败:', err);
             setError('审核内容失败');
@@ -70,11 +72,56 @@ const AdminReview = () => {
         }
     };
 
+    // 处理搜索回车键
+    const handleSearchKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            setActiveSearchTerm(searchTerm.trim());
+        }
+    };
+
+    // 清除搜索
+    const handleClearSearch = () => {
+        setSearchTerm('');
+        setActiveSearchTerm('');
+    };
+
+    // 动态调整清除按钮位置
+    const updateClearButtonPosition = () => {
+        if (searchInputRef.current && clearButtonRef.current && activeSearchTerm) {
+            const input = searchInputRef.current;
+            const clearBtn = clearButtonRef.current;
+            
+            // 创建临时元素来测量文字宽度
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const computedStyle = window.getComputedStyle(input);
+            context.font = `${computedStyle.fontSize} ${computedStyle.fontFamily}`;
+            
+            // 使用当前输入框中显示的文字宽度
+            const displayedText = searchTerm || activeSearchTerm;
+            const textWidth = context.measureText(displayedText).width;
+            
+            // 计算按钮位置（左边距 + 搜索图标宽度 + 文字宽度 + 一点间隙）
+            const leftPosition = 40 + textWidth + 8;
+            
+            // 确保按钮不超出输入框右边界
+            const maxLeft = input.offsetWidth - 32;
+            const finalLeft = Math.min(leftPosition, maxLeft);
+            
+            clearBtn.style.left = `${finalLeft}px`;
+        }
+    };
+
+    // 监听搜索词变化，更新清除按钮位置
+    useEffect(() => {
+        updateClearButtonPosition();
+    }, [searchTerm, activeSearchTerm]);
+
     // 过滤内容列表
     const filteredContents = Array.isArray(contents) ? contents.filter(content => {
-        const matchesSearch = content.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             content.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             content.author?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = content.title?.toLowerCase().includes(activeSearchTerm.toLowerCase()) ||
+                             content.content?.toLowerCase().includes(activeSearchTerm.toLowerCase()) ||
+                             content.author?.toLowerCase().includes(activeSearchTerm.toLowerCase());
         
         const matchesStatus = filterStatus === 'all' || content.status === filterStatus;
         const matchesType = filterType === 'all' || content.type === filterType;
@@ -85,9 +132,9 @@ const AdminReview = () => {
     // 获取状态显示文本
     const getStatusText = (status) => {
         switch (status) {
-            case 'pending': return '待审核';
-            case 'approved': return '已通过';
-            case 'rejected': return '已拒绝';
+            case 'PENDING': return '待审核';
+            case 'APPROVED': return '已通过';
+            case 'BANNED': return '已拒绝';
             default: return '未知';
         }
     };
@@ -144,12 +191,24 @@ const AdminReview = () => {
                     <div className="admin-search-box">
                         <SearchOutlined className="admin-search-icon" />
                         <input
+                            ref={searchInputRef}
                             type="text"
-                            placeholder="搜索标题、内容、作者..."
+                            placeholder="搜索标题、内容、作者... (按回车键搜索)"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyPress={handleSearchKeyPress}
                             className="admin-search-input"
                         />
+                        {activeSearchTerm && (
+                            <button 
+                                ref={clearButtonRef}
+                                onClick={handleClearSearch}
+                                className="admin-search-clear-btn"
+                                title="清除搜索"
+                            >
+                                ×
+                            </button>
+                        )}
                     </div>
                     
                     <div className="admin-filter-box">
@@ -159,9 +218,9 @@ const AdminReview = () => {
                             className="admin-filter-select"
                         >
                             <option value="all">全部状态</option>
-                            <option value="pending">待审核</option>
-                            <option value="approved">已通过</option>
-                            <option value="rejected">已拒绝</option>
+                            <option value="PENDING">待审核</option>
+                            <option value="APPROVED">已通过</option>
+                            <option value="BANNED">已拒绝</option>
                         </select>
                     </div>
                     
@@ -195,20 +254,20 @@ const AdminReview = () => {
                     </div>
                     <div className="admin-stat-item">
                         <span className="admin-stat-label">待审核:</span>
-                        <span className="admin-stat-value admin-stat-pending">
-                            {Array.isArray(contents) ? contents.filter(c => c.status === 'pending').length : 0}
+                        <span className="admin-stat-value admin-stat-PENDING">
+                            {Array.isArray(contents) ? contents.filter(c => c.status === 'PENDING').length : 0}
                         </span>
                     </div>
                     <div className="admin-stat-item">
                         <span className="admin-stat-label">已通过:</span>
-                        <span className="admin-stat-value admin-stat-approved">
-                            {Array.isArray(contents) ? contents.filter(c => c.status === 'approved').length : 0}
+                        <span className="admin-stat-value admin-stat-APPROVED">
+                            {Array.isArray(contents) ? contents.filter(c => c.status === 'APPROVED').length : 0}
                         </span>
                     </div>
                     <div className="admin-stat-item">
                         <span className="admin-stat-label">已拒绝:</span>
-                        <span className="admin-stat-value admin-stat-rejected">
-                            {Array.isArray(contents) ? contents.filter(c => c.status === 'rejected').length : 0}
+                        <span className="admin-stat-value admin-stat-BANNED">
+                            {Array.isArray(contents) ? contents.filter(c => c.status === 'BANNED').length : 0}
                         </span>
                     </div>
                 </div>
@@ -288,10 +347,10 @@ const AdminReview = () => {
                                         查看详情
                                     </button>
                                     
-                                    {content.status === 'pending' && (
+                                    {content.status === 'PENDING' && (
                                         <>
                                             <button
-                                                onClick={() => handleReviewAction(content.id, 'approved')}
+                                                onClick={() => handleReviewAction(content.id, 'APPROVED', content.type)}
                                                 disabled={operatingContentId === content.id}
                                                 className="admin-btn admin-btn-success"
                                             >
@@ -305,7 +364,7 @@ const AdminReview = () => {
                                                 )}
                                             </button>
                                             <button
-                                                onClick={() => handleReviewAction(content.id, 'rejected')}
+                                                onClick={() => handleReviewAction(content.id, 'BANNED', content.type)}
                                                 disabled={operatingContentId === content.id}
                                                 className="admin-btn admin-btn-danger"
                                             >
@@ -344,38 +403,37 @@ const AdminReview = () => {
                             <div className="admin-detail-item">
                                 <strong>内容类型:</strong> {getTypeText(selectedContent.type)}
                             </div>
-                            {selectedContent.content?.title && (
+                            {selectedContent.title && (
                                 <div className="admin-detail-item">
-                                    <strong>标题:</strong> {selectedContent.content.title}
+                                    <strong>标题:</strong> {selectedContent.title}
                                 </div>
                             )}
                             <div className="admin-detail-item">
                                 <strong>内容:</strong> 
                                 <div className="admin-content-full">
-                                    {selectedContent.content?.content || selectedContent.content?.content}
+                                    {selectedContent.content || selectedContent.comment.content}
                                 </div>
                             </div>
                             <div className="admin-detail-item">
-                                <strong>作者:</strong> {selectedContent.content?.userId}
+                                <strong>作者ID:</strong> {selectedContent.author || selectedContent.comment.userId}
                             </div>
                             <div className="admin-detail-item">
-                                <strong>创建时间:</strong> {formatDate(selectedContent.content?.createdAt)}
+                                <strong>创建时间:</strong> {formatDate(selectedContent.createdAt || selectedContent.comment.createdAt)}
                             </div>
                             <div className="admin-detail-item">
-                                <strong>审核状态:</strong> {getStatusText(selectedContent.content?.reviewStatus?.toLowerCase())}
+                                <strong>审核状态:</strong> {getStatusText(selectedContent.status || selectedContent.comment.reviewStatus)}
                             </div>
-                            {selectedContent.content?.tags && (
+                            {selectedContent.tags && (
                                 <div className="admin-detail-item">
-                                    <strong>标签:</strong> {selectedContent.content.tags.join(', ')}
+                                    <strong>标签:</strong> {selectedContent.tags.join(', ')}
                                 </div>
                             )}
-                            {selectedContent.content?.postId && (
-                                <div className="admin-detail-item">
-                                    <strong>所属帖子ID:</strong> {selectedContent.content.postId}
-                                </div>
-                            )}
+                
                             {selectedContent.post && (
                                 <>
+                                    <div className="admin-detail-item">
+                                    <strong>所属帖子ID:</strong> {selectedContent.post.id}
+                                    </div>
                                     <div className="admin-detail-item">
                                         <strong>所属帖子标题:</strong> {selectedContent.post.title}
                                     </div>
@@ -385,6 +443,7 @@ const AdminReview = () => {
                                             {selectedContent.post.content}
                                         </div>
                                     </div>
+        
                                 </>
                             )}
                         </div>
@@ -395,4 +454,4 @@ const AdminReview = () => {
     );
 };
 
-export default AdminReview; 
+export default AdminReview;

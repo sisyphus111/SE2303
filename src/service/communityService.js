@@ -15,8 +15,8 @@ export const getPostList = async (params = {}, auth = {}) => {
     if (params.size < 1 || params.size > 100) {
         throw new Error('每页大小必须在1到100之间');
     }
-    if (params.sortBy && !['latest', 'mostCommented', 'mostViewed'].includes(params.sortBy)) {
-        throw new Error('排序方式必须是 latest、mostCommented 或 mostViewed');
+    if (params.sortBy && !['latest', 'mostCommented', 'mostLiked'].includes(params.sortBy)) {
+        throw new Error('排序方式必须是 latest、mostCommented 或 mostLiked');
     }
 
     const queryParams = {
@@ -176,15 +176,13 @@ export const deletePost = async (postId, auth = {}) => {
 };
 
 // 点赞帖子
-export const LikePost = async (postId, auth = {}) => {
-    if (!auth.userId || auth.valid === false) {
-        message.error('请先登录');
-        throw new Error('用户未登录');
-    }
-    if (!postId || postId.trim() === '') {
-        throw new Error('帖子ID不能为空');
-    }
+export const LikePost = async (postId) => {
+
+    // if (!postId || postId.trim() === '') {
+    //     throw new Error('帖子ID不能为空');
+    // }
     try {
+        console.log("开始点赞操作111");
         const response = await post(`/community/posts/like/${postId}`, {});
         message.success('点赞成功');
         return {
@@ -203,14 +201,14 @@ export const LikePost = async (postId, auth = {}) => {
 };
 
 // 取消点赞帖子
-export const UnlikePost = async (postId, auth = {}) => {
-    if (!auth.userId || auth.valid === false) {
-        message.error('请先登录');
-        throw new Error('用户未登录');
-    }
-    if (!postId || postId.trim() === '') {
-        throw new Error('帖子ID不能为空');
-    }
+export const UnlikePost = async (postId) => {
+    // if (!auth.userId || auth.valid === false) {
+    //     message.error('请先登录');
+    //     throw new Error('用户未登录');
+    // }
+    // if (!postId || postId.trim() === '') {
+    //     throw new Error('帖子ID不能为空');
+    // }
     try {
         const response = await del(`/community/posts/unlike/${postId}`, {});
         message.success('取消点赞成功');
@@ -325,53 +323,6 @@ export const sendCommentToPost = async (postId, content, auth = {}) => {
     }
 };
 
-// 收藏帖子
-export const collectPost = async (postId, auth = {}) => {
-    if (!auth.userId || auth.valid === false) {
-        message.error('请先登录');
-        throw new Error('用户未登录');
-    }
-    try {
-        const response = await post(`/community/posts/collect/${postId}`, {});
-        message.success('收藏成功');
-        return {
-            success: true,
-            data: response,
-            message: response.message,
-        };
-
-    } catch (error) {
-        message.error('收藏失败：' + error.message);
-        return {
-            success: false,
-            error: error.message || '收藏失败',
-        };
-    }
-};
-
-// 取消收藏帖子
-export const delCollectedPost = async (postId, auth = {}) => {
-    if (!auth.userId || auth.valid === false) {
-        message.error('请先登录');
-        throw new Error('用户未登录');
-    }
-    try {
-        const response = await del(`/community/posts/delete/collection/${postId}`, {});
-        message.success('取消收藏成功');
-        return {
-            success: true,
-            data: response,
-            message: response.message,
-        };
-
-    } catch (error) {
-        message.error('取消收藏失败：' + error.message);
-        return {
-            success: false,
-            error: error.message || '取消收藏失败',
-        };
-    }
-};
 
 // 审核通过帖子
 export const approvePost = async (postId, auth = {}) => {
@@ -455,6 +406,78 @@ export const reportPost = async (postId, reason, auth = {}) => {
         return {
             success: false,
             error: error.message || '举报帖子失败',
+        };
+    }
+};
+
+// 获取总帖子数
+export const getTotalPostsCount = async (auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    try {
+        const response = await get(`/community/posts/total_count`, {});
+
+        return {
+            success: true,
+            data: response,
+            message: "总帖子数获取成功",
+        };
+
+    } catch (error) {
+        message.error('获取总帖子数失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '获取总帖子数失败',
+        };
+    }
+};
+
+// 获取今日总发帖数
+export const getTodayPostsCount = async (auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    try {
+        const response = await get(`/community/posts/today_count`, {});
+
+        return {
+            success: true,
+            data: response,
+            message: "今日总发帖数获取成功",
+        };
+
+    } catch (error) {
+        message.error('获取今日总发帖数失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '获取今日总发帖数失败',
+        };
+    }
+};
+
+// 获取今日总评论数
+export const getTodayCommentsCount = async (auth = {}) => {
+    if (!auth.userId || auth.valid === false) {
+        message.error('请先登录');
+        throw new Error('用户未登录');
+    }
+    try {
+        const response = await get(`/community/comments/today_count`, {});
+
+        return {
+            success: true,
+            data: response,
+            message: "今日总评论数获取成功",
+        };
+
+    } catch (error) {
+        message.error('获取今日总评论数失败：' + error.message);
+        return {
+            success: false,
+            error: error.message || '获取今日总评论数失败',
         };
     }
 };

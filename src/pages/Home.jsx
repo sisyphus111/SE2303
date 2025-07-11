@@ -18,13 +18,15 @@ export const Home = () => {
   const [moodData, setMoodData] = useState([]);
   const [analysisData, setAnalysisData] = useState('');
   const [loading, setLoading] = useState(true);
+  const [analysisLoading, setAnalysisLoading] = useState(true);
   const [emergencyStatus, setEmergencyStatus] = useState({ status: 'normal', message: '' });
 
   useEffect(() => {
     if (userProfile) {
       loadData();
+      loadAnalysisData(); // 异步加载分析数据
     }
-  }, [userProfile]);
+  }, [userProfile]); // 只在userProfile变化时执行
 
   const loadData = async () => {
     try {
@@ -36,26 +38,39 @@ export const Home = () => {
       // API调用注释：获取心情数据
       // const moodRes = await getMoodData();
       
-      // API调用注释：获取分析数据
-      // const analysisRes = await getAnalysisData();
-      
       // API调用注释：获取预警状态
       // const emergencyRes = await getEmergencyStatus();
 
-      const [articlesRes, moodRes, analysisRes] = await Promise.all([
+      const [articlesRes, moodRes] = await Promise.all([
         getArticles(),
         getMoodData(userProfile?.userId || 1), // 使用真实用户ID，如果没有则使用1作为后备
-        getAnalysisData()
       ]);
       
       setArticles(articlesRes || []);
       setMoodData(moodRes || []);
-      setAnalysisData(analysisRes || '');
       // setEmergencyStatus(emergencyRes || { status: 'normal', message: '' });
     } catch (error) {
       console.error('加载数据失败:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // 异步获取分析数据
+  const loadAnalysisData = async () => {
+    try {
+      setAnalysisLoading(true);
+      
+      // API调用注释：获取分析数据
+      // const analysisRes = await getAnalysisData(userProfile?.id || 1);
+      
+      const analysisRes = await getAnalysisData(userProfile?.id || 1);
+      setAnalysisData(analysisRes || '');
+    } catch (error) {
+      console.error('获取分析数据失败:', error);
+      setAnalysisData('获取分析数据时出现错误，请稍后重试。');
+    } finally {
+      setAnalysisLoading(false);
     }
   };
 
@@ -75,6 +90,7 @@ export const Home = () => {
 
   const handleDataUpdate = () => {
     loadData(); // 当子组件需要刷新数据时调用
+    loadAnalysisData(); // 同时刷新分析数据
   };
 
   if (loading) {
@@ -96,7 +112,7 @@ export const Home = () => {
       <div className="features-section">
         <EmergencyAlert status={emergencyStatus} />
         <EmotionChart data={moodData} />
-        <AnalysisPanel analysisData={analysisData} />
+        <AnalysisPanel analysisData={analysisData} analysisLoading={analysisLoading} />
       </div>
     </div>
   );

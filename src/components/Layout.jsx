@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {useAudio} from '../lib/GlobalAudioPlayer';
 import { useUser } from '../lib/UserContext';
+import UserDisplayName from './UserDisplayName';
 import { logout as authLogout } from '../service/authService';
 import NotificationDropdown from './NotificationDropdown';
 import { 
@@ -155,7 +156,7 @@ const Layout = ({children}) => {
                                         className="user-button"
                                         onClick={() => setShowUserMenu(!showUserMenu)}
                                     >
-                                        <div className="user-avatar">
+                                        <div className="user-avatar header-user-avatar">
                                             {userProfile?.avatar && userProfile.avatar.includes('http') ? (
                                                 <img 
                                                     src={userProfile.avatar} 
@@ -173,14 +174,12 @@ const Layout = ({children}) => {
                                                     display: userProfile?.avatar && userProfile.avatar.includes('http') ? 'none' : 'flex'
                                                 }}
                                             >
-                                                {getUserAvatar().length === 1 ? (
-                                                    <span className="avatar-text">{getUserAvatar()}</span>
-                                                ) : (
-                                                    <UserOutlined />
-                                                )}
+                                                <UserOutlined />
                                             </div>
                                         </div>
-                                        <span className="user-name">{getUserDisplayName()}</span>
+                                        <span className="user-name">
+                                            <UserDisplayName userId={userProfile.userId} />
+                                        </span>
                                         <DownOutlined className="dropdown-icon" />
                                     </button>
                                     

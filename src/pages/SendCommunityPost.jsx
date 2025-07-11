@@ -336,27 +336,6 @@ const SendCommunityPostPage = () => {
                             </div>
                         </div>
                     </div>
-
-                    <div className="community-stats">
-                        <div className="stats-header">
-                            <UserOutlined />
-                            <h3>社区动态</h3>
-                        </div>
-                        <div className="stats-content">
-                            <div className="stat-item">
-                                <span className="stat-number">1,234</span>
-                                <span className="stat-label">活跃用户</span>
-                            </div>
-                            <div className="stat-item">
-                                <span className="stat-number">5,678</span>
-                                <span className="stat-label">总帖子数</span>
-                            </div>
-                            <div className="stat-item">
-                                <span className="stat-number">12,345</span>
-                                <span className="stat-label">评论互动</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../lib/UserContext';
+import ContentWarningModal from '../components/ContentWarningModal';
 import '../css/Diary.css';
 
 // API服务导入
@@ -16,6 +17,7 @@ export const Diary = () => {
     weather: 'sunny'
   });
   const [loading, setLoading] = useState(false);
+  const [showWarningModal, setShowWarningModal] = useState(false);
 
   useEffect(() => {
     // 加载日记列表
@@ -145,26 +147,29 @@ export const Diary = () => {
         contentInspector.validateContent(contentToInspect)
       ]);
       
-      if (!titleSafe) {
+      // 如果内容不安全，显示通知框并停止保存
+      if (!titleSafe || !contentSafe) {
         // 创建内容审查警报
         try {
-          await contentInspector.createContentAlert(userProfile.userId, titleToInspect, '标题');
-          console.log('🚨 已创建标题内容审查警报');
-        } catch (alertError) {
-          console.error('创建标题内容审查警报失败:', alertError);
-        }
-      }
-      
-      if (!contentSafe) {
-        // 创建内容审查警报
-        try {
-          await contentInspector.createContentAlert(userProfile.userId, contentToInspect, '内容');
-          console.log('🚨 已创建内容审查警报');
+          if (!titleSafe) {
+            await contentInspector.createContentAlert(userProfile.userId, titleToInspect, '标题');
+            console.log('🚨 已创建标题内容审查警报');
+          }
+          if (!contentSafe) {
+            await contentInspector.createContentAlert(userProfile.userId, contentToInspect, '内容');
+            console.log('🚨 已创建内容审查警报');
+          }
         } catch (alertError) {
           console.error('创建内容审查警报失败:', alertError);
         }
+        
+        // 显示安慰用户的模态框
+        setShowWarningModal(true);
+        setLoading(false);
+        return; // 停止保存日记
       }
       
+      // 内容安全，继续保存日记
       // 将小写天气值转换为大写枚举值
       const weatherMap = {
         sunny: 'SUNNY',
@@ -279,6 +284,10 @@ export const Diary = () => {
 
   return (
     <div className="diary-container">
+      <ContentWarningModal 
+        isOpen={showWarningModal} 
+        onClose={() => setShowWarningModal(false)} 
+      />
       <div className="diary-header">
         <button onClick={goBack} className="back-btn">← 返回</button>
         <h1>文字日记</h1>

@@ -66,6 +66,7 @@ const AdminPostsManagement = () => {
         page: currentPage,
         size: postsPerPage,
         sortBy: 'latest'
+
       };
       
       if (activeSearchTerm) options.keyword = activeSearchTerm;
@@ -82,6 +83,7 @@ const AdminPostsManagement = () => {
       }
       
       const data = await getAdminPosts(options);
+      console.log('获取的帖子数据:', data);
       const postsArray = Array.isArray(data) ? data : (data?.content || []);
       setPosts(postsArray);
       setTotalPages(data?.totalPages || 0);

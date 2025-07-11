@@ -62,7 +62,28 @@ const mockMoodData = [
   { date: '周日', value: 3 }
 ];
 
-const mockAnalysisData = "根据您最近一周的情绪数据分析，您的整体心情状态良好，平均评分为3.6分。但在周三出现了情绪低谷，可能与工作压力有关。建议您在工作压力较大时，适当进行放松活动，如散步、听音乐或与朋友交流。您的情绪模式显示周末心情较好，建议保持现有的休息习惯。";
+const mockAnalysisData = `# 情绪分析报告
+
+## 整体状态评估
+根据您最近一周的情绪数据分析，您的**整体心情状态良好**，平均评分为 **3.6分**。
+
+## 关键发现
+- 在周三出现了情绪低谷，可能与工作压力有关
+- 周末心情较好，显示您有良好的休息习惯
+- 情绪波动在正常范围内
+
+## 建议措施
+1. **工作压力管理**：在工作压力较大时，适当进行放松活动
+2. **日常放松**：如散步、听音乐或与朋友交流
+3. **保持习惯**：建议保持现有的休息习惯
+
+## 情绪趋势
+您的情绪模式显示：
+- 工作日：平均 3.2分
+- 周末：平均 4.1分
+- 整体趋势：稳定向好
+
+> 💡 **小贴士**：保持规律的作息和适度的运动有助于情绪稳定。`;
 
 const mockEmergencyStatus = {
   status: 'normal',
@@ -176,14 +197,34 @@ export const getAnalysisData = async (userId) => {
   try {
     if (!userId) {
       console.warn('未提供用户ID，返回模拟数据');
+      // 添加模拟延迟以测试加载状态
+      await new Promise(resolve => setTimeout(resolve, 1500));
       return mockAnalysisData;
     }
 
     // 调用后端API获取分析数据
     const response = await get(`/mood/analysis/${userId}`);
     
-    // 检查响应格式
-    let analysisData = response.analysis;
+    // 检查响应格式 - 支持多种可能的响应结构
+    let analysisData;
+    if (typeof response === 'string') {
+      // 直接返回字符串的情况
+      analysisData = response;
+    } else if (response && response.analysis) {
+      // 包装在analysis字段中的情况
+      analysisData = response.analysis;
+    } else if (response && response.data) {
+      // 包装在data字段中的情况
+      analysisData = response.data;
+    } else if (response && typeof response === 'object') {
+      // 其他对象格式，尝试转换为字符串
+      analysisData = JSON.stringify(response, null, 2);
+    } else {
+      console.warn('⚠️ 未知的分析数据响应格式:', response);
+      return mockAnalysisData;
+    }
+    
+    console.log('✅ 获取到分析数据:', analysisData);
     return analysisData;
     
   } catch (error) {

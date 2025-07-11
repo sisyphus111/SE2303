@@ -176,14 +176,34 @@ export const getAnalysisData = async (userId) => {
   try {
     if (!userId) {
       console.warn('未提供用户ID，返回模拟数据');
+      // 添加模拟延迟以测试加载状态
+      await new Promise(resolve => setTimeout(resolve, 1500));
       return mockAnalysisData;
     }
 
     // 调用后端API获取分析数据
     const response = await get(`/mood/analysis/${userId}`);
     
-    // 检查响应格式
-    let analysisData = response.analysis;
+    // 检查响应格式 - 支持多种可能的响应结构
+    let analysisData;
+    if (typeof response === 'string') {
+      // 直接返回字符串的情况
+      analysisData = response;
+    } else if (response && response.analysis) {
+      // 包装在analysis字段中的情况
+      analysisData = response.analysis;
+    } else if (response && response.data) {
+      // 包装在data字段中的情况
+      analysisData = response.data;
+    } else if (response && typeof response === 'object') {
+      // 其他对象格式，尝试转换为字符串
+      analysisData = JSON.stringify(response, null, 2);
+    } else {
+      console.warn('⚠️ 未知的分析数据响应格式:', response);
+      return mockAnalysisData;
+    }
+    
+    console.log('✅ 获取到分析数据:', analysisData);
     return analysisData;
     
   } catch (error) {

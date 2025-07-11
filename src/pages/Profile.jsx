@@ -527,8 +527,8 @@ function Profile() {
                     <Text>{userProfile?.registrationDate ? new Date(userProfile.registrationDate).toLocaleDateString() : '2025-07-01'}</Text>
                   </div>
                   <div className="info-item">
-                    <Text type="secondary">用户ID</Text>
-                    <Text>{userProfile?.id || userProfile?.virtualId || 'demo-user'}</Text>
+                    <Text type="secondary">身份认证</Text>
+                    <Text>已实名</Text>
                   </div>
                   <div className="info-item">
                     <Text type="secondary">账户状态</Text>

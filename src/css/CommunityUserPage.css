@@ -1,6 +1,13 @@
 /* 我的帖子页面样式 */
 
 /* 主容器 */
+.community-user-page {
+    min-height: 100vh;
+    background: var(--background-green);
+    position: relative;
+    overflow-x: hidden;
+}
+
 .user-page-container {
     min-height: 100vh;
     background: var(--background-green);
@@ -28,9 +35,13 @@
 .user-page-header {
     background: linear-gradient(135deg, var(--primary-green) 0%, #1a3d0a 100%);
     color: white;
-    padding: 48px 0;
+    padding: 32px 24px;
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
 }
 
 .user-page-header::before {
@@ -81,6 +92,120 @@
     line-height: 1.5;
 }
 
+/* 用户信息区域 */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+    justify-content: center;
+}
+
+.user-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+.user-avatar:hover {
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* 社区用户页面的头像 - 较大尺寸 */
+.community-user-avatar {
+    width: 100px !important;
+    height: 100px !important;
+    min-width: 100px !important;
+    min-height: 100px !important;
+    max-width: 100px !important;
+    max-height: 100px !important;
+    border: 4px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
+    transition: all 0.3s ease !important;
+}
+
+.community-user-avatar:hover {
+    transform: scale(1.08) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25) !important;
+}
+
+.community-user-avatar.ant-avatar {
+    border: 4px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
+    background: var(--primary-green) !important;
+    color: white !important;
+    font-size: 36px !important;
+}
+
+.community-user-avatar.ant-avatar:hover {
+    transform: scale(1.08) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25) !important;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.user-details h2 {
+    color: white;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-details p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* 按钮样式 */
+.community-user-page .back-btn {
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    padding: 8px 16px !important;
+    height: auto !important;
+    transition: all 0.3s ease !important;
+}
+
+.community-user-page .back-btn:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    transform: translateY(-1px) !important;
+}
+
+.create-post-btn {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: var(--primary-green) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 12px 24px !important;
+    height: auto !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.create-post-btn:hover {
+    background: white !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
 /* 主要内容区域 */
 .user-page-content {
     max-width: 1200px;
@@ -88,6 +213,18 @@
     padding: 32px 24px;
     position: relative;
     z-index: 2;
+}
+
+/* 社区用户内容容器 */
+.community-user-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(45, 80, 22, 0.08);
+    border: 1px solid rgba(45, 80, 22, 0.1);
+    margin-top: 24px;
 }
 
 .user-page-layout {
@@ -173,11 +310,13 @@
 .nav-btn.ant-btn-primary {
     background: var(--primary-green) !important;
     border-color: var(--primary-green) !important;
+    color: white !important;
     box-shadow: 0 2px 8px rgba(45, 80, 22, 0.2) !important;
 }
 
 .nav-btn.ant-btn-primary:hover {
     background: var(--primary-green-light) !important;
+    color: white !important;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(45, 80, 22, 0.3) !important;
 }
@@ -275,7 +414,23 @@
 
 @media (max-width: 768px) {
     .user-page-header {
-        padding: 32px 0;
+        padding: 24px 16px;
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+    
+    .user-info {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .user-details h2 {
+        font-size: 20px;
+    }
+    
+    .user-details p {
+        font-size: 13px;
     }
     
     .user-page-main-title {
@@ -286,18 +441,73 @@
         padding: 24px 16px;
     }
     
+    .community-user-content {
+        padding: 20px;
+        margin: 16px;
+    }
+    
     .user-page-layout {
         gap: 20px;
     }
 }
 
 @media (max-width: 480px) {
+    .user-page-header {
+        padding: 20px 12px;
+        gap: 12px;
+    }
+    
+    .user-info {
+        gap: 12px;
+    }
+    
+    .user-avatar {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .community-user-avatar {
+        width: 80px !important;
+        height: 80px !important;
+        min-width: 80px !important;
+        min-height: 80px !important;
+        max-width: 80px !important;
+        max-height: 80px !important;
+    }
+    
+    .community-user-avatar.ant-avatar {
+        font-size: 28px !important;
+    }
+    
+    .user-details h2 {
+        font-size: 18px;
+    }
+    
+    .user-details p {
+        font-size: 12px;
+    }
+    
+    .community-user-page .back-btn {
+        padding: 6px 12px !important;
+        font-size: 12px !important;
+    }
+    
+    .create-post-btn {
+        padding: 8px 16px !important;
+        font-size: 12px !important;
+    }
+    
     .user-page-main-title {
         font-size: 1.6rem !important;
     }
     
     .user-page-subtitle {
         font-size: 0.9rem;
+    }
+    
+    .community-user-content {
+        padding: 16px;
+        margin: 12px;
     }
     
     .sidebar-card .ant-card-body {

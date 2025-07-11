@@ -12,7 +12,8 @@ import {
   DownOutlined,
   SettingOutlined,
   CheckCircleOutlined,
-  HeartOutlined
+  HeartOutlined,
+  MessageOutlined
 } from '@ant-design/icons';
 import '../css/AdminLayout.css';
 
@@ -44,9 +45,9 @@ const AdminLayout = ({ children }) => {
     const adminNavItems = [
         { path: '/admin/users', label: '用户管理', icon: <UserOutlined /> },
         { path: '/admin/posts', label: '帖子管理', icon: <FileTextOutlined /> },
+        { path: '/admin/comments', label: '评论管理', icon: <MessageOutlined /> },
         { path: '/admin/checkins', label: '打卡管理', icon: <CheckCircleOutlined /> },
         { path: '/admin/reports', label: '举报处理', icon: <ExclamationCircleOutlined /> },
-        { path: '/admin/review', label: '内容审核', icon: <FileTextOutlined /> },
         { path: '/admin/crisis', label: '危险用户', icon: <WarningOutlined /> },
         { path: '/admin/mental-resource', label: '心理资源', icon: <HeartOutlined /> }
     ];
@@ -124,9 +125,6 @@ const AdminLayout = ({ children }) => {
                                     className="admin-user-button"
                                     onClick={() => setShowUserMenu(!showUserMenu)}
                                 >
-                                    <div className="admin-user-avatar">
-                                        <UserOutlined />
-                                    </div>
                                     <span className="admin-user-name">管理员</span>
                                     <DownOutlined className="admin-dropdown-icon" />
                                 </button>

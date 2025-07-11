@@ -7,13 +7,14 @@ import {
     FireOutlined,
     ClockCircleOutlined
 } from '@ant-design/icons';
-import { message } from 'antd';
+import { message, Avatar } from 'antd';
 import PostDetail from '../components/CommunityPostDetail';
 import CommentInput from '../components/CommentIinput';
 import PostCommentList from '../components/CommunityPostCommentList';
 import { getPostDetail, getCommentOfPost, sendCommentToPost } from '../service/communityService';
 import { useUser } from '../lib/UserContext';
 import "../css/CommunityPostDetail.css";
+import UserInfoCard from '../components/UserInfoCard';
 
 const CommunityPostPage = () => {
     const { id } = useParams();
@@ -24,6 +25,7 @@ const CommunityPostPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize] = useState(10);
     const [loading, setLoading] = useState(false);
+    const [sidebarAvatarError, setSidebarAvatarError] = useState(false);
 
     const auth = useMemo(() => ({
         userId: userProfile?.userId,
@@ -123,6 +125,10 @@ const CommunityPostPage = () => {
         );
     }
 
+    const handleSidebarAvatarError = () => {
+        setSidebarAvatarError(true);
+    };
+
     return (
         <div className="community-post-page">
             <div className="post-back-section">
@@ -156,20 +162,7 @@ const CommunityPostPage = () => {
                             <UserOutlined className="sidebar-icon" />
                             <h4>作者信息</h4>
                         </div>
-                        <div className="author-info">
-                            <img
-                                src={getUserAvatar(postData.userId)}
-                                alt={getUserDisplayName(postData.userId)}
-                                className="author-avatar"
-                            />
-                            <div className="author-details">
-                                <div className="author-name">{getUserDisplayName(postData.userId)}</div>
-                                <div className="author-stats">
-                                    <span>帖子: {postData.postMetrics?.postCount || 0}</span>
-                                    <span>获赞: {postData.postMetrics?.likeCount || 0}</span>
-                                </div>
-                            </div>
-                        </div>
+                        <UserInfoCard userId={postData.userId} showStats={true} className="sidebar-author-info-card" />
                     </div>
 
                     <div className="sidebar-card related-posts">

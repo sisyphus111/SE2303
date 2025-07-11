@@ -22,7 +22,8 @@ import PostDetailPage from "./pages/CommunityPost";
 import SendCommunityPostPage from "./pages/SendCommunityPost";
 import CommunityUserPage from "./pages/CommunityUserPage";
 import AdminUsers from "./pages/AdminUsers";
-import AdminPosts from "./pages/AdminPosts";
+import AdminPostsManagement from "./pages/AdminPostsManagement";
+import AdminCommentsManagement from "./pages/AdminCommentsManagement";
 import AdminCheckins from "./pages/AdminCheckins";
 import AdminReports from "./pages/AdminReports";
 import AdminReview from "./pages/AdminReview";
@@ -40,7 +41,8 @@ const AdminRoutes = () => {
                 <Routes>
                     <Route path="/" element={<AdminUsers/>}/>
                     <Route path="/admin/users" element={<AdminUsers/>}/>
-                    <Route path="/admin/posts" element={<AdminPosts/>}/>
+                    <Route path="/admin/posts" element={<AdminPostsManagement/>}/>
+                    <Route path="/admin/comments" element={<AdminCommentsManagement/>}/>
                     <Route path="/admin/checkins" element={<AdminCheckins/>}/>
                     <Route path="/admin/reports" element={<AdminReports/>}/>
                     <Route path="/admin/review" element={<AdminReview/>}/>

@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { getUserStatus, getUserProfile, apiUpdateUserProfile, getUserPreferences, apiUpdateUserPreferences } from '../service/userService';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { getUserStatus, getUserProfile, apiUpdateUserProfile, getUserPreferences, apiUpdateUserPreferences, getUserInfo, getUserCommunityInfo, getUserStatistics } from '../service/userService';
 
 // Context
 const UserContext = createContext();
@@ -32,6 +32,9 @@ export const UserProvider = ({ children }) => {
   // ===== 全局加载和错误状态 =====
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // 使用useRef来存储用户缓存，避免在useCallback依赖中引起无限循环
+  const userCacheRef = useRef(new Map());
 
   // ===== 计算属性 =====
   const isAuthenticated = !!(userProfile && identity !== null && valid !== null);
@@ -166,6 +169,165 @@ export const UserProvider = ({ children }) => {
   const getUserDisplayName = useCallback(() => {
     return userProfile?.nickname || userProfile?.username || userProfile?.email || '用户';
   }, [userProfile]);
+
+  // 获取任意用户的显示信息 - 异步版本
+  const getUserDisplayInfoById = useCallback(async (userId) => {
+    // 如果是当前用户，直接使用当前用户信息
+    if (userProfile && userProfile.userId === userId) {
+      return {
+        nickname: userProfile?.nickname,
+        username: userProfile?.username,
+        hasNickname: !!userProfile?.nickname,
+        hasUsername: !!userProfile?.username
+      };
+    }
+    
+    // 检查缓存中是否有该用户信息
+    if (userCacheRef.current.has(userId)) {
+      const cachedUser = userCacheRef.current.get(userId);
+      return {
+        nickname: cachedUser?.nickname,
+        username: cachedUser?.username,
+        hasNickname: !!cachedUser?.nickname,
+        hasUsername: !!cachedUser?.username
+      };
+    }
+    
+    try {
+      // 从后端获取用户信息
+      const response = await getUserInfo(userId);
+      if (response && response.data) {
+        const userInfo = response.data;
+        // 缓存用户信息
+        userCacheRef.current.set(userId, userInfo);
+        return {
+          nickname: userInfo?.nickname,
+          username: userInfo?.username,
+          hasNickname: !!userInfo?.nickname,
+          hasUsername: !!userInfo?.username
+        };
+      }
+    } catch (error) {
+      console.error('获取用户信息失败:', error);
+    }
+    
+    // 如果获取失败，返回默认值
+    return {
+      nickname: null,
+      username: `用户${userId}`,
+      hasNickname: false,
+      hasUsername: true
+    };
+  }, [userProfile]);
+
+  // 获取任意用户的显示信息 - 同步版本
+  const getUserDisplayInfoByIdSync = useCallback((userId) => {
+    // 如果是当前用户，直接使用当前用户信息
+    if (userProfile && userProfile.userId === userId) {
+      return {
+        nickname: userProfile?.nickname,
+        username: userProfile?.username,
+        hasNickname: !!userProfile?.nickname,
+        hasUsername: !!userProfile?.username
+      };
+    }
+    
+    // 检查缓存中是否有该用户信息
+    if (userCacheRef.current.has(userId)) {
+      const cachedUser = userCacheRef.current.get(userId);
+      return {
+        nickname: cachedUser?.nickname,
+        username: cachedUser?.username,
+        hasNickname: !!cachedUser?.nickname,
+        hasUsername: !!cachedUser?.username
+      };
+    }
+    
+    // 如果缓存中没有，返回默认值并异步获取
+    getUserDisplayInfoById(userId).catch(console.error);
+    return {
+      nickname: null,
+      username: `用户${userId}`,
+      hasNickname: false,
+      hasUsername: true
+    };
+  }, [userProfile, getUserDisplayInfoById]);
+
+  // 获取用户的主要显示名称（用于@提及等场景，只显示用户名）
+  const getUserUsernameById = useCallback((userId) => {
+    // 如果是当前用户，直接使用当前用户信息
+    if (userProfile && userProfile.userId === userId) {
+      return userProfile?.username || '用户';
+    }
+    
+    // 检查缓存中是否有该用户信息
+    if (userCacheRef.current.has(userId)) {
+      const cachedUser = userCacheRef.current.get(userId);
+      return cachedUser?.username || '用户';
+    }
+    
+    // 如果缓存中没有，返回默认值并异步获取
+    getUserDisplayInfoById(userId).catch(console.error);
+    return `用户${userId}`;
+  }, [userProfile, getUserDisplayInfoById]);
+
+  // 获取用户的社区信息（头像、昵称、用户名等）
+  const getUserCommunityInfoById = useCallback(async (userId) => {
+    // 如果是当前用户，直接使用当前用户信息
+    if (userProfile && userProfile.userId === userId) {
+      return {
+        userId: userProfile.userId,
+        username: userProfile.username,
+        nickname: userProfile.nickname,
+        avatar: userProfile.avatar,
+        valid: userProfile.valid
+      };
+    }
+    
+    try {
+      // 从后端获取用户社区信息
+      const response = await getUserCommunityInfo(userId);
+      if (response) {
+        return response;
+      }
+    } catch (error) {
+      console.error('获取用户社区信息失败:', error);
+    }
+    
+    // 如果获取失败，返回默认值
+    return {
+      userId: userId,
+      username: `用户${userId}`,
+      nickname: null,
+      avatar: null,
+      valid: true
+    };
+  }, [userProfile]);
+
+  // 获取用户的统计数据（被点赞数、评论数等）
+  const getUserStatisticsById = useCallback(async (userId) => {
+    try {
+      // 从后端获取用户统计数据
+      const response = await getUserStatistics(userId);
+      if (response) {
+        return response;
+      }
+    } catch (error) {
+      console.error('获取用户统计数据失败:', error);
+    }
+    
+    // 如果获取失败，返回默认值
+    return {
+      likedCount: 0,
+      commentCount: 0
+    };
+  }, []);
+
+  // 获取用户的头像URL
+  const getUserAvatarById = useCallback(async (userId) => {
+    const communityInfo = await getUserCommunityInfoById(userId);
+    return communityInfo?.avatar || null;
+  }, [getUserCommunityInfoById]);
 
 
   // ===== 用户偏好设置相关方法 =====
@@ -359,6 +521,12 @@ export const UserProvider = ({ children }) => {
     updateUserProfile,
     getUserAvatar,
     getUserDisplayName,
+    getUserDisplayInfoById,
+    getUserDisplayInfoByIdSync,
+    getUserUsernameById,
+    getUserCommunityInfoById,
+    getUserStatisticsById,
+    getUserAvatarById,
     
     // 用户偏好设置相关方法
     updateUserPreferences,

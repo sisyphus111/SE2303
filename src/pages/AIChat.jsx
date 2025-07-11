@@ -500,7 +500,7 @@ const AIChat = () => {
                 <div className="message-time">{formatTime(message.timestamp)}</div>
               </div>
               {message.sender === 'user' && (
-                <div className="message-avatar user-avatar">
+                <div className="message-avatar user-avatar chat-user-avatar">
                   <UserOutlined />
                 </div>
               )}

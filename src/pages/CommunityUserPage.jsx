@@ -1,19 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from 'antd';
-import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Avatar } from 'antd';
+import { ArrowLeftOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
 import CommunityUserContent from '../components/CommunityUserContent';
+import UserDisplayName from '../components/UserDisplayName';
 import { useUser } from '../lib/UserContext';
 import '../css/CommunityUserPage.css';
 
 const CommunityUserPage = () => {
     const navigate = useNavigate();
     const { userProfile, valid, getUserAvatar, getUserDisplayName } = useUser();
+    const [avatarError, setAvatarError] = useState(false);
 
     if (!userProfile || !valid) {
         navigate('/login');
         return null;
     }
+
+    const handleAvatarError = () => {
+        setAvatarError(true);
+    };
 
     return (
         <div className="community-user-page">
@@ -27,13 +33,24 @@ const CommunityUserPage = () => {
                     返回
                 </Button>
                 <div className="user-info">
-                    <img
-                        src={getUserAvatar(userProfile.id)}
-                        alt={getUserDisplayName(userProfile.id)}
-                        className="user-avatar"
-                    />
+                    {avatarError ? (
+                        <Avatar 
+                            size={80} 
+                            icon={<UserOutlined />} 
+                            className="user-avatar community-user-avatar"
+                        />
+                    ) : (
+                        <img
+                            src={getUserAvatar(userProfile.userId)}
+                            alt={getUserDisplayName(userProfile.userId)}
+                            className="user-avatar community-user-avatar"
+                            onError={handleAvatarError}
+                        />
+                    )}
                     <div className="user-details">
-                        <h2>{getUserDisplayName(userProfile.id)}</h2>
+                        <h2>
+                            <UserDisplayName userId={userProfile.userId} />
+                        </h2>
                         <p>欢迎回来！查看你的帖子、点赞和收藏</p>
                     </div>
                 </div>

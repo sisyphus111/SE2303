@@ -304,6 +304,24 @@
   background: var(--accent-green);
 }
 
+/* 聊天中的用户头像 - 较小尺寸 */
+.chat-user-avatar {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  max-width: 32px !important;
+  max-height: 32px !important;
+  background: var(--accent-green) !important;
+  border: 2px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  font-size: 16px !important;
+  color: white !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
 .message-content {
   max-width: 75%;
   padding: 14px 18px;

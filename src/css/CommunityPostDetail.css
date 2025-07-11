@@ -20,7 +20,7 @@
   background: var(--white);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-medium);
-  color: var(--text-gray);
+  color: var(--text-gray) !important;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -28,11 +28,23 @@
   box-shadow: var(--shadow-light);
 }
 
+.community-post-page .back-btn {
+  color: var(--text-gray) !important;
+}
+
 .back-btn:hover {
   background: var(--light-gray);
   border-color: var(--accent-green);
-  color: var(--primary-green);
+  color: var(--primary-green) !important;
   transform: translateY(-1px);
+}
+
+.back-btn:focus {
+  color: var(--text-gray) !important;
+}
+
+.back-btn:active {
+  color: var(--text-gray) !important;
 }
 
 /* 页面布局 */
@@ -122,12 +134,63 @@
 /* 作者信息区域 */
 .post-author-section {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   margin-bottom: 24px;
   padding: 20px;
   background: var(--light-gray);
   border-radius: var(--radius-medium);
+  border: 1px solid var(--border-color);
+}
+
+.post-detail-author-card {
+  flex: 1;
+  padding: 0;
+  box-shadow: none;
+  background: transparent;
+  border: none;
+}
+
+.post-detail-author-card:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+.post-detail-author-card .user-info-card {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.post-detail-author-card .user-info-card:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+.post-detail-author-card .user-avatar {
+  width: 60px;
+  height: 60px;
+}
+
+.post-detail-author-card .user-nickname {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-green);
+}
+
+.post-detail-author-card .user-username {
+  font-size: 14px;
+  color: var(--text-gray);
+}
+
+.post-detail-author-card .user-stats {
+  margin-top: 8px;
+}
+
+.post-detail-author-card .stat-item {
+  background: var(--white);
+  padding: 4px 8px;
+  border-radius: var(--radius-small);
   border: 1px solid var(--border-color);
 }
 
@@ -143,6 +206,7 @@
   border-radius: 50%;
   border: 2px solid var(--accent-green);
   object-fit: cover;
+  flex-shrink: 0;
 }
 
 .author-details {
@@ -244,6 +308,17 @@
 .like-count {
   opacity: 0.8;
   font-size: 12px;
+}
+
+.report-btn {
+  background: var(--light-gray);
+  color: var(--text-gray);
+}
+
+.report-btn:hover {
+  background: var(--error);
+  color: var(--white);
+  border-color: var(--error);
 }
 
 .share-btn:hover {

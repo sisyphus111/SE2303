@@ -2,7 +2,6 @@ import React, {useMemo, useState} from 'react';
 import { SendOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import { useUser } from '../lib/UserContext';
-import { sendCommentToPost } from '../service/communityService';
 import ContentWarningModal from './ContentWarningModal';
 import { ContentInspectionClient } from '../service/diaryService';
 import '../css/CommentIinput.css';
@@ -50,18 +49,12 @@ const CommentInput = ({ onSubmit, postId }) => {
                     return; // 停止发送评论
                 }
 
-                // 内容安全，继续发送评论
-                const response = await sendCommentToPost(postId, comment, auth);
-                if (response.success) {
-                    onSubmit(response.data);
-                    setComment('');
-                    message.success('评论发表成功');
-                } else {
-                    message.error(response.error);
-                }
+                // 内容安全，通过onSubmit回调发送评论
+                onSubmit(comment);
+                setComment('');
             } catch (error) {
-                console.error('发送评论失败:', error);
-                message.error('发送评论失败，请稍后重试');
+                console.error('内容审查失败:', error);
+                message.error('内容审查失败，请稍后重试');
             }
         }
     };

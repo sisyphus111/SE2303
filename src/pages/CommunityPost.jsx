@@ -83,8 +83,7 @@ const CommunityPostPage = () => {
             message.error('请先登录');
             return;
         }
-        const commentData = { content };
-        const response = await sendCommentToPost(id, commentData, auth);
+        const response = await sendCommentToPost(id, content, auth);
         if (response.success) {
             setComments(prev => [...prev, response.data]);
             message.success('评论发表成功');

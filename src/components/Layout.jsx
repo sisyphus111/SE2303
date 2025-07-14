@@ -4,7 +4,7 @@ import {useAudio} from '../lib/GlobalAudioPlayer';
 import { useUser } from '../lib/UserContext';
 import UserDisplayName from './UserDisplayName';
 import { logout as authLogout } from '../service/authService';
-import NotificationDropdown from './NotificationDropdown';
+import ChatDropdown from './ChatDropdown';
 import { 
   HomeOutlined, 
   TeamOutlined, 
@@ -148,7 +148,7 @@ const Layout = ({children}) => {
                         {userProfile && identity && valid ? (
                             <div className="user-area">
                                 {/* 消息通知 */}
-                                <NotificationDropdown />
+                                <ChatDropdown />
                                 
                                 {/* 用户下拉菜单 */}
                                 <div className="user-dropdown" ref={userMenuRef}>

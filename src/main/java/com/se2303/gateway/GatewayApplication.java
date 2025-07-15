@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Bean;
  * - 预警服务 (localhost:8086)：处理预警信息、通知校园端功能
  * - 通知服务 (localhost:8087)：资源推送功能
  * - 检查服务 (localhost:8088)：内容审查功能
+ * - 聊天室服务 (localhost:8090)：处理在线聊天、WebSocket通信功能
  */
 @SpringBootApplication // Spring Boot应用主类注解，启用自动配置、组件扫描等功能
 public class GatewayApplication {
@@ -75,5 +76,6 @@ public class GatewayApplication {
         // - 路由到预警服务：http://localhost:8080/api/alert/*
         // - 路由到通知服务：http://localhost:8080/api/notification/*
         // - 路由到检查服务：http://localhost:8080/api/inspection/*
+        // - 路由到聊天室服务：http://localhost:8080/api/chat/*
     }
 } 

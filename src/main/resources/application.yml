@@ -130,6 +130,19 @@ spring:
             # 路径重写：保持原有路径结构不变
             - RewritePath=/api/informs/(?<segment>.*), /api/informs/${segment}
 
+        # -----------------------------------
+        # 聊天室服务路由配置
+        # -----------------------------------
+        - id: chat-service           # 路由唯一标识符
+          uri: http://localhost:8090      # 目标服务地址（聊天室服务）
+          predicates:                     # 路由匹配条件
+            - Path=/api/chat/**           # 匹配以/api/chat/开头的所有路径
+          filters:                        # 路由过滤器配置
+            # 路径重写：保持原有路径结构不变
+            - RewritePath=/api/chat/(?<segment>.*), /api/chat/${segment}
+
+
+
 
 # ===================================
 # JWT配置

@@ -123,6 +123,8 @@ public class RouteLoggingFilter implements GlobalFilter, Ordered {
                 return "notification-service";
             case 8088:
                 return "inspection-service";
+            case 8090:
+                return "chat-service";
             default:
                 return "unknown-service:" + port;
         }

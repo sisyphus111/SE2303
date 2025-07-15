@@ -280,6 +280,7 @@ const ChatDropdown = () => {
   const [lastScrollTrigger, setLastScrollTrigger] = useState(0); // 防重复触发
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
+  const inputRef = useRef(null); // 添加输入框ref
   const [page, setPage] = useState(1); // 修复：页码从1开始，符合后端期望
 
   // 使用WebSocket Hook
@@ -294,6 +295,18 @@ const ChatDropdown = () => {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  // 聊天框打开或切换模式时自动聚焦输入框
+  useEffect(() => {
+    if (isOpen) {
+      // 延迟聚焦，确保DOM已经渲染完成
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 100);
+    }
+  }, [isOpen, isFullscreen]);
 
   // 新消息或打开聊天室时滚动到底部
   useEffect(() => {
@@ -495,6 +508,11 @@ const ChatDropdown = () => {
     };
     setMessages((prev) => [...prev, tempMessage]);
 
+    // 立即保持输入框焦点
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+
     try {
       const success = await sendMessage(messageContent);
       if (success) {
@@ -517,6 +535,19 @@ const ChatDropdown = () => {
       console.error('❌ 消息发送异常:', err);
     } finally {
       setSendingMessage(false);
+      // 确保在发送完成后重新聚焦（使用多个时机确保焦点不丢失）
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 0);
+      
+      // 添加一个稍后的备用聚焦，防止某些情况下焦点丢失
+      setTimeout(() => {
+        if (inputRef.current && document.activeElement !== inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 50);
     }
   };
 
@@ -570,6 +601,18 @@ const ChatDropdown = () => {
     }
   };
 
+  // 聊天框打开或切换模式时自动聚焦输入框
+  useEffect(() => {
+    if (isOpen) {
+      // 延迟聚焦，确保DOM已经渲染完成
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 100);
+    }
+  }, [isOpen, isFullscreen]);
+
   return (
       <div className="chat-dropdown">
         {error && (
@@ -615,6 +658,7 @@ const ChatDropdown = () => {
                     </div>
                     <div className="chat-input-bar">
                 <textarea
+                    ref={inputRef}
                     className="chat-input"
                     value={input}
                     onChange={e => setInput(e.target.value)}
@@ -632,8 +676,7 @@ const ChatDropdown = () => {
                       </button>
                     </div>
                   </div>
-                </div>
-            ) : (
+                </div>                    ) : (
                 <div className="chat-mask" onClick={handleMaskClick}>
                   <div className="chat-panel" onClick={e => e.stopPropagation()}>
                     <div className="chat-header">
@@ -668,6 +711,7 @@ const ChatDropdown = () => {
                     </div>
                     <div className="chat-input-bar">
                 <textarea
+                    ref={inputRef}
                     className="chat-input"
                     value={input}
                     onChange={e => setInput(e.target.value)}

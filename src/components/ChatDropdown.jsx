@@ -280,6 +280,7 @@ const ChatDropdown = () => {
   const [lastScrollTrigger, setLastScrollTrigger] = useState(0); // 防重复触发
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
+  const inputRef = useRef(null); // 输入框引用，用于保持焦点
   const [page, setPage] = useState(1); // 修复：页码从1开始，符合后端期望
 
   // 使用WebSocket Hook
@@ -324,15 +325,22 @@ const ChatDropdown = () => {
       isInitialized = true;
       setIsInitializing(true);
       try {
-        // 修复：获取最新的消息作为第一页内容
-        // 通常聊天室的第一页应该是最新的消息，用户首先看到最近的对话
+        // 获取最新的消息作为第一页内容
+        // 第1页应该是最新的消息，用户首先看到最近的对话
         const pastMessages = await fetchPastMessages(1, 10);
-        // 直接使用后端返回的消息顺序，不进行任何排序
-        console.log('🏠 初始化加载第一页消息:', pastMessages ? pastMessages.map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content?.substring(0, 20) })) : []);
-        setMessages(pastMessages || []);
+        
+        // 确保消息按时间排序：最新的在底部
+        const sortedMessages = (pastMessages || []).sort((a, b) => {
+          const timeA = new Date(a.createdAt).getTime();
+          const timeB = new Date(b.createdAt).getTime();
+          return timeA - timeB; // 升序排列：旧消息在上，新消息在下
+        });
+        
+        console.log('🏠 初始化加载最新消息:', sortedMessages.map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content?.substring(0, 20) })));
+        setMessages(sortedMessages);
         setPage(1); // 当前已加载的页数
-        setHasMore((pastMessages || []).length === 10);
-        console.log('✅ 聊天室初始化成功，显示第一页内容，加载了', (pastMessages || []).length, '条消息，当前页:', 1);
+        setHasMore(sortedMessages.length === 10);
+        console.log('✅ 聊天室初始化成功，显示最新消息，加载了', sortedMessages.length, '条消息，当前页:', 1);
         
         // 滚动到底部显示最新消息
         setTimeout(() => {
@@ -411,8 +419,14 @@ const ChatDropdown = () => {
       return;
     }
     
-    console.log('📜 开始加载更多历史消息, 当前页:', page, '将请求第', page + 1, '页');
+    console.log('📜 开始加载更老的历史消息, 当前页:', page, '将请求第', page + 1, '页');
     setLoadingMore(true);
+    
+    // 记录当前滚动位置和容器高度
+    const container = messagesContainerRef.current;
+    const scrollTop = container?.scrollTop || 0;
+    const scrollHeight = container?.scrollHeight || 0;
+    
     try {
       const pastMessages = await fetchPastMessages(page + 1, 10);
       if (pastMessages && pastMessages.length > 0) {
@@ -420,12 +434,11 @@ const ChatDropdown = () => {
           // 过滤掉重复的消息
           const existingIds = new Set(prev.map(msg => msg.id));
           const newMessages = pastMessages.filter(msg => !existingIds.has(msg.id));
-          console.log('📖 加载更多历史消息:', newMessages.map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content?.substring(0, 20) })));
+          console.log('📖 加载更老的历史消息:', newMessages.map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content?.substring(0, 20) })));
           console.log('📅 当前最旧消息:', prev.length > 0 ? { id: prev[0].id, createdAt: prev[0].createdAt } : '无');
           
-          // 历史消息的合并策略：新加载的旧消息应该放在现有消息前面
-          // 这样保持时间顺序：更旧的消息在上面，更新的消息在下面
-          // 但是需要确保消息按时间正确排序
+          // 将新加载的更老消息放在现有消息的前面
+          // 然后对所有消息按时间排序，确保正确的时间顺序
           const allMessages = [...newMessages, ...prev];
           
           // 按时间戳排序，确保消息按正确的时间顺序显示
@@ -435,14 +448,22 @@ const ChatDropdown = () => {
             return timeA - timeB; // 升序排列：旧消息在前，新消息在后
           });
           
-          const result = sortedMessages;
-          console.log('📋 合并后消息顺序（显示前5条）:', result.slice(0, 5).map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content?.substring(0, 20) })));
-          return result;
+          console.log('📋 合并后消息顺序（显示前5条）:', sortedMessages.slice(0, 5).map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content?.substring(0, 20) })));
+          return sortedMessages;
         });
         setPage(page + 1);
         // 更严格的hasMore判断：只有当返回的消息数等于请求数时才认为还有更多
         setHasMore(pastMessages.length === 10);
-        console.log('✅ 加载了', pastMessages.length, '条更多历史消息, 当前页:', page + 1, 'hasMore:', pastMessages.length === 10);
+        console.log('✅ 加载了', pastMessages.length, '条更老的历史消息, 当前页:', page + 1, 'hasMore:', pastMessages.length === 10);
+        
+        // 在下一个渲染周期中恢复滚动位置
+        setTimeout(() => {
+          if (container) {
+            const newScrollHeight = container.scrollHeight;
+            const heightDifference = newScrollHeight - scrollHeight;
+            container.scrollTop = scrollTop + heightDifference;
+          }
+        }, 0);
       } else {
         setHasMore(false);
         console.log('📝 没有更多历史消息了');
@@ -524,6 +545,12 @@ const ChatDropdown = () => {
       console.error('❌ 消息发送异常:', err);
     } finally {
       setSendingMessage(false);
+      // 发送完成后重新聚焦输入框
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 100);
     }
   };
 
@@ -622,6 +649,7 @@ const ChatDropdown = () => {
                     </div>
                     <div className="chat-input-bar">
                 <textarea
+                    ref={inputRef}
                     className="chat-input"
                     value={input}
                     onChange={e => setInput(e.target.value)}
@@ -675,6 +703,7 @@ const ChatDropdown = () => {
                     </div>
                     <div className="chat-input-bar">
                 <textarea
+                    ref={inputRef}
                     className="chat-input"
                     value={input}
                     onChange={e => setInput(e.target.value)}

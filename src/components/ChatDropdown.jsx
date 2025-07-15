@@ -426,6 +426,7 @@ const ChatDropdown = () => {
     const container = messagesContainerRef.current;
     const scrollTop = container?.scrollTop || 0;
     const scrollHeight = container?.scrollHeight || 0;
+    const clientHeight = container?.clientHeight || 0;
     
     try {
       const pastMessages = await fetchPastMessages(page + 1, 10);
@@ -457,13 +458,23 @@ const ChatDropdown = () => {
         console.log('✅ 加载了', pastMessages.length, '条更老的历史消息, 当前页:', page + 1, 'hasMore:', pastMessages.length === 10);
         
         // 在下一个渲染周期中恢复滚动位置
+        // 由于新消息插入到前面，需要调整滚动位置以保持用户当前查看的内容在相同位置
         setTimeout(() => {
           if (container) {
             const newScrollHeight = container.scrollHeight;
             const heightDifference = newScrollHeight - scrollHeight;
+            // 新内容插入到前面，所以滚动位置需要向下偏移新内容的高度
+            // 这样用户当前查看的内容会保持在相同位置
             container.scrollTop = scrollTop + heightDifference;
+            console.log('📏 滚动位置调整:', { 
+              oldScrollTop: scrollTop, 
+              newScrollTop: scrollTop + heightDifference, 
+              heightDifference,
+              oldScrollHeight: scrollHeight,
+              newScrollHeight
+            });
           }
-        }, 0);
+        }, 100); // 增加延迟确保DOM完全更新
       } else {
         setHasMore(false);
         console.log('📝 没有更多历史消息了');

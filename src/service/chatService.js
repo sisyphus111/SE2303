@@ -47,16 +47,21 @@ class ChatService {
       // 转换后端PastMessage格式为前端需要的格式
       const messages = response.data.map(this.transformPastMessage);
       
+      // 更精确的hasMore判断
+      const hasMore = messages.length === size && response.hasMore !== false;
+      
       console.log('✅ 历史消息获取成功:', {
         count: messages.length,
         page: params.page,
-        size: params.size
+        size: params.size,
+        hasMore,
+        backendHasMore: response.hasMore
       });
       
       return {
         success: true,
         messages,
-        hasMore: messages.length === size, // 如果返回的消息数等于请求的size，说明可能还有更多
+        hasMore,
         currentPage: page
       };
       

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { MailOutlined, FullscreenOutlined, FullscreenExitOutlined, SendOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useUser } from '../lib/UserContext';
 import { useWebSocket } from '../utils/ws';
@@ -216,6 +216,7 @@ const ChatDropdown = () => {
   const [isInitializing, setIsInitializing] = useState(false);
   const [sendingMessage, setSendingMessage] = useState(false);
   const [error, setError] = useState(null);
+  const [lastScrollTrigger, setLastScrollTrigger] = useState(0); // 防重复触发
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const [page, setPage] = useState(1);
@@ -240,11 +241,26 @@ const ChatDropdown = () => {
 
   // 初始化聊天室和WebSocket回调
   useEffect(() => {
-    if (!isOpen || !userProfile?.userId) return;
+    if (!isOpen || !userProfile?.userId) {
+      // 关闭时重置状态
+      if (!isOpen) {
+        setMessages([]);
+        setHasMore(true);
+        setPage(1);
+        setIsInitializing(false);
+        setLoadingMore(false);
+        setError(null);
+        setLastScrollTrigger(0);
+      }
+      return;
+    }
+
+    let isInitialized = false;
 
     // 初始化聊天室
     const initializeChatRoom = async () => {
-      if (isInitializing) return;
+      if (isInitializing || isInitialized) return;
+      isInitialized = true;
       setIsInitializing(true);
       try {
         const pastMessages = await fetchPastMessages(1, 30);
@@ -309,24 +325,42 @@ const ChatDropdown = () => {
     setOnDisconnect(() => {
       console.log('📴 WebSocket连接断开');
     });
-  }, [isOpen, userProfile, fetchPastMessages, setOnMessage, setOnError, setOnConnect, setOnDisconnect, getUserCommunityInfoById]);
-  // 移除了isInitializing依赖，避免循环执行
+
+    // 立即初始化聊天室（如果WebSocket已连接）
+    initializeChatRoom();
+
+    return () => {
+      isInitialized = false;
+    };
+  }, [isOpen, userProfile?.userId]); // 移除fetchPastMessages等函数依赖，避免无限循环
 
   // 加载更多历史消息
-  const loadMoreMessages = async () => {
-    if (loadingMore || !hasMore) return;
+  const loadMoreMessages = useCallback(async () => {
+    if (loadingMore || !hasMore || isInitializing) {
+      console.log('跳过加载更多:', { loadingMore, hasMore, isInitializing });
+      return;
+    }
+    
+    console.log('开始加载更多消息, 当前页:', page);
     setLoadingMore(true);
     try {
       const pastMessages = await fetchPastMessages(page + 1, 20);
-      setMessages((prev) => {
-        // 过滤掉重复的消息
-        const existingIds = new Set(prev.map(msg => msg.id));
-        const newMessages = pastMessages.filter(msg => !existingIds.has(msg.id));
-        return [...newMessages, ...prev];
-      });
-      setPage(page + 1);
-      setHasMore(pastMessages.length === 20);
-      console.log('✅ 加载了', pastMessages.length, '条更多历史消息');
+      if (pastMessages && pastMessages.length > 0) {
+        setMessages((prev) => {
+          // 过滤掉重复的消息
+          const existingIds = new Set(prev.map(msg => msg.id));
+          const newMessages = pastMessages.filter(msg => !existingIds.has(msg.id));
+          console.log('新加载消息数量:', newMessages.length, '总消息数:', pastMessages.length);
+          return [...newMessages, ...prev];
+        });
+        setPage(page + 1);
+        // 更严格的hasMore判断：只有当返回的消息数等于请求数时才认为还有更多
+        setHasMore(pastMessages.length === 20);
+        console.log('✅ 加载了', pastMessages.length, '条更多历史消息, hasMore:', pastMessages.length === 20);
+      } else {
+        setHasMore(false);
+        console.log('📝 没有更多历史消息了');
+      }
     } catch (err) {
       console.error('❌ 加载更多消息失败:', err);
       setError('加载更多消息失败');
@@ -334,15 +368,32 @@ const ChatDropdown = () => {
     } finally {
       setLoadingMore(false);
     }
-  };
+  }, [loadingMore, hasMore, isInitializing, page]); // 移除fetchPastMessages依赖
 
-  // 滚动到顶部时加载更多
-  const handleScroll = () => {
-    if (!messagesContainerRef.current) return;
-    if (messagesContainerRef.current.scrollTop === 0 && hasMore && !loadingMore) {
+  // 滚动到顶部时加载更多 - 添加防抖和更精确的判断
+  const handleScroll = useCallback(() => {
+    const container = messagesContainerRef.current;
+    if (!container || loadingMore || !hasMore || isInitializing) return;
+    
+    // 更严格的条件：必须完全滚动到顶部
+    const scrollTop = container.scrollTop;
+    const shouldLoadMore = scrollTop <= 5; // 进一步缩小触发范围
+    
+    console.log('滚动检查:', { scrollTop, shouldLoadMore, loadingMore, hasMore, isInitializing });
+    
+    if (shouldLoadMore) {
+      const now = Date.now();
+      // 防止1秒内重复触发
+      if (now - lastScrollTrigger < 1000) {
+        console.log('滚动触发过于频繁，忽略');
+        return;
+      }
+      
+      console.log('触发加载更多消息');
+      setLastScrollTrigger(now);
       loadMoreMessages();
     }
-  };
+  }, [loadingMore, hasMore, isInitializing, loadMoreMessages, lastScrollTrigger]);
 
   // 发送消息
   const handleSend = async () => {

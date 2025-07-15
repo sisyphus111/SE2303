@@ -133,13 +133,35 @@ spring:
         # -----------------------------------
         # 聊天室服务路由配置
         # -----------------------------------
-        - id: chat-service           # 路由唯一标识符
+        - id: talk-service           # 路由唯一标识符
           uri: http://localhost:8090      # 目标服务地址（聊天室服务）
           predicates:                     # 路由匹配条件
-            - Path=/api/chat/**           # 匹配以/api/chat/开头的所有路径
+            - Path=/api/talk/**           # 匹配以/api/talk/开头的所有路径
           filters:                        # 路由过滤器配置
             # 路径重写：保持原有路径结构不变
-            - RewritePath=/api/chat/(?<segment>.*), /api/chat/${segment}
+            - RewritePath=/api/talk/(?<segment>.*), /api/talk/${segment}
+
+        # -----------------------------------
+        # 聊天室WebSocket路由配置
+        # -----------------------------------
+        - id: talk-websocket-service      # 路由唯一标识符
+          uri: ws://localhost:8090        # 目标WebSocket服务地址
+          predicates:                     # 路由匹配条件
+            - Path=/ws/talk/**            # 匹配以/ws/talk/开头的WebSocket路径
+          filters:                        # 路由过滤器配置
+            # 路径重写：将/ws/talk/xxx重写为/ws/xxx
+            - RewritePath=/ws/talk/(?<segment>.*), /ws/${segment}
+
+        # -----------------------------------
+        # AI聊天WebSocket路由配置
+        # -----------------------------------
+        - id: ai-chat-websocket-service   # 路由唯一标识符
+          uri: ws://localhost:8081        # 目标WebSocket服务地址
+          predicates:                     # 路由匹配条件
+            - Path=/ws/chat/**            # 匹配以/ws/chat/开头的WebSocket路径
+          filters:                        # 路由过滤器配置
+            # 路径重写：将/ws/chat/xxx重写为/ws/chat/xxx（保持不变）
+            - RewritePath=/ws/chat/(?<segment>.*), /ws/chat/${segment}
 
 
 

@@ -3,6 +3,8 @@
  * 负责WebSocket连接管理、消息发送接收、自动重连等功能
  */
 
+import { WEBSOCKET_URL } from './common';
+
 class ChatWebSocketService {
   constructor() {
     // WebSocket连接实例
@@ -10,7 +12,7 @@ class ChatWebSocketService {
     
     // 连接配置
     this.config = {
-      url: 'ws://localhost:8080/ws/chat',        // 通过网关连接WebSocket服务器地址
+      url: `${WEBSOCKET_URL}/ws/chat`,           // 通过网关连接WebSocket服务器地址（内网穿透）
       maxReconnectAttempts: 5,                   // 最大重连次数
       baseReconnectDelay: 1000,                  // 基础重连延迟(毫秒)
       maxReconnectDelay: 30000                   // 最大重连延迟(毫秒)

@@ -124,3 +124,4 @@ export async function post(url, data, options = {}) {
 
 export const BASEURL = 'https://6b465d84.r7.cpolar.cn';
 export const PREFIX = `${BASEURL}/api`;
+export const WEBSOCKET_URL = 'wss://6b465d84.r7.cpolar.cn';

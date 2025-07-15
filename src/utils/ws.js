@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { get, post } from '../service/common'; // 引入common.js的get和post方法
-import { PREFIX } from '../service/common'; // 引入PREFIX
+import { PREFIX, WEBSOCKET_URL } from '../service/common'; // 引入PREFIX和WEBSOCKET_URL
 
 // WebSocketService 作为一个类，管理WebSocket连接和相关逻辑
 const WebSocketService = {
     ws: null, // WebSocket实例
     heartTimer: null, // 心跳定时器
-    wsIp: 'ws://localhost:8080', // 通过网关连接WebSocket，网关端口为8080
+    wsIp: WEBSOCKET_URL, // 通过网关连接WebSocket，使用内网穿透域名
     apiGateway: PREFIX, // 使用common.js的PREFIX
 
     // 初始化WebSocket连接

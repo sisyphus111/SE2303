@@ -436,12 +436,19 @@ const ChatDropdown = () => {
           console.log('📖 加载更多历史消息:', newMessages.map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content?.substring(0, 20) })));
           console.log('📅 当前最旧消息:', prev.length > 0 ? { id: prev[0].id, createdAt: prev[0].createdAt } : '无');
           
-          // 历史消息的合并策略取决于后端返回的数据顺序
-          // 如果后端第2、3页返回的是更旧的消息，应该放在现有消息前面
-          // 历史消息的合并策略取决于后端返回的数据顺序
-          // 如果后端第2、3页返回的是更旧的消息，应该放在现有消息前面
+          // 历史消息的合并策略：新加载的旧消息应该放在现有消息前面
           // 这样保持时间顺序：更旧的消息在上面，更新的消息在下面
-          const result = [...newMessages, ...prev];
+          // 但是需要确保消息按时间正确排序
+          const allMessages = [...newMessages, ...prev];
+          
+          // 按时间戳排序，确保消息按正确的时间顺序显示
+          const sortedMessages = allMessages.sort((a, b) => {
+            const timeA = new Date(a.createdAt).getTime();
+            const timeB = new Date(b.createdAt).getTime();
+            return timeA - timeB; // 升序排列：旧消息在前，新消息在后
+          });
+          
+          const result = sortedMessages;
           console.log('📋 合并后消息顺序（显示前5条）:', result.slice(0, 5).map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content?.substring(0, 20) })));
           return result;
         });

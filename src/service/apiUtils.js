@@ -1,5 +1,7 @@
 // API工具函数 - 基于Cookie认证，不处理token
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
+import { PREFIX } from './common';
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || PREFIX;
 
 /**
  * 通用请求函数

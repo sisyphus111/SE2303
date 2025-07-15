@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import '../css/AIChat.css';
 import MarkdownRenderer from '../components/MarkdownRenderer';
+import { WEBSOCKET_URL } from '../service/common';
 import { 
   RobotOutlined, 
   SendOutlined, 
@@ -189,7 +190,7 @@ const AIChat = () => {
     try {
       setConnectionStatus('connecting');
       console.log('创建新的WebSocket连接');
-      const ws = new WebSocket('ws://localhost:8081/ws/chat');
+      const ws = new WebSocket(`${WEBSOCKET_URL}/ws/chat`);
       
       ws.onopen = () => {
         console.log('WebSocket连接成功');

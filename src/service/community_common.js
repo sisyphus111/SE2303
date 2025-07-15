@@ -1,4 +1,5 @@
 import { handleApiResponse } from '../lib/ErrorHandler';
+import { BASEURL, PREFIX } from './common';
 
 
 // const addAuthHeaders = (options = {}, auth = {}) => {
@@ -136,8 +137,7 @@ export async function post(url, data, options = {}) {
     return handleApiResponse(response);
 }
 
-export const BASEURL = 'https://6b465d84.r7.cpolar.cn';
-export const PREFIX = `${BASEURL}/api`;
+// 配置已从 common.js 导入，统一管理
 
 // ============ 管理员专用API方法 ============
 

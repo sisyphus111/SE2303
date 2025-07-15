@@ -14,6 +14,107 @@ function ChatBubble({ message, currentUserId }) {
     avatar: message.avatar
   };
 
+  // 头像组件 - 增强的头像显示逻辑
+  const Avatar = ({ userInfo, size = 40 }) => {
+    const [imageError, setImageError] = useState(false);
+    const [imageLoading, setImageLoading] = useState(true);
+    
+    // 检查头像URL是否有效
+    const hasValidAvatar = userInfo.avatar && 
+                          typeof userInfo.avatar === 'string' && 
+                          userInfo.avatar.trim() !== '' &&
+                          !imageError;
+
+    // 根据用户ID生成不同的背景色
+    const getAvatarBgColor = (userId) => {
+      const colors = [
+        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+        'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+        'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+        'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)'
+      ];
+      const index = parseInt(userId || '0') % colors.length;
+      return colors[index];
+    };
+
+    // 图片加载错误处理
+    const handleImageError = () => {
+      setImageError(true);
+      setImageLoading(false);
+    };
+
+    // 图片加载成功处理
+    const handleImageLoad = () => {
+      setImageLoading(false);
+      setImageError(false);
+    };
+
+    // 如果有有效头像且未出错，显示图片
+    if (hasValidAvatar) {
+      return (
+        <div style={{ position: 'relative' }}>
+          <img 
+            src={userInfo.avatar} 
+            alt="头像" 
+            style={{
+              width: `${size}px`,
+              height: `${size}px`,
+              borderRadius: '50%',
+              objectFit: 'cover',
+              background: '#f0f0f0',
+              display: imageLoading ? 'none' : 'block',
+              border: '2px solid #fff',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}
+            onError={handleImageError}
+            onLoad={handleImageLoad}
+          />
+          {imageLoading && (
+            <div style={{
+              width: `${size}px`,
+              height: `${size}px`,
+              borderRadius: '50%',
+              background: '#f0f0f0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '12px',
+              color: '#999',
+              border: '2px solid #fff',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}>
+              <LoadingOutlined />
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // 默认头像：显示用户名首字母，根据用户ID使用不同颜色
+    return (
+      <div style={{
+        width: `${size}px`,
+        height: `${size}px`,
+        borderRadius: '50%',
+        background: getAvatarBgColor(userInfo.id),
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'white',
+        fontSize: `${size * 0.4}px`,
+        fontWeight: 'bold',
+        border: '2px solid #fff',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+      }}>
+        {(userInfo.nickname || userInfo.username || '?').charAt(0).toUpperCase()}
+      </div>
+    );
+  };
+
   // 消息状态指示器
   const getMessageStatusIcon = () => {
     if (!isCurrentUser) return null;
@@ -51,27 +152,7 @@ function ChatBubble({ message, currentUserId }) {
               marginLeft: '12px',
               marginRight: '0'
             }}>
-              {userInfo.avatar ? (
-                  <img src={userInfo.avatar} alt="头像" style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                    background: '#f0f0f0'
-                  }} />
-              ) : (
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    background: '#f0f0f0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    {userInfo.username?.charAt(0).toUpperCase()}
-                  </div>
-              )}
+              <Avatar userInfo={userInfo} size={40} />
             </div>
             <div style={{
               display: 'flex',
@@ -135,27 +216,7 @@ function ChatBubble({ message, currentUserId }) {
               marginLeft: '0',
               marginRight: '12px'
             }}>
-              {userInfo.avatar ? (
-                  <img src={userInfo.avatar} alt="头像" style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                    background: '#f0f0f0'
-                  }} />
-              ) : (
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    background: '#f0f0f0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    {userInfo.username?.charAt(0).toUpperCase()}
-                  </div>
-              )}
+              <Avatar userInfo={userInfo} size={40} />
             </div>
             <div style={{
               display: 'flex',
@@ -219,7 +280,7 @@ const ChatDropdown = () => {
   const [lastScrollTrigger, setLastScrollTrigger] = useState(0); // 防重复触发
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1); // 修复：页码从1开始，符合后端期望
 
   // 使用WebSocket Hook
   const { sendMessage, fetchPastMessages, setOnMessage, setOnError, setOnConnect, setOnDisconnect } = useWebSocket(
@@ -246,7 +307,7 @@ const ChatDropdown = () => {
       if (!isOpen) {
         setMessages([]);
         setHasMore(true);
-        setPage(1);
+        setPage(1); // 修复：重置页码为1（第一页），符合后端期望
         setIsInitializing(false);
         setLoadingMore(false);
         setError(null);
@@ -263,13 +324,20 @@ const ChatDropdown = () => {
       isInitialized = true;
       setIsInitializing(true);
       try {
-        const pastMessages = await fetchPastMessages(1,10);
+        // 修复：获取最新的消息作为第一页内容
+        // 通常聊天室的第一页应该是最新的消息，用户首先看到最近的对话
+        const pastMessages = await fetchPastMessages(1, 10);
         // 直接使用后端返回的消息顺序，不进行任何排序
-        console.log('初始化消息顺序:', pastMessages.map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content.substring(0, 20) })));
-        setMessages(pastMessages);
-        setPage(1);
-        setHasMore(pastMessages.length === 10);
-        console.log('✅ 聊天室初始化成功，加载了', pastMessages.length, '条历史消息');
+        console.log('🏠 初始化加载第一页消息:', pastMessages ? pastMessages.map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content?.substring(0, 20) })) : []);
+        setMessages(pastMessages || []);
+        setPage(1); // 当前已加载的页数
+        setHasMore((pastMessages || []).length === 10);
+        console.log('✅ 聊天室初始化成功，显示第一页内容，加载了', (pastMessages || []).length, '条消息，当前页:', 1);
+        
+        // 滚动到底部显示最新消息
+        setTimeout(() => {
+          scrollToBottom();
+        }, 100);
       } catch (err) {
         console.error('❌ 聊天室初始化失败:', err);
         setError('加载聊天记录失败');
@@ -343,7 +411,7 @@ const ChatDropdown = () => {
       return;
     }
     
-    console.log('开始加载更多消息, 当前页:', page);
+    console.log('📜 开始加载更多历史消息, 当前页:', page, '将请求第', page + 1, '页');
     setLoadingMore(true);
     try {
       const pastMessages = await fetchPastMessages(page + 1, 10);
@@ -352,19 +420,22 @@ const ChatDropdown = () => {
           // 过滤掉重复的消息
           const existingIds = new Set(prev.map(msg => msg.id));
           const newMessages = pastMessages.filter(msg => !existingIds.has(msg.id));
-          console.log('加载更多消息顺序:', newMessages.map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content.substring(0, 20) })));
-          console.log('当前最旧消息:', prev.length > 0 ? { id: prev[0].id, createdAt: prev[0].createdAt } : '无');
+          console.log('📖 加载更多历史消息:', newMessages.map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content?.substring(0, 20) })));
+          console.log('📅 当前最旧消息:', prev.length > 0 ? { id: prev[0].id, createdAt: prev[0].createdAt } : '无');
           
-          // 直接按后端返回的顺序合并：历史消息在前，现有消息在后
-          // 这假设后端返回的历史消息是按时间升序排列的（旧消息在前）
+          // 历史消息的合并策略取决于后端返回的数据顺序
+          // 如果后端第2、3页返回的是更旧的消息，应该放在现有消息前面
+          // 历史消息的合并策略取决于后端返回的数据顺序
+          // 如果后端第2、3页返回的是更旧的消息，应该放在现有消息前面
+          // 这样保持时间顺序：更旧的消息在上面，更新的消息在下面
           const result = [...newMessages, ...prev];
-          console.log('合并后消息顺序:', result.slice(0, 5).map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content.substring(0, 20) })));
+          console.log('📋 合并后消息顺序（显示前5条）:', result.slice(0, 5).map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content?.substring(0, 20) })));
           return result;
         });
         setPage(page + 1);
         // 更严格的hasMore判断：只有当返回的消息数等于请求数时才认为还有更多
         setHasMore(pastMessages.length === 10);
-        console.log('✅ 加载了', pastMessages.length, '条更多历史消息, hasMore:', pastMessages.length === 10);
+        console.log('✅ 加载了', pastMessages.length, '条更多历史消息, 当前页:', page + 1, 'hasMore:', pastMessages.length === 10);
       } else {
         setHasMore(false);
         console.log('📝 没有更多历史消息了');

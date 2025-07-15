@@ -21,7 +21,7 @@ const WebSocketService = {
             return;
         }
 
-        WebSocketService.ws = new WebSocket(`${WebSocketService.wsIp}/ws/talk?x-userId=${userId}`);
+        WebSocketService.ws = new WebSocket(`${WebSocketService.wsIp}/ws/talk/conn?x-userId=${userId}`);
 
         WebSocketService.ws.onopen = () => {
             console.log('WebSocket连接已建立');
@@ -95,7 +95,9 @@ const WebSocketService = {
     // 获取历史消息（通过HTTP，使用common.js的get方法）
     fetchPastMessages: async (page, size, getUserCommunityInfoById, onError) => {
         try {
+            console.log('🔍 发送历史消息请求:', { page, size, url: '/talk/messages' });
             const result = await get('/talk/messages', { params: { page, size } });
+            console.log('📦 后端返回原始数据:', result);
 
             const pastMessages = await Promise.all(
                 result.map(async (msg) => {
@@ -111,6 +113,7 @@ const WebSocketService = {
                     };
                 })
             );
+            console.log('✅ 转换后的消息数据:', pastMessages.map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content?.substring(0, 30) })));
             return pastMessages;
             
         } catch (err) {

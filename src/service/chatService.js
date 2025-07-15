@@ -25,7 +25,7 @@ class ChatService {
   async getHistoryMessages(options = {}) {
     const {
       page = 0,
-      size = 20,
+      size = 10,
       beforeMessageId = null
     } = options;
 
@@ -131,10 +131,12 @@ class ChatService {
   transformPastMessage(pastMessage) {
     return {
       id: pastMessage.id.toString(),
-      text: pastMessage.content,
-      sender: pastMessage.userId.toString(),
-      timestamp: new Date(pastMessage.createdAt),
-      // 用户信息由前端在显示时通过getUserInfo获取
+      userId: pastMessage.userId.toString(),
+      username: pastMessage.username || `用户${pastMessage.userId}`,
+      nickname: pastMessage.nickname || pastMessage.username || `用户${pastMessage.userId}`,
+      avatar: pastMessage.avatar,
+      content: pastMessage.content,
+      createdAt: pastMessage.createdAt,
       messageType: 'history' // 标记为历史消息
     };
   }
@@ -180,10 +182,10 @@ class ChatService {
 
   /**
    * 初始化聊天室 - 获取最新的历史消息
-   * @param {number} size - 初始加载的消息数量，默认30条
+   * @param {number} size - 初始加载的消息数量，默认10条
    * @returns {Promise<Object>} 初始消息列表
    */
-  async initializeChatRoom(size = 30) {
+  async initializeChatRoom(size = 10) {
     console.log('🚀 初始化聊天室...');
     return await this.getHistoryMessages({
       page: 0,

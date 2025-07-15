@@ -263,10 +263,12 @@ const ChatDropdown = () => {
       isInitialized = true;
       setIsInitializing(true);
       try {
-        const pastMessages = await fetchPastMessages(1, 30);
+        const pastMessages = await fetchPastMessages(1,10);
+        // 直接使用后端返回的消息顺序，不进行任何排序
+        console.log('初始化消息顺序:', pastMessages.map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content.substring(0, 20) })));
         setMessages(pastMessages);
         setPage(1);
-        setHasMore(pastMessages.length === 30);
+        setHasMore(pastMessages.length === 10);
         console.log('✅ 聊天室初始化成功，加载了', pastMessages.length, '条历史消息');
       } catch (err) {
         console.error('❌ 聊天室初始化失败:', err);
@@ -344,19 +346,25 @@ const ChatDropdown = () => {
     console.log('开始加载更多消息, 当前页:', page);
     setLoadingMore(true);
     try {
-      const pastMessages = await fetchPastMessages(page + 1, 20);
+      const pastMessages = await fetchPastMessages(page + 1, 10);
       if (pastMessages && pastMessages.length > 0) {
         setMessages((prev) => {
           // 过滤掉重复的消息
           const existingIds = new Set(prev.map(msg => msg.id));
           const newMessages = pastMessages.filter(msg => !existingIds.has(msg.id));
-          console.log('新加载消息数量:', newMessages.length, '总消息数:', pastMessages.length);
-          return [...newMessages, ...prev];
+          console.log('加载更多消息顺序:', newMessages.map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content.substring(0, 20) })));
+          console.log('当前最旧消息:', prev.length > 0 ? { id: prev[0].id, createdAt: prev[0].createdAt } : '无');
+          
+          // 直接按后端返回的顺序合并：历史消息在前，现有消息在后
+          // 这假设后端返回的历史消息是按时间升序排列的（旧消息在前）
+          const result = [...newMessages, ...prev];
+          console.log('合并后消息顺序:', result.slice(0, 5).map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content.substring(0, 20) })));
+          return result;
         });
         setPage(page + 1);
         // 更严格的hasMore判断：只有当返回的消息数等于请求数时才认为还有更多
-        setHasMore(pastMessages.length === 20);
-        console.log('✅ 加载了', pastMessages.length, '条更多历史消息, hasMore:', pastMessages.length === 20);
+        setHasMore(pastMessages.length === 10);
+        console.log('✅ 加载了', pastMessages.length, '条更多历史消息, hasMore:', pastMessages.length === 10);
       } else {
         setHasMore(false);
         console.log('📝 没有更多历史消息了');

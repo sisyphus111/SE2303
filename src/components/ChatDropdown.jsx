@@ -276,9 +276,22 @@ const ChatDropdown = () => {
           createdAt: new Date(message.content.createdAt),
           messageType: 'sent'
         };
-        setMessages((prev) => prev.map((msg) =>
-            msg.id === `temp_${newMessage.id}` ? newMessage : msg
-        ).concat(newMessage));
+        setMessages((prev) => {
+          const existingTempIndex = prev.findIndex(msg => msg.id === `temp_${newMessage.id}`);
+          if (existingTempIndex !== -1) {
+            // 替换临时消息
+            const newMessages = [...prev];
+            newMessages[existingTempIndex] = newMessage;
+            return newMessages;
+          } else {
+            // 检查是否已存在相同ID的消息，避免重复添加
+            const existingMessageIndex = prev.findIndex(msg => msg.id === newMessage.id);
+            if (existingMessageIndex !== -1) {
+              return prev; // 消息已存在，不添加
+            }
+            return [...prev, newMessage];
+          }
+        });
         console.log('✅ 收到新消息:', newMessage);
       }
     });
@@ -296,7 +309,8 @@ const ChatDropdown = () => {
     setOnDisconnect(() => {
       console.log('📴 WebSocket连接断开');
     });
-  }, [isOpen, userProfile, fetchPastMessages, setOnMessage, setOnError, setOnConnect, setOnDisconnect, getUserCommunityInfoById, isInitializing]);
+  }, [isOpen, userProfile, fetchPastMessages, setOnMessage, setOnError, setOnConnect, setOnDisconnect, getUserCommunityInfoById]);
+  // 移除了isInitializing依赖，避免循环执行
 
   // 加载更多历史消息
   const loadMoreMessages = async () => {
@@ -304,7 +318,12 @@ const ChatDropdown = () => {
     setLoadingMore(true);
     try {
       const pastMessages = await fetchPastMessages(page + 1, 20);
-      setMessages((prev) => [...pastMessages, ...prev]);
+      setMessages((prev) => {
+        // 过滤掉重复的消息
+        const existingIds = new Set(prev.map(msg => msg.id));
+        const newMessages = pastMessages.filter(msg => !existingIds.has(msg.id));
+        return [...newMessages, ...prev];
+      });
       setPage(page + 1);
       setHasMore(pastMessages.length === 20);
       console.log('✅ 加载了', pastMessages.length, '条更多历史消息');

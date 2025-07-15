@@ -11,7 +11,7 @@ import { get, post } from './common.js';
 class ChatService {
   constructor() {
     // API路径前缀
-    this.API_PREFIX = '/chat';
+    this.API_PREFIX = '/talk';
   }
 
   /**
@@ -44,31 +44,22 @@ class ChatService {
       
       const response = await get(`${this.API_PREFIX}/history`, { params });
       
-      if (response.success) {
-        // 转换后端PastMessage格式为前端需要的格式
-        const messages = response.data.map(this.transformPastMessage);
-        
-        console.log('✅ 历史消息获取成功:', {
-          count: messages.length,
-          page: params.page,
-          size: params.size
-        });
-        
-        return {
-          success: true,
-          messages,
-          hasMore: messages.length === size, // 如果返回的消息数等于请求的size，说明可能还有更多
-          currentPage: page
-        };
-      } else {
-        console.error('❌ 获取历史消息失败:', response.message);
-        return {
-          success: false,
-          message: response.message,
-          messages: [],
-          hasMore: false
-        };
-      }
+      // 转换后端PastMessage格式为前端需要的格式
+      const messages = response.data.map(this.transformPastMessage);
+      
+      console.log('✅ 历史消息获取成功:', {
+        count: messages.length,
+        page: params.page,
+        size: params.size
+      });
+      
+      return {
+        success: true,
+        messages,
+        hasMore: messages.length === size, // 如果返回的消息数等于请求的size，说明可能还有更多
+        currentPage: page
+      };
+      
     } catch (error) {
       console.error('❌ 获取历史消息异常:', error);
       return {

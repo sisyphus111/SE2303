@@ -10,7 +10,7 @@ class ChatWebSocketService {
     
     // 连接配置
     this.config = {
-      url: 'ws://localhost:8081/ws/chat',        // WebSocket服务器地址
+      url: 'ws://localhost:8080/ws/chat',        // 通过网关连接WebSocket服务器地址
       maxReconnectAttempts: 5,                   // 最大重连次数
       baseReconnectDelay: 1000,                  // 基础重连延迟(毫秒)
       maxReconnectDelay: 30000                   // 最大重连延迟(毫秒)

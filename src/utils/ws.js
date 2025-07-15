@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { get, post } from './common'; // 引入common.js的get和post方法
-import { PREFIX } from './common'; // 引入PREFIX
+import { get, post } from '../service/common'; // 引入common.js的get和post方法
+import { PREFIX } from '../service/common'; // 引入PREFIX
 
 // WebSocketService 作为一个类，管理WebSocket连接和相关逻辑
 const WebSocketService = {
     ws: null, // WebSocket实例
     heartTimer: null, // 心跳定时器
-    wsIp: 'ws://7936e369.r10.vip.cpolar.cn', // 替换为实际WebSocket地址，与PREFIX对应的WebSocket地址
+    wsIp: 'ws://localhost:8080', // 通过网关连接WebSocket，网关端口为8080
     apiGateway: PREFIX, // 使用common.js的PREFIX
 
     // 初始化WebSocket连接
@@ -21,7 +21,7 @@ const WebSocketService = {
             return;
         }
 
-        WebSocketService.ws = new WebSocket(`${WebSocketService.wsIp}/ws?x-userId=${userId}`);
+        WebSocketService.ws = new WebSocket(`${WebSocketService.wsIp}/ws/talk?x-userId=${userId}`);
 
         WebSocketService.ws.onopen = () => {
             console.log('WebSocket连接已建立');
@@ -78,7 +78,7 @@ const WebSocketService = {
         };
 
         try {
-            const result = await post('/messages', sentMessage);
+            const result = await post('/talk/messages', sentMessage);
             if (result.success) {
                 return true;
             } else {
@@ -95,27 +95,24 @@ const WebSocketService = {
     // 获取历史消息（通过HTTP，使用common.js的get方法）
     fetchPastMessages: async (page, size, getUserCommunityInfoById, onError) => {
         try {
-            const result = await get('/messages', { params: { page, size } });
-            if (result.success) {
-                const pastMessages = await Promise.all(
-                    result.data.map(async (msg) => {
-                        const senderInfo = await getUserCommunityInfoById(msg.userId);
-                        return {
-                            id: msg.id,
-                            userId: msg.userId,
-                            username: senderInfo.username || `用户${msg.userId}`,
-                            nickname: senderInfo.nickname,
-                            avatar: senderInfo.avatar,
-                            content: msg.content,
-                            createdAt: msg.createdAt
-                        };
-                    })
-                );
-                return pastMessages;
-            } else {
-                onError(result.message || '获取历史消息失败');
-                return [];
-            }
+            const result = await get('/talk/messages', { params: { page, size } });
+
+            const pastMessages = await Promise.all(
+                result.map(async (msg) => {
+                    const senderInfo = await getUserCommunityInfoById(msg.userId);
+                    return {
+                        id: msg.id,
+                        userId: msg.userId,
+                        username: senderInfo.username || `用户${msg.userId}`,
+                        nickname: senderInfo.nickname,
+                        avatar: senderInfo.avatar,
+                        content: msg.content,
+                        createdAt: msg.createdAt
+                    };
+                })
+            );
+            return pastMessages;
+            
         } catch (err) {
             console.error('获取历史消息失败:', err);
             onError('获取历史失败');

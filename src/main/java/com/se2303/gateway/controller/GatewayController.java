@@ -73,6 +73,7 @@ public class GatewayController {
         services.put("alert-service", "http://localhost:8086"); // 预警服务地址
         services.put("notification-service", "http://localhost:8087"); // 通知服务地址
         services.put("inspection-service", "http://localhost:8088"); // 检查服务地址
+        services.put("chat-service", "http://localhost:8090"); // 检查服务地址
         info.put("services", services); // 将服务信息添加到总信息中
         
         // 添加网关功能特性

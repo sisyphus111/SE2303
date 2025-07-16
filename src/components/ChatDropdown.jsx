@@ -323,8 +323,7 @@ const ChatDropdown = () => {
     }
     
     // 如果对话框已打开，增量加载新消息
-    // 使用推送消息中的时间戳进行增量加载
-    await loadNewMessages(wsMessage.timestamp);
+    await loadNewMessages();
   }, [isOpen]);
 
   // 处理消息更新通知
@@ -350,35 +349,22 @@ const ChatDropdown = () => {
   }, []);
 
   // 增量加载新消息
-  const loadNewMessages = useCallback(async (afterTimestamp = null) => {
-    if (isLoadingNewMessages) {
-      console.log('跳过增量加载: 正在加载中');
+  const loadNewMessages = useCallback(async () => {
+    if (isLoadingNewMessages || !lastMessageTimestamp) {
+      console.log('跳过增量加载:', { isLoadingNewMessages, lastMessageTimestamp });
       return;
     }
     
-    // 使用传入的时间戳或者本地保存的时间戳
-    const timestampToUse = afterTimestamp || lastMessageTimestamp;
-    
-    if (!timestampToUse) {
-      console.log('跳过增量加载: 没有时间戳');
-      return;
-    }
-    
-    console.log('🆕 开始增量加载新消息，上次时间戳:', timestampToUse);
+    console.log('🆕 开始增量加载新消息，上次时间戳:', lastMessageTimestamp);
     setIsLoadingNewMessages(true);
     
     try {
-      // 将时间戳转换为毫秒格式（如果需要）
-      const timestampMs = typeof timestampToUse === 'string' 
-        ? new Date(timestampToUse).getTime() 
-        : timestampToUse;
-      
-      // 获取指定时间戳之后的新消息
+      // 获取上次加载的最后一条消息时间戳之后的新消息
       const newMessages = await fetchPastMessages(
         1, 
         20, 
         { 
-          after: timestampMs,
+          after: lastMessageTimestamp,
           order: 'asc'  // 按时间正序获取
         }
       );
@@ -424,7 +410,7 @@ const ChatDropdown = () => {
     } finally {
       setIsLoadingNewMessages(false);
     }
-  }, [isLoadingNewMessages, lastMessageTimestamp, fetchPastMessages]);
+  }, [lastMessageTimestamp, isLoadingNewMessages, fetchPastMessages]);
 
   // 初始化聊天室和WebSocket回调
   useEffect(() => {

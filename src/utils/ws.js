@@ -8,6 +8,16 @@ const WebSocketService = {
     heartTimer: null, // 心跳定时器
     wsIp: WEBSOCKET_URL, // 通过网关连接WebSocket，使用内网穿透域名
     apiGateway: PREFIX, // 使用common.js的PREFIX
+    
+    // WebSocket连接配置
+    config: {
+        // 是否使用新的API端点（当后端实现新API时设置为true）
+        useNewAPI: false,
+        // 连接重试次数
+        maxRetries: 3,
+        // 重试延迟（毫秒）
+        retryDelay: 2000
+    },
 
     // 初始化WebSocket连接
     initialize: (userId, onMessage, onError, onConnect, onDisconnect, onNewMessage, onMessageUpdate) => {
@@ -21,8 +31,13 @@ const WebSocketService = {
             return;
         }
 
-        // 修改连接地址以匹配后端API文档
-        WebSocketService.ws = new WebSocket(`${WebSocketService.wsIp}/websocket?x-userId=${userId}`);
+        // 根据配置选择连接地址
+        const wsUrl = WebSocketService.config.useNewAPI 
+            ? `${WebSocketService.wsIp}/websocket?x-userId=${userId}`  // 新的API端点
+            : `${WebSocketService.wsIp}/ws/talk/conn?x-userId=${userId}`;  // 原来的端点
+
+        console.log(`尝试连接WebSocket: ${wsUrl}`);
+        WebSocketService.ws = new WebSocket(wsUrl);
 
         WebSocketService.ws.onopen = () => {
             console.log('WebSocket连接已建立');
@@ -72,7 +87,7 @@ const WebSocketService = {
         };
 
         WebSocketService.ws.onerror = (err) => {
-            console.error('WebSocket错误:', err);
+            console.error('WebSocket连接错误:', err);
             if (onError) onError('WebSocket连接错误');
         };
     },
@@ -120,16 +135,37 @@ const WebSocketService = {
         try {
             const params = { page, size, ...options };
             
-            // 根据是否有after参数选择不同的API端点
-            const apiEndpoint = options.after ? '/talk/messages/incremental' : '/talk/messages';
+            // 根据配置和参数选择API端点
+            let apiEndpoint;
+            if (WebSocketService.config.useNewAPI && options.after) {
+                // 使用新的增量API
+                apiEndpoint = '/talk/messages/incremental';
+            } else {
+                // 使用原有的API
+                apiEndpoint = '/talk/messages';
+                // 如果使用原有API但有after参数，在控制台提醒但继续使用原API
+                if (options.after) {
+                    console.warn('⚠️ 检测到增量查询请求，但后端尚未启用新API，将使用原有API');
+                }
+            }
             
-            console.log('🔍 发送历史消息请求:', { params, url: apiEndpoint });
+            console.log('🔍 发送历史消息请求:', { params, url: apiEndpoint, useNewAPI: WebSocketService.config.useNewAPI });
             
             const result = await get(apiEndpoint, { params });
             console.log('📦 后端返回原始数据:', result);
 
-            // 处理后端返回的数据格式
-            const messagesData = result.data || result;
+            // 处理后端返回的数据格式（兼容新旧两种格式）
+            let messagesData;
+            if (result.data && Array.isArray(result.data)) {
+                // 新API格式: {success: true, data: [...]}
+                messagesData = result.data;
+            } else if (Array.isArray(result)) {
+                // 原有API格式: [...]
+                messagesData = result;
+            } else {
+                console.error('❌ 无法识别的数据格式:', result);
+                messagesData = [];
+            }
             
             const pastMessages = await Promise.all(
                 messagesData.map(async (msg) => {
@@ -168,6 +204,24 @@ const WebSocketService = {
             WebSocketService.ws = null;
         }
         clearInterval(WebSocketService.heartTimer);
+    },
+
+    // 更新配置（用于启用新API功能）
+    updateConfig: (newConfig) => {
+        WebSocketService.config = { ...WebSocketService.config, ...newConfig };
+        console.log('🔧 WebSocket配置已更新:', WebSocketService.config);
+    },
+
+    // 启用新API功能
+    enableNewAPI: () => {
+        WebSocketService.updateConfig({ useNewAPI: true });
+        console.log('✅ 已启用新API功能，下次连接将使用新的端点');
+    },
+
+    // 禁用新API功能（回退到原有API）
+    disableNewAPI: () => {
+        WebSocketService.updateConfig({ useNewAPI: false });
+        console.log('⬇️ 已禁用新API功能，使用原有API端点');
     }
 };
 

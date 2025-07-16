@@ -2,7 +2,36 @@
 
 ## 🎯 功能概述
 
-社区聊天系统现在支持**实时同步新消息**，用户无需重新打开对话框就能看到其他用户发送的新消息。
+社区聊天系统现在支持**实时同步新消息**，并提供了新旧API的兼容性方案。
+
+## ⚠️ 当前状态
+
+### 🔄 **兼容性模式**
+前端已经实现了新旧API的兼容性支持：
+- **默认使用原有API** - 确保现有功能正常工作
+- **支持切换到新API** - 当后端准备好时可以无缝切换
+- **自动降级机制** - 如果新API不可用，自动回退到原有API
+
+### 🛠️ **调试工具**
+提供了浏览器控制台调试工具，可以方便地切换和测试：
+
+```javascript
+// 在浏览器控制台中使用
+WSDebug.help()              // 显示帮助信息
+WSDebug.getConfig()         // 查看当前配置
+WSDebug.enableNewAPI()      // 启用新API功能
+WSDebug.disableNewAPI()     // 回退到原有API
+WSDebug.testConnection()    // 测试连接配置
+```
+
+## 🔧 API端点对照
+
+| 功能 | 原有API | 新API | 当前状态 |
+|------|---------|-------|----------|
+| WebSocket连接 | `/ws/talk/conn` | `/websocket` | ✅ 使用原有API |
+| 历史消息查询 | `/talk/messages` | `/talk/messages` | ✅ 正常工作 |
+| 增量消息查询 | 不支持 | `/talk/messages/incremental` | ⏳ 等待后端实现 |
+| 消息发送 | `/talk/messages` | `/talk/messages` | ✅ 正常工作 |
 
 ## ✨ 新功能特性
 

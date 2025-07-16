@@ -11,8 +11,6 @@ const WebSocketService = {
     
     // WebSocket连接配置
     config: {
-        // 是否使用新的API端点（当后端实现新API时设置为true）
-        useNewAPI: false,
         // 连接重试次数
         maxRetries: 3,
         // 重试延迟（毫秒）
@@ -31,10 +29,8 @@ const WebSocketService = {
             return;
         }
 
-        // 根据配置选择连接地址
-        const wsUrl = WebSocketService.config.useNewAPI 
-            ? `${WebSocketService.wsIp}/websocket?x-userId=${userId}`  // 新的API端点
-            : `${WebSocketService.wsIp}/ws/talk/conn?x-userId=${userId}`;  // 原来的端点
+        // 使用旧API端点连接
+        const wsUrl = `${WebSocketService.wsIp}/ws/talk/conn?x-userId=${userId}`;
 
         console.log(`尝试连接WebSocket: ${wsUrl}`);
         WebSocketService.ws = new WebSocket(wsUrl);
@@ -135,32 +131,21 @@ const WebSocketService = {
         try {
             const params = { page, size, ...options };
             
-            // 根据配置和参数选择API端点
-            let apiEndpoint;
-            if (WebSocketService.config.useNewAPI && options.after) {
-                // 使用新的增量API
-                apiEndpoint = '/talk/messages/incremental';
-            } else {
-                // 使用原有的API
-                apiEndpoint = '/talk/messages';
-                // 如果使用原有API但有after参数，在控制台提醒但继续使用原API
-                if (options.after) {
-                    console.warn('⚠️ 检测到增量查询请求，但后端尚未启用新API，将使用原有API');
-                }
-            }
+            // 使用标准API端点
+            const apiEndpoint = '/talk/messages';
             
-            console.log('🔍 发送历史消息请求:', { params, url: apiEndpoint, useNewAPI: WebSocketService.config.useNewAPI });
+            console.log('🔍 发送历史消息请求:', { params, url: apiEndpoint });
             
             const result = await get(apiEndpoint, { params });
             console.log('📦 后端返回原始数据:', result);
 
-            // 处理后端返回的数据格式（兼容新旧两种格式）
+            // 处理后端返回的数据格式
             let messagesData;
             if (result.data && Array.isArray(result.data)) {
-                // 新API格式: {success: true, data: [...]}
+                // API格式: {success: true, data: [...]}
                 messagesData = result.data;
             } else if (Array.isArray(result)) {
-                // 原有API格式: [...]
+                // 直接数组格式: [...]
                 messagesData = result;
             } else {
                 console.error('❌ 无法识别的数据格式:', result);
@@ -206,22 +191,10 @@ const WebSocketService = {
         clearInterval(WebSocketService.heartTimer);
     },
 
-    // 更新配置（用于启用新API功能）
+    // 更新配置
     updateConfig: (newConfig) => {
         WebSocketService.config = { ...WebSocketService.config, ...newConfig };
         console.log('🔧 WebSocket配置已更新:', WebSocketService.config);
-    },
-
-    // 启用新API功能
-    enableNewAPI: () => {
-        WebSocketService.updateConfig({ useNewAPI: true });
-        console.log('✅ 已启用新API功能，下次连接将使用新的端点');
-    },
-
-    // 禁用新API功能（回退到原有API）
-    disableNewAPI: () => {
-        WebSocketService.updateConfig({ useNewAPI: false });
-        console.log('⬇️ 已禁用新API功能，使用原有API端点');
     }
 };
 
@@ -290,5 +263,102 @@ export const useWebSocket = (userId, getUserCommunityInfoById) => {
         setOnMessageUpdate
     };
 };
+
+// 全局调试工具 - 用于测试WebSocket连接
+if (typeof window !== 'undefined') {
+    window.WSDebug = {
+        // 显示帮助信息
+        help() {
+            console.log(`
+🔧 WebSocket调试工具帮助:
+
+1. WSDebug.getConfig()       - 查看当前配置
+2. WSDebug.testConnection()  - 测试连接配置
+3. WSDebug.forceReconnect()  - 强制重新连接
+4. WSDebug.getStatus()       - 查看连接状态
+5. WSDebug.help()           - 显示此帮助信息
+
+当前连接路径: /ws/talk/conn
+            `);
+        },
+
+        // 查看当前配置
+        getConfig() {
+            console.log('📋 当前WebSocket配置:', WebSocketService.config);
+            console.log('🔗 WebSocket状态:', WebSocketService.ws?.readyState);
+            console.log('📡 连接地址:', WebSocketService.wsIp);
+            return WebSocketService.config;
+        },
+
+
+
+        // 测试连接配置
+        testConnection() {
+            const testUrl = `${WebSocketService.wsIp}/ws/talk/conn?x-userId=test123`;
+            
+            console.log('🧪 测试WebSocket连接配置:');
+            console.log('📍 测试地址:', testUrl);
+            
+            // 创建测试连接（不影响现有连接）
+            const testWs = new WebSocket(testUrl);
+            
+            testWs.onopen = () => {
+                console.log('✅ 测试连接成功');
+                testWs.close();
+            };
+            
+            testWs.onerror = (error) => {
+                console.error('❌ 测试连接失败:', error);
+            };
+            
+            testWs.onclose = (event) => {
+                console.log('🔌 测试连接已关闭:', event.code, event.reason);
+            };
+            
+            return '测试连接已启动，请查看控制台输出';
+        },
+
+        // 强制重新连接
+        forceReconnect() {
+            console.log('🔄 强制重新连接WebSocket...');
+            WebSocketService.disconnect();
+            setTimeout(() => {
+                console.log('🔗 开始重新连接...');
+                // 这里需要用户自己调用初始化方法
+                console.log('⚠️ 请在组件中手动重新初始化WebSocket连接');
+            }, 1000);
+            return '已断开连接，请在组件中重新初始化';
+        },
+
+        // 查看连接状态
+        getStatus() {
+            const ws = WebSocketService.ws;
+            if (!ws) {
+                console.log('❌ WebSocket未初始化');
+                return 'not-initialized';
+            }
+            
+            const states = {
+                0: 'CONNECTING',
+                1: 'OPEN', 
+                2: 'CLOSING',
+                3: 'CLOSED'
+            };
+            
+            const status = states[ws.readyState] || 'UNKNOWN';
+            console.log('📡 WebSocket状态:', status);
+            console.log('🔗 连接地址:', ws.url);
+            
+            return {
+                readyState: ws.readyState,
+                status: status,
+                url: ws.url
+            };
+        }
+    };
+
+    // 在控制台显示调试工具可用信息
+    console.log('🔧 WebSocket调试工具已加载！输入 WSDebug.help() 查看帮助');
+}
 
 export default WebSocketService;

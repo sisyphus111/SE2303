@@ -3,6 +3,7 @@ import { MailOutlined, FullscreenOutlined, FullscreenExitOutlined, SendOutlined,
 import { useUser } from '../lib/UserContext';
 import { useWebSocket } from '../utils/ws';
 import '../css/ChatDropdown.css';
+import { formatChatTime, parseDateTime } from '../utils/messageUtils';
 
 // 渲染单条消息（左右布局区分自己和他人）
 function ChatBubble({ message, currentUserId }) {
@@ -187,7 +188,7 @@ function ChatBubble({ message, currentUserId }) {
                 alignItems: 'center',
                 justifyContent: 'flex-end'
               }}>
-                {new Date(message.createdAt).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+                {formatChatTime(message.createdAt)}
                 {getMessageStatusIcon()}
               </div>
             </div>
@@ -248,7 +249,7 @@ function ChatBubble({ message, currentUserId }) {
                 color: '#999',
                 lineHeight: 1
               }}>
-                {new Date(message.createdAt).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+                {formatChatTime(message.createdAt)}
               </div>
             </div>
           </div>
@@ -367,7 +368,7 @@ const ChatDropdown = () => {
           nickname: senderInfo.nickname || `用户${message.content.from_userId}`,
           avatar: senderInfo.avatar,
           content: message.content.content,
-          createdAt: new Date(message.content.createdAt),
+          createdAt: parseDateTime(message.content.createdAt),
           messageType: 'sent'
         };
         setMessages((prev) => {

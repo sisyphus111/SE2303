@@ -30,8 +30,17 @@ const WebSocketService = {
         };
 
         WebSocketService.ws.onmessage = async (event) => {
+
+            
+            console.log('接收到了来自后端的websocket消息');
+
+
             try {
                 const message = JSON.parse(event.data);
+
+                console.log('接收到的websocket消息：', message);
+
+
                 if (message.type === 'text') {
                     if (onMessage) onMessage(message);
                 }

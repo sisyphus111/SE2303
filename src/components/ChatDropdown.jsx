@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { MailOutlined, FullscreenOutlined, FullscreenExitOutlined, SendOutlined, LoadingOutlined } from '@ant-design/icons';
+import { MessageOutlined, FullscreenOutlined, FullscreenExitOutlined, SendOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useUser } from '../lib/UserContext';
 import { useWebSocket } from '../utils/ws';
 import '../css/ChatDropdown.css';
+import { formatChatTime, parseDateTime } from '../utils/messageUtils';
 
 // 渲染单条消息（左右布局区分自己和他人）
 function ChatBubble({ message, currentUserId }) {
@@ -187,7 +188,7 @@ function ChatBubble({ message, currentUserId }) {
                 alignItems: 'center',
                 justifyContent: 'flex-end'
               }}>
-                {new Date(message.createdAt).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+                {formatChatTime(message.createdAt)}
                 {getMessageStatusIcon()}
               </div>
             </div>
@@ -248,7 +249,7 @@ function ChatBubble({ message, currentUserId }) {
                 color: '#999',
                 lineHeight: 1
               }}>
-                {new Date(message.createdAt).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+                {formatChatTime(message.createdAt)}
               </div>
             </div>
           </div>
@@ -367,24 +368,16 @@ const ChatDropdown = () => {
           nickname: senderInfo.nickname || `用户${message.content.from_userId}`,
           avatar: senderInfo.avatar,
           content: message.content.content,
-          createdAt: new Date(message.content.createdAt),
+          createdAt: parseDateTime(message.content.createdAt),
           messageType: 'sent'
         };
         setMessages((prev) => {
-          const existingTempIndex = prev.findIndex(msg => msg.id === `temp_${newMessage.id}`);
-          if (existingTempIndex !== -1) {
-            // 替换临时消息
-            const newMessages = [...prev];
-            newMessages[existingTempIndex] = newMessage;
-            return newMessages;
-          } else {
-            // 检查是否已存在相同ID的消息，避免重复添加
-            const existingMessageIndex = prev.findIndex(msg => msg.id === newMessage.id);
-            if (existingMessageIndex !== -1) {
-              return prev; // 消息已存在，不添加
-            }
-            return [...prev, newMessage];
+          // 检查是否已存在相同ID的消息，避免重复添加
+          const existingMessageIndex = prev.findIndex(msg => msg.id === newMessage.id);
+          if (existingMessageIndex !== -1) {
+            return prev; // 消息已存在，不添加
           }
+          return [...prev, newMessage];
         });
         console.log('✅ 收到新消息:', newMessage);
       }
@@ -521,37 +514,15 @@ const ChatDropdown = () => {
     setInput('');
     setSendingMessage(true);
 
-    // 乐观更新
-    const tempMessage = {
-      id: `temp_${Date.now()}`,
-      userId: userProfile.userId,
-      username: userProfile.username || '我',
-      nickname: userProfile.nickname,
-      avatar: userProfile.avatar,
-      content: messageContent,
-      createdAt: new Date(),
-      messageType: 'sending'
-    };
-    setMessages((prev) => [...prev, tempMessage]);
-
     try {
       const success = await sendMessage(messageContent);
       if (success) {
-        setMessages((prev) => prev.map((msg) =>
-            msg.id === tempMessage.id ? { ...msg, messageType: 'sent' } : msg
-        ));
-        console.log('✅ 消息发送成功');
+        console.log('✅ 消息发送成功，等待WebSocket推送');
       } else {
-        setMessages((prev) => prev.map((msg) =>
-            msg.id === tempMessage.id ? { ...msg, messageType: 'failed' } : msg
-        ));
         setError('发送消息失败');
         console.error('❌ 消息发送失败');
       }
     } catch (err) {
-      setMessages((prev) => prev.map((msg) =>
-          msg.id === tempMessage.id ? { ...msg, messageType: 'failed' } : msg
-      ));
       setError('发送消息失败');
       console.error('❌ 消息发送异常:', err);
     } finally {
@@ -620,8 +591,32 @@ const ChatDropdown = () => {
         {error && (
             <div style={{ color: 'red', textAlign: 'center', padding: '10px' }}>{error}</div>
         )}
-        <button className="chat-trigger" onClick={() => setIsOpen(v => !v)}>
-          <MailOutlined />
+        <button 
+          className="chat-trigger" 
+          onClick={() => setIsOpen(v => !v)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '8px 12px',
+            backgroundColor: 'transparent',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            color: '#666',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = '#f0f8f0';
+            e.target.style.color = '#4a7c59';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = 'transparent';
+            e.target.style.color = '#666';
+          }}
+        >
+          <MessageOutlined style={{ fontSize: '16px' }} />
+          <span style={{ marginLeft: '6px', fontWeight: '500' }}>聊天室</span>
         </button>
         {isOpen && (
             isFullscreen ? (
@@ -656,6 +651,17 @@ const ChatDropdown = () => {
                           </div>
                       )}
                       {!isInitializing && <MessageList messages={messages} currentUserId={userProfile?.userId} />}
+                      {sendingMessage && (
+                          <div style={{
+                            padding: '8px 16px',
+                            textAlign: 'right',
+                            color: '#999',
+                            fontSize: '12px'
+                          }}>
+                            <LoadingOutlined spin style={{ marginRight: '4px' }} />
+                            正在发送消息...
+                          </div>
+                      )}
                       <div ref={messagesEndRef} />
                     </div>
                     <div className="chat-input-bar">
@@ -710,6 +716,17 @@ const ChatDropdown = () => {
                           </div>
                       )}
                       {!isInitializing && <MessageList messages={messages} currentUserId={userProfile?.userId} />}
+                      {sendingMessage && (
+                          <div style={{
+                            padding: '8px 16px',
+                            textAlign: 'right',
+                            color: '#999',
+                            fontSize: '12px'
+                          }}>
+                            <LoadingOutlined spin style={{ marginRight: '4px' }} />
+                            正在发送消息...
+                          </div>
+                      )}
                       <div ref={messagesEndRef} />
                     </div>
                     <div className="chat-input-bar">

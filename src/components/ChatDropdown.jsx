@@ -412,19 +412,87 @@ const ChatDropdown = () => {
     }
   }, [lastMessageTimestamp, isLoadingNewMessages, fetchPastMessages]);
 
-  // 初始化聊天室和WebSocket回调
+  // 初始化WebSocket回调（始终保持连接和消息处理）
+  useEffect(() => {
+    if (!userProfile?.userId) {
+      return;
+    }
+
+    // 设置WebSocket回调 - 无论对话框是否打开都要处理消息
+    setOnMessage(async (message) => {
+      if (message.type === 'text') {
+        const senderInfo = await getUserCommunityInfoById(message.content.from_userId);
+        const newMessage = {
+          id: message.content.id,
+          userId: message.content.from_userId,
+          username: senderInfo.username || `用户${message.content.from_userId}`,
+          nickname: senderInfo.nickname || `用户${message.content.from_userId}`,
+          avatar: senderInfo.avatar,
+          content: message.content.content,
+          createdAt: new Date(message.content.createdAt),
+          messageType: 'sent'
+        };
+        
+        // 无论对话框是否打开都要更新消息列表
+        setMessages((prev) => {
+          const existingTempIndex = prev.findIndex(msg => msg.id === `temp_${newMessage.id}`);
+          if (existingTempIndex !== -1) {
+            // 替换临时消息
+            const newMessages = [...prev];
+            newMessages[existingTempIndex] = newMessage;
+            return newMessages;
+          } else {
+            // 检查是否已存在相同ID的消息，避免重复添加
+            const existingMessageIndex = prev.findIndex(msg => msg.id === newMessage.id);
+            if (existingMessageIndex !== -1) {
+              return prev; // 消息已存在，不添加
+            }
+            return [...prev, newMessage];
+          }
+        });
+        
+        // 更新最后消息时间戳
+        setLastMessageTimestamp(newMessage.createdAt);
+        console.log('✅ 收到实时新消息:', newMessage, '对话框打开状态:', isOpen);
+      }
+    });
+
+    setOnError((err) => {
+      setError(err);
+      console.error('❌ WebSocket错误:', err);
+    });
+
+    setOnConnect(() => {
+      console.log('✅ WebSocket连接成功');
+    });
+
+    setOnDisconnect(() => {
+      console.log('📴 WebSocket连接断开');
+    });
+
+    // 设置新消息通知回调
+    setOnNewMessage(handleNewMessage);
+    
+    // 设置消息更新回调
+    setOnMessageUpdate(handleMessageUpdate);
+
+  }, [userProfile?.userId, getUserCommunityInfoById, handleNewMessage, handleMessageUpdate]);
+
+  // 初始化聊天室（仅在对话框打开时）
   useEffect(() => {
     if (!isOpen || !userProfile?.userId) {
-      // 关闭时重置状态
+      // 关闭时重置状态（但保留消息列表，让WebSocket接收的消息得以保存）
       if (!isOpen) {
-        setMessages([]);
+        // 不清空messages，保留WebSocket接收到的新消息
+        // setMessages([]); // 注释掉这行
         setHasMore(true);
         setPage(1); // 修复：重置页码为1（第一页），符合后端期望
         setIsInitializing(false);
         setLoadingMore(false);
         setError(null);
         setLastScrollTrigger(0);
-        setLastMessageTimestamp(null); // 重置时间戳
+        // 不重置lastMessageTimestamp，保持增量加载的连续性
+        // setLastMessageTimestamp(null); // 注释掉这行
         setIsLoadingNewMessages(false);
       }
       return;
@@ -438,8 +506,28 @@ const ChatDropdown = () => {
       isInitialized = true;
       setIsInitializing(true);
       try {
-        // 获取最新的消息作为第一页内容
-        // 第1页应该是最新的消息，用户首先看到最近的对话
+        // 检查是否已经有消息（通过WebSocket接收的）
+        if (messages.length > 0) {
+          console.log('🔄 对话框重新打开，已有', messages.length, '条消息，跳过初始化加载');
+          setPage(1);
+          setHasMore(true); // 可能还有更多历史消息
+          
+          // 如果有消息，设置最后一条消息的时间戳
+          const lastMessage = messages[messages.length - 1];
+          if (lastMessage && lastMessage.createdAt) {
+            setLastMessageTimestamp(lastMessage.createdAt);
+            console.log('📅 使用现有消息设置时间戳:', lastMessage.createdAt);
+          }
+          
+          // 滚动到底部显示最新消息
+          setTimeout(() => {
+            scrollToBottom();
+          }, 100);
+          return;
+        }
+        
+        // 如果没有消息，才从API加载
+        console.log('🏠 首次打开对话框，从API加载最新消息');
         const pastMessages = await fetchPastMessages(1, 10);
         
         // 确保消息按时间排序：最新的在底部
@@ -470,77 +558,23 @@ const ChatDropdown = () => {
       } catch (err) {
         console.error('❌ 聊天室初始化失败:', err);
         setError('加载聊天记录失败');
-        setMessages([]);
+        // 如果API加载失败，不要清空现有消息
+        if (messages.length === 0) {
+          setMessages([]);
+        }
         setHasMore(false);
       } finally {
         setIsInitializing(false);
       }
     };
 
-    // 设置WebSocket回调
-    setOnMessage(async (message) => {
-      if (message.type === 'text') {
-        const senderInfo = await getUserCommunityInfoById(message.content.from_userId);
-        const newMessage = {
-          id: message.content.id,
-          userId: message.content.from_userId,
-          username: senderInfo.username || `用户${message.content.from_userId}`,
-          nickname: senderInfo.nickname || `用户${message.content.from_userId}`,
-          avatar: senderInfo.avatar,
-          content: message.content.content,
-          createdAt: new Date(message.content.createdAt),
-          messageType: 'sent'
-        };
-        setMessages((prev) => {
-          const existingTempIndex = prev.findIndex(msg => msg.id === `temp_${newMessage.id}`);
-          if (existingTempIndex !== -1) {
-            // 替换临时消息
-            const newMessages = [...prev];
-            newMessages[existingTempIndex] = newMessage;
-            return newMessages;
-          } else {
-            // 检查是否已存在相同ID的消息，避免重复添加
-            const existingMessageIndex = prev.findIndex(msg => msg.id === newMessage.id);
-            if (existingMessageIndex !== -1) {
-              return prev; // 消息已存在，不添加
-            }
-            return [...prev, newMessage];
-          }
-        });
-        
-        // 更新最后消息时间戳
-        setLastMessageTimestamp(newMessage.createdAt);
-        console.log('✅ 收到新消息:', newMessage);
-      }
-    });
-
-    setOnError((err) => {
-      setError(err);
-      console.error('❌ WebSocket错误:', err);
-    });
-
-    setOnConnect(() => {
-      console.log('✅ WebSocket连接成功');
-      initializeChatRoom();
-    });
-
-    setOnDisconnect(() => {
-      console.log('📴 WebSocket连接断开');
-    });
-
-    // 设置新消息通知回调
-    setOnNewMessage(handleNewMessage);
-    
-    // 设置消息更新回调
-    setOnMessageUpdate(handleMessageUpdate);
-
-    // 立即初始化聊天室（如果WebSocket已连接）
+    // 立即初始化聊天室
     initializeChatRoom();
 
     return () => {
       isInitialized = false;
     };
-  }, [isOpen, userProfile?.userId, handleNewMessage, handleMessageUpdate]); // 添加新的依赖
+  }, [isOpen, userProfile?.userId, messages]); // 添加messages依赖
 
   // 加载更多历史消息
   const loadMoreMessages = useCallback(async () => {

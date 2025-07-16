@@ -20,80 +20,115 @@ const WebSocketService = {
     // 初始化WebSocket连接
     initialize: (userId, onMessage, onError, onConnect, onDisconnect, onNewMessage, onMessageUpdate) => {
         if (!userId) {
+            console.error('❌ WebSocket初始化失败: 未提供userId');
             onError('未提供userId，无法建立WebSocket连接');
             return;
         }
 
         if (WebSocketService.ws && WebSocketService.ws.readyState === WebSocket.OPEN) {
-            console.log('WebSocket已连接，无需重复初始化');
+            console.log('✅ WebSocket已连接，无需重复初始化');
             return;
         }
 
         // 使用旧API端点连接
         const wsUrl = `${WebSocketService.wsIp}/ws/talk/conn?x-userId=${userId}`;
 
-        console.log(`尝试连接WebSocket: ${wsUrl}`);
+        console.log(`🔗 尝试连接WebSocket: ${wsUrl}`);
+        console.log('🔗 WebSocket配置:', {
+            wsIp: WebSocketService.wsIp,
+            userId: userId,
+            apiGateway: WebSocketService.apiGateway
+        });
+        
         WebSocketService.ws = new WebSocket(wsUrl);
 
         WebSocketService.ws.onopen = () => {
-            console.log('WebSocket连接已建立');
+            console.log('✅ WebSocket连接已建立成功');
             WebSocketService.startHeartBeat();
             if (onConnect) onConnect();
         };
 
         WebSocketService.ws.onmessage = async (event) => {
+            console.log('📨 WebSocket收到原始消息:', event.data);
+            
             try {
                 const message = JSON.parse(event.data);
-                console.log('收到WebSocket消息:', message);
+                console.log('📋 WebSocket解析后的消息:', message);
+                console.log('📋 消息类型:', message.type);
                 
                 switch (message.type) {
                     case 'text':
-                        // 原有的实时消息处理
-                        console.log('📨 处理实时消息:', message);
-                        if (onMessage) onMessage(message);
+                        // 实时文本消息处理
+                        console.log('📝 处理type: "text"消息:', message);
+                        if (onMessage) {
+                            console.log('📝 调用onMessage回调');
+                            onMessage(message);
+                        } else {
+                            console.warn('⚠️ onMessage回调未设置');
+                        }
                         break;
                         
                     case 'new_message':
                         // 新消息通知 - 触发增量加载
-                        console.log('🆕 收到新消息通知:', message);
-                        if (onNewMessage) onNewMessage(message);
+                        console.log('🆕 处理type: "new_message"消息:', message);
+                        if (onNewMessage) {
+                            console.log('🆕 调用onNewMessage回调');
+                            onNewMessage(message);
+                        } else {
+                            console.warn('⚠️ onNewMessage回调未设置');
+                        }
                         break;
                         
                     case 'message_update':
                         // 消息更新通知 - 更新本地消息
-                        console.log('🔄 收到消息更新通知:', message);
-                        if (onMessageUpdate) onMessageUpdate(message);
+                        console.log('🔄 处理type: "message_update"消息:', message);
+                        if (onMessageUpdate) {
+                            console.log('🔄 调用onMessageUpdate回调');
+                            onMessageUpdate(message);
+                        } else {
+                            console.warn('⚠️ onMessageUpdate回调未设置');
+                        }
                         break;
                         
                     default:
                         console.warn('❓ 未知消息类型:', message.type, message);
                 }
             } catch (err) {
-                console.error('处理WebSocket消息失败:', err);
+                console.error('❌ 处理WebSocket消息失败:', err);
+                console.error('❌ 原始消息数据:', event.data);
                 if (onError) onError('接收消息失败');
             }
         };
 
-        WebSocketService.ws.onclose = () => {
-            console.log('WebSocket连接已关闭');
+        WebSocketService.ws.onclose = (event) => {
+            console.log('🔌 WebSocket连接已关闭:', event.code, event.reason);
             clearInterval(WebSocketService.heartTimer);
             if (onDisconnect) onDisconnect();
+            
             // 5秒后尝试重连
-            setTimeout(() => WebSocketService.initialize(userId, onMessage, onError, onConnect, onDisconnect, onNewMessage, onMessageUpdate), 5000);
+            console.log('⏰ 5秒后尝试重新连接...');
+            setTimeout(() => {
+                console.log('🔄 开始重新连接WebSocket...');
+                WebSocketService.initialize(userId, onMessage, onError, onConnect, onDisconnect, onNewMessage, onMessageUpdate);
+            }, 5000);
         };
 
         WebSocketService.ws.onerror = (err) => {
-            console.error('WebSocket连接错误:', err);
+            console.error('❌ WebSocket连接错误:', err);
+            console.error('❌ 连接URL:', wsUrl);
             if (onError) onError('WebSocket连接错误');
         };
     },
 
     // 发送心跳包
     startHeartBeat: () => {
+        console.log('💓 启动心跳包定时器');
         WebSocketService.heartTimer = setInterval(() => {
             if (WebSocketService.ws && WebSocketService.ws.readyState === WebSocket.OPEN) {
                 WebSocketService.ws.send('heart');
-                console.log('发送心跳包');
+                console.log('💓 发送心跳包');
+            } else {
+                console.warn('⚠️ WebSocket未连接，跳过心跳包发送');
             }
         }, 9900);
     },
@@ -233,18 +268,49 @@ export const useWebSocket = (userId, getUserCommunityInfoById) => {
 
     useEffect(() => {
         if (userId && getUserCommunityInfoById) {
+            console.log('🎯 useWebSocket初始化:', { userId, hasGetUserFunc: !!getUserCommunityInfoById });
+            console.log('🎯 回调函数状态:', {
+                onMessage: !!onMessageRef.current,
+                onError: !!onErrorRef.current,
+                onConnect: !!onConnectRef.current,
+                onDisconnect: !!onDisconnectRef.current,
+                onNewMessage: !!onNewMessageRef.current,
+                onMessageUpdate: !!onMessageUpdateRef.current
+            });
+            
             WebSocketService.initialize(
                 userId,
-                (message) => onMessageRef.current?.(message),
-                (error) => onErrorRef.current?.(error),
-                () => onConnectRef.current?.(),
-                () => onDisconnectRef.current?.(),
-                (message) => onNewMessageRef.current?.(message),
-                (message) => onMessageUpdateRef.current?.(message)
+                (message) => {
+                    console.log('🎯 useWebSocket onMessage回调被调用:', message);
+                    onMessageRef.current?.(message);
+                },
+                (error) => {
+                    console.log('🎯 useWebSocket onError回调被调用:', error);
+                    onErrorRef.current?.(error);
+                },
+                () => {
+                    console.log('🎯 useWebSocket onConnect回调被调用');
+                    onConnectRef.current?.();
+                },
+                () => {
+                    console.log('🎯 useWebSocket onDisconnect回调被调用');
+                    onDisconnectRef.current?.();
+                },
+                (message) => {
+                    console.log('🎯 useWebSocket onNewMessage回调被调用:', message);
+                    onNewMessageRef.current?.(message);
+                },
+                (message) => {
+                    console.log('🎯 useWebSocket onMessageUpdate回调被调用:', message);
+                    onMessageUpdateRef.current?.(message);
+                }
             );
+        } else {
+            console.warn('⚠️ useWebSocket初始化失败:', { userId, hasGetUserFunc: !!getUserCommunityInfoById });
         }
 
         return () => {
+            console.log('🧹 useWebSocket清理，断开WebSocket连接');
             WebSocketService.disconnect();
         };
     }, [userId, getUserCommunityInfoById]);

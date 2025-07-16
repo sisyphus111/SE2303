@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { MailOutlined, FullscreenOutlined, FullscreenExitOutlined, SendOutlined, LoadingOutlined } from '@ant-design/icons';
+import { MessageOutlined, FullscreenOutlined, FullscreenExitOutlined, SendOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useUser } from '../lib/UserContext';
 import { useWebSocket } from '../utils/ws';
 import '../css/ChatDropdown.css';
@@ -591,8 +591,32 @@ const ChatDropdown = () => {
         {error && (
             <div style={{ color: 'red', textAlign: 'center', padding: '10px' }}>{error}</div>
         )}
-        <button className="chat-trigger" onClick={() => setIsOpen(v => !v)}>
-          <MailOutlined />
+        <button 
+          className="chat-trigger" 
+          onClick={() => setIsOpen(v => !v)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '8px 12px',
+            backgroundColor: 'transparent',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            color: '#666',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = '#f0f8f0';
+            e.target.style.color = '#4a7c59';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = 'transparent';
+            e.target.style.color = '#666';
+          }}
+        >
+          <MessageOutlined style={{ fontSize: '16px' }} />
+          <span style={{ marginLeft: '6px', fontWeight: '500' }}>聊天室</span>
         </button>
         {isOpen && (
             isFullscreen ? (

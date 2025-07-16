@@ -21,7 +21,8 @@ const WebSocketService = {
             return;
         }
 
-        WebSocketService.ws = new WebSocket(`${WebSocketService.wsIp}/ws/talk/conn?x-userId=${userId}`);
+        // 修改连接地址以匹配后端API文档
+        WebSocketService.ws = new WebSocket(`${WebSocketService.wsIp}/websocket?x-userId=${userId}`);
 
         WebSocketService.ws.onopen = () => {
             console.log('WebSocket连接已建立');
@@ -118,13 +119,20 @@ const WebSocketService = {
     fetchPastMessages: async (page, size, options = {}, getUserCommunityInfoById, onError) => {
         try {
             const params = { page, size, ...options };
-            console.log('🔍 发送历史消息请求:', { params, url: '/talk/messages' });
             
-            const result = await get('/talk/messages', { params });
+            // 根据是否有after参数选择不同的API端点
+            const apiEndpoint = options.after ? '/talk/messages/incremental' : '/talk/messages';
+            
+            console.log('🔍 发送历史消息请求:', { params, url: apiEndpoint });
+            
+            const result = await get(apiEndpoint, { params });
             console.log('📦 后端返回原始数据:', result);
 
+            // 处理后端返回的数据格式
+            const messagesData = result.data || result;
+            
             const pastMessages = await Promise.all(
-                result.map(async (msg) => {
+                messagesData.map(async (msg) => {
                     const senderInfo = await getUserCommunityInfoById(msg.userId);
                     return {
                         id: msg.id,

@@ -10,7 +10,7 @@ const WebSocketService = {
     apiGateway: PREFIX, // 使用common.js的PREFIX
 
     // 初始化WebSocket连接
-    initialize: (userId, onMessage, onError, onConnect, onDisconnect) => {
+    initialize: (userId, onMessage, onError, onConnect, onDisconnect, onNewMessage, onMessageUpdate) => {
         if (!userId) {
             onError('未提供userId，无法建立WebSocket连接');
             return;
@@ -32,8 +32,29 @@ const WebSocketService = {
         WebSocketService.ws.onmessage = async (event) => {
             try {
                 const message = JSON.parse(event.data);
-                if (message.type === 'text') {
-                    if (onMessage) onMessage(message);
+                console.log('收到WebSocket消息:', message);
+                
+                switch (message.type) {
+                    case 'text':
+                        // 原有的实时消息处理
+                        console.log('📨 处理实时消息:', message);
+                        if (onMessage) onMessage(message);
+                        break;
+                        
+                    case 'new_message':
+                        // 新消息通知 - 触发增量加载
+                        console.log('🆕 收到新消息通知:', message);
+                        if (onNewMessage) onNewMessage(message);
+                        break;
+                        
+                    case 'message_update':
+                        // 消息更新通知 - 更新本地消息
+                        console.log('🔄 收到消息更新通知:', message);
+                        if (onMessageUpdate) onMessageUpdate(message);
+                        break;
+                        
+                    default:
+                        console.warn('❓ 未知消息类型:', message.type, message);
                 }
             } catch (err) {
                 console.error('处理WebSocket消息失败:', err);
@@ -46,7 +67,7 @@ const WebSocketService = {
             clearInterval(WebSocketService.heartTimer);
             if (onDisconnect) onDisconnect();
             // 5秒后尝试重连
-            setTimeout(() => WebSocketService.initialize(userId, onMessage, onError, onConnect, onDisconnect), 5000);
+            setTimeout(() => WebSocketService.initialize(userId, onMessage, onError, onConnect, onDisconnect, onNewMessage, onMessageUpdate), 5000);
         };
 
         WebSocketService.ws.onerror = (err) => {
@@ -93,10 +114,13 @@ const WebSocketService = {
     },
 
     // 获取历史消息（通过HTTP，使用common.js的get方法）
-    fetchPastMessages: async (page, size, getUserCommunityInfoById, onError) => {
+    // 支持增量查询：after参数用于获取指定时间戳之后的新消息
+    fetchPastMessages: async (page, size, options = {}, getUserCommunityInfoById, onError) => {
         try {
-            console.log('🔍 发送历史消息请求:', { page, size, url: '/talk/messages' });
-            const result = await get('/talk/messages', { params: { page, size } });
+            const params = { page, size, ...options };
+            console.log('🔍 发送历史消息请求:', { params, url: '/talk/messages' });
+            
+            const result = await get('/talk/messages', { params });
             console.log('📦 后端返回原始数据:', result);
 
             const pastMessages = await Promise.all(
@@ -113,7 +137,13 @@ const WebSocketService = {
                     };
                 })
             );
-            console.log('✅ 转换后的消息数据:', pastMessages.map(m => ({ id: m.id, createdAt: m.createdAt, content: m.content?.substring(0, 30) })));
+            
+            console.log('✅ 转换后的消息数据:', pastMessages.map(m => ({ 
+                id: m.id, 
+                createdAt: m.createdAt, 
+                content: m.content?.substring(0, 30) 
+            })));
+            
             return pastMessages;
             
         } catch (err) {
@@ -139,6 +169,8 @@ export const useWebSocket = (userId, getUserCommunityInfoById) => {
     const onErrorRef = useRef(null);
     const onConnectRef = useRef(null);
     const onDisconnectRef = useRef(null);
+    const onNewMessageRef = useRef(null);
+    const onMessageUpdateRef = useRef(null);
 
     const setOnMessage = useCallback((callback) => {
         onMessageRef.current = callback;
@@ -156,6 +188,14 @@ export const useWebSocket = (userId, getUserCommunityInfoById) => {
         onDisconnectRef.current = callback;
     }, []);
 
+    const setOnNewMessage = useCallback((callback) => {
+        onNewMessageRef.current = callback;
+    }, []);
+
+    const setOnMessageUpdate = useCallback((callback) => {
+        onMessageUpdateRef.current = callback;
+    }, []);
+
     useEffect(() => {
         if (userId && getUserCommunityInfoById) {
             WebSocketService.initialize(
@@ -163,7 +203,9 @@ export const useWebSocket = (userId, getUserCommunityInfoById) => {
                 (message) => onMessageRef.current?.(message),
                 (error) => onErrorRef.current?.(error),
                 () => onConnectRef.current?.(),
-                () => onDisconnectRef.current?.()
+                () => onDisconnectRef.current?.(),
+                (message) => onNewMessageRef.current?.(message),
+                (message) => onMessageUpdateRef.current?.(message)
             );
         }
 
@@ -174,14 +216,16 @@ export const useWebSocket = (userId, getUserCommunityInfoById) => {
 
     return {
         sendMessage: (content) => WebSocketService.sendMessage(content, (error) => onErrorRef.current?.(error)),
-        fetchPastMessages: (page, size) =>
-            WebSocketService.fetchPastMessages(page, size, getUserCommunityInfoById, (error) =>
+        fetchPastMessages: (page, size, options = {}) =>
+            WebSocketService.fetchPastMessages(page, size, options, getUserCommunityInfoById, (error) =>
                 onErrorRef.current?.(error)
             ),
         setOnMessage,
         setOnError,
         setOnConnect,
-        setOnDisconnect
+        setOnDisconnect,
+        setOnNewMessage,
+        setOnMessageUpdate
     };
 };
 

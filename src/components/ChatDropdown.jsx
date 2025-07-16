@@ -282,12 +282,22 @@ const ChatDropdown = () => {
   const messagesContainerRef = useRef(null);
   const inputRef = useRef(null); // 输入框引用，用于保持焦点
   const [page, setPage] = useState(1); // 修复：页码从1开始，符合后端期望
+  
+  // 新增状态：用于实时同步
+  const [lastMessageTimestamp, setLastMessageTimestamp] = useState(null);
+  const [isLoadingNewMessages, setIsLoadingNewMessages] = useState(false);
 
   // 使用WebSocket Hook
-  const { sendMessage, fetchPastMessages, setOnMessage, setOnError, setOnConnect, setOnDisconnect } = useWebSocket(
-      userProfile?.userId,
-      getUserCommunityInfoById
-  );
+  const { 
+    sendMessage, 
+    fetchPastMessages, 
+    setOnMessage, 
+    setOnError, 
+    setOnConnect, 
+    setOnDisconnect,
+    setOnNewMessage,        // 新增：新消息回调
+    setOnMessageUpdate      // 新增：消息更新回调
+  } = useWebSocket(userProfile?.userId, getUserCommunityInfoById);
 
   // 滚动到底部
   const scrollToBottom = () => {
@@ -301,6 +311,107 @@ const ChatDropdown = () => {
     if (isOpen) scrollToBottom();
   }, [messages, isOpen]);
 
+  // 处理新消息通知 - 实时同步新消息
+  const handleNewMessage = useCallback(async (wsMessage) => {
+    console.log('🆕 收到新消息通知:', wsMessage);
+    
+    if (!isOpen) {
+      // 如果对话框未打开，只更新未读消息计数
+      // 这里可以添加未读消息计数逻辑
+      console.log('对话框未打开，跳过新消息加载');
+      return;
+    }
+    
+    // 如果对话框已打开，增量加载新消息
+    await loadNewMessages();
+  }, [isOpen]);
+
+  // 处理消息更新通知
+  const handleMessageUpdate = useCallback((wsMessage) => {
+    console.log('🔄 收到消息更新通知:', wsMessage);
+    
+    setMessages(prev => {
+      switch (wsMessage.action) {
+        case 'delete':
+          // 删除消息
+          return prev.filter(msg => msg.id !== wsMessage.messageId);
+        case 'edit':
+          // 编辑消息 - 需要后端提供更新后的消息内容
+          return prev.map(msg => 
+            msg.id === wsMessage.messageId 
+              ? { ...msg, content: wsMessage.data?.content || msg.content }
+              : msg
+          );
+        default:
+          return prev;
+      }
+    });
+  }, []);
+
+  // 增量加载新消息
+  const loadNewMessages = useCallback(async () => {
+    if (isLoadingNewMessages || !lastMessageTimestamp) {
+      console.log('跳过增量加载:', { isLoadingNewMessages, lastMessageTimestamp });
+      return;
+    }
+    
+    console.log('🆕 开始增量加载新消息，上次时间戳:', lastMessageTimestamp);
+    setIsLoadingNewMessages(true);
+    
+    try {
+      // 获取上次加载的最后一条消息时间戳之后的新消息
+      const newMessages = await fetchPastMessages(
+        1, 
+        20, 
+        { 
+          after: lastMessageTimestamp,
+          order: 'asc'  // 按时间正序获取
+        }
+      );
+      
+      if (newMessages.length > 0) {
+        console.log('✅ 增量加载到', newMessages.length, '条新消息');
+        
+        setMessages(prev => {
+          // 过滤掉重复的消息
+          const existingIds = new Set(prev.map(msg => msg.id));
+          const uniqueNewMessages = newMessages.filter(msg => !existingIds.has(msg.id));
+          
+          if (uniqueNewMessages.length === 0) {
+            console.log('没有新的唯一消息');
+            return prev;
+          }
+          
+          // 将新消息添加到现有消息后面
+          const updatedMessages = [...prev, ...uniqueNewMessages];
+          
+          // 按时间排序确保正确顺序
+          const sortedMessages = updatedMessages.sort((a, b) => {
+            const timeA = new Date(a.createdAt).getTime();
+            const timeB = new Date(b.createdAt).getTime();
+            return timeA - timeB;
+          });
+          
+          console.log('📋 更新消息列表，新增', uniqueNewMessages.length, '条消息');
+          return sortedMessages;
+        });
+        
+        // 更新最后一条消息的时间戳
+        const latestMessage = newMessages[newMessages.length - 1];
+        setLastMessageTimestamp(latestMessage.createdAt);
+        
+        // 自动滚动到底部显示新消息
+        setTimeout(() => scrollToBottom(), 100);
+      } else {
+        console.log('没有新消息需要加载');
+      }
+    } catch (error) {
+      console.error('❌ 增量加载新消息失败:', error);
+    } finally {
+      setIsLoadingNewMessages(false);
+    }
+  }, [lastMessageTimestamp, isLoadingNewMessages, fetchPastMessages]);
+
   // 初始化聊天室和WebSocket回调
   useEffect(() => {
     if (!isOpen || !userProfile?.userId) {
@@ -313,6 +424,8 @@ const ChatDropdown = () => {
         setLoadingMore(false);
         setError(null);
         setLastScrollTrigger(0);
+        setLastMessageTimestamp(null); // 重置时间戳
+        setIsLoadingNewMessages(false);
       }
       return;
     }
@@ -340,6 +453,14 @@ const ChatDropdown = () => {
         setMessages(sortedMessages);
         setPage(1); // 当前已加载的页数
         setHasMore(sortedMessages.length === 10);
+        
+        // 设置最后一条消息的时间戳，用于增量加载
+        if (sortedMessages.length > 0) {
+          const lastMessage = sortedMessages[sortedMessages.length - 1];
+          setLastMessageTimestamp(lastMessage.createdAt);
+          console.log('📅 设置最后消息时间戳:', lastMessage.createdAt);
+        }
+        
         console.log('✅ 聊天室初始化成功，显示最新消息，加载了', sortedMessages.length, '条消息，当前页:', 1);
         
         // 滚动到底部显示最新消息
@@ -386,6 +507,9 @@ const ChatDropdown = () => {
             return [...prev, newMessage];
           }
         });
+        
+        // 更新最后消息时间戳
+        setLastMessageTimestamp(newMessage.createdAt);
         console.log('✅ 收到新消息:', newMessage);
       }
     });
@@ -404,13 +528,19 @@ const ChatDropdown = () => {
       console.log('📴 WebSocket连接断开');
     });
 
+    // 设置新消息通知回调
+    setOnNewMessage(handleNewMessage);
+    
+    // 设置消息更新回调
+    setOnMessageUpdate(handleMessageUpdate);
+
     // 立即初始化聊天室（如果WebSocket已连接）
     initializeChatRoom();
 
     return () => {
       isInitialized = false;
     };
-  }, [isOpen, userProfile?.userId]); // 移除fetchPastMessages等函数依赖，避免无限循环
+  }, [isOpen, userProfile?.userId, handleNewMessage, handleMessageUpdate]); // 添加新的依赖
 
   // 加载更多历史消息
   const loadMoreMessages = useCallback(async () => {
@@ -656,6 +786,18 @@ const ChatDropdown = () => {
                           </div>
                       )}
                       {!isInitializing && <MessageList messages={messages} currentUserId={userProfile?.userId} />}
+                      {/* 新增：加载新消息指示器 */}
+                      {isLoadingNewMessages && (
+                          <div style={{
+                            textAlign: 'center',
+                            padding: '10px',
+                            color: '#1890ff',
+                            fontSize: '12px'
+                          }}>
+                            <LoadingOutlined spin style={{ marginRight: '4px' }} />
+                            正在加载新消息...
+                          </div>
+                      )}
                       <div ref={messagesEndRef} />
                     </div>
                     <div className="chat-input-bar">
@@ -710,6 +852,18 @@ const ChatDropdown = () => {
                           </div>
                       )}
                       {!isInitializing && <MessageList messages={messages} currentUserId={userProfile?.userId} />}
+                      {/* 新增：加载新消息指示器 */}
+                      {isLoadingNewMessages && (
+                          <div style={{
+                            textAlign: 'center',
+                            padding: '10px',
+                            color: '#1890ff',
+                            fontSize: '12px'
+                          }}>
+                            <LoadingOutlined spin style={{ marginRight: '4px' }} />
+                            正在加载新消息...
+                          </div>
+                      )}
                       <div ref={messagesEndRef} />
                     </div>
                     <div className="chat-input-bar">

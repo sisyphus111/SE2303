@@ -15,107 +15,6 @@ function ChatBubble({ message, currentUserId }) {
     avatar: message.avatar
   };
 
-  // 头像组件 - 增强的头像显示逻辑
-  const Avatar = ({ userInfo, size = 40 }) => {
-    const [imageError, setImageError] = useState(false);
-    const [imageLoading, setImageLoading] = useState(true);
-    
-    // 检查头像URL是否有效
-    const hasValidAvatar = userInfo.avatar && 
-                          typeof userInfo.avatar === 'string' && 
-                          userInfo.avatar.trim() !== '' &&
-                          !imageError;
-
-    // 根据用户ID生成不同的背景色
-    const getAvatarBgColor = (userId) => {
-      const colors = [
-        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-        'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-        'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
-        'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)'
-      ];
-      const index = parseInt(userId || '0') % colors.length;
-      return colors[index];
-    };
-
-    // 图片加载错误处理
-    const handleImageError = () => {
-      setImageError(true);
-      setImageLoading(false);
-    };
-
-    // 图片加载成功处理
-    const handleImageLoad = () => {
-      setImageLoading(false);
-      setImageError(false);
-    };
-
-    // 如果有有效头像且未出错，显示图片
-    if (hasValidAvatar) {
-      return (
-        <div style={{ position: 'relative' }}>
-          <img 
-            src={userInfo.avatar} 
-            alt="头像" 
-            style={{
-              width: `${size}px`,
-              height: `${size}px`,
-              borderRadius: '50%',
-              objectFit: 'cover',
-              background: '#f0f0f0',
-              display: imageLoading ? 'none' : 'block',
-              border: '2px solid #fff',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-            }}
-            onError={handleImageError}
-            onLoad={handleImageLoad}
-          />
-          {imageLoading && (
-            <div style={{
-              width: `${size}px`,
-              height: `${size}px`,
-              borderRadius: '50%',
-              background: '#f0f0f0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '12px',
-              color: '#999',
-              border: '2px solid #fff',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-            }}>
-              <LoadingOutlined />
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    // 默认头像：显示用户名首字母，根据用户ID使用不同颜色
-    return (
-      <div style={{
-        width: `${size}px`,
-        height: `${size}px`,
-        borderRadius: '50%',
-        background: getAvatarBgColor(userInfo.id),
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'white',
-        fontSize: `${size * 0.4}px`,
-        fontWeight: 'bold',
-        border: '2px solid #fff',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-      }}>
-        {(userInfo.username || '?').charAt(0).toUpperCase()}
-      </div>
-    );
-  };
-
   // 消息状态指示器
   const getMessageStatusIcon = () => {
     if (!isCurrentUser) return null;
@@ -266,6 +165,107 @@ const MessageList = ({ messages, currentUserId }) => (
       ))}
     </>
 );
+
+// 头像组件 - 增强的头像显示逻辑
+const Avatar = ({ userInfo, size = 40 }) => {
+  const [imageError, setImageError] = React.useState(false);
+  const [imageLoading, setImageLoading] = React.useState(true);
+
+  // 检查头像URL是否有效
+  const hasValidAvatar = userInfo.avatar &&
+    typeof userInfo.avatar === 'string' &&
+    userInfo.avatar.trim() !== '' &&
+    !imageError;
+
+  // 根据用户ID生成不同的背景色
+  const getAvatarBgColor = (userId) => {
+    const colors = [
+      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+      'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+      'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+      'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+      'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)'
+    ];
+    const index = parseInt(userId || '0') % colors.length;
+    return colors[index];
+  };
+
+  // 图片加载错误处理
+  const handleImageError = () => {
+    setImageError(true);
+    setImageLoading(false);
+  };
+
+  // 图片加载成功处理
+  const handleImageLoad = () => {
+    setImageLoading(false);
+    setImageError(false);
+  };
+
+  // 如果有有效头像且未出错，显示图片
+  if (hasValidAvatar) {
+    return (
+      <div style={{ position: 'relative' }}>
+        <img
+          src={userInfo.avatar}
+          alt="头像"
+          style={{
+            width: `${size}px`,
+            height: `${size}px`,
+            borderRadius: '50%',
+            objectFit: 'cover',
+            background: '#f0f0f0',
+            display: imageLoading ? 'none' : 'block',
+            border: '2px solid #fff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          }}
+          onError={handleImageError}
+          onLoad={handleImageLoad}
+        />
+        {imageLoading && (
+          <div style={{
+            width: `${size}px`,
+            height: `${size}px`,
+            borderRadius: '50%',
+            background: '#f0f0f0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '12px',
+            color: '#999',
+            border: '2px solid #fff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          }}>
+            <LoadingOutlined />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // 默认头像：显示用户名首字母，根据用户ID使用不同颜色
+  return (
+    <div style={{
+      width: `${size}px`,
+      height: `${size}px`,
+      borderRadius: '50%',
+      background: getAvatarBgColor(userInfo.id),
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'white',
+      fontSize: `${size * 0.4}px`,
+      fontWeight: 'bold',
+      border: '2px solid #fff',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+    }}>
+      {(userInfo.username || '?').charAt(0).toUpperCase()}
+    </div>
+  );
+};
 
 const ChatDropdown = () => {
   const { userProfile, getUserCommunityInfoById } = useUser();

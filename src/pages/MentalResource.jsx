@@ -75,10 +75,10 @@ function MentalResource() {
         setCarouselData(carouselImages);
       }
       // 推荐文章
-      const articlesRes = await getRecommendedArticles({ page: 1, size: 10, category: 'mental-health' });
+      const articlesRes = await getRecommendedArticles({ page: 1, size: 3 });
       setArticlesData(Array.isArray(articlesRes.list) ? articlesRes.list : (Array.isArray(articlesRes) ? articlesRes : []));
       // 音乐
-      const musicRes = await getMusicList({ page: 1, size: 20 });
+      const musicRes = await getMusicList({ page: 1, size: 3 });
       setMusicData(Array.isArray(musicRes.list) ? musicRes.list : (Array.isArray(musicRes) ? musicRes : []));
     } catch (error) {
       console.error('加载资源数据失败:', error);

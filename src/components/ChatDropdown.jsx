@@ -623,7 +623,7 @@ const ChatDropdown = () => {
                 <div className="chat-fullscreen-mask" onClick={handleMaskClick}>
                   <div className="chat-panel fullscreen" onClick={e => e.stopPropagation()}>
                     <div className="chat-header">
-                      <span>群聊</span>
+                      <span>聊天室</span>
                       <button className="fullscreen-btn" onClick={() => setIsFullscreen(false)}>
                         <FullscreenExitOutlined />
                       </button>
@@ -689,7 +689,7 @@ const ChatDropdown = () => {
                 <div className="chat-mask" onClick={handleMaskClick}>
                   <div className="chat-panel" onClick={e => e.stopPropagation()}>
                     <div className="chat-header">
-                      <span>群聊</span>
+                      <span>聊天室</span>
                       <button className="fullscreen-btn" onClick={() => setIsFullscreen(true)}>
                         <FullscreenOutlined />
                       </button>

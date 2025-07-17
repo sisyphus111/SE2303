@@ -111,7 +111,7 @@ function ChatBubble({ message, currentUserId }) {
         border: '2px solid #fff',
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
       }}>
-        {(userInfo.nickname || userInfo.username || '?').charAt(0).toUpperCase()}
+        {(userInfo.username || '?').charAt(0).toUpperCase()}
       </div>
     );
   };
@@ -166,7 +166,7 @@ function ChatBubble({ message, currentUserId }) {
                 color: '#666',
                 marginBottom: '4px',
                 lineHeight: 1.2
-              }}>{userInfo.nickname || userInfo.username}</div>
+              }}>{userInfo.username}</div>
               <div style={{
                 fontSize: '14px',
                 color: 'white',

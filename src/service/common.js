@@ -123,6 +123,8 @@ export async function post(url, data, options = {}) {
 }
 
 // 内网穿透域名配置 - 只需要修改这一行即可更新所有服务的域名
-export const BASEURL = 'https://8580394.r10.vip.cpolar.cn';
+export const BASEURL = 'https://15496ab0.r5.cpolar.top';
+// export const BASEURL = 'https://localhost:8080'; // 本地开发时使用
 export const PREFIX = `${BASEURL}/api`;
-export const WEBSOCKET_URL = 'wss://8580394.r10.vip.cpolar.cn';
+export const WEBSOCKET_URL = 'wss://15496ab0.r5.cpolar.top';
+// export const WEBSOCKET_URL = 'wss://localhost:8080'; // 本地开发时使用

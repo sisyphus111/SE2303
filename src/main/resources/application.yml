@@ -1,0 +1,233 @@
+# ===================================
+# 服务器配置
+# ===================================
+server:
+  port: 8080  # 网关服务启动端口，前端和其他服务通过此端口访问网关
+
+# ===================================
+# Spring应用配置
+# ===================================
+spring:
+  application:
+    name: se2303-gateway  # 应用名称，用于服务注册发现和日志标识
+  
+  cloud:
+    gateway:
+      # ===================================
+      # 全局CORS跨域配置
+      # ===================================
+      globalcors:
+        cors-configurations:
+          '[/**]':  # 匹配所有路径的跨域配置
+            allowedOriginPatterns:  # 允许跨域访问的源地址模式列表（支持通配符）
+              - "*"                      # 允许任何来源（最宽松的配置）
+            allowedMethods:  # 允许的HTTP请求方法
+              - GET     # 获取数据请求
+              - POST    # 创建数据请求
+              - PUT     # 更新数据请求
+              - DELETE  # 删除数据请求
+              - OPTIONS # 预检请求方法
+              - PATCH   # 部分更新请求
+              - HEAD    # 头部信息请求
+            allowedHeaders:  # 允许的请求头
+              - "*"     # 允许所有请求头，包括自定义头部
+            allowCredentials: true    # 允许携带认证信息（如Cookie、Authorization头）
+            maxAge: 1728000          # 预检请求缓存时间（秒），20天 = 20*24*60*60
+      
+      # ===================================
+      # 网关路由配置
+      # ===================================
+      routes:
+        # -----------------------------------
+        # 用户认证服务路由配置
+        # -----------------------------------
+        - id: user-service-auth           # 路由唯一标识符
+          uri: http://localhost:8082      # 目标服务地址（用户服务）
+          predicates:                     # 路由匹配条件
+            - Path=/api/auth/**           # 匹配以/api/user/开头的所有路径
+          filters:                        # 路由过滤器配置
+            # 路径重写过滤器：将/api/auth/xxx重写为/api/auth/xxx（保持不变）
+            # (?<segment>.*)是正则表达式，捕获user/后的所有内容并命名为segment
+            # ${segment}是占位符，引用捕获的内容
+            - RewritePath=/api/auth/(?<segment>.*), /api/auth/${segment}
+
+        # -----------------------------------
+        # 用户服务路由配置
+        # -----------------------------------
+        - id: user-service-user           # 路由唯一标识符
+          uri: http://localhost:8082      # 目标服务地址（用户服务）
+          predicates:                     # 路由匹配条件
+            - Path=/api/user/**           # 匹配以/api/user/开头的所有路径
+          filters:                        # 路由过滤器配置
+            # 路径重写过滤器：将/api/user/xxx重写为/api/user/xxx（保持不变）
+            # (?<segment>.*)是正则表达式，捕获user/后的所有内容并命名为segment
+            # ${segment}是占位符，引用捕获的内容
+            - RewritePath=/api/user/(?<segment>.*), /api/user/${segment}
+
+        # -----------------------------------
+        # 社区服务路由配置  
+        # -----------------------------------
+        - id: community-service           # 路由唯一标识符
+          uri: http://localhost:8083      # 目标服务地址（社区服务）
+          predicates:                     # 路由匹配条件
+            - Path=/api/community/**      # 匹配以/api/community/开头的所有路径
+          filters:                        # 路由过滤器配置
+            # 路径重写：保持原有路径结构不变
+            - RewritePath=/api/community/(?<segment>.*), /api/community/${segment}
+
+        # -----------------------------------
+        # 心情服务路由配置
+        # -----------------------------------
+        - id: mood-service                # 路由唯一标识符
+          uri: http://localhost:8085      # 目标服务地址（心情服务）
+          predicates:                     # 路由匹配条件
+            - Path=/api/mood/**           # 匹配以/api/mood/开头的所有路径
+          filters:                        # 路由过滤器配置
+            # 路径重写：保持原有路径结构不变
+            - RewritePath=/api/mood/(?<segment>.*), /api/mood/${segment}
+
+        # -----------------------------------
+        # 预警服务路由配置
+        # -----------------------------------
+        - id: alert-service        # 路由唯一标识符
+          uri: http://localhost:8086      # 目标服务地址（通知服务）
+          predicates:                     # 路由匹配条件
+            - Path=/api/alert/**   # 匹配以/api/alert/开头的所有路径
+          filters:                        # 路由过滤器配置
+            # 路径重写：保持原有路径结构不变
+            - RewritePath=/api/alert/(?<segment>.*), /api/alert/${segment}
+
+        # -----------------------------------
+        # 通知服务路由配置
+        # -----------------------------------
+        - id: notification-service        # 路由唯一标识符
+          uri: http://localhost:8087      # 目标服务地址（通知服务）
+          predicates:                     # 路由匹配条件
+            - Path=/api/notification/**   # 匹配以/api/notification/开头的所有路径
+          filters:                        # 路由过滤器配置
+            # 路径重写：保持原有路径结构不变
+            - RewritePath=/api/notification/(?<segment>.*), /api/notification/${segment}
+
+        # -----------------------------------
+        # ai审查服务路由配置
+        # -----------------------------------
+        - id: inspection-service        # 路由唯一标识符
+          uri: http://localhost:8088      # 目标服务地址（通知服务）
+          predicates:                     # 路由匹配条件
+            - Path=/api/inspect/**   # 匹配以/api/inspect/开头的所有路径
+          filters:                        # 路由过滤器配置
+            # 路径重写：保持原有路径结构不变
+            - RewritePath=/api/inspect/(?<segment>.*), /api/inspect/${segment}
+
+        # -----------------------------------
+        # 通知审查服务路由配置
+        # -----------------------------------
+        - id: inform-service        # 路由唯一标识符
+          uri: http://localhost:8089      # 目标服务地址（通知服务）
+          predicates:                     # 路由匹配条件
+            - Path=/api/informs/**   # 匹配以/api/informs/开头的所有路径
+          filters:                        # 路由过滤器配置
+            # 路径重写：保持原有路径结构不变
+            - RewritePath=/api/informs/(?<segment>.*), /api/informs/${segment}
+
+        # -----------------------------------
+        # 聊天室服务路由配置
+        # -----------------------------------
+        - id: talk-service           # 路由唯一标识符
+          uri: http://localhost:8090      # 目标服务地址（聊天室服务）
+          predicates:                     # 路由匹配条件
+            - Path=/api/talk/**           # 匹配以/api/talk/开头的所有路径
+          filters:                        # 路由过滤器配置
+            # 路径重写：保持原有路径结构不变
+            - RewritePath=/api/talk/(?<segment>.*), /api/talk/${segment}
+
+        # -----------------------------------
+        # 聊天室WebSocket路由配置
+        # -----------------------------------
+        - id: talk-websocket-service      # 路由唯一标识符
+          uri: ws://localhost:8090        # 目标WebSocket服务地址
+          predicates:                     # 路由匹配条件
+            - Path=/ws/talk/**            # 匹配以/ws/talk/开头的WebSocket路径
+          filters:                        # 路由过滤器配置
+            # 路径重写：将/ws/talk/xxx重写为/ws/xxx
+            - RewritePath=/ws/talk/(?<segment>.*), /ws/${segment}
+
+        # -----------------------------------
+        # AI聊天WebSocket路由配置
+        # -----------------------------------
+        - id: ai-chat-websocket-service   # 路由唯一标识符
+          uri: ws://localhost:8081        # 目标WebSocket服务地址
+          predicates:                     # 路由匹配条件
+            - Path=/ws/chat/**            # 匹配以/ws/chat/开头的WebSocket路径
+          filters:                        # 路由过滤器配置
+            # 路径重写：将/ws/chat/xxx重写为/ws/chat/xxx（保持不变）
+            - RewritePath=/ws/chat/(?<segment>.*), /ws/chat/${segment}
+
+
+
+
+# ===================================
+# JWT配置
+# ===================================
+jwt:
+  secret: ${JWT_SECRET}
+                      # 
+                      # 配置说明：
+                      # - 开发环境：使用简单密钥便于调试（当前设置）
+                      # - 生产环境：应使用至少32位的复杂随机字符串
+                      # - 所有微服务必须使用相同的密钥才能互相验证JWT令牌
+                      #
+                      # 安全建议：
+                      # - 生产环境通过环境变量设置：export JWT_SECRET=your-production-secret
+                      # - 或启动时通过参数指定：--jwt.secret=your-production-secret
+                      # - 密钥应包含字母、数字和特殊字符的组合
+                      #
+                      # 示例复杂密钥：
+                      # MySecretKey@2024#SE2303$Gateway!
+                      # 
+                      # 环境变量覆盖方式：
+                      # export JWT_SECRET=MySecretKey@2024#SE2303$Gateway!
+
+
+
+# ===================================
+# 监控端点配置
+# ===================================
+management:
+  endpoints:
+    web:
+      exposure:
+        # 暴露的监控端点列表
+        include: health,info,gateway  # health: 健康检查，info: 应用信息，gateway: 网关信息
+  endpoint:
+    health:
+      show-details: always  # 健康检查端点显示详细信息
+                           # always: 总是显示详细信息
+                           # when-authorized: 仅在授权用户时显示
+                           # never: 从不显示详细信息
+
+# ===================================
+# 日志配置
+# ===================================
+logging:
+  level:
+    # 设置根日志级别
+    root: INFO
+    # 网关相关包的日志级别
+    com.se2303.gateway: INFO
+    # Spring Cloud Gateway的日志级别
+    org.springframework.cloud.gateway: INFO
+    # HTTP请求日志级别
+    org.springframework.web: INFO
+    # 响应式编程相关日志
+    reactor.netty: INFO
+  pattern:
+    # 控制台日志输出格式
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+    # 文件日志输出格式  
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+  file:
+    # 日志文件配置
+    name: logs/gateway.log
+    max-size: 10MB
+    max-history: 30

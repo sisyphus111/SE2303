@@ -1,0 +1,175 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AlertRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.alertservice.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: AlertRepository (com.se2303.alertservice.repository)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">AlertRepository</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.alertservice.repository;
+&nbsp;
+&nbsp;import com.se2303.alertservice.model.Alert;
+&nbsp;import com.se2303.alertservice.model.AlertStatus;
+&nbsp;import com.se2303.alertservice.model.AlertType;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.data.repository.query.Param;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * 警报数据访问接口
+&nbsp; */
+&nbsp;@Repository
+&nbsp;public interface AlertRepository extends JpaRepository&lt;Alert, Long&gt; {
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID查找警报
+&nbsp;     */
+&nbsp;    List&lt;Alert&gt; findByUserIdOrderByCreatedAtDesc(String userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据状态查找警报
+&nbsp;     */
+&nbsp;    List&lt;Alert&gt; findByStatusOrderByCreatedAtDesc(AlertStatus status);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据状态分页查找警报
+&nbsp;     */
+&nbsp;    Page&lt;Alert&gt; findByStatusOrderByCreatedAtDesc(AlertStatus status, Pageable pageable);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据类型查找警报
+&nbsp;     */
+&nbsp;    List&lt;Alert&gt; findByAlertTypeOrderByCreatedAtDesc(AlertType alertType);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID和状态查找警报
+&nbsp;     */
+&nbsp;    List&lt;Alert&gt; findByUserIdAndStatusOrderByCreatedAtDesc(String userId, AlertStatus status);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据心理咨询师ID查找分配的警报
+&nbsp;     */
+&nbsp;    List&lt;Alert&gt; findByAssignedCounselorIdOrderByCreatedAtDesc(String counselorId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据心理咨询师ID和状态查找警报
+&nbsp;     */
+&nbsp;    List&lt;Alert&gt; findByAssignedCounselorIdAndStatusOrderByCreatedAtDesc(String counselorId, AlertStatus status);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 查找待处理的警报（未分配）
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT a FROM Alert a WHERE a.status = &#39;PENDING&#39; ORDER BY a.createdAt DESC&quot;)
+&nbsp;    List&lt;Alert&gt; findPendingAlerts();
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 查找指定时间范围内的警报
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT a FROM Alert a WHERE a.createdAt BETWEEN :startDate AND :endDate ORDER BY a.createdAt DESC&quot;)
+&nbsp;    List&lt;Alert&gt; findByCreatedAtBetween(@Param(&quot;startDate&quot;) LocalDateTime startDate, 
+&nbsp;                                      @Param(&quot;endDate&quot;) LocalDateTime endDate);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 统计指定状态的警报数量
+&nbsp;     */
+&nbsp;    long countByStatus(AlertStatus status);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 统计指定用户的警报数量
+&nbsp;     */
+&nbsp;    long countByUserId(String userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 统计指定心理咨询师分配的警报数量
+&nbsp;     */
+&nbsp;    long countByAssignedCounselorId(String counselorId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 查找最近创建的警报
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT a FROM Alert a ORDER BY a.createdAt DESC&quot;)
+&nbsp;    Page&lt;Alert&gt; findRecentAlerts(Pageable pageable);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据多个条件查找警报
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT a FROM Alert a WHERE &quot; +
+&nbsp;           &quot;(:userId IS NULL OR a.userId = :userId) AND &quot; +
+&nbsp;           &quot;(:status IS NULL OR a.status = :status) AND &quot; +
+&nbsp;           &quot;(:alertType IS NULL OR a.alertType = :alertType) AND &quot; +
+&nbsp;           &quot;(:alertLevel IS NULL OR a.alertLevel = :alertLevel) &quot; +
+&nbsp;           &quot;ORDER BY a.createdAt DESC&quot;)
+&nbsp;    Page&lt;Alert&gt; findByConditions(
+&nbsp;        @Param(&quot;userId&quot;) String userId,
+&nbsp;        @Param(&quot;status&quot;) com.se2303.alertservice.model.AlertStatus status,
+&nbsp;        @Param(&quot;alertType&quot;) com.se2303.alertservice.model.AlertType alertType,
+&nbsp;        @Param(&quot;alertLevel&quot;) com.se2303.alertservice.model.AlertLevel alertLevel,
+&nbsp;        Pageable pageable
+&nbsp;    );
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:41</div>
+</div>
+</body>
+</html>

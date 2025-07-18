@@ -1,0 +1,161 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MoodDAO</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.moodservice.dao</a>
+</div>
+
+<h1>Coverage Summary for Class: MoodDAO (com.se2303.moodservice.dao)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">MoodDAO</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.moodservice.dao;
+&nbsp;
+&nbsp;import com.se2303.moodservice.model.Mood;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;/**
+&nbsp; * Mood数据访问对象接口
+&nbsp; * 定义与Mood实体相关的数据访问操作
+&nbsp; */
+&nbsp;public interface MoodDAO {
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 保存心情记录
+&nbsp;     */
+&nbsp;    Mood save(Mood mood);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据ID查找心情记录
+&nbsp;     */
+&nbsp;    Optional&lt;Mood&gt; findById(Long id);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID和日期查找心情记录
+&nbsp;     */
+&nbsp;    Optional&lt;Mood&gt; findByUserIdAndDate(String userId, LocalDate date);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID查找所有心情记录，按日期降序排列
+&nbsp;     */
+&nbsp;    List&lt;Mood&gt; findByUserIdOrderByDateDesc(String userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID和日期范围查找心情记录
+&nbsp;     */
+&nbsp;    List&lt;Mood&gt; findByUserIdAndDateBetweenOrderByDateDesc(String userId, LocalDate startDate, LocalDate endDate);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 检查用户在某一天是否已经打卡
+&nbsp;     */
+&nbsp;    boolean existsByUserIdAndDate(String userId, LocalDate date);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID统计打卡次数
+&nbsp;     */
+&nbsp;    long countByUserId(String userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID和日期范围统计打卡次数
+&nbsp;     */
+&nbsp;    long countByUserIdAndDateBetween(String userId, LocalDate startDate, LocalDate endDate);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID查找已打卡的记录
+&nbsp;     */
+&nbsp;    List&lt;Mood&gt; findByUserIdAndScoreCommittedTrueOrderByDateDesc(String userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID查找已写日记的记录
+&nbsp;     */
+&nbsp;    List&lt;Mood&gt; findByUserIdAndDiaryCommittedTrueOrderByDateDesc(String userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 删除心情记录
+&nbsp;     */
+&nbsp;    void deleteById(Long id);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 删除所有心情记录
+&nbsp;     */
+&nbsp;    void deleteAll();
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取所有心情记录
+&nbsp;     */
+&nbsp;    List&lt;Mood&gt; findAll();
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取所有心情记录，按日期降序排列
+&nbsp;     */
+&nbsp;    List&lt;Mood&gt; findAllByOrderByDateDesc();
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 检查用户是否已打卡（基于scoreCommitted字段）
+&nbsp;     */
+&nbsp;    boolean hasCheckedIn(String userId, LocalDate date);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 检查用户是否已写日记（基于diaryCommitted字段）
+&nbsp;     */
+&nbsp;    boolean hasWrittenDiary(String userId, LocalDate date);
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:43</div>
+</div>
+</body>
+</html>

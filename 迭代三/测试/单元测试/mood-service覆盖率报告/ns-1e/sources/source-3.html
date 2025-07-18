@@ -1,0 +1,321 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MoodLabel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.moodservice.model</a>
+</div>
+
+<h1>Coverage Summary for Class: MoodLabel (com.se2303.moodservice.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MoodLabel</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (18/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    46.9%
+  </span>
+  <span class="absValue">
+    (15/32)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    84%
+  </span>
+  <span class="absValue">
+    (63/75)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.moodservice.model;
+&nbsp;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * 心情标签枚举
+&nbsp; * 定义常用的心情标签
+&nbsp; */
+<b class="fc">&nbsp;public enum MoodLabel {</b>
+&nbsp;    
+&nbsp;    // 积极情绪
+<b class="fc">&nbsp;    HAPPY(&quot;开心&quot;),</b>
+<b class="fc">&nbsp;    EXCITED(&quot;兴奋&quot;),</b>
+<b class="fc">&nbsp;    CONTENT(&quot;满足&quot;),</b>
+<b class="fc">&nbsp;    PEACEFUL(&quot;宁静&quot;),</b>
+<b class="fc">&nbsp;    GRATEFUL(&quot;感恩&quot;),</b>
+<b class="fc">&nbsp;    CONFIDENT(&quot;自信&quot;),</b>
+<b class="fc">&nbsp;    ENERGIZED(&quot;充满活力&quot;),</b>
+<b class="fc">&nbsp;    OPTIMISTIC(&quot;乐观&quot;),</b>
+&nbsp;    
+&nbsp;    // 中性情绪
+<b class="fc">&nbsp;    NEUTRAL(&quot;平静&quot;),</b>
+<b class="fc">&nbsp;    CALM(&quot;冷静&quot;),</b>
+<b class="fc">&nbsp;    FOCUSED(&quot;专注&quot;),</b>
+<b class="fc">&nbsp;    RELAXED(&quot;放松&quot;),</b>
+&nbsp;    
+&nbsp;    // 消极情绪
+<b class="fc">&nbsp;    SAD(&quot;悲伤&quot;),</b>
+<b class="fc">&nbsp;    ANGRY(&quot;愤怒&quot;),</b>
+<b class="fc">&nbsp;    ANXIOUS(&quot;焦虑&quot;),</b>
+<b class="fc">&nbsp;    STRESSED(&quot;压力&quot;),</b>
+<b class="fc">&nbsp;    TIRED(&quot;疲惫&quot;),</b>
+<b class="fc">&nbsp;    LONELY(&quot;孤独&quot;),</b>
+<b class="fc">&nbsp;    FRUSTRATED(&quot;沮丧&quot;),</b>
+<b class="fc">&nbsp;    WORRIED(&quot;担心&quot;),</b>
+<b class="fc">&nbsp;    DISAPPOINTED(&quot;失望&quot;),</b>
+<b class="fc">&nbsp;    IRRITATED(&quot;烦躁&quot;),</b>
+<b class="fc">&nbsp;    CONFUSED(&quot;困惑&quot;);</b>
+&nbsp;    
+&nbsp;    private final String label;
+&nbsp;    
+<b class="fc">&nbsp;    MoodLabel(String label) {</b>
+<b class="fc">&nbsp;        this.label = label;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getLabel() {
+<b class="fc">&nbsp;        return label;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据标签文本获取枚举值
+&nbsp;     */
+&nbsp;    public static MoodLabel fromLabel(String label) {
+<b class="pc">&nbsp;        for (MoodLabel moodLabel : values()) {</b>
+<b class="pc">&nbsp;            if (moodLabel.label.equals(label)) {</b>
+<b class="fc">&nbsp;                return moodLabel;</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        throw new IllegalArgumentException(&quot;Unknown mood label: &quot; + label);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 检查标签是否存在
+&nbsp;     */
+&nbsp;    public static boolean isValidLabel(String label) {
+<b class="pc">&nbsp;        for (MoodLabel moodLabel : values()) {</b>
+<b class="fc">&nbsp;            if (moodLabel.label.equals(label)) {</b>
+<b class="fc">&nbsp;                return true;</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取标签的权值
+&nbsp;     * 积极标签权值为1，中性标签权值为0，消极标签权值为-1
+&nbsp;     */
+&nbsp;    public int getWeight() {
+<b class="pc">&nbsp;        if (isPositiveMood()) {</b>
+<b class="fc">&nbsp;            return 1;</b>
+<b class="nc">&nbsp;        } else if (isNegativeMood()) {</b>
+<b class="nc">&nbsp;            return -1;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return 0; // 中性标签</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 判断是否为积极情绪
+&nbsp;     */
+&nbsp;    public boolean isPositiveMood() {
+<b class="fc">&nbsp;        return Arrays.asList(getPositiveMoods()).contains(this);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 判断是否为消极情绪
+&nbsp;     */
+&nbsp;    public boolean isNegativeMood() {
+<b class="fc">&nbsp;        return Arrays.asList(getNegativeMoods()).contains(this);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 判断是否为中性情绪
+&nbsp;     */
+&nbsp;    public boolean isNeutralMood() {
+<b class="fc">&nbsp;        return Arrays.asList(getNeutralMoods()).contains(this);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 计算标签列表的总权值
+&nbsp;     */
+&nbsp;    public static int calculateTotalWeight(List&lt;String&gt; labels) {
+<b class="pc">&nbsp;        if (labels == null || labels.isEmpty()) {</b>
+<b class="nc">&nbsp;            return 0;</b>
+&nbsp;        }
+&nbsp;        
+<b class="fc">&nbsp;        return labels.stream()</b>
+<b class="fc">&nbsp;                .filter(MoodLabel::isValidLabel)</b>
+<b class="fc">&nbsp;                .mapToInt(label -&gt; MoodLabel.fromLabel(label).getWeight())</b>
+<b class="fc">&nbsp;                .sum();</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 统计积极标签数量
+&nbsp;     */
+&nbsp;    public static int countPositiveLabels(List&lt;String&gt; labels) {
+<b class="pc">&nbsp;        if (labels == null || labels.isEmpty()) {</b>
+<b class="nc">&nbsp;            return 0;</b>
+&nbsp;        }
+&nbsp;        
+<b class="fc">&nbsp;        return (int) labels.stream()</b>
+<b class="fc">&nbsp;                .filter(MoodLabel::isValidLabel)</b>
+<b class="fc">&nbsp;                .filter(label -&gt; MoodLabel.fromLabel(label).isPositiveMood())</b>
+<b class="fc">&nbsp;                .count();</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 统计中性标签数量
+&nbsp;     */
+&nbsp;    public static int countNeutralLabels(List&lt;String&gt; labels) {
+<b class="pc">&nbsp;        if (labels == null || labels.isEmpty()) {</b>
+<b class="nc">&nbsp;            return 0;</b>
+&nbsp;        }
+&nbsp;        
+<b class="fc">&nbsp;        return (int) labels.stream()</b>
+<b class="fc">&nbsp;                .filter(MoodLabel::isValidLabel)</b>
+<b class="fc">&nbsp;                .filter(label -&gt; MoodLabel.fromLabel(label).isNeutralMood())</b>
+<b class="fc">&nbsp;                .count();</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 统计消极标签数量
+&nbsp;     */
+&nbsp;    public static int countNegativeLabels(List&lt;String&gt; labels) {
+<b class="pc">&nbsp;        if (labels == null || labels.isEmpty()) {</b>
+<b class="nc">&nbsp;            return 0;</b>
+&nbsp;        }
+&nbsp;        
+<b class="fc">&nbsp;        return (int) labels.stream()</b>
+<b class="fc">&nbsp;                .filter(MoodLabel::isValidLabel)</b>
+<b class="fc">&nbsp;                .filter(label -&gt; MoodLabel.fromLabel(label).isNegativeMood())</b>
+<b class="fc">&nbsp;                .count();</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据总权值判断心情趋势
+&nbsp;     */
+&nbsp;    public static String getMoodTrend(int totalWeight) {
+<b class="pc">&nbsp;        if (totalWeight &gt; 0) {</b>
+<b class="fc">&nbsp;            return &quot;positive&quot;;</b>
+<b class="nc">&nbsp;        } else if (totalWeight &lt; 0) {</b>
+<b class="nc">&nbsp;            return &quot;negative&quot;;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return &quot;neutral&quot;;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取所有积极情绪标签
+&nbsp;     */
+&nbsp;    public static MoodLabel[] getPositiveMoods() {
+<b class="fc">&nbsp;        return new MoodLabel[]{</b>
+&nbsp;            HAPPY, EXCITED, CONTENT, PEACEFUL, GRATEFUL, CONFIDENT, ENERGIZED, OPTIMISTIC
+&nbsp;        };
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取所有消极情绪标签
+&nbsp;     */
+&nbsp;    public static MoodLabel[] getNegativeMoods() {
+<b class="fc">&nbsp;        return new MoodLabel[]{</b>
+&nbsp;            SAD, ANGRY, ANXIOUS, STRESSED, TIRED, LONELY, FRUSTRATED, WORRIED, DISAPPOINTED, IRRITATED, CONFUSED
+&nbsp;        };
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取所有中性情绪标签
+&nbsp;     */
+&nbsp;    public static MoodLabel[] getNeutralMoods() {
+<b class="fc">&nbsp;        return new MoodLabel[]{</b>
+&nbsp;            NEUTRAL, CALM, FOCUSED, RELAXED
+&nbsp;        };
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:42</div>
+</div>
+</body>
+</html>

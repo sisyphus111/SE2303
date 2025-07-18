@@ -1,0 +1,143 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MoodRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.moodservice.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: MoodRepository (com.se2303.moodservice.repository)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">MoodRepository</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.moodservice.repository;
+&nbsp;
+&nbsp;import com.se2303.moodservice.model.Mood;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.data.repository.query.Param;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;/**
+&nbsp; * Mood实体的Repository接口
+&nbsp; */
+&nbsp;@Repository
+&nbsp;public interface MoodRepository extends JpaRepository&lt;Mood, Long&gt; {
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID和日期查找心情记录
+&nbsp;     */
+&nbsp;    Optional&lt;Mood&gt; findByUserIdAndDate(String userId, LocalDate date);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID查找所有心情记录，按日期降序排列
+&nbsp;     */
+&nbsp;    List&lt;Mood&gt; findByUserIdOrderByDateDesc(String userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID和日期范围查找心情记录
+&nbsp;     */
+&nbsp;    List&lt;Mood&gt; findByUserIdAndDateBetweenOrderByDateDesc(String userId, LocalDate startDate, LocalDate endDate);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 检查用户在某一天是否已经打卡
+&nbsp;     */
+&nbsp;    boolean existsByUserIdAndDate(String userId, LocalDate date);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID统计打卡次数
+&nbsp;     */
+&nbsp;    long countByUserId(String userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID和日期范围统计打卡次数
+&nbsp;     */
+&nbsp;    long countByUserIdAndDateBetween(String userId, LocalDate startDate, LocalDate endDate);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID查找最近的心情记录
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT m FROM Mood m WHERE m.userId = :userId ORDER BY m.date DESC&quot;)
+&nbsp;    List&lt;Mood&gt; findRecentMoodsByUserId(@Param(&quot;userId&quot;) String userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID查找指定数量的最近心情记录
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT m FROM Mood m WHERE m.userId = :userId ORDER BY m.date DESC LIMIT :limit&quot;)
+&nbsp;    List&lt;Mood&gt; findRecentMoodsByUserIdWithLimit(@Param(&quot;userId&quot;) String userId, @Param(&quot;limit&quot;) int limit);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID查找已打卡的记录
+&nbsp;     */
+&nbsp;    List&lt;Mood&gt; findByUserIdAndScoreCommittedTrueOrderByDateDesc(String userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID查找已写日记的记录
+&nbsp;     */
+&nbsp;    List&lt;Mood&gt; findByUserIdAndDiaryCommittedTrueOrderByDateDesc(String userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取所有心情记录，按日期降序排列
+&nbsp;     */
+&nbsp;    List&lt;Mood&gt; findAllByOrderByDateDesc();
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:41</div>
+</div>
+</body>
+</html>

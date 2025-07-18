@@ -1,0 +1,683 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AIService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.botservice.service</a>
+</div>
+
+<h1>Coverage Summary for Class: AIService (com.se2303.botservice.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AIService</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/116)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/262)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.botservice.service;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.databind.JsonNode;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import com.se2303.botservice.config.AIPromptConfig;
+&nbsp;import com.se2303.botservice.model.ChatMessage;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.http.MediaType;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.web.reactive.function.client.WebClient;
+&nbsp;import org.springframework.web.reactive.function.client.WebClientResponseException;
+&nbsp;import reactor.core.publisher.Mono;
+&nbsp;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.time.format.DateTimeFormatter;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.function.Consumer;
+&nbsp;import java.time.Duration;
+&nbsp;import org.springframework.http.HttpHeaders;
+&nbsp;import org.springframework.http.HttpEntity;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.client.RestTemplate;
+&nbsp;
+&nbsp;
+&nbsp;@Service
+&nbsp;public class AIService {
+&nbsp;
+&nbsp;    @Value(&quot;${ai.api.url:https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions}&quot;)
+&nbsp;    public String apiUrl;
+&nbsp;
+&nbsp;    @Value(&quot;${ai.api.key}&quot;)
+&nbsp;    public String apiKey;
+&nbsp;
+&nbsp;    @Value(&quot;${ai.api.model:qwen-turbo}&quot;)
+&nbsp;    public String model;
+&nbsp;
+&nbsp;    @Value(&quot;${ai.api.timeout:30}&quot;)
+&nbsp;    public int timeoutSeconds;
+&nbsp;
+&nbsp;    @Value(&quot;${alert.service.url:http://localhost:8086}&quot;)
+&nbsp;    public String alertServiceUrl;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public AIPromptConfig promptConfig;
+&nbsp;
+&nbsp;    public final WebClient webClient;
+&nbsp;    public final ObjectMapper objectMapper;
+<b class="nc">&nbsp;    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd HH:mm:ss.SSS&quot;);</b>
+&nbsp;
+&nbsp;    // 对话开始时间记录
+&nbsp;    public LocalDateTime conversationStartTime;
+&nbsp;    private static final long MAX_CONVERSATION_DURATION_MINUTES =1;
+&nbsp;
+&nbsp;    // 记录是否已经发送过超时警告，避免重复发送
+<b class="nc">&nbsp;    public boolean timeoutAlertSent = false;</b>
+&nbsp;
+&nbsp;    // 当前用户信息
+<b class="nc">&nbsp;    private String currentUserId = &quot;unknown&quot;;</b>
+<b class="nc">&nbsp;    private String currentSessionId = &quot;unknown&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;    public AIService() {</b>
+<b class="nc">&nbsp;        this.webClient = WebClient.builder()</b>
+<b class="nc">&nbsp;                .codecs(configurer -&gt; configurer.defaultCodecs().maxInMemorySize(1024 * 1024))</b>
+<b class="nc">&nbsp;                .build();</b>
+<b class="nc">&nbsp;        this.objectMapper = new ObjectMapper();</b>
+<b class="nc">&nbsp;        logInfo(&quot;AIService初始化完成&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void getStreamingResponse(String userMessage, List&lt;ChatMessage&gt; history, Consumer&lt;String&gt; onChunk, Consumer&lt;String&gt; onComplete, Runnable onFinish) {
+<b class="nc">&nbsp;        getStreamingResponse(userMessage, history, null, null, onChunk, onComplete, onFinish);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void getStreamingResponse(String userMessage, List&lt;ChatMessage&gt; history, String scenario, String personality, Consumer&lt;String&gt; onChunk, Consumer&lt;String&gt; onComplete, Runnable onFinish) {
+&nbsp;        // 检查对话持续时间
+<b class="nc">&nbsp;        checkConversationDuration();</b>
+&nbsp;
+<b class="nc">&nbsp;        logInfo(&quot;=== AI服务调用开始 ===&quot;);</b>
+<b class="nc">&nbsp;        logInfo(&quot;时间: &quot; + LocalDateTime.now().format(timeFormatter));</b>
+<b class="nc">&nbsp;        logInfo(&quot;API URL: &quot; + apiUrl);</b>
+<b class="nc">&nbsp;        logInfo(&quot;模型: &quot; + model);</b>
+<b class="nc">&nbsp;        logInfo(&quot;超时时间: &quot; + timeoutSeconds + &quot;秒&quot;);</b>
+<b class="nc">&nbsp;        logInfo(&quot;用户消息: &quot; + userMessage);</b>
+<b class="nc">&nbsp;        logInfo(&quot;历史消息数量: &quot; + (history != null ? history.size() : 0));</b>
+<b class="nc">&nbsp;        logInfo(&quot;场景: &quot; + (scenario != null ? scenario : &quot;默认&quot;));</b>
+<b class="nc">&nbsp;        logInfo(&quot;性格: &quot; + (personality != null ? personality : &quot;默认&quot;));</b>
+&nbsp;
+&nbsp;        // 初始化对话开始时间（如果是第一次对话）
+<b class="nc">&nbsp;        if (conversationStartTime == null) {</b>
+<b class="nc">&nbsp;            conversationStartTime = LocalDateTime.now();</b>
+<b class="nc">&nbsp;            logInfo(&quot;对话开始时间已记录: &quot; + conversationStartTime.format(timeFormatter));</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // 检查API密钥
+<b class="nc">&nbsp;        if (apiKey == null || apiKey.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;            logInfo(&quot;API密钥未配置，使用模拟响应&quot;);</b>
+<b class="nc">&nbsp;            simulateStreamingResponse(userMessage, onChunk, onComplete, onFinish);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        logInfo(&quot;API密钥已配置，前缀: &quot; + apiKey.substring(0, Math.min(10, apiKey.length())) + &quot;...&quot;);</b>
+&nbsp;
+&nbsp;        try {
+&nbsp;            // 构建请求体
+<b class="nc">&nbsp;            Map&lt;String, Object&gt; requestBody = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;            requestBody.put(&quot;model&quot;, model);</b>
+<b class="nc">&nbsp;            requestBody.put(&quot;stream&quot;, true);</b>
+&nbsp;
+&nbsp;            // 构建消息列表，包含系统提示词、历史对话和当前用户消息
+<b class="nc">&nbsp;            List&lt;Map&lt;String, Object&gt;&gt; messages = new ArrayList&lt;&gt;();</b>
+&nbsp;
+&nbsp;            // 获取系统提示词
+<b class="nc">&nbsp;            String systemPrompt = promptConfig.getFullPrompt(scenario, personality);</b>
+&nbsp;
+&nbsp;            // 添加系统提示词（只在没有历史消息时添加，避免重复）
+<b class="nc">&nbsp;            if (history == null || history.isEmpty()) {</b>
+<b class="nc">&nbsp;                Map&lt;String, Object&gt; systemMessage = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;                systemMessage.put(&quot;role&quot;, &quot;system&quot;);</b>
+<b class="nc">&nbsp;                systemMessage.put(&quot;content&quot;, systemPrompt);</b>
+<b class="nc">&nbsp;                messages.add(systemMessage);</b>
+<b class="nc">&nbsp;                logInfo(&quot;添加系统提示词: &quot; + systemPrompt.substring(0, Math.min(100, systemPrompt.length())) + &quot;...&quot;);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 添加历史消息
+<b class="nc">&nbsp;            if (history != null &amp;&amp; !history.isEmpty()) {</b>
+<b class="nc">&nbsp;                for (ChatMessage msg : history) {</b>
+&nbsp;                    // 只添加完整的对话消息，跳过流式响应的chunk
+<b class="nc">&nbsp;                    if (&quot;user&quot;.equals(msg.getRole()) || &quot;assistant&quot;.equals(msg.getRole())) {</b>
+<b class="nc">&nbsp;                        Map&lt;String, Object&gt; messageMap = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;                        messageMap.put(&quot;role&quot;, msg.getRole());</b>
+<b class="nc">&nbsp;                        messageMap.put(&quot;content&quot;, msg.getContent());</b>
+<b class="nc">&nbsp;                        messages.add(messageMap);</b>
+<b class="nc">&nbsp;                        logInfo(&quot;添加历史消息 - 角色: &quot; + msg.getRole() + &quot;, 内容: &quot; + msg.getContent().substring(0, Math.min(50, msg.getContent().length())) + &quot;...&quot;);</b>
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+&nbsp;
+&nbsp;            // 添加当前用户消息
+<b class="nc">&nbsp;            Map&lt;String, Object&gt; currentMessage = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;            currentMessage.put(&quot;role&quot;, &quot;user&quot;);</b>
+<b class="nc">&nbsp;            currentMessage.put(&quot;content&quot;, userMessage);</b>
+<b class="nc">&nbsp;            messages.add(currentMessage);</b>
+&nbsp;
+<b class="nc">&nbsp;            requestBody.put(&quot;messages&quot;, messages);</b>
+<b class="nc">&nbsp;            requestBody.put(&quot;max_tokens&quot;, 1000);</b>
+<b class="nc">&nbsp;            requestBody.put(&quot;temperature&quot;, 0.7);</b>
+&nbsp;
+<b class="nc">&nbsp;            logInfo(&quot;构建的请求体: &quot; + objectMapper.writeValueAsString(requestBody));</b>
+<b class="nc">&nbsp;            logInfo(&quot;开始发送HTTP请求...&quot;);</b>
+&nbsp;
+&nbsp;            // 用于收集完整的AI响应
+<b class="nc">&nbsp;            StringBuilder fullResponse = new StringBuilder();</b>
+&nbsp;
+&nbsp;            // 发送流式请求
+<b class="nc">&nbsp;            webClient.post()</b>
+<b class="nc">&nbsp;                    .uri(apiUrl)</b>
+<b class="nc">&nbsp;                    .header(&quot;Authorization&quot;, &quot;Bearer &quot; + apiKey)</b>
+<b class="nc">&nbsp;                    .header(&quot;Content-Type&quot;, &quot;application/json&quot;)</b>
+<b class="nc">&nbsp;                    .bodyValue(requestBody)</b>
+<b class="nc">&nbsp;                    .accept(MediaType.TEXT_EVENT_STREAM)</b>
+<b class="nc">&nbsp;                    .retrieve()</b>
+<b class="nc">&nbsp;                    .bodyToFlux(String.class)</b>
+<b class="nc">&nbsp;                    .timeout(java.time.Duration.ofSeconds(timeoutSeconds))</b>
+<b class="nc">&nbsp;                    .doOnSubscribe(subscription -&gt; logInfo(&quot;订阅流式响应&quot;))</b>
+<b class="nc">&nbsp;                    .doOnError(error -&gt; logError(&quot;流式响应出错&quot;, error))</b>
+<b class="nc">&nbsp;                    .doOnComplete(() -&gt; logInfo(&quot;流式响应完成&quot;))</b>
+<b class="nc">&nbsp;                    .subscribe(</b>
+&nbsp;                        chunk -&gt; {
+&nbsp;                            try {
+&nbsp;                                // 解析阿里云百炼格式的数据
+<b class="nc">&nbsp;                                String content = parseStreamChunk(chunk);</b>
+<b class="nc">&nbsp;                                if (content != null &amp;&amp; !content.isEmpty()) {</b>
+<b class="nc">&nbsp;                                    fullResponse.append(content);</b>
+<b class="nc">&nbsp;                                    onChunk.accept(content);</b>
+<b class="nc">&nbsp;                                } else if (content == null) {</b>
+<b class="nc">&nbsp;                                    logInfo(&quot;收到结束信号，完成流式响应&quot;);</b>
+&nbsp;                                    // 调用完整响应回调
+<b class="nc">&nbsp;                                    onComplete.accept(fullResponse.toString());</b>
+&nbsp;                                }
+&nbsp;                            } catch (Exception e) {
+<b class="nc">&nbsp;                                logError(&quot;解析chunk时出错&quot;, e);</b>
+&nbsp;                            }
+&nbsp;                        },
+&nbsp;                        error -&gt; {
+<b class="nc">&nbsp;                            logError(&quot;=== API调用错误详情 ===&quot;, error);</b>
+&nbsp;
+<b class="nc">&nbsp;                            if (error instanceof WebClientResponseException) {</b>
+<b class="nc">&nbsp;                                WebClientResponseException webError = (WebClientResponseException) error;</b>
+<b class="nc">&nbsp;                                logError(&quot;HTTP状态码: &quot; + webError.getStatusCode());</b>
+<b class="nc">&nbsp;                                logError(&quot;响应头: &quot; + webError.getHeaders());</b>
+<b class="nc">&nbsp;                                logError(&quot;响应体: &quot; + webError.getResponseBodyAsString());</b>
+&nbsp;                            }
+&nbsp;
+<b class="nc">&nbsp;                            logError(&quot;错误堆栈:&quot;, error);</b>
+<b class="nc">&nbsp;                            onChunk.accept(&quot;抱歉，AI服务调用失败: &quot; + error.getMessage());</b>
+<b class="nc">&nbsp;                            onFinish.run();</b>
+&nbsp;                        },
+&nbsp;                        () -&gt; {
+<b class="nc">&nbsp;                            logInfo(&quot;API调用成功完成&quot;);</b>
+<b class="nc">&nbsp;                            onFinish.run();</b>
+&nbsp;                        }
+&nbsp;                    );
+&nbsp;
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            logError(&quot;构建请求时出错&quot;, e);</b>
+<b class="nc">&nbsp;            onChunk.accept(&quot;抱歉，构建API请求时出错: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            onFinish.run();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // 保持向后兼容的方法
+&nbsp;    public void getStreamingResponse(String userMessage, Consumer&lt;String&gt; onChunk, Runnable onComplete) {
+<b class="nc">&nbsp;        getStreamingResponse(userMessage, null, onChunk, (fullResponse) -&gt; {}, onComplete);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private String parseStreamChunk(String chunk) {
+&nbsp;        try {
+&nbsp;            // 处理特殊的结束标志
+<b class="nc">&nbsp;            if (&quot;[DONE]&quot;.equals(chunk.trim())) {</b>
+<b class="nc">&nbsp;                logInfo(&quot;收到流式响应结束标志&quot;);</b>
+<b class="nc">&nbsp;                return null;</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 阿里云百炼直接返回JSON，不是SSE格式
+<b class="nc">&nbsp;            JsonNode jsonNode = objectMapper.readTree(chunk);</b>
+&nbsp;
+<b class="nc">&nbsp;            JsonNode choices = jsonNode.get(&quot;choices&quot;);</b>
+<b class="nc">&nbsp;            if (choices != null &amp;&amp; choices.isArray() &amp;&amp; choices.size() &gt; 0) {</b>
+<b class="nc">&nbsp;                JsonNode choice = choices.get(0);</b>
+<b class="nc">&nbsp;                JsonNode delta = choice.get(&quot;delta&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;                if (delta != null) {</b>
+<b class="nc">&nbsp;                    if (delta.has(&quot;content&quot;)) {</b>
+<b class="nc">&nbsp;                        String content = delta.get(&quot;content&quot;).asText();</b>
+&nbsp;
+&nbsp;                        // 检查是否是结束标志
+<b class="nc">&nbsp;                        JsonNode finishReason = choice.get(&quot;finish_reason&quot;);</b>
+<b class="nc">&nbsp;                        if (finishReason != null &amp;&amp; !&quot;null&quot;.equals(finishReason.asText()) &amp;&amp; !finishReason.isNull()) {</b>
+<b class="nc">&nbsp;                            logInfo(&quot;检测到结束标志: &quot; + finishReason.asText());</b>
+&nbsp;                        }
+&nbsp;
+<b class="nc">&nbsp;                        return content;</b>
+&nbsp;                    } else {
+&nbsp;                        // 检查是否是结束信号
+<b class="nc">&nbsp;                        JsonNode finishReason = choice.get(&quot;finish_reason&quot;);</b>
+<b class="nc">&nbsp;                        if (finishReason != null &amp;&amp; !&quot;null&quot;.equals(finishReason.asText()) &amp;&amp; !finishReason.isNull()) {</b>
+<b class="nc">&nbsp;                            logInfo(&quot;检测到结束标志: &quot; + finishReason.asText());</b>
+<b class="nc">&nbsp;                            return null; // 表示结束</b>
+&nbsp;                        }
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+&nbsp;
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            logError(&quot;解析JSON时出错，原始数据: &quot; + chunk, e);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return &quot;&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // 模拟流式响应，用于开发和测试
+&nbsp;    private void simulateStreamingResponse(String userMessage, Consumer&lt;String&gt; onChunk, Consumer&lt;String&gt; onComplete, Runnable onFinish) {
+&nbsp;        // 检查对话持续时间
+<b class="nc">&nbsp;        checkConversationDuration();</b>
+&nbsp;
+<b class="nc">&nbsp;        logInfo(&quot;=== 开始模拟流式响应 ===&quot;);</b>
+<b class="nc">&nbsp;        new Thread(() -&gt; {</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                String response = generateMockResponse(userMessage);</b>
+<b class="nc">&nbsp;                String[] words = response.split(&quot;(?&lt;=\\s)&quot;); // 按空格分割但保留空格</b>
+&nbsp;
+<b class="nc">&nbsp;                for (int i = 0; i &lt; words.length; i++) {</b>
+<b class="nc">&nbsp;                    String word = words[i];</b>
+<b class="nc">&nbsp;                    onChunk.accept(word);</b>
+<b class="nc">&nbsp;                    Thread.sleep(50 + (int)(Math.random() * 100)); // 模拟网络延迟</b>
+&nbsp;                }
+&nbsp;
+<b class="nc">&nbsp;                Thread.sleep(500); // 最后暂停一下</b>
+<b class="nc">&nbsp;                logInfo(&quot;模拟响应发送完成&quot;);</b>
+<b class="nc">&nbsp;                onComplete.accept(response); // 传递完整响应</b>
+<b class="nc">&nbsp;                onFinish.run();</b>
+&nbsp;            } catch (InterruptedException e) {
+<b class="nc">&nbsp;                Thread.currentThread().interrupt();</b>
+<b class="nc">&nbsp;                logError(&quot;模拟响应被中断&quot;, e);</b>
+&nbsp;            } catch (Exception e) {
+<b class="nc">&nbsp;                logError(&quot;模拟响应出错&quot;, e);</b>
+<b class="nc">&nbsp;                onFinish.run();</b>
+&nbsp;            }
+<b class="nc">&nbsp;        }).start();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String generateMockResponse(String userMessage) {
+&nbsp;        // 根据用户消息生成相应的模拟回复，符合心理健康陪伴助手的角色
+<b class="nc">&nbsp;        String lowerMessage = userMessage.toLowerCase();</b>
+&nbsp;
+<b class="nc">&nbsp;        if (lowerMessage.contains(&quot;难过&quot;) || lowerMessage.contains(&quot;伤心&quot;) || lowerMessage.contains(&quot;不开心&quot;) || lowerMessage.contains(&quot;抑郁&quot;)) {</b>
+<b class="nc">&nbsp;            return &quot;小暖感受到你现在的心情不太好。记住，每个人都会有情绪低落的时候，这是完全正常的。你想聊聊具体发生了什么吗？我在这里倾听，不会评判你。如果这种情绪持续很久，建议你也可以考虑寻求专业的心理咨询师帮助。&quot;;</b>
+<b class="nc">&nbsp;        } else if (lowerMessage.contains(&quot;开心&quot;) || lowerMessage.contains(&quot;高兴&quot;) || lowerMessage.contains(&quot;快乐&quot;)) {</b>
+<b class="nc">&nbsp;            return &quot;太好了！看到你心情不错小暖也很开心。能分享是什么让你这么开心吗？分享快乐会让快乐加倍哦！&quot;;</b>
+<b class="nc">&nbsp;        } else if (lowerMessage.contains(&quot;压力&quot;) || lowerMessage.contains(&quot;焦虑&quot;) || lowerMessage.contains(&quot;紧张&quot;)) {</b>
+<b class="nc">&nbsp;            return &quot;压力确实会让人感到困扰。小暖建议你可以试试深呼吸：慢慢吸气数到4，然后慢慢呼气数到6。你愿意和我分享是什么让你感到压力吗？我们可以一起想想解决的方法。记住，一步一步来，不要给自己太大压力。&quot;;</b>
+<b class="nc">&nbsp;        } else if (lowerMessage.contains(&quot;谢谢&quot;) || lowerMessage.contains(&quot;感谢&quot;)) {</b>
+<b class="nc">&nbsp;            return &quot;不用谢！能陪伴你是小暖的荣幸。希望我们的对话能给你带来一些温暖和力量。有什么其他想聊的吗？我随时在这里。&quot;;</b>
+<b class="nc">&nbsp;        } else if (lowerMessage.contains(&quot;你好&quot;) || lowerMessage.contains(&quot;hello&quot;) || lowerMessage.contains(&quot;小暖&quot;)) {</b>
+<b class="nc">&nbsp;            return &quot;你好！我是小暖，你的心理健康陪伴助手。很高兴和你聊天！今天过得怎么样？有什么想和我分享的吗？无论是开心的事还是困扰，我都很愿意倾听。&quot;;</b>
+<b class="nc">&nbsp;        } else if (lowerMessage.contains(&quot;自杀&quot;) || lowerMessage.contains(&quot;不想活&quot;) || lowerMessage.contains(&quot;结束生命&quot;)) {</b>
+<b class="nc">&nbsp;            return &quot;小暖非常担心你现在的状态。你的生命非常宝贵，值得被珍惜。如果你有这些想法，请立即寻求专业帮助：可以拨打全国24小时心理援助热线400-161-9995，或者联系你信任的朋友、家人。你并不孤单，有很多人关心你。&quot;;</b>
+<b class="nc">&nbsp;        } else if (lowerMessage.contains(&quot;失眠&quot;) || lowerMessage.contains(&quot;睡不着&quot;)) {</b>
+<b class="nc">&nbsp;            return &quot;失眠确实很困扰人。小暖建议你可以试试：睡前1小时不要看手机，可以听些轻音乐，喝杯温热的牛奶，或者做些简单的放松练习。如果失眠持续影响你的生活，建议咨询医生。&quot;;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            String[] responses = {</b>
+&nbsp;                &quot;小暖理解你的感受，能具体说说吗？我在这里认真倾听。&quot;,
+&nbsp;                &quot;这确实是一个值得思考的问题。你觉得呢？小暖很想听听你的想法。&quot;,
+&nbsp;                &quot;听起来很有趣，请继续分享你的想法。我很感兴趣。&quot;,
+&nbsp;                &quot;小暖在这里陪伴着你，随时可以聊天。你并不孤单。&quot;,
+&nbsp;                &quot;你的想法很有见地，小暖很想听听更多。&quot;,
+&nbsp;                &quot;生活中总会有起起落落，重要的是保持积极的心态。小暖相信你有能力面对挑战。&quot;,
+&nbsp;                &quot;每个人都有自己的节奏，不用着急。小暖支持你按照自己的步调前进。&quot;,
+&nbsp;                &quot;你的感受是正常的，小暖完全理解。不要压抑自己的情绪。&quot;,
+&nbsp;                &quot;让我们一起面对这个挑战吧。小暖会一直陪伴着你。&quot;,
+&nbsp;                &quot;你的坚持让小暖很感动。继续保持下去！我相信你能做到。&quot;
+&nbsp;            };
+<b class="nc">&nbsp;            return responses[(int)(Math.random() * responses.length)];</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void logInfo(String message) {
+<b class="nc">&nbsp;        System.out.println(&quot;[AIService-INFO] &quot; + LocalDateTime.now().format(timeFormatter) + &quot; - &quot; + message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void logError(String message, Throwable error) {
+<b class="nc">&nbsp;        System.err.println(&quot;[AIService-ERROR] &quot; + LocalDateTime.now().format(timeFormatter) + &quot; - &quot; + message);</b>
+<b class="nc">&nbsp;        if (error != null) {</b>
+<b class="nc">&nbsp;            error.printStackTrace();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void logError(String message) {
+<b class="nc">&nbsp;        logError(message, null);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 检查对话持续时间，如果超过限制则输出警告信息并发送警报
+&nbsp;     */
+&nbsp;    public void checkConversationDuration() {
+<b class="nc">&nbsp;        logInfo(&quot;=== 检查对话持续时间 ===&quot;);</b>
+<b class="nc">&nbsp;        logInfo(&quot;conversationStartTime: &quot; + (conversationStartTime != null ? conversationStartTime.format(timeFormatter) : &quot;null&quot;));</b>
+<b class="nc">&nbsp;        logInfo(&quot;timeoutAlertSent: &quot; + timeoutAlertSent);</b>
+<b class="nc">&nbsp;        logInfo(&quot;currentUserId: &quot; + currentUserId);</b>
+<b class="nc">&nbsp;        logInfo(&quot;currentSessionId: &quot; + currentSessionId);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (conversationStartTime != null) {</b>
+<b class="nc">&nbsp;            LocalDateTime now = LocalDateTime.now();</b>
+<b class="nc">&nbsp;            long durationMinutes = java.time.Duration.between(conversationStartTime, now).toMinutes();</b>
+&nbsp;
+<b class="nc">&nbsp;            logInfo(&quot;当前对话持续时间: &quot; + durationMinutes + &quot; 分钟&quot;);</b>
+<b class="nc">&nbsp;            logInfo(&quot;最大允许时间: &quot; + MAX_CONVERSATION_DURATION_MINUTES + &quot; 分钟&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;            if (durationMinutes &gt;= MAX_CONVERSATION_DURATION_MINUTES) {</b>
+<b class="nc">&nbsp;                logInfo(&quot;超过时间限制，准备发送警报&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;                String warningMessage = String.format(</b>
+&nbsp;                    &quot;⚠️ 对话持续时间警告 ⚠️\n&quot; +
+&nbsp;                    &quot;当前对话已持续 %d 分钟，超过了建议的 %d 分钟限制。\n&quot; +
+&nbsp;                    &quot;建议您：\n&quot; +
+&nbsp;                    &quot;1. 适当休息，避免长时间使用电子设备\n&quot; +
+&nbsp;                    &quot;2. 如果感到疲劳，请暂停对话\n&quot; +
+&nbsp;                    &quot;3. 如果需要继续，建议稍后重新开始对话\n&quot; +
+&nbsp;                    &quot;对话开始时间: %s&quot;,
+<b class="nc">&nbsp;                    durationMinutes, MAX_CONVERSATION_DURATION_MINUTES,</b>
+<b class="nc">&nbsp;                    conversationStartTime.format(timeFormatter)</b>
+&nbsp;                );
+&nbsp;
+<b class="nc">&nbsp;                logInfo(&quot;=== 对话超时警告 ===&quot;);</b>
+<b class="nc">&nbsp;                logInfo(warningMessage);</b>
+<b class="nc">&nbsp;                System.err.println(&quot;[AIService-WARNING] &quot; + LocalDateTime.now().format(timeFormatter) + &quot; - &quot; + warningMessage);</b>
+<b class="nc">&nbsp;                System.err.println(&quot;[AIService-WARNING] &quot; + LocalDateTime.now().format(timeFormatter) + &quot; - 用户ID: &quot; + currentUserId + &quot;, 会话ID: &quot; + currentSessionId + &quot;, 持续时间: &quot; + durationMinutes + &quot; 分钟&quot;);</b>
+&nbsp;
+&nbsp;                // 发送AI超时警报到alert-service
+<b class="nc">&nbsp;                if (!timeoutAlertSent) {</b>
+<b class="nc">&nbsp;                    logInfo(&quot;开始发送超时警报...&quot;);</b>
+<b class="nc">&nbsp;                    System.out.println(&quot;[AIService-INFO] &quot; + LocalDateTime.now().format(timeFormatter) + &quot; - 开始向alert-service发送超时警报&quot;);</b>
+<b class="nc">&nbsp;                    sendTimeoutAlert(durationMinutes);</b>
+<b class="nc">&nbsp;                    timeoutAlertSent = true;</b>
+<b class="nc">&nbsp;                    logInfo(&quot;警报发送标志已设置为true&quot;);</b>
+&nbsp;                } else {
+<b class="nc">&nbsp;                    logInfo(&quot;警报已发送过，跳过重复发送&quot;);</b>
+<b class="nc">&nbsp;                    System.out.println(&quot;[AIService-INFO] &quot; + LocalDateTime.now().format(timeFormatter) + &quot; - 超时警报已发送过，跳过重复发送&quot;);</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 重置对话开始时间（可用于新对话开始时调用）
+&nbsp;     */
+&nbsp;    public void resetConversationTimer() {
+<b class="nc">&nbsp;        conversationStartTime = LocalDateTime.now();</b>
+<b class="nc">&nbsp;        timeoutAlertSent = false; // 重置警报发送状态</b>
+<b class="nc">&nbsp;        logInfo(&quot;对话计时器已重置，新对话开始时间: &quot; + conversationStartTime.format(timeFormatter));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取当前对话持续时间（分钟）
+&nbsp;     */
+&nbsp;    public long getCurrentConversationDurationMinutes() {
+<b class="nc">&nbsp;        if (conversationStartTime == null) {</b>
+<b class="nc">&nbsp;            return 0;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return java.time.Duration.between(conversationStartTime, LocalDateTime.now()).toMinutes();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 发送AI超时警报到alert-service
+&nbsp;     */
+&nbsp;    private void sendTimeoutAlert(long durationMinutes) {
+&nbsp;        try {
+<b class="nc">&nbsp;            logInfo(&quot;=== 开始发送AI超时警报 ===&quot;);</b>
+<b class="nc">&nbsp;            logInfo(&quot;Alert Service URL: &quot; + alertServiceUrl);</b>
+<b class="nc">&nbsp;            logInfo(&quot;当前用户ID: &quot; + currentUserId);</b>
+<b class="nc">&nbsp;            logInfo(&quot;当前会话ID: &quot; + currentSessionId);</b>
+<b class="nc">&nbsp;            logInfo(&quot;超时持续时间: &quot; + durationMinutes + &quot; 分钟&quot;);</b>
+&nbsp;
+&nbsp;            // 构建警报请求 - 按照curl示例格式
+<b class="nc">&nbsp;            Map&lt;String, Object&gt; alertRequest = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;            alertRequest.put(&quot;userId&quot;, currentUserId);</b>
+<b class="nc">&nbsp;            alertRequest.put(&quot;alertType&quot;, &quot;AI_TIMEOUT&quot;);</b>
+<b class="nc">&nbsp;            alertRequest.put(&quot;alertLevel&quot;, &quot;MEDIUM&quot;);</b>
+<b class="nc">&nbsp;            alertRequest.put(&quot;description&quot;, String.format(&quot;AI对话超时警告 - 对话持续%d分钟&quot;, durationMinutes));</b>
+<b class="nc">&nbsp;            alertRequest.put(&quot;operationDetails&quot;, String.format(</b>
+&nbsp;                &quot;对话开始时间: %s\n当前持续时间: %d 分钟\n建议限制: %d 分钟\n服务: bot-service&quot;,
+<b class="nc">&nbsp;                conversationStartTime.format(timeFormatter),</b>
+<b class="nc">&nbsp;                durationMinutes,</b>
+<b class="nc">&nbsp;                MAX_CONVERSATION_DURATION_MINUTES</b>
+&nbsp;            ));
+&nbsp;
+<b class="nc">&nbsp;            String requestJson = objectMapper.writeValueAsString(alertRequest);</b>
+<b class="nc">&nbsp;            logInfo(&quot;警报请求内容: &quot; + requestJson);</b>
+&nbsp;
+&nbsp;            // 使用同步调用确保请求发送完成
+&nbsp;            try {
+<b class="nc">&nbsp;                logInfo(&quot;尝试使用WebClient发送警报到: &quot; + alertServiceUrl + &quot;/api/alert/create&quot;);</b>
+<b class="nc">&nbsp;                String response = webClient.post()</b>
+<b class="nc">&nbsp;                        .uri(alertServiceUrl + &quot;/api/alert/create&quot;)</b>
+<b class="nc">&nbsp;                        .header(&quot;Content-Type&quot;, &quot;application/json&quot;)</b>
+<b class="nc">&nbsp;                        .bodyValue(alertRequest)</b>
+<b class="nc">&nbsp;                        .retrieve()</b>
+<b class="nc">&nbsp;                        .bodyToMono(String.class)</b>
+<b class="nc">&nbsp;                        .timeout(Duration.ofSeconds(10))  // 设置超时时间</b>
+<b class="nc">&nbsp;                        .block();  // 同步等待响应</b>
+&nbsp;
+<b class="nc">&nbsp;                logInfo(&quot;AI超时警报发送成功: &quot; + response);</b>
+<b class="nc">&nbsp;                System.out.println(&quot;[AIService-SUCCESS] &quot; + LocalDateTime.now().format(timeFormatter) + &quot; - AI超时警报发送成功&quot;);</b>
+&nbsp;
+&nbsp;            } catch (Exception httpError) {
+<b class="nc">&nbsp;                logError(&quot;发送AI超时警报HTTP请求失败&quot;, httpError);</b>
+<b class="nc">&nbsp;                System.err.println(&quot;[AIService-ERROR] &quot; + LocalDateTime.now().format(timeFormatter) + &quot; - WebClient发送警报失败: &quot; + httpError.getMessage());</b>
+&nbsp;
+&nbsp;                // 尝试使用 RestTemplate 作为备选方案
+&nbsp;                try {
+<b class="nc">&nbsp;                    logInfo(&quot;尝试使用RestTemplate作为备选方案发送警报&quot;);</b>
+<b class="nc">&nbsp;                    RestTemplate restTemplate = new RestTemplate();</b>
+<b class="nc">&nbsp;                    HttpHeaders headers = new HttpHeaders();</b>
+<b class="nc">&nbsp;                    headers.setContentType(MediaType.APPLICATION_JSON);</b>
+<b class="nc">&nbsp;                    HttpEntity&lt;String&gt; entity = new HttpEntity&lt;&gt;(requestJson, headers);</b>
+&nbsp;
+<b class="nc">&nbsp;                    ResponseEntity&lt;String&gt; restResponse = restTemplate.postForEntity(</b>
+&nbsp;                        alertServiceUrl + &quot;/api/alert/create&quot;,
+&nbsp;                        entity,
+&nbsp;                        String.class
+&nbsp;                    );
+&nbsp;
+<b class="nc">&nbsp;                    logInfo(&quot;使用RestTemplate发送警报成功: &quot; + restResponse.getBody());</b>
+<b class="nc">&nbsp;                    System.out.println(&quot;[AIService-SUCCESS] &quot; + LocalDateTime.now().format(timeFormatter) + &quot; - RestTemplate发送警报成功&quot;);</b>
+&nbsp;
+&nbsp;                } catch (Exception restError) {
+<b class="nc">&nbsp;                    logError(&quot;RestTemplate发送警报也失败&quot;, restError);</b>
+<b class="nc">&nbsp;                    System.err.println(&quot;[AIService-ERROR] &quot; + LocalDateTime.now().format(timeFormatter) + &quot; - RestTemplate发送警报也失败: &quot; + restError.getMessage());</b>
+<b class="nc">&nbsp;                    System.err.println(&quot;[AIService-ERROR] &quot; + LocalDateTime.now().format(timeFormatter) + &quot; - 所有发送警报的方法都失败了，请检查alert-service是否正常运行&quot;);</b>
+&nbsp;
+&nbsp;                    // 输出详细的错误堆栈信息
+<b class="nc">&nbsp;                    System.err.println(&quot;[AIService-ERROR] WebClient错误详情:&quot;);</b>
+<b class="nc">&nbsp;                    httpError.printStackTrace();</b>
+<b class="nc">&nbsp;                    System.err.println(&quot;[AIService-ERROR] RestTemplate错误详情:&quot;);</b>
+<b class="nc">&nbsp;                    restError.printStackTrace();</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            logError(&quot;构建AI超时警报请求时出错&quot;, e);</b>
+<b class="nc">&nbsp;            System.err.println(&quot;[AIService-ERROR] &quot; + LocalDateTime.now().format(timeFormatter) + &quot; - 构建警报请求时出错: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 检查alert-service健康状态
+&nbsp;     */
+&nbsp;    public boolean checkAlertServiceHealth() {
+&nbsp;        try {
+<b class="nc">&nbsp;            String response = webClient.get()</b>
+<b class="nc">&nbsp;                    .uri(alertServiceUrl + &quot;/api/alert/health&quot;)</b>
+<b class="nc">&nbsp;                    .retrieve()</b>
+<b class="nc">&nbsp;                    .bodyToMono(String.class)</b>
+<b class="nc">&nbsp;                    .block();</b>
+&nbsp;
+<b class="nc">&nbsp;            logInfo(&quot;Alert Service 健康检查响应: &quot; + response);</b>
+<b class="nc">&nbsp;            return response != null &amp;&amp; response.contains(&quot;UP&quot;);</b>
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            logError(&quot;Alert Service 健康检查失败&quot;, e);</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 设置当前用户信息
+&nbsp;     */
+&nbsp;    public void setCurrentUser(String userId, String sessionId) {
+<b class="nc">&nbsp;        this.currentUserId = userId;</b>
+<b class="nc">&nbsp;        this.currentSessionId = sessionId;</b>
+<b class="nc">&nbsp;        logInfo(&quot;设置当前用户 - 用户ID: &quot; + userId + &quot;, 会话ID: &quot; + sessionId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取当前用户ID
+&nbsp;     */
+&nbsp;    public String getCurrentUserId() {
+<b class="nc">&nbsp;        return currentUserId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取当前会话ID
+&nbsp;     */
+&nbsp;    public String getCurrentSessionId() {
+<b class="nc">&nbsp;        return currentSessionId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void forceTimeoutAlert() {
+<b class="nc">&nbsp;        logInfo(&quot;=== 强制触发超时警报（测试用） ===&quot;);</b>
+<b class="nc">&nbsp;        if (conversationStartTime == null) {</b>
+<b class="nc">&nbsp;            conversationStartTime = LocalDateTime.now().minusMinutes(10);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        timeoutAlertSent = false;</b>
+<b class="nc">&nbsp;        sendTimeoutAlert(10);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 测试JSON格式 - 用于测试目的
+&nbsp;     */
+&nbsp;    public String testJsonFormat() {
+&nbsp;        try {
+<b class="nc">&nbsp;            Map&lt;String, Object&gt; testData = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;            testData.put(&quot;userId&quot;, currentUserId);</b>
+<b class="nc">&nbsp;            testData.put(&quot;alertType&quot;, &quot;AI_TIMEOUT&quot;);</b>
+<b class="nc">&nbsp;            testData.put(&quot;alertLevel&quot;, &quot;MEDIUM&quot;);</b>
+<b class="nc">&nbsp;            testData.put(&quot;description&quot;, &quot;测试AI超时警报&quot;);</b>
+<b class="nc">&nbsp;            testData.put(&quot;operationDetails&quot;, &quot;这是一个测试警报&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;            return objectMapper.writeValueAsString(testData);</b>
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            logError(&quot;生成测试JSON时出错&quot;, e);</b>
+<b class="nc">&nbsp;            return &quot;{\&quot;error\&quot;: \&quot;生成JSON失败: &quot; + e.getMessage() + &quot;\&quot;}&quot;;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:31</div>
+</div>
+</body>
+</html>

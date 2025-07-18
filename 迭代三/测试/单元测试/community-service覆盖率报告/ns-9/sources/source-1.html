@@ -1,0 +1,208 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AIPromptConfig</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.botservice.config</a>
+</div>
+
+<h1>Coverage Summary for Class: AIPromptConfig (com.se2303.botservice.config)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AIPromptConfig</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/27)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.botservice.config;
+&nbsp;
+&nbsp;import org.springframework.boot.context.properties.ConfigurationProperties;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;@Component
+&nbsp;@ConfigurationProperties(prefix = &quot;ai.prompt&quot;)
+&nbsp;public class AIPromptConfig {
+&nbsp;    
+&nbsp;    private String system;
+<b class="nc">&nbsp;    private Map&lt;String, String&gt; scenarios = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;    private Map&lt;String, String&gt; personalities = new HashMap&lt;&gt;();</b>
+&nbsp;    
+<b class="nc">&nbsp;    public AIPromptConfig() {</b>
+&nbsp;        // 初始化默认场景提示词
+<b class="nc">&nbsp;        scenarios.put(&quot;general&quot;, &quot;你是一个专业的心理健康陪伴助手，名叫&#39;小暖&#39;。你的主要职责是提供温暖、理解和支持的对话。&quot;);</b>
+<b class="nc">&nbsp;        scenarios.put(&quot;crisis&quot;, &quot;你是危机干预助手，当用户表达自杀倾向或严重心理危机时，请立即提供专业帮助建议和热线电话。&quot;);</b>
+<b class="nc">&nbsp;        scenarios.put(&quot;academic&quot;, &quot;你是学习压力疏导助手，专门帮助学生处理学习压力、考试焦虑等问题。&quot;);</b>
+<b class="nc">&nbsp;        scenarios.put(&quot;relationship&quot;, &quot;你是人际关系咨询助手，帮助用户处理朋友、家人、恋人之间的关系问题。&quot;);</b>
+&nbsp;        
+&nbsp;        // 初始化不同性格的提示词
+<b class="nc">&nbsp;        personalities.put(&quot;warm&quot;, &quot;你是一个温暖、善解人意的陪伴者，总是用温柔的语气和用户交流。&quot;);</b>
+<b class="nc">&nbsp;        personalities.put(&quot;professional&quot;, &quot;你是一个专业、理性的心理咨询助手，提供客观的建议和指导。&quot;);</b>
+<b class="nc">&nbsp;        personalities.put(&quot;encouraging&quot;, &quot;你是一个积极、鼓励性的助手，总是给用户正面的支持和鼓励。&quot;);</b>
+<b class="nc">&nbsp;        personalities.put(&quot;empathetic&quot;, &quot;你是一个富有同理心的助手，能够深刻理解用户的感受和情绪。&quot;);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getSystem() {
+<b class="nc">&nbsp;        return system;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setSystem(String system) {
+<b class="nc">&nbsp;        this.system = system;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public Map&lt;String, String&gt; getScenarios() {
+<b class="nc">&nbsp;        return scenarios;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setScenarios(Map&lt;String, String&gt; scenarios) {
+<b class="nc">&nbsp;        this.scenarios = scenarios;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public Map&lt;String, String&gt; getPersonalities() {
+<b class="nc">&nbsp;        return personalities;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setPersonalities(Map&lt;String, String&gt; personalities) {
+<b class="nc">&nbsp;        this.personalities = personalities;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取完整的系统提示词
+&nbsp;     * @param scenario 场景类型
+&nbsp;     * @param personality 性格类型
+&nbsp;     * @return 完整的提示词
+&nbsp;     */
+&nbsp;    public String getFullPrompt(String scenario, String personality) {
+<b class="nc">&nbsp;        StringBuilder prompt = new StringBuilder();</b>
+&nbsp;        
+&nbsp;        // 添加基础系统提示词
+<b class="nc">&nbsp;        if (system != null &amp;&amp; !system.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;            prompt.append(system).append(&quot;\n\n&quot;);</b>
+&nbsp;        }
+&nbsp;        
+&nbsp;        // 添加场景特定提示词
+<b class="nc">&nbsp;        if (scenario != null &amp;&amp; scenarios.containsKey(scenario)) {</b>
+<b class="nc">&nbsp;            prompt.append(scenarios.get(scenario)).append(&quot;\n\n&quot;);</b>
+&nbsp;        }
+&nbsp;        
+&nbsp;        // 添加性格特定提示词
+<b class="nc">&nbsp;        if (personality != null &amp;&amp; personalities.containsKey(personality)) {</b>
+<b class="nc">&nbsp;            prompt.append(personalities.get(personality)).append(&quot;\n\n&quot;);</b>
+&nbsp;        }
+&nbsp;        
+&nbsp;        // 添加通用指导原则
+<b class="nc">&nbsp;        prompt.append(&quot;请记住：你是一个陪伴者，不是医生。对于严重的心理健康问题，请建议用户寻求专业帮助。&quot;);</b>
+&nbsp;        
+<b class="nc">&nbsp;        return prompt.toString();</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取默认提示词
+&nbsp;     * @return 默认提示词
+&nbsp;     */
+&nbsp;    public String getDefaultPrompt() {
+<b class="nc">&nbsp;        return getFullPrompt(&quot;general&quot;, &quot;warm&quot;);</b>
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:33</div>
+</div>
+</body>
+</html>

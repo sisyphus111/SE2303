@@ -1,0 +1,341 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ReportService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.communityservice.service.Impl</a>
+</div>
+
+<h1>Coverage Summary for Class: ReportService (com.se2303.communityservice.service.Impl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ReportService</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/42)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/98)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.communityservice.service.Impl;
+&nbsp;
+&nbsp;import com.se2303.communityservice.dto.PageDTO;
+&nbsp;import com.se2303.communityservice.entity.Report;
+&nbsp;import com.se2303.communityservice.entity.Post;
+&nbsp;import com.se2303.communityservice.entity.Comment;
+&nbsp;import com.se2303.communityservice.repository.ReportRepository;
+&nbsp;import com.se2303.communityservice.repository.PostRepository;
+&nbsp;import com.se2303.communityservice.repository.CommentRepository;
+&nbsp;import com.se2303.communityservice.service.IReportService;
+&nbsp;import jakarta.persistence.EntityNotFoundException;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;@Service
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class ReportService implements IReportService {
+<b class="nc">&nbsp;    private static final Logger logger = LoggerFactory.getLogger(ReportService.class);</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private ReportRepository reportRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private PostRepository postRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private CommentRepository commentRepository;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public PageDTO&lt;Report&gt; getAllReports(Report.ReportStatus status, Pageable pageable) {
+<b class="nc">&nbsp;        logger.info(&quot;获取举报列表，状态筛选: {}&quot;, status);</b>
+&nbsp;        
+&nbsp;        Page&lt;Report&gt; reports;
+<b class="nc">&nbsp;        if (status != null) {</b>
+<b class="nc">&nbsp;            reports = reportRepository.findByStatus(status, pageable);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            reports = reportRepository.findAll(pageable);</b>
+&nbsp;        }
+&nbsp;        
+<b class="nc">&nbsp;        logger.info(&quot;✅ 获取到 {} 条举报记录&quot;, reports.getTotalElements());</b>
+&nbsp;        
+<b class="nc">&nbsp;        return new PageDTO&lt;&gt;(</b>
+<b class="nc">&nbsp;                reports.getContent(),</b>
+<b class="nc">&nbsp;                reports.getNumber(),</b>
+<b class="nc">&nbsp;                reports.getSize(),</b>
+<b class="nc">&nbsp;                reports.getTotalElements(),</b>
+<b class="nc">&nbsp;                reports.getTotalPages()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Report getReportById(Long reportId) {
+<b class="nc">&nbsp;        validateReportId(reportId);</b>
+&nbsp;        
+<b class="nc">&nbsp;        Report report = reportRepository.findById(reportId)</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; {</b>
+<b class="nc">&nbsp;                    logger.warn(&quot;举报记录未找到: {}&quot;, reportId);</b>
+<b class="nc">&nbsp;                    return new EntityNotFoundException(&quot;举报记录未找到: &quot; + reportId);</b>
+&nbsp;                });
+&nbsp;        
+<b class="nc">&nbsp;        logger.debug(&quot;获取举报详情: {}&quot;, reportId);</b>
+<b class="nc">&nbsp;        return report;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    @Transactional
+&nbsp;    public Report handleReport(Long reportId, String action, String adminId) {
+<b class="nc">&nbsp;        return handleReport(reportId, action, adminId, null);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    @Transactional
+&nbsp;    public Report handleReport(Long reportId, String action, String adminId, String handleReason) {
+<b class="nc">&nbsp;        validateReportId(reportId);</b>
+<b class="nc">&nbsp;        validateAdminId(adminId);</b>
+<b class="nc">&nbsp;        validateAction(action);</b>
+&nbsp;        
+<b class="nc">&nbsp;        Report report = reportRepository.findById(reportId)</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; {</b>
+<b class="nc">&nbsp;                    logger.warn(&quot;举报记录未找到: {}&quot;, reportId);</b>
+<b class="nc">&nbsp;                    return new EntityNotFoundException(&quot;举报记录未找到: &quot; + reportId);</b>
+&nbsp;                });
+&nbsp;        
+&nbsp;        // 检查举报状态
+<b class="nc">&nbsp;        if (report.getStatus() != Report.ReportStatus.PENDING) {</b>
+<b class="nc">&nbsp;            throw new IllegalStateException(&quot;举报已被处理，无法重复处理&quot;);</b>
+&nbsp;        }
+&nbsp;        
+<b class="nc">&nbsp;        if (report.getType().equals(&quot;post&quot;)) {</b>
+<b class="nc">&nbsp;            Post post = postRepository.findById(report.getPostId())</b>
+<b class="nc">&nbsp;                    .orElseThrow(() -&gt; {</b>
+<b class="nc">&nbsp;                        logger.warn(&quot;帖子未找到: {}&quot;, report.getPostId());</b>
+<b class="nc">&nbsp;                        return new EntityNotFoundException(&quot;帖子未找到: &quot; + report.getPostId());</b>
+&nbsp;                    });
+<b class="nc">&nbsp;            if (action.equals(&quot;resolved&quot;)) {</b>
+<b class="nc">&nbsp;                post.setReviewStatus(&quot;BANNED&quot;);</b>
+<b class="nc">&nbsp;            } else if (action.equals(&quot;rejected&quot;)) {</b>
+<b class="nc">&nbsp;                post.setReviewStatus(&quot;APPROVED&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            postRepository.save(post);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (report.getType().equals(&quot;comment&quot;)) {</b>
+<b class="nc">&nbsp;            Comment comment = commentRepository.findById(report.getCommentId())</b>
+<b class="nc">&nbsp;                    .orElseThrow(() -&gt; {</b>
+<b class="nc">&nbsp;                        logger.warn(&quot;评论未找到: {}&quot;, report.getCommentId());</b>
+<b class="nc">&nbsp;                        return new EntityNotFoundException(&quot;评论未找到: &quot; + report.getCommentId());</b>
+&nbsp;                    });
+<b class="nc">&nbsp;            if (action.equals(&quot;resolved&quot;)) {</b>
+<b class="nc">&nbsp;                comment.setReviewStatus(&quot;BANNED&quot;);</b>
+<b class="nc">&nbsp;            } else if (action.equals(&quot;rejected&quot;)) {</b>
+<b class="nc">&nbsp;                comment.setReviewStatus(&quot;APPROVED&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            commentRepository.save(comment);</b>
+&nbsp;        }
+&nbsp;        // 更新举报状态
+<b class="nc">&nbsp;        if (&quot;resolved&quot;.equals(action)) {</b>
+<b class="nc">&nbsp;            report.setStatus(Report.ReportStatus.APPROVED);</b>
+<b class="nc">&nbsp;        } else if (&quot;rejected&quot;.equals(action)) {</b>
+<b class="nc">&nbsp;            report.setStatus(Report.ReportStatus.REJECTED);</b>
+&nbsp;        }
+&nbsp;        
+<b class="nc">&nbsp;        Report savedReport = reportRepository.save(report);</b>
+<b class="nc">&nbsp;        logger.info(&quot;✅ 管理员 {} 处理举报 {}: {}&quot;, adminId, reportId, action);</b>
+&nbsp;        
+<b class="nc">&nbsp;        return savedReport;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Long getReportCountByPostId(Long postId) {
+<b class="nc">&nbsp;        validatePostId(postId);</b>
+<b class="nc">&nbsp;        return reportRepository.countByPostId(postId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取举报详情（包含帖子信息）
+&nbsp;     */
+&nbsp;    public Map&lt;String, Object&gt; getReportDetail(Long reportId) {
+<b class="nc">&nbsp;        validateReportId(reportId);</b>
+&nbsp;        
+<b class="nc">&nbsp;        Report report = reportRepository.findById(reportId)</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; {</b>
+<b class="nc">&nbsp;                    logger.warn(&quot;举报记录未找到: {}&quot;, reportId);</b>
+<b class="nc">&nbsp;                    return new EntityNotFoundException(&quot;举报记录未找到: &quot; + reportId);</b>
+&nbsp;                });
+&nbsp;        
+&nbsp;
+<b class="nc">&nbsp;        Post post = null;</b>
+<b class="nc">&nbsp;        Comment comment = null;</b>
+<b class="nc">&nbsp;        Map&lt;String, Object&gt; result = new HashMap&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;        if (report.getType().equals(&quot;post&quot;)) {</b>
+&nbsp;            // 获取被举报的帖子信息
+<b class="nc">&nbsp;            post = postRepository.findById(report.getPostId())</b>
+<b class="nc">&nbsp;                    .orElseThrow(() -&gt; {</b>
+<b class="nc">&nbsp;                        logger.warn(&quot;帖子未找到: {}&quot;, report.getPostId());</b>
+<b class="nc">&nbsp;                        return new EntityNotFoundException(&quot;帖子未找到: &quot; + report.getPostId());</b>
+&nbsp;                    });
+<b class="nc">&nbsp;            result.put(&quot;post&quot;, post);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (report.getType().equals(&quot;comment&quot;)) {</b>
+&nbsp;            // 获取被举报的评论信息
+<b class="nc">&nbsp;            comment = commentRepository.findById(report.getCommentId())</b>
+<b class="nc">&nbsp;                    .orElseThrow(() -&gt; {</b>
+<b class="nc">&nbsp;                        logger.warn(&quot;评论未找到: {}&quot;, report.getCommentId());</b>
+<b class="nc">&nbsp;                        return new EntityNotFoundException(&quot;评论未找到: &quot; + report.getCommentId());</b>
+&nbsp;                    });
+<b class="nc">&nbsp;            result.put(&quot;comment&quot;, comment);</b>
+&nbsp;        }
+&nbsp;        
+<b class="nc">&nbsp;        result.put(&quot;report&quot;, report);</b>
+&nbsp;        
+<b class="nc">&nbsp;        return result;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取举报统计信息
+&nbsp;     */
+&nbsp;    public Map&lt;String, Object&gt; getReportStats() {
+<b class="nc">&nbsp;        long totalReports = reportRepository.count();</b>
+<b class="nc">&nbsp;        long pendingReports = reportRepository.countByStatus(Report.ReportStatus.PENDING);</b>
+<b class="nc">&nbsp;        long approvedReports = reportRepository.countByStatus(Report.ReportStatus.APPROVED);</b>
+<b class="nc">&nbsp;        long rejectedReports = reportRepository.countByStatus(Report.ReportStatus.REJECTED);</b>
+&nbsp;        
+<b class="nc">&nbsp;        Map&lt;String, Object&gt; stats = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;        stats.put(&quot;total&quot;, totalReports);</b>
+<b class="nc">&nbsp;        stats.put(&quot;pending&quot;, pendingReports);</b>
+<b class="nc">&nbsp;        stats.put(&quot;approved&quot;, approvedReports);</b>
+<b class="nc">&nbsp;        stats.put(&quot;rejected&quot;, rejectedReports);</b>
+&nbsp;        
+<b class="nc">&nbsp;        return stats;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void validateReportId(Long reportId) {
+<b class="nc">&nbsp;        if (reportId == null || reportId &lt;= 0) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;无效的举报ID: &quot; + reportId);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void validateAdminId(String adminId) {
+<b class="nc">&nbsp;        if (adminId == null || adminId.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;无效的管理员ID: &quot; + adminId);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void validateAction(String action) {
+<b class="nc">&nbsp;        if (action == null || (!action.equals(&quot;resolved&quot;) &amp;&amp; !action.equals(&quot;rejected&quot;))) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;无效的处理动作，只支持 resolved 或 rejected: &quot; + action);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void validatePostId(Long postId) {
+<b class="nc">&nbsp;        if (postId == null || postId &lt;= 0) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;无效的帖子ID: &quot; + postId);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:30</div>
+</div>
+</body>
+</html>

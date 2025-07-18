@@ -1,0 +1,159 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MoodItemDAO</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.moodservice.dao</a>
+</div>
+
+<h1>Coverage Summary for Class: MoodItemDAO (com.se2303.moodservice.dao)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">MoodItemDAO</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.moodservice.dao;
+&nbsp;
+&nbsp;import com.se2303.moodservice.model.MoodItem;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * MoodItem数据访问对象接口
+&nbsp; * 定义与MoodItem实体相关的数据访问操作
+&nbsp; */
+&nbsp;public interface MoodItemDAO {
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 保存心情标签
+&nbsp;     */
+&nbsp;    MoodItem save(MoodItem moodItem);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据ID查找心情标签
+&nbsp;     */
+&nbsp;    MoodItem findById(Long id);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据mood_id查找所有心情标签
+&nbsp;     */
+&nbsp;    List&lt;MoodItem&gt; findByMoodId(Long moodId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据标签名称查找所有心情标签
+&nbsp;     */
+&nbsp;    List&lt;MoodItem&gt; findByLabel(String label);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据标签名称模糊查找
+&nbsp;     */
+&nbsp;    List&lt;MoodItem&gt; findByLabelContainingIgnoreCase(String label);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据mood_id删除所有心情标签
+&nbsp;     */
+&nbsp;    void deleteByMoodId(Long moodId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 删除心情标签
+&nbsp;     */
+&nbsp;    void deleteById(Long id);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 删除所有心情标签
+&nbsp;     */
+&nbsp;    void deleteAll();
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取所有心情标签
+&nbsp;     */
+&nbsp;    List&lt;MoodItem&gt; findAll();
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 统计某个标签的使用次数
+&nbsp;     */
+&nbsp;    long countByLabel(String label);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 查找最常用的标签（按使用次数降序）
+&nbsp;     */
+&nbsp;    List&lt;Object[]&gt; findMostUsedLabels();
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 查找指定用户的所有心情标签
+&nbsp;     */
+&nbsp;    List&lt;MoodItem&gt; findByUserId(Long userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 查找指定用户在指定日期范围内的心情标签
+&nbsp;     */
+&nbsp;    List&lt;MoodItem&gt; findByUserIdAndDateBetween(Long userId, String startDate, String endDate);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 批量保存心情标签
+&nbsp;     */
+&nbsp;    List&lt;MoodItem&gt; saveAll(List&lt;MoodItem&gt; moodItems);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 检查标签是否存在
+&nbsp;     */
+&nbsp;    boolean existsByLabel(String label);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据mood_id和label查找心情标签
+&nbsp;     */
+&nbsp;    MoodItem findByMoodIdAndLabel(Long moodId, String label);
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:41</div>
+</div>
+</body>
+</html>

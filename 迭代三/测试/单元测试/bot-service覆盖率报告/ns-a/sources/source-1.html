@@ -1,0 +1,256 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PromptController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.botservice.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: PromptController (com.se2303.botservice.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PromptController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    70.8%
+  </span>
+  <span class="absValue">
+    (17/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (51/51)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.botservice.controller;
+&nbsp;
+&nbsp;import com.se2303.botservice.config.AIPromptConfig;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/prompt&quot;)
+&nbsp;@CrossOrigin(origins = &quot;*&quot;)
+<b class="fc">&nbsp;public class PromptController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public AIPromptConfig promptConfig;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取所有可用的场景类型
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/scenarios&quot;)
+&nbsp;    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; getScenarios() {
+<b class="fc">&nbsp;        return ResponseEntity.ok(promptConfig.getScenarios());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取所有可用的性格类型
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/personalities&quot;)
+&nbsp;    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; getPersonalities() {
+<b class="fc">&nbsp;        return ResponseEntity.ok(promptConfig.getPersonalities());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取完整的提示词配置信息
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/config&quot;)
+&nbsp;    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; getPromptConfig() {
+<b class="fc">&nbsp;        Map&lt;String, Object&gt; config = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        config.put(&quot;system&quot;, promptConfig.getSystem());</b>
+<b class="fc">&nbsp;        config.put(&quot;scenarios&quot;, promptConfig.getScenarios());</b>
+<b class="fc">&nbsp;        config.put(&quot;personalities&quot;, promptConfig.getPersonalities());</b>
+<b class="fc">&nbsp;        config.put(&quot;default&quot;, promptConfig.getDefaultPrompt());</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(config);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据场景和性格获取完整的提示词
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/full&quot;)
+&nbsp;    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; getFullPrompt(
+&nbsp;            @RequestParam(required = false) String scenario,
+&nbsp;            @RequestParam(required = false) String personality) {
+&nbsp;        
+<b class="fc">&nbsp;        String fullPrompt = promptConfig.getFullPrompt(scenario, personality);</b>
+<b class="fc">&nbsp;        Map&lt;String, String&gt; response = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        response.put(&quot;prompt&quot;, fullPrompt);</b>
+<b class="fc">&nbsp;        response.put(&quot;scenario&quot;, scenario != null ? scenario : &quot;默认&quot;);</b>
+<b class="fc">&nbsp;        response.put(&quot;personality&quot;, personality != null ? personality : &quot;默认&quot;);</b>
+&nbsp;        
+<b class="fc">&nbsp;        return ResponseEntity.ok(response);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取默认提示词
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/default&quot;)
+&nbsp;    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; getDefaultPrompt() {
+<b class="fc">&nbsp;        String defaultPrompt = promptConfig.getDefaultPrompt();</b>
+<b class="fc">&nbsp;        Map&lt;String, String&gt; response = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        response.put(&quot;prompt&quot;, defaultPrompt);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(response);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 更新系统提示词
+&nbsp;     */
+&nbsp;    @PutMapping(&quot;/system&quot;)
+&nbsp;    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; updateSystemPrompt(@RequestBody Map&lt;String, String&gt; request) {
+<b class="fc">&nbsp;        String newSystemPrompt = request.get(&quot;prompt&quot;);</b>
+<b class="pc">&nbsp;        if (newSystemPrompt != null &amp;&amp; !newSystemPrompt.trim().isEmpty()) {</b>
+<b class="fc">&nbsp;            promptConfig.setSystem(newSystemPrompt);</b>
+<b class="fc">&nbsp;            Map&lt;String, String&gt; response = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;            response.put(&quot;message&quot;, &quot;系统提示词更新成功&quot;);</b>
+<b class="fc">&nbsp;            response.put(&quot;prompt&quot;, newSystemPrompt);</b>
+<b class="fc">&nbsp;            return ResponseEntity.ok(response);</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            Map&lt;String, String&gt; response = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;            response.put(&quot;error&quot;, &quot;提示词不能为空&quot;);</b>
+<b class="fc">&nbsp;            return ResponseEntity.badRequest().body(response);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 添加新的场景提示词
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/scenarios&quot;)
+&nbsp;    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; addScenario(
+&nbsp;            @RequestBody Map&lt;String, String&gt; request) {
+&nbsp;        
+<b class="fc">&nbsp;        String name = request.get(&quot;name&quot;);</b>
+<b class="fc">&nbsp;        String prompt = request.get(&quot;prompt&quot;);</b>
+&nbsp;        
+<b class="pc">&nbsp;        if (name != null &amp;&amp; prompt != null &amp;&amp; !name.trim().isEmpty() &amp;&amp; !prompt.trim().isEmpty()) {</b>
+<b class="fc">&nbsp;            promptConfig.getScenarios().put(name, prompt);</b>
+<b class="fc">&nbsp;            Map&lt;String, String&gt; response = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;            response.put(&quot;message&quot;, &quot;场景提示词添加成功&quot;);</b>
+<b class="fc">&nbsp;            response.put(&quot;name&quot;, name);</b>
+<b class="fc">&nbsp;            return ResponseEntity.ok(response);</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            Map&lt;String, String&gt; response = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;            response.put(&quot;error&quot;, &quot;场景名称和提示词不能为空&quot;);</b>
+<b class="fc">&nbsp;            return ResponseEntity.badRequest().body(response);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 添加新的性格提示词
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/personalities&quot;)
+&nbsp;    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; addPersonality(
+&nbsp;            @RequestBody Map&lt;String, String&gt; request) {
+&nbsp;        
+<b class="fc">&nbsp;        String name = request.get(&quot;name&quot;);</b>
+<b class="fc">&nbsp;        String prompt = request.get(&quot;prompt&quot;);</b>
+&nbsp;        
+<b class="pc">&nbsp;        if (name != null &amp;&amp; prompt != null &amp;&amp; !name.trim().isEmpty() &amp;&amp; !prompt.trim().isEmpty()) {</b>
+<b class="fc">&nbsp;            promptConfig.getPersonalities().put(name, prompt);</b>
+<b class="fc">&nbsp;            Map&lt;String, String&gt; response = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;            response.put(&quot;message&quot;, &quot;性格提示词添加成功&quot;);</b>
+<b class="fc">&nbsp;            response.put(&quot;name&quot;, name);</b>
+<b class="fc">&nbsp;            return ResponseEntity.ok(response);</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            Map&lt;String, String&gt; response = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;            response.put(&quot;error&quot;, &quot;性格名称和提示词不能为空&quot;);</b>
+<b class="fc">&nbsp;            return ResponseEntity.badRequest().body(response);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:31</div>
+</div>
+</body>
+</html>

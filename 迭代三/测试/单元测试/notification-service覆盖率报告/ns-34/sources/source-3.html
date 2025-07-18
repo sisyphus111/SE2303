@@ -1,0 +1,113 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MusicRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.notificationservice.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: MusicRepository (com.se2303.notificationservice.repository)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">MusicRepository$MockitoMock$WlT4LeWh</td>
+  </tr>
+  <tr>
+    <td class="name">MusicRepository$MockitoMock$WlT4LeWh$auxiliary$N1roAvFw</td>
+  </tr>
+  <tr>
+    <td class="name">MusicRepository$MockitoMock$WlT4LeWh$auxiliary$SD7B2bgW</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.notificationservice.repository;
+&nbsp;
+&nbsp;import com.se2303.notificationservice.model.Music;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.data.repository.query.Param;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Repository
+&nbsp;public interface MusicRepository extends JpaRepository&lt;Music, Long&gt; {
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 分页查询音乐
+&nbsp;     */
+&nbsp;    Page&lt;Music&gt; findAllByOrderByCreatedAtDesc(Pageable pageable);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据分类查询音乐
+&nbsp;     */
+&nbsp;    List&lt;Music&gt; findByCategoryOrderByCreatedAtDesc(String category);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据标题模糊查询
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT m FROM Music m WHERE m.title LIKE %:keyword% OR m.category LIKE %:keyword%&quot;)
+&nbsp;    List&lt;Music&gt; findByKeyword(@Param(&quot;keyword&quot;) String keyword);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 按id正序分页查询音乐
+&nbsp;     */
+&nbsp;    Page&lt;Music&gt; findAllByOrderByIdAsc(Pageable pageable);
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:41</div>
+</div>
+</body>
+</html>

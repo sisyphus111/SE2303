@@ -1,0 +1,186 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > UpdatePreferencesRequest</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.userservice.dto.request</a>
+</div>
+
+<h1>Coverage Summary for Class: UpdatePreferencesRequest (com.se2303.userservice.dto.request)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UpdatePreferencesRequest</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.userservice.dto.request;
+&nbsp;
+&nbsp;// 用户偏好设置更新请求体
+&nbsp;public class UpdatePreferencesRequest {
+&nbsp;    // 通知设置 - 通知方式
+&nbsp;    private Boolean pushNotifications;
+&nbsp;    private Boolean emailNotifications;
+&nbsp;    
+&nbsp;    // 通知设置 - 通知类型
+&nbsp;    public Boolean commentNotifications;
+&nbsp;    private Boolean likeNotifications;
+&nbsp;    private Boolean systemNotifications;
+&nbsp;    
+&nbsp;    // 个人偏好 - 媒体设置
+&nbsp;    private Boolean soundEnabled;
+&nbsp;    
+&nbsp;    // 个人偏好 - 社区交互
+&nbsp;    private Boolean showPostStats;
+&nbsp;    private Boolean enablePostRecommendation;
+&nbsp;    private Boolean blockSensitiveContent;
+&nbsp;    
+&nbsp;    // 心理健康设置
+&nbsp;    private Boolean crisisInterventionEnabled;
+&nbsp;    private Boolean moodTrackingEnabled;
+&nbsp;    private Boolean anonymousPosting;
+&nbsp;    private Boolean mentalHealthDataSharing;
+&nbsp;
+<b class="fc">&nbsp;    public UpdatePreferencesRequest() {}</b>
+&nbsp;
+&nbsp;    public Boolean getPushNotifications() {
+<b class="fc">&nbsp;        return pushNotifications;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getEmailNotifications() {
+<b class="fc">&nbsp;        return emailNotifications;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getCommentNotifications() {
+<b class="fc">&nbsp;        return commentNotifications;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getLikeNotifications() {
+<b class="fc">&nbsp;        return likeNotifications;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getSystemNotifications() {
+<b class="fc">&nbsp;        return systemNotifications;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getSoundEnabled() {
+<b class="fc">&nbsp;        return soundEnabled;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getShowPostStats() {
+<b class="fc">&nbsp;        return showPostStats;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getEnablePostRecommendation() {
+<b class="fc">&nbsp;        return enablePostRecommendation;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getBlockSensitiveContent() {
+<b class="fc">&nbsp;        return blockSensitiveContent;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getCrisisInterventionEnabled() {
+<b class="fc">&nbsp;        return crisisInterventionEnabled;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getMoodTrackingEnabled() {
+<b class="fc">&nbsp;        return moodTrackingEnabled;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getAnonymousPosting() {
+<b class="fc">&nbsp;        return anonymousPosting;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getMentalHealthDataSharing() {
+<b class="fc">&nbsp;        return mentalHealthDataSharing;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:38</div>
+</div>
+</body>
+</html>

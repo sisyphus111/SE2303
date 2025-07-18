@@ -1,0 +1,159 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > JaccountConfig</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.userservice.config</a>
+</div>
+
+<h1>Coverage Summary for Class: JaccountConfig (com.se2303.userservice.config)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JaccountConfig</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.userservice.config;
+&nbsp;
+&nbsp;import org.springframework.boot.context.properties.ConfigurationProperties;
+&nbsp;import org.springframework.context.annotation.Configuration;
+&nbsp;
+&nbsp;@Configuration
+&nbsp;@ConfigurationProperties(prefix = &quot;jaccount&quot;)
+<b class="nc">&nbsp;public class JaccountConfig {</b>
+<b class="nc">&nbsp;    private String clientId = &quot;REDACTED&quot;;</b>
+<b class="nc">&nbsp;    private String clientSecret = &quot;REDACTED&quot;;</b>
+<b class="nc">&nbsp;    private String tokenUrl = &quot;https://jaccount.sjtu.edu.cn/oauth2/token&quot;;</b>
+<b class="nc">&nbsp;    private String userInfoUrl = &quot;https://api.sjtu.edu.cn/v1/me/profile&quot;;</b>
+<b class="nc">&nbsp;    private String logoutUrl = &quot;http://jaccount.sjtu.edu.cn/oauth2/logout&quot;;</b>
+&nbsp;    
+&nbsp;    // Getters and Setters
+&nbsp;    public String getClientId() {
+<b class="nc">&nbsp;        return clientId;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setClientId(String clientId) {
+<b class="nc">&nbsp;        this.clientId = clientId;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getClientSecret() {
+<b class="nc">&nbsp;        return clientSecret;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setClientSecret(String clientSecret) {
+<b class="nc">&nbsp;        this.clientSecret = clientSecret;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getTokenUrl() {
+<b class="nc">&nbsp;        return tokenUrl;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setTokenUrl(String tokenUrl) {
+<b class="nc">&nbsp;        this.tokenUrl = tokenUrl;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getUserInfoUrl() {
+<b class="nc">&nbsp;        return userInfoUrl;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setUserInfoUrl(String userInfoUrl) {
+<b class="nc">&nbsp;        this.userInfoUrl = userInfoUrl;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getLogoutUrl() {
+<b class="nc">&nbsp;        return logoutUrl;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setLogoutUrl(String logoutUrl) {
+<b class="nc">&nbsp;        this.logoutUrl = logoutUrl;</b>
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:42</div>
+</div>
+</body>
+</html>

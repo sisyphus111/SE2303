@@ -1,0 +1,245 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MoodCheckInResponse</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.moodservice.dto</a>
+</div>
+
+<h1>Coverage Summary for Class: MoodCheckInResponse (com.se2303.moodservice.dto)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MoodCheckInResponse</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/34)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.moodservice.dto;
+&nbsp;
+&nbsp;import com.se2303.moodservice.model.WeatherType;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * 心情打卡响应DTO
+&nbsp; */
+&nbsp;public class MoodCheckInResponse {
+&nbsp;    
+&nbsp;    private Long id;
+&nbsp;    private String userId;
+&nbsp;    private LocalDate date;
+&nbsp;    private Integer score;
+&nbsp;    private Boolean scoreCommitted;
+&nbsp;    private String diaryDescription;
+&nbsp;    private Boolean diaryCommitted;
+&nbsp;    private String diaryTitle;
+&nbsp;    private WeatherType weather;
+&nbsp;    private List&lt;String&gt; moodLabels;
+&nbsp;    private LocalDateTime createdAt;
+&nbsp;    private LocalDateTime updatedAt;
+&nbsp;    
+&nbsp;    // 构造函数
+<b class="nc">&nbsp;    public MoodCheckInResponse() {}</b>
+&nbsp;    
+&nbsp;    public MoodCheckInResponse(Long id, String userId, LocalDate date, Integer score, 
+&nbsp;                              Boolean scoreCommitted, String diaryDescription, 
+&nbsp;                              Boolean diaryCommitted, String diaryTitle, WeatherType weather, List&lt;String&gt; moodLabels,
+<b class="nc">&nbsp;                              LocalDateTime createdAt, LocalDateTime updatedAt) {</b>
+<b class="nc">&nbsp;        this.id = id;</b>
+<b class="nc">&nbsp;        this.userId = userId;</b>
+<b class="nc">&nbsp;        this.date = date;</b>
+<b class="nc">&nbsp;        this.score = score;</b>
+<b class="nc">&nbsp;        this.scoreCommitted = scoreCommitted;</b>
+<b class="nc">&nbsp;        this.diaryDescription = diaryDescription;</b>
+<b class="nc">&nbsp;        this.diaryCommitted = diaryCommitted;</b>
+<b class="nc">&nbsp;        this.diaryTitle = diaryTitle;</b>
+<b class="nc">&nbsp;        this.weather = weather;</b>
+<b class="nc">&nbsp;        this.moodLabels = moodLabels;</b>
+<b class="nc">&nbsp;        this.createdAt = createdAt;</b>
+<b class="nc">&nbsp;        this.updatedAt = updatedAt;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    // Getter和Setter方法
+&nbsp;    public Long getId() {
+<b class="nc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setId(Long id) {
+<b class="nc">&nbsp;        this.id = id;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getUserId() {
+<b class="nc">&nbsp;        return userId;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setUserId(String userId) {
+<b class="nc">&nbsp;        this.userId = userId;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public LocalDate getDate() {
+<b class="nc">&nbsp;        return date;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setDate(LocalDate date) {
+<b class="nc">&nbsp;        this.date = date;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public Integer getScore() {
+<b class="nc">&nbsp;        return score;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setScore(Integer score) {
+<b class="nc">&nbsp;        this.score = score;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public Boolean getScoreCommitted() {
+<b class="nc">&nbsp;        return scoreCommitted;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getDiaryDescription() {
+<b class="nc">&nbsp;        return diaryDescription;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setDiaryDescription(String diaryDescription) {
+<b class="nc">&nbsp;        this.diaryDescription = diaryDescription;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public Boolean getDiaryCommitted() {
+<b class="nc">&nbsp;        return diaryCommitted;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getDiaryTitle() {
+<b class="nc">&nbsp;        return diaryTitle;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setDiaryTitle(String diaryTitle) {
+<b class="nc">&nbsp;        this.diaryTitle = diaryTitle;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public WeatherType getWeather() {
+<b class="nc">&nbsp;        return weather;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;String&gt; getMoodLabels() {
+<b class="nc">&nbsp;        return moodLabels;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setMoodLabels(List&lt;String&gt; moodLabels) {
+<b class="nc">&nbsp;        this.moodLabels = moodLabels;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public LocalDateTime getCreatedAt() {
+<b class="nc">&nbsp;        return createdAt;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public LocalDateTime getUpdatedAt() {
+<b class="nc">&nbsp;        return updatedAt;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;        return &quot;MoodCheckInResponse{&quot; +</b>
+&nbsp;                &quot;id=&quot; + id +
+&nbsp;                &quot;, userId=&quot; + userId +
+&nbsp;                &quot;, date=&quot; + date +
+&nbsp;                &quot;, score=&quot; + score +
+&nbsp;                &quot;, scoreCommitted=&quot; + scoreCommitted +
+&nbsp;                &quot;, diaryDescription=&#39;&quot; + diaryDescription + &#39;\&#39;&#39; +
+&nbsp;                &quot;, diaryCommitted=&quot; + diaryCommitted +
+&nbsp;                &quot;, diaryTitle=&#39;&quot; + diaryTitle + &#39;\&#39;&#39; +
+&nbsp;                &quot;, weather=&quot; + weather +
+&nbsp;                &quot;, moodLabels=&quot; + moodLabels +
+&nbsp;                &quot;, createdAt=&quot; + createdAt +
+&nbsp;                &quot;, updatedAt=&quot; + updatedAt +
+&nbsp;                &#39;}&#39;;
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:43</div>
+</div>
+</body>
+</html>

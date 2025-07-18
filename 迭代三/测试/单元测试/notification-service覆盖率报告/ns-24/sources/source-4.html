@@ -1,0 +1,185 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > CreateArticleRequest</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.notificationservice.dto</a>
+</div>
+
+<h1>Coverage Summary for Class: CreateArticleRequest (com.se2303.notificationservice.dto)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CreateArticleRequest</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (13/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.notificationservice.dto;
+&nbsp;
+&nbsp;import jakarta.validation.constraints.NotBlank;
+&nbsp;import jakarta.validation.constraints.Size;
+&nbsp;
+&nbsp;/**
+&nbsp; * 创建文章请求DTO
+&nbsp; */
+&nbsp;public class CreateArticleRequest {
+&nbsp;    
+&nbsp;    @NotBlank(message = &quot;文章标题不能为空&quot;)
+&nbsp;    @Size(max = 255, message = &quot;文章标题长度不能超过255个字符&quot;)
+&nbsp;    private String title;
+&nbsp;    
+&nbsp;    @Size(max = 1000, message = &quot;文章简介长度不能超过1000个字符&quot;)
+&nbsp;    private String introduction;
+&nbsp;    
+&nbsp;    @Size(max = 5000, message = &quot;文章描述长度不能超过5000个字符&quot;)
+&nbsp;    private String description;
+&nbsp;    
+&nbsp;    @Size(max = 500, message = &quot;封面图片URL长度不能超过500个字符&quot;)
+&nbsp;    private String cover;
+&nbsp;    
+&nbsp;    @Size(max = 500, message = &quot;文章链接长度不能超过500个字符&quot;)
+&nbsp;    private String link;
+&nbsp;    
+<b class="fc">&nbsp;    @Size(max = 100, message = &quot;文章分类长度不能超过100个字符&quot;)</b>
+&nbsp;    private String category = &quot;心理健康&quot;;
+&nbsp;    
+&nbsp;    // 构造函数
+<b class="fc">&nbsp;    public CreateArticleRequest() {}</b>
+&nbsp;
+&nbsp;    // Getter和Setter方法
+&nbsp;    public String getTitle() {
+<b class="fc">&nbsp;        return title;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setTitle(String title) {
+<b class="fc">&nbsp;        this.title = title;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getIntroduction() {
+<b class="fc">&nbsp;        return introduction;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setIntroduction(String introduction) {
+<b class="fc">&nbsp;        this.introduction = introduction;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getDescription() {
+<b class="fc">&nbsp;        return description;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setDescription(String description) {
+<b class="fc">&nbsp;        this.description = description;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getCover() {
+<b class="fc">&nbsp;        return cover;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setCover(String cover) {
+<b class="fc">&nbsp;        this.cover = cover;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getLink() {
+<b class="fc">&nbsp;        return link;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setLink(String link) {
+<b class="fc">&nbsp;        this.link = link;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getCategory() {
+<b class="fc">&nbsp;        return category;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setCategory(String category) {
+<b class="fc">&nbsp;        this.category = category;</b>
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:41</div>
+</div>
+</body>
+</html>

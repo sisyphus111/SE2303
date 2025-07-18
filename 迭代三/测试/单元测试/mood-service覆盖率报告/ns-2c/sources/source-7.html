@@ -1,0 +1,257 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > UserPreferenceResponse</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.userservice.dto.response</a>
+</div>
+
+<h1>Coverage Summary for Class: UserPreferenceResponse (com.se2303.userservice.dto.response)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserPreferenceResponse</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/30)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/45)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.userservice.dto.response;
+&nbsp;
+&nbsp;import com.se2303.userservice.entity.UserPreferences;
+&nbsp;
+&nbsp;public class UserPreferenceResponse {
+&nbsp;    private Long userId;
+&nbsp;    private Boolean pushNotifications;
+&nbsp;    private Boolean emailNotifications;
+&nbsp;    private Boolean commentNotifications;
+&nbsp;    private Boolean likeNotifications;
+&nbsp;    private Boolean systemNotifications;
+&nbsp;    private Boolean soundEnabled;
+&nbsp;    private Boolean showPostStats;
+&nbsp;    private Boolean enablePostRecommendation;
+&nbsp;    private Boolean blockSensitiveContent;
+&nbsp;    private Boolean crisisInterventionEnabled;
+&nbsp;    private Boolean moodTrackingEnabled;
+&nbsp;    private Boolean anonymousPosting;
+&nbsp;    private Boolean mentalHealthDataSharing;
+&nbsp;
+<b class="nc">&nbsp;    public UserPreferenceResponse() {}</b>
+&nbsp;
+&nbsp;    public Long getUserId() {
+<b class="nc">&nbsp;        return userId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getPushNotifications() {
+<b class="nc">&nbsp;        return pushNotifications;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getEmailNotifications() {
+<b class="nc">&nbsp;        return emailNotifications;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getCommentNotifications() {
+<b class="nc">&nbsp;        return commentNotifications;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getLikeNotifications() {
+<b class="nc">&nbsp;        return likeNotifications;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getSystemNotifications() {
+<b class="nc">&nbsp;        return systemNotifications;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getSoundEnabled() {
+<b class="nc">&nbsp;        return soundEnabled;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getShowPostStats() {
+<b class="nc">&nbsp;        return showPostStats;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getEnablePostRecommendation() {
+<b class="nc">&nbsp;        return enablePostRecommendation;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getBlockSensitiveContent() {
+<b class="nc">&nbsp;        return blockSensitiveContent;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getCrisisInterventionEnabled() {
+<b class="nc">&nbsp;        return crisisInterventionEnabled;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getMoodTrackingEnabled() {
+<b class="nc">&nbsp;        return moodTrackingEnabled;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getAnonymousPosting() {
+<b class="nc">&nbsp;        return anonymousPosting;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getMentalHealthDataSharing() {
+<b class="nc">&nbsp;        return mentalHealthDataSharing;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setUserId(Long userId) {
+<b class="nc">&nbsp;        this.userId = userId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setPushNotifications(Boolean pushNotifications) {
+<b class="nc">&nbsp;        this.pushNotifications = pushNotifications;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setEmailNotifications(Boolean emailNotifications) {
+<b class="nc">&nbsp;        this.emailNotifications = emailNotifications;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setCommentNotifications(Boolean commentNotifications) {
+<b class="nc">&nbsp;        this.commentNotifications = commentNotifications;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setLikeNotifications(Boolean likeNotifications) {
+<b class="nc">&nbsp;        this.likeNotifications = likeNotifications;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setSystemNotifications(Boolean systemNotifications) {
+<b class="nc">&nbsp;        this.systemNotifications = systemNotifications;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setSoundEnabled(Boolean soundEnabled) {
+<b class="nc">&nbsp;        this.soundEnabled = soundEnabled;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setShowPostStats(Boolean showPostStats) {
+<b class="nc">&nbsp;        this.showPostStats = showPostStats;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setEnablePostRecommendation(Boolean enablePostRecommendation) {
+<b class="nc">&nbsp;        this.enablePostRecommendation = enablePostRecommendation;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setBlockSensitiveContent(Boolean blockSensitiveContent) {
+<b class="nc">&nbsp;        this.blockSensitiveContent = blockSensitiveContent;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setCrisisInterventionEnabled(Boolean crisisInterventionEnabled) {
+<b class="nc">&nbsp;        this.crisisInterventionEnabled = crisisInterventionEnabled;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setMoodTrackingEnabled(Boolean moodTrackingEnabled) {
+<b class="nc">&nbsp;        this.moodTrackingEnabled = moodTrackingEnabled;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setAnonymousPosting(Boolean anonymousPosting) {
+<b class="nc">&nbsp;        this.anonymousPosting = anonymousPosting;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setMentalHealthDataSharing(Boolean mentalHealthDataSharing) {
+<b class="nc">&nbsp;        this.mentalHealthDataSharing = mentalHealthDataSharing;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static UserPreferenceResponse convertToUserPreferenceResponse(UserPreferences userPreferences) {
+<b class="nc">&nbsp;        UserPreferenceResponse userPreferenceResponse = new UserPreferenceResponse();</b>
+<b class="nc">&nbsp;        userPreferenceResponse.setUserId(userPreferences.getAuth().getId());</b>
+<b class="nc">&nbsp;        userPreferenceResponse.setPushNotifications(userPreferences.getPushNotifications());</b>
+<b class="nc">&nbsp;        userPreferenceResponse.setEmailNotifications(userPreferences.getEmailNotifications());</b>
+<b class="nc">&nbsp;        userPreferenceResponse.setCommentNotifications(userPreferences.getCommentNotifications());</b>
+<b class="nc">&nbsp;        userPreferenceResponse.setLikeNotifications(userPreferences.getLikeNotifications());</b>
+<b class="nc">&nbsp;        userPreferenceResponse.setSystemNotifications(userPreferences.getSystemNotifications());</b>
+<b class="nc">&nbsp;        userPreferenceResponse.setSoundEnabled(userPreferences.getSoundEnabled());</b>
+<b class="nc">&nbsp;        userPreferenceResponse.setShowPostStats(userPreferences.getShowPostStats());</b>
+<b class="nc">&nbsp;        userPreferenceResponse.setEnablePostRecommendation(userPreferences.getEnablePostRecommendation());</b>
+<b class="nc">&nbsp;        userPreferenceResponse.setBlockSensitiveContent(userPreferences.getBlockSensitiveContent());</b>
+<b class="nc">&nbsp;        userPreferenceResponse.setCrisisInterventionEnabled(userPreferences.getCrisisInterventionEnabled());</b>
+<b class="nc">&nbsp;        userPreferenceResponse.setMoodTrackingEnabled(userPreferences.getMoodTrackingEnabled());</b>
+<b class="nc">&nbsp;        userPreferenceResponse.setAnonymousPosting(userPreferences.getAnonymousPosting());</b>
+<b class="nc">&nbsp;        userPreferenceResponse.setMentalHealthDataSharing(userPreferences.getMentalHealthDataSharing());</b>
+<b class="nc">&nbsp;        return userPreferenceResponse;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:42</div>
+</div>
+</body>
+</html>

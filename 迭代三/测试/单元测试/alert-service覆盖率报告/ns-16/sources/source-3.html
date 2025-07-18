@@ -1,0 +1,113 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > IReportService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.communityservice.service</a>
+</div>
+
+<h1>Coverage Summary for Class: IReportService (com.se2303.communityservice.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">IReportService</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.communityservice.service;
+&nbsp;
+&nbsp;import com.se2303.communityservice.dto.PageDTO;
+&nbsp;import com.se2303.communityservice.entity.Report;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;public interface IReportService {
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取所有举报列表（管理员用）
+&nbsp;     */
+&nbsp;    PageDTO&lt;Report&gt; getAllReports(Report.ReportStatus status, Pageable pageable);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据ID获取举报详情
+&nbsp;     */
+&nbsp;    Report getReportById(Long reportId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 处理举报（批准或拒绝）
+&nbsp;     */
+&nbsp;    Report handleReport(Long reportId, String action, String adminId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 处理举报（批准或拒绝，带处理原因）
+&nbsp;     */
+&nbsp;    Report handleReport(Long reportId, String action, String adminId, String handleReason);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取指定帖子的举报数量
+&nbsp;     */
+&nbsp;    Long getReportCountByPostId(Long postId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取举报详情（包含帖子信息）
+&nbsp;     */
+&nbsp;    Map&lt;String, Object&gt; getReportDetail(Long reportId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取举报统计信息
+&nbsp;     */
+&nbsp;    Map&lt;String, Object&gt; getReportStats();
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:30</div>
+</div>
+</body>
+</html>

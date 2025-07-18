@@ -1,0 +1,190 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > InformApiService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.informservice.service</a>
+</div>
+
+<h1>Coverage Summary for Class: InformApiService (com.se2303.informservice.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">InformApiService</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.informservice.service;
+&nbsp;
+&nbsp;import com.se2303.informservice.dto.request.CreateInformRequest;
+&nbsp;import com.se2303.informservice.entity.Inform;
+&nbsp;import com.se2303.informservice.entity.InformType;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;/**
+&nbsp; * 外部服务调用接口
+&nbsp; * 提供给其他微服务调用的通知服务
+&nbsp; */
+&nbsp;@Service
+<b class="nc">&nbsp;public class InformApiService {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private InformService informService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 发送评论通知
+&nbsp;     * @param userId 接收通知的用户ID
+&nbsp;     * @param content 评论内容
+&nbsp;     * @param relatedId 相关帖子ID
+&nbsp;     * @param fromUserId 评论者ID
+&nbsp;     */
+&nbsp;    public void sendCommentNotification(Long userId, String content, String relatedId, Long fromUserId) {
+<b class="nc">&nbsp;        CreateInformRequest request = new CreateInformRequest();</b>
+<b class="nc">&nbsp;        request.setUserId(userId);</b>
+<b class="nc">&nbsp;        request.setType(InformType.COMMENT);</b>
+<b class="nc">&nbsp;        request.setContent(content);</b>
+<b class="nc">&nbsp;        request.setRelatedId(relatedId);</b>
+<b class="nc">&nbsp;        request.setFromUserId(fromUserId);</b>
+&nbsp;        
+<b class="nc">&nbsp;        informService.createInform(request);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 发送点赞通知
+&nbsp;     * @param userId 接收通知的用户ID
+&nbsp;     * @param relatedId 相关帖子ID
+&nbsp;     * @param fromUserId 点赞者ID
+&nbsp;     */
+&nbsp;    public void sendLikeNotification(Long userId, String relatedId, Long fromUserId) {
+<b class="nc">&nbsp;        CreateInformRequest request = new CreateInformRequest();</b>
+<b class="nc">&nbsp;        request.setUserId(userId);</b>
+<b class="nc">&nbsp;        request.setType(InformType.LIKE);</b>
+<b class="nc">&nbsp;        request.setContent(&quot;&quot;); // 点赞通知content为空</b>
+<b class="nc">&nbsp;        request.setRelatedId(relatedId);</b>
+<b class="nc">&nbsp;        request.setFromUserId(fromUserId);</b>
+&nbsp;        
+<b class="nc">&nbsp;        informService.createInform(request);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 通用通知发送方法
+&nbsp;     * @param userId 接收通知的用户ID
+&nbsp;     * @param type 通知类型
+&nbsp;     * @param content 通知内容
+&nbsp;     * @param relatedId 相关ID
+&nbsp;     * @param fromUserId 发起者ID
+&nbsp;     */
+&nbsp;    public Inform sendInform(Long userId, InformType type, String content, String relatedId, Long fromUserId) {
+<b class="nc">&nbsp;        CreateInformRequest request = new CreateInformRequest();</b>
+<b class="nc">&nbsp;        request.setUserId(userId);</b>
+<b class="nc">&nbsp;        request.setType(type);</b>
+<b class="nc">&nbsp;        request.setContent(content);</b>
+<b class="nc">&nbsp;        request.setRelatedId(relatedId);</b>
+<b class="nc">&nbsp;        request.setFromUserId(fromUserId);</b>
+&nbsp;        
+<b class="nc">&nbsp;        return informService.createInform(request);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 发送评论通知（简化方法名）
+&nbsp;     */
+&nbsp;    public void sendCommentInform(Long userId, String content, String relatedId, Long fromUserId) {
+<b class="nc">&nbsp;        sendCommentNotification(userId, content, relatedId, fromUserId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 发送点赞通知（简化方法名）
+&nbsp;     */
+&nbsp;    public void sendLikeInform(Long userId, String relatedId, Long fromUserId) {
+<b class="nc">&nbsp;        sendLikeNotification(userId, relatedId, fromUserId);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:30</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,133 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > InformRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.informservice.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: InformRepository (com.se2303.informservice.repository)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">InformRepository$MockitoMock$z0Dh4Sbh</td>
+  </tr>
+  <tr>
+    <td class="name">InformRepository$MockitoMock$z0Dh4Sbh$auxiliary$DNWcgcqK</td>
+  </tr>
+  <tr>
+    <td class="name">InformRepository$MockitoMock$z0Dh4Sbh$auxiliary$h7EaW5pk</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.informservice.repository;
+&nbsp;
+&nbsp;import com.se2303.informservice.entity.Inform;
+&nbsp;import com.se2303.informservice.entity.InformType;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Modifying;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.data.repository.query.Param;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Repository
+&nbsp;public interface InformRepository extends JpaRepository&lt;Inform, Long&gt; {
+&nbsp;    
+&nbsp;    // 获取用户的通知列表，按创建时间倒序
+&nbsp;    Page&lt;Inform&gt; findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+&nbsp;    
+&nbsp;    // 添加兼容的方法
+&nbsp;    Page&lt;Inform&gt; findByUserId(Long userId, Pageable pageable);
+&nbsp;    
+&nbsp;    // 获取用户未读通知数量
+&nbsp;    long countByUserIdAndIsReadFalse(Long userId);
+&nbsp;    
+&nbsp;    // 获取用户未读通知列表
+&nbsp;    List&lt;Inform&gt; findByUserIdAndIsReadFalse(Long userId);
+&nbsp;    
+&nbsp;    // 获取用户最近的未读通知
+&nbsp;    List&lt;Inform&gt; findByUserIdAndIsReadFalseOrderByCreatedAtDesc(Long userId);
+&nbsp;    
+&nbsp;    // 获取指定时间后的新通知
+&nbsp;    List&lt;Inform&gt; findByUserIdAndCreatedAtAfterOrderByCreatedAtDesc(Long userId, LocalDateTime after);
+&nbsp;    
+&nbsp;    // 删除过期通知
+&nbsp;    void deleteByCreatedAtBefore(LocalDateTime cutoffTime);
+&nbsp;    
+&nbsp;    // 批量标记已读
+&nbsp;    @Modifying
+&nbsp;    @Query(value = &quot;UPDATE informs SET is_read = TRUE, read_at = CURRENT_TIMESTAMP WHERE user_id = :userId AND is_read = FALSE&quot;, nativeQuery = true)
+&nbsp;    int markAllAsReadByUserId(@Param(&quot;userId&quot;) Long userId);
+&nbsp;
+&nbsp;    @Modifying
+&nbsp;    @Query(value = &quot;UPDATE informs SET is_read = TRUE, read_at = CURRENT_TIMESTAMP WHERE id = :id AND user_id = :userId AND is_read = FALSE&quot;, nativeQuery = true)
+&nbsp;    int markAsReadByIdAndUserId(@Param(&quot;id&quot;) Long id, @Param(&quot;userId&quot;) Long userId);
+&nbsp;    
+&nbsp;    // 删除过期通知（超过30天的已读通知）
+&nbsp;    @Modifying
+&nbsp;    @Query(value = &quot;DELETE FROM informs WHERE is_read = TRUE AND read_at &lt; :before&quot;, nativeQuery = true)
+&nbsp;    int deleteReadNotificationsBefore(@Param(&quot;before&quot;) LocalDateTime before);
+&nbsp;    
+&nbsp;    // 按类型获取用户通知
+&nbsp;    Page&lt;Inform&gt; findByUserIdAndTypeOrderByCreatedAtDesc(Long userId, InformType type, Pageable pageable);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:41</div>
+</div>
+</body>
+</html>

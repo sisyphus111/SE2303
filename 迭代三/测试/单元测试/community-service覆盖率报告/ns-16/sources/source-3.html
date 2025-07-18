@@ -1,0 +1,132 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ICommentService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.communityservice.service</a>
+</div>
+
+<h1>Coverage Summary for Class: ICommentService (com.se2303.communityservice.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">ICommentService$MockitoMock$lasp7ueJ</td>
+  </tr>
+  <tr>
+    <td class="name">ICommentService$MockitoMock$lasp7ueJ$auxiliary$Brmv7Ghr</td>
+  </tr>
+  <tr>
+    <td class="name">ICommentService$MockitoMock$lasp7ueJ$auxiliary$t40FV4SX</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.communityservice.service;
+&nbsp;
+&nbsp;import com.se2303.communityservice.dto.CommentDTO;
+&nbsp;import com.se2303.communityservice.dto.PageDTO;
+&nbsp;import com.se2303.communityservice.entity.Comment;
+&nbsp;import com.se2303.communityservice.entity.Report;
+&nbsp;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;@Service
+&nbsp;public interface ICommentService {
+&nbsp;    PageDTO&lt;Comment&gt; getCommentsByPostId(Long postId, Pageable pageable);
+&nbsp;
+&nbsp;    Comment addComment(Long postId, CommentDTO commentDTO, String userId);
+&nbsp;
+&nbsp;    Comment approveComment(Long commentId, String adminId);
+&nbsp;
+&nbsp;    Comment banComment(Long commentId, String adminId);
+&nbsp;    
+&nbsp;    // 新增：获取审核队列专用方法
+&nbsp;    PageDTO&lt;Comment&gt; getReviewQueue(String keyword, String status, Pageable pageable);
+&nbsp;    
+&nbsp;    // 新增：获取评论详情（包含帖子信息）
+&nbsp;    Map&lt;String, Object&gt; getCommentDetail(Long commentId);
+&nbsp;    
+&nbsp;    // 新增：获取评论统计信息
+&nbsp;    Map&lt;String, Object&gt; getCommentStats();
+&nbsp;
+&nbsp;    // 新增：举报评论
+&nbsp;    Report reportComment(Long commentId, String userId, String reason, String detail);
+&nbsp;    
+&nbsp;    // 新增：获取管理员评论列表
+&nbsp;    Map&lt;String, Object&gt; getAdminComments(String keyword, String sortBy, Integer page, Integer size);
+&nbsp;    
+&nbsp;    // 新增：删除评论（软删除）
+&nbsp;    Comment deleteComment(Long commentId, String adminId);
+&nbsp;
+&nbsp;    // 新增：获取今日审核通过的评论数量
+&nbsp;    Integer getTodayApprovedCommentCount();
+&nbsp;
+&nbsp;    // 新增：根据多个标签筛选评论
+&nbsp;    PageDTO&lt;Comment&gt; getCommentsByTags(java.util.List&lt;String&gt; tags, String status, Pageable pageable);
+&nbsp;    
+&nbsp;    // 新增：根据多个标签筛选评论并按时间排序
+&nbsp;    PageDTO&lt;Comment&gt; getCommentsByTagsOrderByCreatedAt(java.util.List&lt;String&gt; tags, String status, Pageable pageable);
+&nbsp;    
+&nbsp;    // 新增：管理员专用 - 根据多个标签筛选所有状态的评论
+&nbsp;    PageDTO&lt;Comment&gt; getAllCommentsByTags(java.util.List&lt;String&gt; tags, Pageable pageable);
+&nbsp;
+&nbsp;    Long getCommentCountByUserId(Long userId);
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:33</div>
+</div>
+</body>
+</html>

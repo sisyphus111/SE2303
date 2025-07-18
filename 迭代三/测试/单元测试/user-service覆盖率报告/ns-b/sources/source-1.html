@@ -1,0 +1,180 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > ChatMessage</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.botservice.model</a>
+</div>
+
+<h1>Coverage Summary for Class: ChatMessage (com.se2303.botservice.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ChatMessage</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.botservice.model;
+&nbsp;
+&nbsp;public class ChatMessage {
+&nbsp;    private String id; // 消息唯一标识
+&nbsp;    private String type; // &quot;user&quot;, &quot;ai&quot;, &quot;ai_chunk&quot;, &quot;ai_end&quot;, &quot;error&quot;
+&nbsp;    private String role; // &quot;user&quot;, &quot;assistant&quot;, &quot;system&quot;
+&nbsp;    private String content;
+<b class="nc">&nbsp;    private long timestamp;</b>
+&nbsp;    
+<b class="nc">&nbsp;    public ChatMessage() {}</b>
+<b class="nc">&nbsp;    </b>
+<b class="nc">&nbsp;    public ChatMessage(String type, String content, long timestamp) {</b>
+<b class="nc">&nbsp;        this.type = type;</b>
+&nbsp;        this.content = content;
+&nbsp;        this.timestamp = timestamp;
+&nbsp;    }
+<b class="nc">&nbsp;    </b>
+&nbsp;    public ChatMessage(String id, String type, String role, String content, long timestamp) {
+&nbsp;        this.id = id;
+&nbsp;        this.type = type;
+<b class="nc">&nbsp;        this.role = role;</b>
+&nbsp;        this.content = content;
+&nbsp;        this.timestamp = timestamp;
+&nbsp;    }
+<b class="nc">&nbsp;    </b>
+&nbsp;    public String getId() {
+&nbsp;        return id;
+&nbsp;    }
+<b class="nc">&nbsp;    </b>
+&nbsp;    public void setId(String id) {
+&nbsp;        this.id = id;
+&nbsp;    }
+<b class="nc">&nbsp;    </b>
+&nbsp;    public String getType() {
+&nbsp;        return type;
+&nbsp;    }
+<b class="nc">&nbsp;    </b>
+&nbsp;    public void setType(String type) {
+&nbsp;        this.type = type;
+&nbsp;    }
+&nbsp;    
+<b class="nc">&nbsp;    public String getRole() {</b>
+&nbsp;        return role;
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setRole(String role) {
+&nbsp;        this.role = role;
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getContent() {
+&nbsp;        return content;
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setContent(String content) {
+&nbsp;        this.content = content;
+&nbsp;    }
+&nbsp;    
+&nbsp;    public long getTimestamp() {
+&nbsp;        return timestamp;
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setTimestamp(long timestamp) {
+&nbsp;        this.timestamp = timestamp;
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    public String toString() {
+&nbsp;        return &quot;ChatMessage{&quot; +
+&nbsp;                &quot;id=&#39;&quot; + id + &#39;\&#39;&#39; +
+&nbsp;                &quot;, type=&#39;&quot; + type + &#39;\&#39;&#39; +
+&nbsp;                &quot;, role=&#39;&quot; + role + &#39;\&#39;&#39; +
+&nbsp;                &quot;, content=&#39;&quot; + content + &#39;\&#39;&#39; +
+&nbsp;                &quot;, timestamp=&quot; + timestamp +
+&nbsp;                &#39;}&#39;;
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:38</div>
+</div>
+</body>
+</html>

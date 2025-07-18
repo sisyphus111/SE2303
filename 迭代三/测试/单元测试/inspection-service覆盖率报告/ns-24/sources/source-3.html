@@ -1,0 +1,192 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > LLMService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.inspectionservice.service</a>
+</div>
+
+<h1>Coverage Summary for Class: LLMService (com.se2303.inspectionservice.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LLMService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83.3%
+  </span>
+  <span class="absValue">
+    (5/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    95.5%
+  </span>
+  <span class="absValue">
+    (21/22)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.inspectionservice.service;
+&nbsp;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.web.client.RestTemplate;
+&nbsp;import org.springframework.http.HttpEntity;
+&nbsp;import org.springframework.http.HttpHeaders;
+&nbsp;import org.springframework.http.HttpMethod;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.http.MediaType;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import com.fasterxml.jackson.databind.JsonNode;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class LLMService {</b>
+&nbsp;
+<b class="fc">&nbsp;    private final RestTemplate restTemplate = new RestTemplate();</b>
+<b class="fc">&nbsp;    private final ObjectMapper objectMapper = new ObjectMapper();</b>
+&nbsp;    
+&nbsp;    // Dify API 配置
+&nbsp;    private static final String DIFY_CHAT_URL = &quot;http://127.0.0.1/chat/bC1S72xe6NMOVKL4&quot;;
+&nbsp;    private static final String DIFY_API_URL = &quot;http://127.0.0.1/v1&quot;;
+&nbsp;    private static final String API_KEY = &quot;REDACTED&quot;;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 调用 Dify API 进行内容安全检查
+&nbsp;     * @param content 待检查的内容
+&nbsp;     * @return true 如果内容安全，false 如果不安全
+&nbsp;     */
+&nbsp;    public boolean isContentSafe(String content) {
+<b class="fc">&nbsp;        if (content == null || content.trim().isEmpty()) {</b>
+<b class="fc">&nbsp;            return true;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        try {
+&nbsp;            // 构建请求头
+<b class="fc">&nbsp;            HttpHeaders headers = new HttpHeaders();</b>
+<b class="fc">&nbsp;            headers.setContentType(MediaType.APPLICATION_JSON);</b>
+<b class="fc">&nbsp;            headers.set(&quot;Authorization&quot;, &quot;Bearer &quot; + API_KEY);</b>
+&nbsp;
+&nbsp;            // 构建请求体
+<b class="fc">&nbsp;            Map&lt;String, Object&gt; requestBody = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;            requestBody.put(&quot;inputs&quot;, new HashMap&lt;&gt;());</b>
+<b class="fc">&nbsp;            requestBody.put(&quot;query&quot;, &quot;请检查以下内容是否包含自杀倾向或危险信息，只需回答&#39;安全&#39;或&#39;有人想死&#39;：&quot; + content);</b>
+<b class="fc">&nbsp;            requestBody.put(&quot;response_mode&quot;, &quot;blocking&quot;);</b>
+<b class="fc">&nbsp;            requestBody.put(&quot;user&quot;, &quot;inspection-service&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;            HttpEntity&lt;Map&lt;String, Object&gt;&gt; request = new HttpEntity&lt;&gt;(requestBody, headers);</b>
+&nbsp;
+&nbsp;            // 发送请求到 Dify API
+<b class="fc">&nbsp;            ResponseEntity&lt;String&gt; response = restTemplate.exchange(</b>
+&nbsp;                DIFY_API_URL + &quot;/chat-messages&quot;,
+&nbsp;                HttpMethod.POST,
+&nbsp;                request,
+&nbsp;                String.class
+&nbsp;            );
+&nbsp;
+&nbsp;            // 解析响应
+<b class="fc">&nbsp;            JsonNode responseJson = objectMapper.readTree(response.getBody());</b>
+<b class="fc">&nbsp;            String answer = responseJson.path(&quot;answer&quot;).asText(&quot;&quot;);</b>
+&nbsp;
+&nbsp;            // 检查是否包含&quot;有人想死&quot;
+<b class="pc">&nbsp;            if (answer.contains(&quot;有人想死&quot;)) {</b>
+<b class="nc">&nbsp;                return false;</b>
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            return true;</b>
+&nbsp;
+&nbsp;        } catch (Exception e) {
+&nbsp;            // 如果 API 调用失败，记录错误并返回 true（安全）
+<b class="fc">&nbsp;            System.err.println(&quot;Dify API 调用失败: &quot; + e.getMessage());</b>
+<b class="fc">&nbsp;            return true;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:40</div>
+</div>
+</body>
+</html>

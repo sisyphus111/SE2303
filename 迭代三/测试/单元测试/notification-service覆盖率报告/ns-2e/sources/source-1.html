@@ -1,0 +1,291 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > FileUploadService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.userservice.service</a>
+</div>
+
+<h1>Coverage Summary for Class: FileUploadService (com.se2303.userservice.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FileUploadService</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/48)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.userservice.service;
+&nbsp;
+&nbsp;import com.qcloud.cos.COSClient;
+&nbsp;import com.qcloud.cos.model.ObjectMetadata;
+&nbsp;import com.qcloud.cos.model.PutObjectRequest;
+&nbsp;import com.qcloud.cos.model.PutObjectResult;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.web.multipart.MultipartFile;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.UUID;
+&nbsp;
+&nbsp;/**
+&nbsp; * 文件上传服务类
+&nbsp; * 负责处理文件上传到腾讯云COS对象存储
+&nbsp; */
+&nbsp;@Service
+<b class="nc">&nbsp;public class FileUploadService {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private COSClient cosClient;
+&nbsp;
+&nbsp;    @Value(&quot;${tencent.cos.bucket-name}&quot;)
+&nbsp;    private String bucketName;
+&nbsp;
+&nbsp;    @Value(&quot;${tencent.cos.domain}&quot;)
+&nbsp;    private String domain;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 上传用户头像到腾讯云COS
+&nbsp;     * 
+&nbsp;     * 整个流程如下：
+&nbsp;     * 1. 验证文件类型（只允许图片格式）
+&nbsp;     * 2. 生成唯一的文件名（使用UUID避免文件名冲突）
+&nbsp;     * 3. 设置文件元数据（Content-Type等）
+&nbsp;     * 4. 上传文件到腾讯云COS存储桶
+&nbsp;     * 5. 返回文件的完整访问URL
+&nbsp;     * 
+&nbsp;     * @param file 上传的头像文件
+&nbsp;     * @param userId 用户ID，用于组织文件路径
+&nbsp;     * @return String 上传后的文件URL
+&nbsp;     * @throws IOException 文件处理异常
+&nbsp;     * @throws IllegalArgumentException 文件类型不支持异常
+&nbsp;     */
+&nbsp;    public String uploadAvatar(MultipartFile file, Long userId) throws IOException {
+&nbsp;        // 1. 验证文件
+<b class="nc">&nbsp;        if (file == null || file.isEmpty()) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;文件不能为空&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // 2. 验证文件类型（只允许图片）
+<b class="nc">&nbsp;        String originalFilename = file.getOriginalFilename();</b>
+<b class="nc">&nbsp;        if (originalFilename == null) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;文件名不能为空&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        String fileExtension = getFileExtension(originalFilename).toLowerCase();</b>
+<b class="nc">&nbsp;        if (!isImageFile(fileExtension)) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;只支持图片格式文件 (jpg, jpeg, png, gif, bmp, webp)&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // 3. 验证文件大小（最大5MB）
+<b class="nc">&nbsp;        if (file.getSize() &gt; 5 * 1024 * 1024) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;文件大小不能超过5MB&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        try {
+&nbsp;            // 4. 生成唯一文件名：avatars/用户ID/UUID.扩展名
+<b class="nc">&nbsp;            String fileName = String.format(&quot;avatars/%d/%s.%s&quot;, </b>
+&nbsp;                userId, 
+<b class="nc">&nbsp;                UUID.randomUUID().toString(), </b>
+&nbsp;                fileExtension
+&nbsp;            );
+&nbsp;
+&nbsp;            // 5. 设置文件元数据
+<b class="nc">&nbsp;            ObjectMetadata metadata = new ObjectMetadata();</b>
+<b class="nc">&nbsp;            metadata.setContentType(getContentType(fileExtension));</b>
+<b class="nc">&nbsp;            metadata.setContentLength(file.getSize());</b>
+&nbsp;            // 设置缓存控制，提高访问性能
+<b class="nc">&nbsp;            metadata.setCacheControl(&quot;max-age=31536000&quot;); // 1年缓存</b>
+&nbsp;
+&nbsp;            // 6. 创建上传请求
+<b class="nc">&nbsp;            PutObjectRequest putObjectRequest = new PutObjectRequest(</b>
+&nbsp;                bucketName, 
+&nbsp;                fileName, 
+<b class="nc">&nbsp;                file.getInputStream(), </b>
+&nbsp;                metadata
+&nbsp;            );
+&nbsp;
+&nbsp;            // 7. 上传文件到腾讯云COS
+<b class="nc">&nbsp;            PutObjectResult result = cosClient.putObject(putObjectRequest);</b>
+&nbsp;            
+&nbsp;            // 8. 返回文件的完整访问URL
+<b class="nc">&nbsp;            String fileUrl = domain + &quot;/&quot; + fileName;</b>
+&nbsp;            
+<b class="nc">&nbsp;            System.out.println(&quot;文件上传成功: &quot; + fileUrl);</b>
+<b class="nc">&nbsp;            return fileUrl;</b>
+&nbsp;
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            System.err.println(&quot;文件上传失败: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            throw new IOException(&quot;文件上传失败: &quot; + e.getMessage(), e);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取文件扩展名
+&nbsp;     * @param filename 文件名
+&nbsp;     * @return 文件扩展名（不包含点号）
+&nbsp;     */
+&nbsp;    private String getFileExtension(String filename) {
+<b class="nc">&nbsp;        int lastDotIndex = filename.lastIndexOf(&#39;.&#39;);</b>
+<b class="nc">&nbsp;        if (lastDotIndex == -1) {</b>
+<b class="nc">&nbsp;            return &quot;&quot;;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return filename.substring(lastDotIndex + 1);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 检查是否为支持的图片格式
+&nbsp;     * @param extension 文件扩展名
+&nbsp;     * @return true表示支持的图片格式
+&nbsp;     */
+&nbsp;    private boolean isImageFile(String extension) {
+<b class="nc">&nbsp;        String[] supportedFormats = {&quot;jpg&quot;, &quot;jpeg&quot;, &quot;png&quot;, &quot;gif&quot;, &quot;bmp&quot;, &quot;webp&quot;};</b>
+<b class="nc">&nbsp;        for (String format : supportedFormats) {</b>
+<b class="nc">&nbsp;            if (format.equals(extension)) {</b>
+<b class="nc">&nbsp;                return true;</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据文件扩展名获取Content-Type
+&nbsp;     * @param extension 文件扩展名
+&nbsp;     * @return Content-Type字符串
+&nbsp;     */
+&nbsp;    private String getContentType(String extension) {
+<b class="nc">&nbsp;        switch (extension.toLowerCase()) {</b>
+&nbsp;            case &quot;jpg&quot;:
+&nbsp;            case &quot;jpeg&quot;:
+<b class="nc">&nbsp;                return &quot;image/jpeg&quot;;</b>
+&nbsp;            case &quot;png&quot;:
+<b class="nc">&nbsp;                return &quot;image/png&quot;;</b>
+&nbsp;            case &quot;gif&quot;:
+<b class="nc">&nbsp;                return &quot;image/gif&quot;;</b>
+&nbsp;            case &quot;bmp&quot;:
+<b class="nc">&nbsp;                return &quot;image/bmp&quot;;</b>
+&nbsp;            case &quot;webp&quot;:
+<b class="nc">&nbsp;                return &quot;image/webp&quot;;</b>
+&nbsp;            default:
+<b class="nc">&nbsp;                return &quot;application/octet-stream&quot;;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除COS中的文件（用于更换头像时删除旧头像）
+&nbsp;     * @param fileUrl 要删除的文件URL
+&nbsp;     */
+&nbsp;    public void deleteFile(String fileUrl) {
+&nbsp;        try {
+<b class="nc">&nbsp;            if (fileUrl != null &amp;&amp; fileUrl.startsWith(domain)) {</b>
+&nbsp;                // 从URL中提取文件Key（去除域名部分）
+<b class="nc">&nbsp;                String fileKey = fileUrl.substring(domain.length() + 1);</b>
+<b class="nc">&nbsp;                cosClient.deleteObject(bucketName, fileKey);</b>
+<b class="nc">&nbsp;                System.out.println(&quot;旧头像删除成功: &quot; + fileUrl);</b>
+&nbsp;            }
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            System.err.println(&quot;删除旧头像失败: &quot; + e.getMessage());</b>
+&nbsp;            // 删除失败不影响新头像上传，只记录错误
+&nbsp;        }
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:41</div>
+</div>
+</body>
+</html>

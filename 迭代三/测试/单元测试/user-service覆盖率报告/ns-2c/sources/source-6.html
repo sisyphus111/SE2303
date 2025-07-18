@@ -1,0 +1,245 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > UserManagementResponse</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.userservice.dto.response</a>
+</div>
+
+<h1>Coverage Summary for Class: UserManagementResponse (com.se2303.userservice.dto.response)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserManagementResponse</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (24/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (37/37)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.userservice.dto.response;
+&nbsp;
+&nbsp;import com.se2303.userservice.entity.User;
+&nbsp;
+&nbsp;public class UserManagementResponse {
+&nbsp;    private Long id;
+&nbsp;    private String username;
+&nbsp;    private String nickname;
+&nbsp;    private String avatar;
+&nbsp;    private String sjtuId;
+&nbsp;    private String jaccount;
+&nbsp;    private String registrationDate;
+&nbsp;    private Boolean valid;
+&nbsp;    private Boolean isUser;
+&nbsp;    private String phone;
+&nbsp;    private String realname;
+&nbsp;
+<b class="fc">&nbsp;    public UserManagementResponse() {}</b>
+&nbsp;
+&nbsp;    // Getters and Setters
+&nbsp;    public Long getId() {
+<b class="fc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setId(Long id) {
+<b class="fc">&nbsp;        this.id = id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getUsername() {
+<b class="fc">&nbsp;        return username;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setUsername(String username) {
+<b class="fc">&nbsp;        this.username = username;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getNickname() {
+<b class="fc">&nbsp;        return nickname;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setNickname(String nickname) {
+<b class="fc">&nbsp;        this.nickname = nickname;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getAvatar() {
+<b class="fc">&nbsp;        return avatar;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setAvatar(String avatar) {
+<b class="fc">&nbsp;        this.avatar = avatar;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getSjtuId() {
+<b class="fc">&nbsp;        return sjtuId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setSjtuId(String sjtuId) {
+<b class="fc">&nbsp;        this.sjtuId = sjtuId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getJaccount() {
+<b class="fc">&nbsp;        return jaccount;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setJaccount(String jaccount) {
+<b class="fc">&nbsp;        this.jaccount = jaccount;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getRegistrationDate() {
+<b class="fc">&nbsp;        return registrationDate;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setRegistrationDate(String registrationDate) {
+<b class="fc">&nbsp;        this.registrationDate = registrationDate;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getValid() {
+<b class="fc">&nbsp;        return valid;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setValid(Boolean valid) {
+<b class="fc">&nbsp;        this.valid = valid;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Boolean getIsUser() {
+<b class="fc">&nbsp;        return isUser;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setIsUser(Boolean isUser) {
+<b class="fc">&nbsp;        this.isUser = isUser;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getPhone() {
+<b class="fc">&nbsp;        return phone;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getRealname() {
+<b class="fc">&nbsp;        return realname;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setPhone(String phone) {
+<b class="fc">&nbsp;        this.phone = phone;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setRealname(String realname) {
+<b class="fc">&nbsp;        this.realname = realname;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static UserManagementResponse convertToUserManagementResponse(User user) {
+<b class="fc">&nbsp;        UserManagementResponse response = new UserManagementResponse();</b>
+<b class="fc">&nbsp;        response.setId(user.getId());</b>
+<b class="fc">&nbsp;        response.setUsername(user.getUsername());</b>
+<b class="fc">&nbsp;        response.setNickname(user.getNickname());</b>
+<b class="fc">&nbsp;        response.setAvatar(user.getAvatar());</b>
+<b class="fc">&nbsp;        response.setSjtuId(user.getAuth().getSjtuId());</b>
+<b class="fc">&nbsp;        response.setJaccount(user.getAuth().getJaccount());</b>
+<b class="fc">&nbsp;        response.setValid(user.getAuth().getValid());</b>
+<b class="fc">&nbsp;        response.setIsUser(user.getAuth().getIsUser());</b>
+&nbsp;
+<b class="fc">&nbsp;        response.setPhone(user.getAuth().getTelephone());</b>
+<b class="fc">&nbsp;        response.setRealname(user.getAuth().getName());</b>
+&nbsp;        
+<b class="pc">&nbsp;        if (user.getRegistrationDate() != null) {</b>
+<b class="fc">&nbsp;            response.setRegistrationDate(user.getRegistrationDate().toString());</b>
+&nbsp;        }
+&nbsp;        
+<b class="fc">&nbsp;        return response;</b>
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:38</div>
+</div>
+</body>
+</html>

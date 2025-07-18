@@ -1,0 +1,886 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > UserController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.userservice.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: UserController (com.se2303.userservice.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/110)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/434)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.userservice.controller;
+&nbsp;
+&nbsp;import com.se2303.userservice.entity.User;
+&nbsp;import com.se2303.userservice.entity.UserPreferences;
+&nbsp;
+&nbsp;import com.se2303.userservice.repository.AuthRepository;
+&nbsp;
+&nbsp;import com.se2303.userservice.service.UserService;
+&nbsp;import com.se2303.userservice.service.UserPreferencesService;
+&nbsp;import com.se2303.userservice.service.FileUploadService;
+&nbsp;
+&nbsp;import com.se2303.userservice.util.JwtUtil;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import org.springframework.web.multipart.MultipartFile;
+&nbsp;
+&nbsp;import com.se2303.userservice.dto.request.UpdateProfileRequest;
+&nbsp;import com.se2303.userservice.dto.request.UpdatePreferencesRequest;
+&nbsp;import com.se2303.userservice.dto.response.UserPreferenceResponse;
+&nbsp;import com.se2303.userservice.dto.response.UserProfileResponse;
+&nbsp;import com.se2303.userservice.dto.response.UserStatusResponse;
+&nbsp;import com.se2303.userservice.dto.response.UserManagementResponse;
+&nbsp;import com.se2303.userservice.dto.response.UserInfoForCommunityResponse;
+&nbsp;
+&nbsp;import com.se2303.userservice.dto.response.ApiResponse;
+&nbsp;
+&nbsp;
+&nbsp;import jakarta.servlet.http.Cookie;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.time.format.DateTimeParseException;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/user&quot;)
+<b class="nc">&nbsp;public class UserController {</b>
+&nbsp;    @Autowired
+&nbsp;    private UserService userService;
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private UserPreferencesService userPreferencesService;
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private FileUploadService fileUploadService;
+&nbsp;
+&nbsp;    @GetMapping(&quot;/community_info/{userId}&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&lt;UserInfoForCommunityResponse&gt;&gt; getCommunityInfo(@PathVariable Long userId, HttpServletRequest request) {
+<b class="nc">&nbsp;        ApiResponse&lt;UserInfoForCommunityResponse&gt; result = new ApiResponse&lt;UserInfoForCommunityResponse&gt;();</b>
+&nbsp;        
+&nbsp;        try {
+<b class="nc">&nbsp;            System.out.println(&quot;=== GET /community_info 请求开始 ===&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;            Optional&lt;User&gt; userOpt = userService.getUserById(userId);</b>
+<b class="nc">&nbsp;            if (!userOpt.isPresent()) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户不存在&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(404).body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            User user = userOpt.get();</b>
+<b class="nc">&nbsp;            UserPreferences userPreferences = userPreferencesService.getUserPreferencesByUserId(userId).get();</b>
+<b class="nc">&nbsp;            result.setSuccess(true);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;用户信息获取成功&quot;);</b>
+<b class="nc">&nbsp;            result.setData(UserInfoForCommunityResponse.convertToUserInfoForCommunityResponse(user, userPreferences));</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(result);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            result.setSuccess(false);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;服务器内部错误: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(500).body(result);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;    @GetMapping(&quot;/profile&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&lt;UserProfileResponse&gt;&gt; getProfile(HttpServletRequest request) {
+<b class="nc">&nbsp;        ApiResponse&lt;UserProfileResponse&gt; result = new ApiResponse&lt;UserProfileResponse&gt;();</b>
+&nbsp;        
+&nbsp;        try {
+<b class="nc">&nbsp;            System.out.println(&quot;=== GET /profile 请求开始 ===&quot;);</b>
+&nbsp;
+&nbsp;            // 打印所有请求头信息
+<b class="nc">&nbsp;            System.out.println(&quot;=== 请求头信息 ===&quot;);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;X-User-Id: &quot; + request.getHeader(&quot;X-User-Id&quot;));</b>
+<b class="nc">&nbsp;            System.out.println(&quot;X-Valid: &quot; + request.getHeader(&quot;X-Valid&quot;));</b>
+<b class="nc">&nbsp;            System.out.println(&quot;X-Identity: &quot; + request.getHeader(&quot;X-Identity&quot;));</b>
+<b class="nc">&nbsp;            System.out.println(&quot;X-Gateway-Auth: &quot; + request.getHeader(&quot;X-Gateway-Auth&quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;            System.out.println(&quot;? Token验证成功&quot;);</b>
+<b class="nc">&nbsp;            Long userId = JwtUtil.getUserId(request.getHeader(&quot;X-User-Id&quot;));</b>
+<b class="nc">&nbsp;            boolean valid = JwtUtil.getValid(request.getHeader(&quot;X-Valid&quot;));</b>
+<b class="nc">&nbsp;            boolean identity = JwtUtil.getIdentity(request.getHeader(&quot;X-Identity&quot;));</b>
+<b class="nc">&nbsp;            System.out.println(&quot;=== 解析结果 ===&quot;);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;UserId: &quot; + userId);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Valid: &quot; + valid);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Identity: &quot; + identity); </b>
+&nbsp;
+<b class="nc">&nbsp;            if (!valid) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户状态无效&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(result);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 3. 通过userId获取用户信息
+<b class="nc">&nbsp;            Optional&lt;User&gt; userOpt = userService.getUserById(userId);</b>
+<b class="nc">&nbsp;            if (!userOpt.isPresent()) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户不存在&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(404).body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            User user = userOpt.get();</b>
+&nbsp;            
+&nbsp;            // 4. 返回用户信息
+<b class="nc">&nbsp;            result.setSuccess(true);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;用户信息获取成功&quot;);</b>
+<b class="nc">&nbsp;            result.setData(UserProfileResponse.convertToUserProfileResponse(user));</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(result);</b>
+&nbsp;            
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            result.setSuccess(false);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;服务器内部错误: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(500).body(result);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    @GetMapping(&quot;/status&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&lt;UserStatusResponse&gt;&gt; getUserStatus(HttpServletRequest request) {
+<b class="nc">&nbsp;        ApiResponse&lt;UserStatusResponse&gt; result = new ApiResponse&lt;UserStatusResponse&gt;();</b>
+&nbsp;        
+&nbsp;        try {
+<b class="nc">&nbsp;            System.out.println(&quot;=== GET /status 请求开始 ===&quot;);</b>
+&nbsp;    
+<b class="nc">&nbsp;            Long userId = JwtUtil.getUserId(request.getHeader(&quot;X-User-Id&quot;));</b>
+<b class="nc">&nbsp;            boolean valid = JwtUtil.getValid(request.getHeader(&quot;X-Valid&quot;));</b>
+<b class="nc">&nbsp;            boolean identity = JwtUtil.getIdentity(request.getHeader(&quot;X-Identity&quot;));</b>
+<b class="nc">&nbsp;            System.out.println(&quot;UserId: &quot; + userId);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Valid: &quot; + valid);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Identity: &quot; + identity);</b>
+&nbsp;
+<b class="nc">&nbsp;            if (!valid) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户状态无效&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(result);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 3. 通过virtualId获取用户信息
+<b class="nc">&nbsp;            Optional&lt;User&gt; userOpt = userService.getUserById(userId);</b>
+<b class="nc">&nbsp;            if (!userOpt.isPresent()) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户不存在&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(404).body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            User user = userOpt.get();</b>
+&nbsp;            
+&nbsp;            // 4. 返回用户状态信息
+<b class="nc">&nbsp;            result.setSuccess(true);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;用户状态查询成功&quot;);</b>
+<b class="nc">&nbsp;            result.setData(UserStatusResponse.convertToUserStatusResponse(user));</b>
+<b class="nc">&nbsp;            System.out.println(&quot;? 用户状态查询成功: identity=true, valid=&quot; + user.getAuth().getValid());</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(result);</b>
+&nbsp;            
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;? 获取用户状态时发生错误: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            result.setSuccess(false);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;服务器内部错误: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(500).body(result);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    
+&nbsp;
+&nbsp;    @PutMapping(&quot;/profile&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&lt;UserProfileResponse&gt;&gt; updateProfile(@RequestBody UpdateProfileRequest updateRequest, HttpServletRequest request) {
+<b class="nc">&nbsp;        ApiResponse&lt;UserProfileResponse&gt; result = new ApiResponse&lt;UserProfileResponse&gt;();</b>
+&nbsp;        
+&nbsp;        try {
+&nbsp;            // 添加调试日志
+<b class="nc">&nbsp;            System.out.println(&quot;接收到的updateRequest: &quot;);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;username: &quot; + updateRequest.getUsername());</b>
+<b class="nc">&nbsp;            System.out.println(&quot;nickname: &quot; + updateRequest.getNickname());</b>
+<b class="nc">&nbsp;            System.out.println(&quot;profileVisibility: &quot; + updateRequest.getProfileVisibility());</b>
+<b class="nc">&nbsp;            System.out.println(&quot;tags: &quot; + updateRequest.getTags());</b>
+&nbsp;            
+<b class="nc">&nbsp;            Long userId = JwtUtil.getUserId(request.getHeader(&quot;X-User-Id&quot;));</b>
+<b class="nc">&nbsp;            boolean valid = JwtUtil.getValid(request.getHeader(&quot;X-Valid&quot;));</b>
+<b class="nc">&nbsp;            boolean identity = JwtUtil.getIdentity(request.getHeader(&quot;X-Identity&quot;));</b>
+<b class="nc">&nbsp;            System.out.println(&quot;UserId: &quot; + userId);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Valid: &quot; + valid);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Identity: &quot; + identity);</b>
+&nbsp;            
+<b class="nc">&nbsp;            if (!valid) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户状态无效&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            if (!identity) {</b>
+<b class="nc">&nbsp;                result.setSuccess(true);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户是管理员&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.ok(result);</b>
+&nbsp;            }
+&nbsp;            
+&nbsp;            // 3. 通过userId获取用户信息
+<b class="nc">&nbsp;            Optional&lt;User&gt; userOpt = userService.getUserById(userId);</b>
+<b class="nc">&nbsp;            if (!userOpt.isPresent()) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户不存在&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(404).body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            User user = userOpt.get();</b>
+&nbsp;            
+&nbsp;            // 4. 参数校验
+<b class="nc">&nbsp;            if (updateRequest.getUsername() != null &amp;&amp; updateRequest.getUsername().trim().isEmpty()) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户名不能为空&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.badRequest().body(result);</b>
+&nbsp;            }
+&nbsp;            
+&nbsp;            // 5. 处理生日字段转换
+<b class="nc">&nbsp;            LocalDate birthday = null;</b>
+<b class="nc">&nbsp;            if (updateRequest.getBirthday() != null &amp;&amp; !updateRequest.getBirthday().trim().isEmpty()) {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    birthday = LocalDate.parse(updateRequest.getBirthday());</b>
+<b class="nc">&nbsp;                } catch (DateTimeParseException e) {</b>
+<b class="nc">&nbsp;                    result.setSuccess(false);</b>
+<b class="nc">&nbsp;                    result.setMessage(&quot;生日格式不正确，应为YYYY-MM-DD格式&quot;);</b>
+<b class="nc">&nbsp;                    return ResponseEntity.badRequest().body(result);</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;            
+&nbsp;            // 6. 调用service更新用户资料
+<b class="nc">&nbsp;            boolean success = userService.updateProfile(</b>
+<b class="nc">&nbsp;                user.getId(), </b>
+<b class="nc">&nbsp;                updateRequest.getUsername(),</b>
+<b class="nc">&nbsp;                updateRequest.getNickname(), </b>
+<b class="nc">&nbsp;                updateRequest.getAvatar(),</b>
+<b class="nc">&nbsp;                updateRequest.getGender(),</b>
+&nbsp;                birthday,
+<b class="nc">&nbsp;                updateRequest.getLocation(),</b>
+<b class="nc">&nbsp;                updateRequest.getBio(),</b>
+<b class="nc">&nbsp;                updateRequest.getTags(),</b>
+<b class="nc">&nbsp;                updateRequest.getProfileVisibility()</b>
+&nbsp;            );
+&nbsp;            
+<b class="nc">&nbsp;            if (success) {</b>
+<b class="nc">&nbsp;                result.setSuccess(true);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户资料更新成功&quot;);</b>
+&nbsp;                // 返回更新后的用户信息
+<b class="nc">&nbsp;                Optional&lt;User&gt; updatedUserOpt = userService.getUserById(user.getId());</b>
+<b class="nc">&nbsp;                if (updatedUserOpt.isPresent()) {</b>
+<b class="nc">&nbsp;                    result.setData(UserProfileResponse.convertToUserProfileResponse(updatedUserOpt.get()));</b>
+&nbsp;                }
+<b class="nc">&nbsp;                return ResponseEntity.ok(result);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;更新失败&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(500).body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            result.setSuccess(false);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;服务器内部错误: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(500).body(result);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/preferences&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&lt;UserPreferenceResponse&gt;&gt; getUserPreferences(HttpServletRequest request) {
+<b class="nc">&nbsp;        ApiResponse&lt;UserPreferenceResponse&gt; result = new ApiResponse&lt;UserPreferenceResponse&gt;();</b>
+&nbsp;        
+&nbsp;        try {
+<b class="nc">&nbsp;            System.out.println(&quot;=== GET /preferences 请求开始 ===&quot;);</b>
+&nbsp;            
+<b class="nc">&nbsp;            Long userId = JwtUtil.getUserId(request.getHeader(&quot;X-User-Id&quot;));</b>
+<b class="nc">&nbsp;            System.out.println(&quot;UserId from token: &quot; + userId);</b>
+<b class="nc">&nbsp;            boolean valid = JwtUtil.getValid(request.getHeader(&quot;X-Valid&quot;));</b>
+<b class="nc">&nbsp;            boolean identity = JwtUtil.getIdentity(request.getHeader(&quot;X-Identity&quot;));</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Valid: &quot; + valid);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Identity: &quot; + identity);</b>
+&nbsp;            
+<b class="nc">&nbsp;            if (!valid) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户状态无效&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            if (!identity) {</b>
+<b class="nc">&nbsp;                result.setSuccess(true);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户是管理员&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.ok(result);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 3. 获取用户偏好设置
+<b class="nc">&nbsp;            Optional&lt;UserPreferences&gt; preferencesOpt = userPreferencesService.getUserPreferencesByUserId(userId);</b>
+&nbsp;            
+<b class="nc">&nbsp;            if (preferencesOpt.isPresent()) {</b>
+&nbsp;                // 返回现有偏好设置
+<b class="nc">&nbsp;                result.setSuccess(true);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户偏好设置查询成功&quot;);</b>
+<b class="nc">&nbsp;                result.setData(UserPreferenceResponse.convertToUserPreferenceResponse(preferencesOpt.get()));</b>
+<b class="nc">&nbsp;                System.out.println(&quot;? 用户偏好设置查询成功&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.ok(result);</b>
+&nbsp;            } else {
+&nbsp;                // 如果没有偏好设置，创建默认设置
+<b class="nc">&nbsp;                Optional&lt;User&gt; userOpt = userService.getUserById(userId);</b>
+<b class="nc">&nbsp;                if (userOpt.isPresent()) {</b>
+<b class="nc">&nbsp;                    UserPreferences defaultPrefs = userPreferencesService.createDefaultPreferences(userOpt.get().getId());</b>
+<b class="nc">&nbsp;                    result.setSuccess(true);</b>
+<b class="nc">&nbsp;                    result.setMessage(&quot;用户偏好设置查询成功&quot;);</b>
+<b class="nc">&nbsp;                    result.setData(UserPreferenceResponse.convertToUserPreferenceResponse(defaultPrefs));</b>
+<b class="nc">&nbsp;                    System.out.println(&quot;? 创建默认偏好设置成功&quot;);</b>
+<b class="nc">&nbsp;                    return ResponseEntity.ok(result);</b>
+&nbsp;                } else {
+<b class="nc">&nbsp;                    result.setSuccess(false);</b>
+<b class="nc">&nbsp;                    result.setMessage(&quot;用户不存在&quot;);</b>
+<b class="nc">&nbsp;                    return ResponseEntity.status(404).body(result);</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;? 获取用户偏好设置时发生错误: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            result.setSuccess(false);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;服务器内部错误: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(500).body(result);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/count&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&lt;Integer&gt;&gt; getNormalUserCount(HttpServletRequest request) {
+<b class="nc">&nbsp;        ApiResponse&lt;Integer&gt; result = new ApiResponse&lt;Integer&gt;();</b>
+<b class="nc">&nbsp;        result.setSuccess(true);</b>
+<b class="nc">&nbsp;        result.setMessage(&quot;用户数量查询成功&quot;);</b>
+<b class="nc">&nbsp;        result.setData(userService.getNormalUserCount());</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(result);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/preferences&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; updateUserPreferences(@RequestBody UpdatePreferencesRequest updateRequest, HttpServletRequest request) {
+<b class="nc">&nbsp;        ApiResponse&lt;UserPreferenceResponse&gt; result = new ApiResponse&lt;UserPreferenceResponse&gt;();</b>
+&nbsp;        
+&nbsp;        try {
+<b class="nc">&nbsp;            System.out.println(&quot;=== POST /preferences 请求开始 ===&quot;);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;收到的请求数据: &quot; + updateRequest);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;pushNotifications: &quot; + updateRequest.getPushNotifications());</b>
+<b class="nc">&nbsp;            System.out.println(&quot;emailNotifications: &quot; + updateRequest.getEmailNotifications());</b>
+<b class="nc">&nbsp;            System.out.println(&quot;commentNotifications: &quot; + updateRequest.getCommentNotifications());</b>
+<b class="nc">&nbsp;            System.out.println(&quot;likeNotifications: &quot; + updateRequest.getLikeNotifications());</b>
+<b class="nc">&nbsp;            System.out.println(&quot;systemNotifications: &quot; + updateRequest.getSystemNotifications());</b>
+&nbsp;            
+<b class="nc">&nbsp;            Long userId = JwtUtil.getUserId(request.getHeader(&quot;X-User-Id&quot;));</b>
+<b class="nc">&nbsp;            boolean valid = JwtUtil.getValid(request.getHeader(&quot;X-Valid&quot;));</b>
+<b class="nc">&nbsp;            boolean identity = JwtUtil.getIdentity(request.getHeader(&quot;X-Identity&quot;));</b>
+<b class="nc">&nbsp;            System.out.println(&quot;UserId: &quot; + userId);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Valid: &quot; + valid);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Identity: &quot; + identity);</b>
+&nbsp;            
+<b class="nc">&nbsp;            if (!valid) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户状态无效&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            if (!identity) {</b>
+<b class="nc">&nbsp;                result.setSuccess(true);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户是管理员&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.ok(result);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 3. 通过userId获取用户信息
+<b class="nc">&nbsp;            Optional&lt;User&gt; userOpt = userService.getUserById(userId);</b>
+<b class="nc">&nbsp;            if (!userOpt.isPresent()) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户不存在&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(404).body(result);</b>
+&nbsp;            }
+&nbsp;            // 4. 创建UserPreferences对象，只设置传递的字段
+<b class="nc">&nbsp;            UserPreferences preferences = new UserPreferences();</b>
+<b class="nc">&nbsp;            preferences.setAuth(userOpt.get().getAuth());</b>
+&nbsp;            
+&nbsp;            // 设置通知偏好 - 通知方式
+<b class="nc">&nbsp;            if (updateRequest.getPushNotifications() != null) {</b>
+<b class="nc">&nbsp;                System.out.println(&quot;设置 pushNotifications = &quot; + updateRequest.getPushNotifications());</b>
+<b class="nc">&nbsp;                preferences.setPushNotifications(updateRequest.getPushNotifications());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (updateRequest.getEmailNotifications() != null) {</b>
+<b class="nc">&nbsp;                System.out.println(&quot;设置 emailNotifications = &quot; + updateRequest.getEmailNotifications());</b>
+<b class="nc">&nbsp;                preferences.setEmailNotifications(updateRequest.getEmailNotifications());</b>
+&nbsp;            }
+&nbsp;            
+&nbsp;            // 设置通知偏好 - 通知类型
+<b class="nc">&nbsp;            if (updateRequest.getCommentNotifications() != null) {</b>
+<b class="nc">&nbsp;                System.out.println(&quot;设置 commentNotifications = &quot; + updateRequest.getCommentNotifications());</b>
+<b class="nc">&nbsp;                preferences.setCommentNotifications(updateRequest.getCommentNotifications());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (updateRequest.getLikeNotifications() != null) {</b>
+<b class="nc">&nbsp;                System.out.println(&quot;设置 likeNotifications = &quot; + updateRequest.getLikeNotifications());</b>
+<b class="nc">&nbsp;                preferences.setLikeNotifications(updateRequest.getLikeNotifications());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (updateRequest.getSystemNotifications() != null) {</b>
+<b class="nc">&nbsp;                System.out.println(&quot;设置 systemNotifications = &quot; + updateRequest.getSystemNotifications());</b>
+<b class="nc">&nbsp;                preferences.setSystemNotifications(updateRequest.getSystemNotifications());</b>
+&nbsp;            }
+&nbsp;            
+&nbsp;            // 设置个人偏好 - 媒体设置
+<b class="nc">&nbsp;            if (updateRequest.getSoundEnabled() != null) {</b>
+<b class="nc">&nbsp;                System.out.println(&quot;设置 soundEnabled = &quot; + updateRequest.getSoundEnabled());</b>
+<b class="nc">&nbsp;                preferences.setSoundEnabled(updateRequest.getSoundEnabled());</b>
+&nbsp;            }
+&nbsp;            
+&nbsp;            // 设置个人偏好 - 社区交互
+<b class="nc">&nbsp;            if (updateRequest.getShowPostStats() != null) {</b>
+<b class="nc">&nbsp;                System.out.println(&quot;设置 showPostStats = &quot; + updateRequest.getShowPostStats());</b>
+<b class="nc">&nbsp;                preferences.setShowPostStats(updateRequest.getShowPostStats());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (updateRequest.getEnablePostRecommendation() != null) {</b>
+<b class="nc">&nbsp;                System.out.println(&quot;设置 enablePostRecommendation = &quot; + updateRequest.getEnablePostRecommendation());</b>
+<b class="nc">&nbsp;                preferences.setEnablePostRecommendation(updateRequest.getEnablePostRecommendation());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (updateRequest.getBlockSensitiveContent() != null) {</b>
+<b class="nc">&nbsp;                System.out.println(&quot;设置 blockSensitiveContent = &quot; + updateRequest.getBlockSensitiveContent());</b>
+<b class="nc">&nbsp;                preferences.setBlockSensitiveContent(updateRequest.getBlockSensitiveContent());</b>
+&nbsp;            }
+&nbsp;            
+&nbsp;            // 设置心理健康偏好
+<b class="nc">&nbsp;            if (updateRequest.getCrisisInterventionEnabled() != null) {</b>
+<b class="nc">&nbsp;                System.out.println(&quot;设置 crisisInterventionEnabled = &quot; + updateRequest.getCrisisInterventionEnabled());</b>
+<b class="nc">&nbsp;                preferences.setCrisisInterventionEnabled(updateRequest.getCrisisInterventionEnabled());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (updateRequest.getMoodTrackingEnabled() != null) {</b>
+<b class="nc">&nbsp;                System.out.println(&quot;设置 moodTrackingEnabled = &quot; + updateRequest.getMoodTrackingEnabled());</b>
+<b class="nc">&nbsp;                preferences.setMoodTrackingEnabled(updateRequest.getMoodTrackingEnabled());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (updateRequest.getAnonymousPosting() != null) {</b>
+<b class="nc">&nbsp;                System.out.println(&quot;设置 anonymousPosting = &quot; + updateRequest.getAnonymousPosting());</b>
+<b class="nc">&nbsp;                preferences.setAnonymousPosting(updateRequest.getAnonymousPosting());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (updateRequest.getMentalHealthDataSharing() != null) {</b>
+<b class="nc">&nbsp;                System.out.println(&quot;设置 mentalHealthDataSharing = &quot; + updateRequest.getMentalHealthDataSharing());</b>
+<b class="nc">&nbsp;                preferences.setMentalHealthDataSharing(updateRequest.getMentalHealthDataSharing());</b>
+&nbsp;            }
+&nbsp;            
+&nbsp;            // 4. 保存或更新偏好设置
+<b class="nc">&nbsp;            Optional&lt;UserPreferences&gt; savedOpt = userPreferencesService.saveOrUpdateUserPreferencesByUserId(userId, preferences);</b>
+&nbsp;            
+<b class="nc">&nbsp;            if (savedOpt.isPresent()) {</b>
+<b class="nc">&nbsp;                result.setSuccess(true);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户偏好设置更新成功&quot;);</b>
+<b class="nc">&nbsp;                result.setData(UserPreferenceResponse.convertToUserPreferenceResponse(savedOpt.get()));</b>
+<b class="nc">&nbsp;                System.out.println(&quot;? 用户偏好设置更新成功&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.ok(result);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户不存在&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(404).body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;? 更新用户偏好设置时发生错误: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            result.setSuccess(false);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;服务器内部错误: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(500).body(result);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 上传用户头像接口
+&nbsp;     * 
+&nbsp;     * 处理流程：
+&nbsp;     * 1. 验证用户身份（JWT Token）
+&nbsp;     * 2. 调用文件上传服务将头像上传到腾讯云COS
+&nbsp;     * 3. 更新用户数据库中的头像URL字段
+&nbsp;     * 4. 删除旧头像文件（如果存在）
+&nbsp;     * 5. 返回新的头像URL
+&nbsp;     * 
+&nbsp;     * @param file 上传的头像文件
+&nbsp;     * @param request HTTP请求对象（用于获取JWT Token）
+&nbsp;     * @return 包含头像URL的响应
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/avatar&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&lt;Map&lt;String, String&gt;&gt;&gt; uploadAvatar(
+&nbsp;            @RequestParam(&quot;avatar&quot;) MultipartFile file, 
+&nbsp;            HttpServletRequest request) {
+&nbsp;        
+<b class="nc">&nbsp;        ApiResponse&lt;Map&lt;String, String&gt;&gt; result = new ApiResponse&lt;&gt;();</b>
+&nbsp;        
+&nbsp;        try {
+<b class="nc">&nbsp;            System.out.println(&quot;=== POST /avatar 头像上传请求开始 ===&quot;);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;文件名: &quot; + (file != null ? file.getOriginalFilename() : &quot;null&quot;));</b>
+<b class="nc">&nbsp;            System.out.println(&quot;文件大小: &quot; + (file != null ? file.getSize() : 0) + &quot; bytes&quot;);</b>
+&nbsp;            
+<b class="nc">&nbsp;            Long userId = JwtUtil.getUserId(request.getHeader(&quot;X-User-Id&quot;));</b>
+<b class="nc">&nbsp;            boolean valid = JwtUtil.getValid(request.getHeader(&quot;X-Valid&quot;));</b>
+<b class="nc">&nbsp;            boolean identity = JwtUtil.getIdentity(request.getHeader(&quot;X-Identity&quot;));</b>
+&nbsp;            
+<b class="nc">&nbsp;            System.out.println(&quot;UserId: &quot; + userId);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Valid: &quot; + valid);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Identity: &quot; + identity);</b>
+&nbsp;            
+<b class="nc">&nbsp;            if (!valid) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户状态无效&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            if (!identity) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;管理员不允许上传头像&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(403).body(result);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 3. 验证用户是否存在
+<b class="nc">&nbsp;            Optional&lt;User&gt; userOpt = userService.getUserById(userId);</b>
+<b class="nc">&nbsp;            if (!userOpt.isPresent()) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户不存在&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(404).body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            User user = userOpt.get();</b>
+<b class="nc">&nbsp;            String oldAvatarUrl = user.getAvatar();</b>
+&nbsp;
+&nbsp;            // 4. 上传文件到腾讯云COS
+<b class="nc">&nbsp;            String newAvatarUrl = fileUploadService.uploadAvatar(file, userId);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;? 文件上传成功，新头像URL: &quot; + newAvatarUrl);</b>
+&nbsp;
+&nbsp;            // 5. 更新用户的头像URL
+<b class="nc">&nbsp;            user.setAvatar(newAvatarUrl);</b>
+<b class="nc">&nbsp;            boolean updateSuccess = userService.updateProfile(</b>
+<b class="nc">&nbsp;                user.getId(),</b>
+<b class="nc">&nbsp;                user.getUsername(),</b>
+<b class="nc">&nbsp;                user.getNickname(),</b>
+&nbsp;                newAvatarUrl,  // 新的头像URL
+<b class="nc">&nbsp;                user.getGender(),</b>
+<b class="nc">&nbsp;                user.getBirthday(),</b>
+<b class="nc">&nbsp;                user.getLocation(),</b>
+<b class="nc">&nbsp;                user.getBio(),</b>
+<b class="nc">&nbsp;                user.getTags(),</b>
+<b class="nc">&nbsp;                user.getProfileVisibility()</b>
+&nbsp;            );
+&nbsp;            
+<b class="nc">&nbsp;            if (!updateSuccess) {</b>
+<b class="nc">&nbsp;                System.err.println(&quot;? 更新用户头像URL失败&quot;);</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;更新用户头像失败&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(500).body(result);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 6. 删除旧头像文件（如果存在且不是默认头像）
+<b class="nc">&nbsp;            if (oldAvatarUrl != null &amp;&amp; !oldAvatarUrl.isEmpty() &amp;&amp; </b>
+<b class="nc">&nbsp;                !oldAvatarUrl.equals(&quot;default_avatar.png&quot;) &amp;&amp; </b>
+<b class="nc">&nbsp;                !oldAvatarUrl.startsWith(&quot;data:&quot;)) {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    fileUploadService.deleteFile(oldAvatarUrl);</b>
+<b class="nc">&nbsp;                } catch (Exception e) {</b>
+<b class="nc">&nbsp;                    System.err.println(&quot;删除旧头像时出错（不影响上传结果）: &quot; + e.getMessage());</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;
+&nbsp;            // 7. 返回成功响应
+<b class="nc">&nbsp;            Map&lt;String, String&gt; responseData = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;            responseData.put(&quot;avatarUrl&quot;, newAvatarUrl);</b>
+&nbsp;            
+<b class="nc">&nbsp;            result.setSuccess(true);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;头像上传成功&quot;);</b>
+<b class="nc">&nbsp;            result.setData(responseData);</b>
+&nbsp;            
+<b class="nc">&nbsp;            System.out.println(&quot;? 头像上传流程完成&quot;);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(result);</b>
+&nbsp;
+<b class="nc">&nbsp;        } catch (IllegalArgumentException e) {</b>
+&nbsp;            // 文件验证错误（文件类型、大小等）
+<b class="nc">&nbsp;            System.err.println(&quot;? 文件验证失败: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            result.setSuccess(false);</b>
+<b class="nc">&nbsp;            result.setMessage(e.getMessage());</b>
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(result);</b>
+&nbsp;            
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+&nbsp;            // 文件上传错误
+<b class="nc">&nbsp;            System.err.println(&quot;? 文件上传失败: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            result.setSuccess(false);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;文件上传失败: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(500).body(result);</b>
+&nbsp;            
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+&nbsp;            // 其他未预期的错误
+<b class="nc">&nbsp;            System.err.println(&quot;? 头像上传过程中发生未知错误: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            result.setSuccess(false);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;服务器内部错误: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(500).body(result);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 管理员功能：获取所有普通用户列表
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/admin/users/user
+&nbsp;    public ResponseEntity&lt;ApiResponse&lt;UserManagementResponse&gt;&gt; getUserById(@PathVariable Long userId, HttpServletRequest request) {
+<b class="nc">&nbsp;        ApiResponse&lt;UserManagementResponse&gt; result = new ApiResponse&lt;&gt;();</b>
+&nbsp;        
+&nbsp;        try {
+<b class="nc">&nbsp;            System.out.println(&quot;=== GET /admin/users 获取普通用户列表请求开始 ===&quot;);</b>
+&nbsp;        
+<b class="nc">&nbsp;            boolean valid = JwtUtil.getValid(request.getHeader(&quot;X-Valid&quot;));</b>
+<b class="nc">&nbsp;            boolean identity = JwtUtil.getIdentity(request.getHeader(&quot;X-Identity&quot;));</b>
+&nbsp;            
+<b class="nc">&nbsp;            if (!valid) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户状态无效&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            if (identity) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;权限不足，仅管理员可访问&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(403).body(result);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 3. 获取指定用户
+<b class="nc">&nbsp;            Optional&lt;User&gt; userOpt = userService.getUserById(userId);</b>
+<b class="nc">&nbsp;            if (!userOpt.isPresent()) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户不存在&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(404).body(result);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            User user = userOpt.get();</b>
+<b class="nc">&nbsp;            UserManagementResponse userResponse = UserManagementResponse.convertToUserManagementResponse(user);</b>
+&nbsp;            
+<b class="nc">&nbsp;            result.setSuccess(true);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;用户信息获取成功&quot;);</b>
+<b class="nc">&nbsp;            result.setData(userResponse);</b>
+&nbsp;            
+<b class="nc">&nbsp;            System.out.println(&quot;? 用户信息获取成功&quot;);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(result);</b>
+&nbsp;            
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;? 获取用户信息时发生错误: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            result.setSuccess(false);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;服务器内部错误: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(500).body(result);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 管理员功能：获取所有普通用户列表
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/admin/users&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&lt;List&lt;UserManagementResponse&gt;&gt;&gt; getAllUsers(HttpServletRequest request) {
+<b class="nc">&nbsp;        ApiResponse&lt;List&lt;UserManagementResponse&gt;&gt; result = new ApiResponse&lt;&gt;();</b>
+&nbsp;        
+&nbsp;        try {
+<b class="nc">&nbsp;            System.out.println(&quot;=== GET /admin/users 获取普通用户列表请求开始 ===&quot;);</b>
+&nbsp;        
+<b class="nc">&nbsp;            boolean valid = JwtUtil.getValid(request.getHeader(&quot;X-Valid&quot;));</b>
+<b class="nc">&nbsp;            boolean identity = JwtUtil.getIdentity(request.getHeader(&quot;X-Identity&quot;));</b>
+&nbsp;            
+<b class="nc">&nbsp;            if (!valid) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户状态无效&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            if (identity) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;权限不足，仅管理员可访问&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(403).body(result);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 3. 获取所有普通用户列表（isUser=true）
+<b class="nc">&nbsp;            List&lt;User&gt; users = userService.getAllNormalUsers();</b>
+<b class="nc">&nbsp;            List&lt;UserManagementResponse&gt; userResponses = users.stream()</b>
+<b class="nc">&nbsp;                    .map(UserManagementResponse::convertToUserManagementResponse)</b>
+<b class="nc">&nbsp;                    .collect(java.util.stream.Collectors.toList());</b>
+&nbsp;            
+<b class="nc">&nbsp;            result.setSuccess(true);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;普通用户列表获取成功&quot;);</b>
+<b class="nc">&nbsp;            result.setData(userResponses);</b>
+&nbsp;            
+<b class="nc">&nbsp;            System.out.println(&quot;? 普通用户列表获取成功，共 &quot; + users.size() + &quot; 个用户&quot;);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(result);</b>
+&nbsp;            
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;? 获取普通用户列表时发生错误: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            result.setSuccess(false);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;服务器内部错误: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(500).body(result);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 管理员功能：启用或禁用用户
+&nbsp;     */
+&nbsp;    @PutMapping(&quot;/admin/users/user/status&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&lt;String&gt;&gt; updateUserStatus(
+&nbsp;            @PathVariable Long userId, 
+&nbsp;            @RequestParam boolean valid,
+&nbsp;            HttpServletRequest request) {
+<b class="nc">&nbsp;        ApiResponse&lt;String&gt; result = new ApiResponse&lt;&gt;();</b>
+&nbsp;        
+&nbsp;        try {
+<b class="nc">&nbsp;            System.out.println(&quot;=== PUT /admin/users/user + userId + &quot;/status 更新用户状态请求开始 ===&quot;);</b>
+&nbsp;            
+&nbsp;            // 从请求头中获取用户认证信息（由网关传递）
+<b class="nc">&nbsp;            Long adminUserId = JwtUtil.getUserId(request.getHeader(&quot;X-User-Id&quot;));</b>
+<b class="nc">&nbsp;            boolean adminValid = JwtUtil.getValid(request.getHeader(&quot;X-Valid&quot;));</b>
+<b class="nc">&nbsp;            boolean identity = JwtUtil.getIdentity(request.getHeader(&quot;X-Identity&quot;));</b>
+&nbsp;            
+<b class="nc">&nbsp;            System.out.println(&quot;Admin UserId: &quot; + adminUserId);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Admin Valid: &quot; + adminValid);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Admin Identity: &quot; + identity);</b>
+&nbsp;            
+<b class="nc">&nbsp;            if (adminUserId == null) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;未登录或用户ID无效&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            if (!adminValid) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户状态无效&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            if (identity) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;权限不足，仅管理员可访问&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(403).body(result);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 3. 更新用户状态
+<b class="nc">&nbsp;            boolean success = userService.updateUserStatus(userId, valid);</b>
+&nbsp;            
+<b class="nc">&nbsp;            if (success) {</b>
+<b class="nc">&nbsp;                result.setSuccess(true);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户状态更新成功&quot;);</b>
+<b class="nc">&nbsp;                result.setData(valid ? &quot;用户已启用&quot; : &quot;用户已禁用&quot;);</b>
+&nbsp;                
+<b class="nc">&nbsp;                System.out.println(&quot;? 用户状态更新成功: userId=&quot; + userId + &quot;, valid=&quot; + valid);</b>
+<b class="nc">&nbsp;                return ResponseEntity.ok(result);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户不存在或更新失败&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(404).body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;? 更新用户状态时发生错误: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            result.setSuccess(false);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;服务器内部错误: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(500).body(result);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:43</div>
+</div>
+</body>
+</html>

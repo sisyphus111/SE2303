@@ -1,0 +1,93 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > LikeRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.communityservice.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: LikeRepository (com.se2303.communityservice.repository)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">LikeRepository</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.communityservice.repository;
+&nbsp;
+&nbsp;import com.se2303.communityservice.entity.Like;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@Repository
+&nbsp;public interface LikeRepository extends JpaRepository&lt;Like, Long&gt; {
+&nbsp;    List&lt;Like&gt; findByPostId(Long postId);
+&nbsp;
+&nbsp;    boolean existsByPostIdAndUserId(Long postId, String userId);
+&nbsp;
+&nbsp;    Optional&lt;Like&gt; findByPostIdAndUserId(Long postId, String userId);
+&nbsp;
+&nbsp;    long countByPostId(Long postId);
+&nbsp;
+&nbsp;    @Query(&quot;SELECT DISTINCT l.postId FROM Like l&quot;)
+&nbsp;    List&lt;Long&gt; findDistinctPostIds();
+&nbsp;
+&nbsp;    List&lt;Like&gt; findByUserId(String userId);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:40</div>
+</div>
+</body>
+</html>

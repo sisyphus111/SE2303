@@ -1,0 +1,359 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MusicService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.notificationservice.service</a>
+</div>
+
+<h1>Coverage Summary for Class: MusicService (com.se2303.notificationservice.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MusicService</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/32)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/92)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">MusicService$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/32)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/95)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.notificationservice.service;
+&nbsp;
+&nbsp;import com.se2303.notificationservice.dto.ApiResponse;
+&nbsp;import com.se2303.notificationservice.dto.CreateMusicRequest;
+&nbsp;import com.se2303.notificationservice.dto.MusicResponse;
+&nbsp;import com.se2303.notificationservice.model.Music;
+&nbsp;import com.se2303.notificationservice.repository.MusicRepository;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.PageRequest;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@Service
+<b class="nc">&nbsp;public class MusicService {</b>
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private MusicRepository musicRepository;
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 创建音乐
+&nbsp;     */
+&nbsp;    public ApiResponse createMusic(CreateMusicRequest request) {
+&nbsp;        try {
+<b class="nc">&nbsp;            Music music = new Music(</b>
+<b class="nc">&nbsp;                request.getTitle(),</b>
+<b class="nc">&nbsp;                request.getCategory(),</b>
+<b class="nc">&nbsp;                request.getCover(),</b>
+<b class="nc">&nbsp;                request.getUrl(),</b>
+<b class="nc">&nbsp;                request.getDuration()</b>
+&nbsp;            );
+&nbsp;            
+<b class="nc">&nbsp;            Music savedMusic = musicRepository.save(music);</b>
+<b class="nc">&nbsp;            MusicResponse response = convertToResponse(savedMusic);</b>
+&nbsp;            
+<b class="nc">&nbsp;            return ApiResponse.success(response, &quot;音乐创建成功&quot;);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return ApiResponse.error(&quot;创建音乐失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取音乐列表
+&nbsp;     */
+&nbsp;    public ApiResponse getMusicList(int page, int size) {
+&nbsp;        try {
+<b class="nc">&nbsp;            Pageable pageable = PageRequest.of(page - 1, size);</b>
+<b class="nc">&nbsp;            Page&lt;Music&gt; musicPage = musicRepository.findAllByOrderByCreatedAtDesc(pageable);</b>
+&nbsp;            
+<b class="nc">&nbsp;            List&lt;MusicResponse&gt; responses = musicPage.getContent().stream()</b>
+<b class="nc">&nbsp;                    .map(this::convertToResponse)</b>
+<b class="nc">&nbsp;                    .collect(Collectors.toList());</b>
+&nbsp;            
+<b class="nc">&nbsp;            return ApiResponse.success(responses, &quot;获取音乐列表成功&quot;);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return ApiResponse.error(&quot;获取音乐列表失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据关键词搜索音乐
+&nbsp;     */
+&nbsp;    public ApiResponse searchMusic(String keyword) {
+&nbsp;        try {
+<b class="nc">&nbsp;            if (keyword == null || keyword.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;                return ApiResponse.error(&quot;搜索关键词不能为空&quot;);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            List&lt;Music&gt; musics = musicRepository.findByKeyword(keyword.trim());</b>
+<b class="nc">&nbsp;            List&lt;MusicResponse&gt; responses = musics.stream()</b>
+<b class="nc">&nbsp;                    .map(this::convertToResponse)</b>
+<b class="nc">&nbsp;                    .collect(Collectors.toList());</b>
+&nbsp;            
+<b class="nc">&nbsp;            return ApiResponse.success(responses, &quot;搜索音乐成功&quot;);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return ApiResponse.error(&quot;搜索音乐失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据分类获取音乐
+&nbsp;     */
+&nbsp;    public ApiResponse getMusicByCategory(String category) {
+&nbsp;        try {
+<b class="nc">&nbsp;            if (category == null || category.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;                return ApiResponse.error(&quot;分类不能为空&quot;);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            List&lt;Music&gt; musics = musicRepository.findByCategoryOrderByCreatedAtDesc(category.trim());</b>
+<b class="nc">&nbsp;            List&lt;MusicResponse&gt; responses = musics.stream()</b>
+<b class="nc">&nbsp;                    .map(this::convertToResponse)</b>
+<b class="nc">&nbsp;                    .collect(Collectors.toList());</b>
+&nbsp;            
+<b class="nc">&nbsp;            return ApiResponse.success(responses, &quot;获取分类音乐成功&quot;);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return ApiResponse.error(&quot;获取分类音乐失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取所有音乐
+&nbsp;     */
+&nbsp;    public ApiResponse getAllMusic() {
+&nbsp;        try {
+<b class="nc">&nbsp;            List&lt;Music&gt; musics = musicRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(0, 100)).getContent();</b>
+<b class="nc">&nbsp;            List&lt;MusicResponse&gt; responses = musics.stream()</b>
+<b class="nc">&nbsp;                    .map(this::convertToResponse)</b>
+<b class="nc">&nbsp;                    .collect(Collectors.toList());</b>
+&nbsp;            
+<b class="nc">&nbsp;            return ApiResponse.success(responses, &quot;获取所有音乐成功&quot;);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return ApiResponse.error(&quot;获取所有音乐失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 按id正序分页获取音乐
+&nbsp;     */
+&nbsp;    public ApiResponse getMusicListByIdAsc(int page, int size) {
+&nbsp;        try {
+<b class="nc">&nbsp;            Pageable pageable = PageRequest.of(page - 1, size);</b>
+<b class="nc">&nbsp;            Page&lt;Music&gt; musicPage = musicRepository.findAllByOrderByIdAsc(pageable);</b>
+<b class="nc">&nbsp;            List&lt;MusicResponse&gt; responses = musicPage.getContent().stream()</b>
+<b class="nc">&nbsp;                    .map(this::convertToResponse)</b>
+<b class="nc">&nbsp;                    .collect(Collectors.toList());</b>
+<b class="nc">&nbsp;            long total = musicPage.getTotalElements();</b>
+<b class="nc">&nbsp;            return ApiResponse.success(new java.util.HashMap&lt;String, Object&gt;() {{</b>
+<b class="nc">&nbsp;                put(&quot;list&quot;, responses);</b>
+<b class="nc">&nbsp;                put(&quot;total&quot;, total);</b>
+&nbsp;            }}, &quot;按id正序分页获取音乐成功&quot;);
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return ApiResponse.error(&quot;按id正序分页获取音乐失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除音乐
+&nbsp;     */
+&nbsp;    public ApiResponse deleteMusic(Long musicId) {
+&nbsp;        try {
+<b class="nc">&nbsp;            if (musicId == null) {</b>
+<b class="nc">&nbsp;                return ApiResponse.error(&quot;音乐ID不能为空&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (!musicRepository.existsById(musicId)) {</b>
+<b class="nc">&nbsp;                return ApiResponse.error(&quot;音乐不存在&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            musicRepository.deleteById(musicId);</b>
+<b class="nc">&nbsp;            return ApiResponse.success(null, &quot;音乐删除成功&quot;);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return ApiResponse.error(&quot;删除音乐失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 更新音乐
+&nbsp;     */
+&nbsp;    public ApiResponse updateMusic(Long musicId, com.se2303.notificationservice.dto.UpdateMusicRequest request) {
+&nbsp;        try {
+<b class="nc">&nbsp;            if (musicId == null) {</b>
+<b class="nc">&nbsp;                return ApiResponse.error(&quot;音乐ID不能为空&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (!musicRepository.existsById(musicId)) {</b>
+<b class="nc">&nbsp;                return ApiResponse.error(&quot;音乐不存在&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            Music music = musicRepository.findById(musicId).orElse(null);</b>
+<b class="nc">&nbsp;            if (music == null) {</b>
+<b class="nc">&nbsp;                return ApiResponse.error(&quot;音乐不存在&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (request.getTitle() != null &amp;&amp; !request.getTitle().trim().isEmpty()) {</b>
+<b class="nc">&nbsp;                music.setTitle(request.getTitle().trim());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (request.getCategory() != null) {</b>
+<b class="nc">&nbsp;                music.setCategory(request.getCategory());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (request.getCover() != null) {</b>
+<b class="nc">&nbsp;                music.setCover(request.getCover());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (request.getUrl() != null) {</b>
+<b class="nc">&nbsp;                music.setUrl(request.getUrl());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (request.getDuration() != null &amp;&amp; request.getDuration() &gt; 0) {</b>
+<b class="nc">&nbsp;                music.setDuration(request.getDuration());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            Music updatedMusic = musicRepository.save(music);</b>
+<b class="nc">&nbsp;            MusicResponse response = convertToResponse(updatedMusic);</b>
+<b class="nc">&nbsp;            return ApiResponse.success(response, &quot;音乐更新成功&quot;);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return ApiResponse.error(&quot;更新音乐失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 将Music实体转换为MusicResponse
+&nbsp;     */
+&nbsp;    private MusicResponse convertToResponse(Music music) {
+<b class="nc">&nbsp;        return new MusicResponse(</b>
+<b class="nc">&nbsp;                music.getId(),</b>
+<b class="nc">&nbsp;                music.getTitle(),</b>
+<b class="nc">&nbsp;                music.getCategory(),</b>
+<b class="nc">&nbsp;                music.getCover(),</b>
+<b class="nc">&nbsp;                music.getUrl(),</b>
+<b class="nc">&nbsp;                music.getDuration(),</b>
+<b class="nc">&nbsp;                music.getCreatedAt()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:42</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,568 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MoodServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.moodservice.service.impl</a>
+</div>
+
+<h1>Coverage Summary for Class: MoodServiceImpl (com.se2303.moodservice.service.impl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MoodServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/23)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/84)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/198)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.moodservice.service.impl;
+&nbsp;
+&nbsp;import com.se2303.moodservice.dao.MoodDAO;
+&nbsp;import com.se2303.moodservice.dao.MoodItemDAO;
+&nbsp;import com.se2303.moodservice.dto.CheckInRequest;
+&nbsp;import com.se2303.moodservice.dto.DiaryRequest;
+&nbsp;import com.se2303.moodservice.dto.MoodCheckInRequest;
+&nbsp;import com.se2303.moodservice.dto.MoodCheckInResponse;
+&nbsp;import com.se2303.moodservice.dto.MoodQueryRequest;
+&nbsp;import com.se2303.moodservice.dto.TodayMoodResponse;
+&nbsp;import com.se2303.moodservice.model.Mood;
+&nbsp;import com.se2303.moodservice.model.MoodItem;
+&nbsp;import com.se2303.moodservice.model.MoodLabel;
+&nbsp;import com.se2303.moodservice.service.MoodService;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;/**
+&nbsp; * 心情服务实现类
+&nbsp; * 使用DAO层进行数据访问
+&nbsp; */
+&nbsp;@Service
+&nbsp;@Transactional
+<b class="nc">&nbsp;public class MoodServiceImpl implements MoodService {</b>
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private MoodDAO moodDAO;
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private MoodItemDAO moodItemDAO;
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    public MoodCheckInResponse checkIn(String userId, MoodCheckInRequest request) {
+&nbsp;        // 检查是否已经打卡
+<b class="nc">&nbsp;        Optional&lt;Mood&gt; existingMood = moodDAO.findByUserIdAndDate(userId, request.getDate());</b>
+&nbsp;        
+&nbsp;        Mood mood;
+<b class="nc">&nbsp;        if (existingMood.isPresent()) {</b>
+&nbsp;            // 更新现有记录
+<b class="nc">&nbsp;            mood = existingMood.get();</b>
+<b class="nc">&nbsp;            mood.setScore(request.getScore());</b>
+<b class="nc">&nbsp;            mood.setScoreCommitted(true);</b>
+<b class="nc">&nbsp;            mood.setDiaryDescription(request.getDiaryDescription());</b>
+<b class="nc">&nbsp;            mood.setDiaryTitle(request.getDiaryTitle());</b>
+<b class="nc">&nbsp;            mood.setDiaryCommitted(request.getDiaryDescription() != null &amp;&amp; !request.getDiaryDescription().trim().isEmpty());</b>
+<b class="nc">&nbsp;            mood.setWeather(request.getWeather());</b>
+&nbsp;            
+&nbsp;            // 删除旧的心情标签
+<b class="nc">&nbsp;            moodItemDAO.deleteByMoodId(mood.getId());</b>
+&nbsp;        } else {
+&nbsp;            // 创建新记录
+<b class="nc">&nbsp;            mood = new Mood();</b>
+<b class="nc">&nbsp;            mood.setUserId(userId);</b>
+<b class="nc">&nbsp;            mood.setDate(request.getDate());</b>
+<b class="nc">&nbsp;            mood.setScore(request.getScore());</b>
+<b class="nc">&nbsp;            mood.setScoreCommitted(true);</b>
+<b class="nc">&nbsp;            mood.setDiaryDescription(request.getDiaryDescription());</b>
+<b class="nc">&nbsp;            mood.setDiaryTitle(request.getDiaryTitle());</b>
+<b class="nc">&nbsp;            mood.setDiaryCommitted(request.getDiaryDescription() != null &amp;&amp; !request.getDiaryDescription().trim().isEmpty());</b>
+<b class="nc">&nbsp;            mood.setWeather(request.getWeather());</b>
+&nbsp;        }
+&nbsp;        
+&nbsp;        // 保存心情记录
+<b class="nc">&nbsp;        mood = moodDAO.save(mood);</b>
+&nbsp;        
+&nbsp;        // 保存心情标签
+<b class="nc">&nbsp;        if (request.getMoodLabels() != null &amp;&amp; !request.getMoodLabels().isEmpty()) {</b>
+<b class="nc">&nbsp;            for (String label : request.getMoodLabels()) {</b>
+&nbsp;                // 验证标签是否有效
+<b class="nc">&nbsp;                if (MoodLabel.isValidLabel(label)) {</b>
+<b class="nc">&nbsp;                    MoodItem moodItem = new MoodItem(label, mood);</b>
+<b class="nc">&nbsp;                    moodItemDAO.save(moodItem);</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;        
+<b class="nc">&nbsp;        return convertToResponse(mood);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    public MoodCheckInResponse checkInOnly(String userId, CheckInRequest request) {
+&nbsp;        // 检查是否已经打卡
+<b class="nc">&nbsp;        Optional&lt;Mood&gt; existingMood = moodDAO.findByUserIdAndDate(userId, request.getDate());</b>
+&nbsp;        
+&nbsp;        Mood mood;
+<b class="nc">&nbsp;        if (existingMood.isPresent()) {</b>
+&nbsp;            // 更新现有记录，只更新打卡相关字段
+<b class="nc">&nbsp;            mood = existingMood.get();</b>
+<b class="nc">&nbsp;            mood.setScore(request.getScore());</b>
+<b class="nc">&nbsp;            mood.setScoreCommitted(true);</b>
+&nbsp;            // 保持原有的日记内容不变
+&nbsp;            
+&nbsp;            // 删除旧的心情标签
+<b class="nc">&nbsp;            moodItemDAO.deleteByMoodId(mood.getId());</b>
+&nbsp;        } else {
+&nbsp;            // 创建新记录，只包含打卡信息
+<b class="nc">&nbsp;            mood = new Mood();</b>
+<b class="nc">&nbsp;            mood.setUserId(userId);</b>
+<b class="nc">&nbsp;            mood.setDate(request.getDate());</b>
+<b class="nc">&nbsp;            mood.setScore(request.getScore());</b>
+<b class="nc">&nbsp;            mood.setScoreCommitted(true);</b>
+<b class="nc">&nbsp;            mood.setDiaryCommitted(false); // 没有写日记</b>
+&nbsp;        }
+&nbsp;        
+&nbsp;        // 保存心情记录
+<b class="nc">&nbsp;        mood = moodDAO.save(mood);</b>
+&nbsp;        
+&nbsp;        // 保存心情标签
+<b class="nc">&nbsp;        if (request.getMoodLabels() != null &amp;&amp; !request.getMoodLabels().isEmpty()) {</b>
+<b class="nc">&nbsp;            for (String label : request.getMoodLabels()) {</b>
+&nbsp;                // 验证标签是否有效
+<b class="nc">&nbsp;                if (MoodLabel.isValidLabel(label)) {</b>
+<b class="nc">&nbsp;                    MoodItem moodItem = new MoodItem(label, mood);</b>
+<b class="nc">&nbsp;                    moodItemDAO.save(moodItem);</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;        
+<b class="nc">&nbsp;        return convertToResponse(mood);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    public MoodCheckInResponse writeDiaryOnly(String userId, DiaryRequest request) {
+&nbsp;        // 检查是否已经存在记录
+<b class="nc">&nbsp;        Optional&lt;Mood&gt; existingMood = moodDAO.findByUserIdAndDate(userId, request.getDate());</b>
+&nbsp;        
+&nbsp;        Mood mood;
+<b class="nc">&nbsp;        if (existingMood.isPresent()) {</b>
+&nbsp;            // 更新现有记录，只更新日记相关字段
+<b class="nc">&nbsp;            mood = existingMood.get();</b>
+<b class="nc">&nbsp;            mood.setDiaryDescription(request.getDiaryDescription());</b>
+<b class="nc">&nbsp;            mood.setDiaryTitle(request.getDiaryTitle());</b>
+<b class="nc">&nbsp;            mood.setDiaryCommitted(true);</b>
+<b class="nc">&nbsp;            mood.setWeather(request.getWeather());</b>
+&nbsp;            // 保持原有的打卡信息不变
+&nbsp;        } else {
+&nbsp;            // 创建新记录，只包含日记信息
+<b class="nc">&nbsp;            mood = new Mood();</b>
+<b class="nc">&nbsp;            mood.setUserId(userId);</b>
+<b class="nc">&nbsp;            mood.setDate(request.getDate());</b>
+<b class="nc">&nbsp;            mood.setDiaryDescription(request.getDiaryDescription());</b>
+<b class="nc">&nbsp;            mood.setDiaryTitle(request.getDiaryTitle());</b>
+<b class="nc">&nbsp;            mood.setDiaryCommitted(true);</b>
+<b class="nc">&nbsp;            mood.setWeather(request.getWeather());</b>
+<b class="nc">&nbsp;            mood.setScoreCommitted(false); // 没有打卡</b>
+&nbsp;        }
+&nbsp;        
+&nbsp;        // 保存心情记录
+<b class="nc">&nbsp;        mood = moodDAO.save(mood);</b>
+&nbsp;        
+<b class="nc">&nbsp;        return convertToResponse(mood);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public MoodCheckInResponse findById(Long id) {
+<b class="nc">&nbsp;        Optional&lt;Mood&gt; mood = moodDAO.findById(id);</b>
+<b class="nc">&nbsp;        return mood.map(this::convertToResponse).orElse(null);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public MoodCheckInResponse findByUserIdAndDate(String userId, LocalDate date) {
+<b class="nc">&nbsp;        Optional&lt;Mood&gt; mood = moodDAO.findByUserIdAndDate(userId, date);</b>
+<b class="nc">&nbsp;        return mood.map(this::convertToResponse).orElse(null);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public List&lt;MoodCheckInResponse&gt; findByUserId(String userId) {
+<b class="nc">&nbsp;        List&lt;Mood&gt; moods = moodDAO.findByUserIdOrderByDateDesc(userId);</b>
+<b class="nc">&nbsp;        return moods.stream()</b>
+<b class="nc">&nbsp;                .map(this::convertToResponse)</b>
+<b class="nc">&nbsp;                .collect(Collectors.toList());</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public List&lt;MoodCheckInResponse&gt; findByUserIdAndDateBetween(String userId, LocalDate startDate, LocalDate endDate) {
+<b class="nc">&nbsp;        List&lt;Mood&gt; moods = moodDAO.findByUserIdAndDateBetweenOrderByDateDesc(userId, startDate, endDate);</b>
+<b class="nc">&nbsp;        return moods.stream()</b>
+<b class="nc">&nbsp;                .map(this::convertToResponse)</b>
+<b class="nc">&nbsp;                .collect(Collectors.toList());</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public boolean hasCheckedIn(String userId, LocalDate date) {
+<b class="nc">&nbsp;        return moodDAO.hasCheckedIn(userId, date);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public boolean hasWrittenDiary(String userId, LocalDate date) {
+<b class="nc">&nbsp;        return moodDAO.hasWrittenDiary(userId, date);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    public MoodCheckInResponse updateMood(Long id, MoodCheckInRequest request) {
+<b class="nc">&nbsp;        Optional&lt;Mood&gt; existingMood = moodDAO.findById(id);</b>
+<b class="nc">&nbsp;        if (existingMood.isPresent()) {</b>
+<b class="nc">&nbsp;            Mood mood = existingMood.get();</b>
+<b class="nc">&nbsp;            mood.setScore(request.getScore());</b>
+<b class="nc">&nbsp;            mood.setScoreCommitted(true);</b>
+<b class="nc">&nbsp;            mood.setDiaryDescription(request.getDiaryDescription());</b>
+<b class="nc">&nbsp;            mood.setDiaryTitle(request.getDiaryTitle());</b>
+<b class="nc">&nbsp;            mood.setDiaryCommitted(request.getDiaryDescription() != null &amp;&amp; !request.getDiaryDescription().trim().isEmpty());</b>
+<b class="nc">&nbsp;            mood.setWeather(request.getWeather());</b>
+&nbsp;            
+&nbsp;            // 删除旧的心情标签
+<b class="nc">&nbsp;            moodItemDAO.deleteByMoodId(mood.getId());</b>
+&nbsp;            
+&nbsp;            // 保存新的心情标签
+<b class="nc">&nbsp;            if (request.getMoodLabels() != null &amp;&amp; !request.getMoodLabels().isEmpty()) {</b>
+<b class="nc">&nbsp;                for (String label : request.getMoodLabels()) {</b>
+<b class="nc">&nbsp;                    if (MoodLabel.isValidLabel(label)) {</b>
+<b class="nc">&nbsp;                        MoodItem moodItem = new MoodItem(label, mood);</b>
+<b class="nc">&nbsp;                        moodItemDAO.save(moodItem);</b>
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            mood = moodDAO.save(mood);</b>
+<b class="nc">&nbsp;            return convertToResponse(mood);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    public void deleteMood(Long id) {
+<b class="nc">&nbsp;        moodDAO.deleteById(id);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    public MoodCheckInResponse deleteDiary(String userId, LocalDate date) {
+<b class="nc">&nbsp;        Optional&lt;Mood&gt; moodOptional = moodDAO.findByUserIdAndDate(userId, date);</b>
+&nbsp;        
+<b class="nc">&nbsp;        if (moodOptional.isPresent()) {</b>
+<b class="nc">&nbsp;            Mood mood = moodOptional.get();</b>
+&nbsp;            
+&nbsp;            // 清空日记内容并设置日记状态为false
+<b class="nc">&nbsp;            mood.setDiaryDescription(null);</b>
+<b class="nc">&nbsp;            mood.setDiaryTitle(null);</b>
+<b class="nc">&nbsp;            mood.setDiaryCommitted(false);</b>
+&nbsp;            
+&nbsp;            // 保存更新后的记录
+<b class="nc">&nbsp;            mood = moodDAO.save(mood);</b>
+&nbsp;            
+<b class="nc">&nbsp;            return convertToResponse(mood);</b>
+&nbsp;        } else {
+&nbsp;            // 如果没有找到记录，返回null
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public long getCheckInCount(String userId) {
+<b class="nc">&nbsp;        return moodDAO.countByUserId(userId);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public long getCheckInCount(String userId, LocalDate startDate, LocalDate endDate) {
+<b class="nc">&nbsp;        return moodDAO.countByUserIdAndDateBetween(userId, startDate, endDate);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public long getDiaryCount(String userId) {
+<b class="nc">&nbsp;        return moodDAO.findByUserIdAndDiaryCommittedTrueOrderByDateDesc(userId).size();</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public long getDiaryCount(String userId, LocalDate startDate, LocalDate endDate) {
+<b class="nc">&nbsp;        List&lt;Mood&gt; moods = moodDAO.findByUserIdAndDateBetweenOrderByDateDesc(userId, startDate, endDate);</b>
+<b class="nc">&nbsp;        return moods.stream()</b>
+<b class="nc">&nbsp;                .filter(mood -&gt; Boolean.TRUE.equals(mood.getDiaryCommitted()))</b>
+<b class="nc">&nbsp;                .count();</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public TodayMoodResponse getTodayMood(String userId, LocalDate date) {
+<b class="nc">&nbsp;        Optional&lt;Mood&gt; moodOptional = moodDAO.findByUserIdAndDate(userId, date);</b>
+&nbsp;        
+<b class="nc">&nbsp;        if (moodOptional.isPresent()) {</b>
+<b class="nc">&nbsp;            Mood mood = moodOptional.get();</b>
+<b class="nc">&nbsp;            return convertToTodayMoodResponse(mood);</b>
+&nbsp;        } else {
+&nbsp;            // 如果没有找到记录，返回空记录但包含日期信息
+<b class="nc">&nbsp;            return new TodayMoodResponse(</b>
+<b class="nc">&nbsp;                    null, userId, date, null, false, null,</b>
+<b class="nc">&nbsp;                    0, 0, 0, 0, &quot;neutral&quot;, null, null</b>
+&nbsp;            );
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public TodayMoodResponse getTodayMood(String userId) {
+<b class="nc">&nbsp;        return getTodayMood(userId, LocalDate.now());</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public List&lt;MoodCheckInResponse&gt; queryMoods(MoodQueryRequest request) {
+&nbsp;        List&lt;Mood&gt; moods;
+&nbsp;        
+&nbsp;        // 如果没有提供任何筛选条件，返回所有数据
+<b class="nc">&nbsp;        if (!request.hasFilters()) {</b>
+<b class="nc">&nbsp;            moods = moodDAO.findAllByOrderByDateDesc();</b>
+&nbsp;        } else {
+&nbsp;            // 构建查询条件
+<b class="nc">&nbsp;            if (request.getUserId() != null &amp;&amp; </b>
+<b class="nc">&nbsp;                (request.getMoodLabels() == null || request.getMoodLabels().isEmpty()) &amp;&amp; </b>
+<b class="nc">&nbsp;                request.getStartDate() == null &amp;&amp; </b>
+<b class="nc">&nbsp;                request.getEndDate() == null) {</b>
+&nbsp;                // 只按用户ID查询
+<b class="nc">&nbsp;                moods = moodDAO.findByUserIdOrderByDateDesc(request.getUserId());</b>
+<b class="nc">&nbsp;            } else if (request.getUserId() != null &amp;&amp; </b>
+<b class="nc">&nbsp;                       request.getStartDate() != null &amp;&amp; </b>
+<b class="nc">&nbsp;                       request.getEndDate() != null &amp;&amp; </b>
+<b class="nc">&nbsp;                       (request.getMoodLabels() == null || request.getMoodLabels().isEmpty())) {</b>
+&nbsp;                // 按用户ID和时间范围查询
+<b class="nc">&nbsp;                moods = moodDAO.findByUserIdAndDateBetweenOrderByDateDesc(</b>
+<b class="nc">&nbsp;                    request.getUserId(), request.getStartDate(), request.getEndDate());</b>
+&nbsp;            } else {
+&nbsp;                // 复杂查询：需要按标签筛选
+<b class="nc">&nbsp;                moods = moodDAO.findAllByOrderByDateDesc();</b>
+&nbsp;                
+&nbsp;                // 在内存中进行筛选
+<b class="nc">&nbsp;                moods = moods.stream()</b>
+<b class="nc">&nbsp;                    .filter(mood -&gt; {</b>
+&nbsp;                        // 用户ID筛选
+<b class="nc">&nbsp;                        if (request.getUserId() != null &amp;&amp; !mood.getUserId().equals(request.getUserId())) {</b>
+<b class="nc">&nbsp;                            return false;</b>
+&nbsp;                        }
+&nbsp;                        
+&nbsp;                        // 时间范围筛选
+<b class="nc">&nbsp;                        if (request.getStartDate() != null &amp;&amp; mood.getDate().isBefore(request.getStartDate())) {</b>
+<b class="nc">&nbsp;                            return false;</b>
+&nbsp;                        }
+<b class="nc">&nbsp;                        if (request.getEndDate() != null &amp;&amp; mood.getDate().isAfter(request.getEndDate())) {</b>
+<b class="nc">&nbsp;                            return false;</b>
+&nbsp;                        }
+&nbsp;                        
+&nbsp;                        // 情绪标签筛选
+<b class="nc">&nbsp;                        if (request.getMoodLabels() != null &amp;&amp; !request.getMoodLabels().isEmpty()) {</b>
+<b class="nc">&nbsp;                            List&lt;String&gt; moodLabels = moodItemDAO.findByMoodId(mood.getId())</b>
+<b class="nc">&nbsp;                                .stream()</b>
+<b class="nc">&nbsp;                                .map(MoodItem::getLabel)</b>
+<b class="nc">&nbsp;                                .collect(Collectors.toList());</b>
+&nbsp;                            
+&nbsp;                            // 检查是否包含任何指定的标签
+<b class="nc">&nbsp;                            boolean hasMatchingLabel = request.getMoodLabels().stream()</b>
+<b class="nc">&nbsp;                                .anyMatch(moodLabels::contains);</b>
+&nbsp;                            
+<b class="nc">&nbsp;                            if (!hasMatchingLabel) {</b>
+<b class="nc">&nbsp;                                return false;</b>
+&nbsp;                            }
+&nbsp;                        }
+&nbsp;                        
+<b class="nc">&nbsp;                        return true;</b>
+&nbsp;                    })
+<b class="nc">&nbsp;                    .collect(Collectors.toList());</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;        
+&nbsp;        // 应用分页
+<b class="nc">&nbsp;        int start = request.getPage() * request.getSize();</b>
+<b class="nc">&nbsp;        int end = Math.min(start + request.getSize(), moods.size());</b>
+&nbsp;        
+<b class="nc">&nbsp;        if (start &gt;= moods.size()) {</b>
+<b class="nc">&nbsp;            return List.of();</b>
+&nbsp;        }
+&nbsp;        
+<b class="nc">&nbsp;        List&lt;Mood&gt; pagedMoods = moods.subList(start, end);</b>
+&nbsp;        
+&nbsp;        // 转换为响应对象
+<b class="nc">&nbsp;        return pagedMoods.stream()</b>
+<b class="nc">&nbsp;            .map(this::convertToResponse)</b>
+<b class="nc">&nbsp;            .collect(Collectors.toList());</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 将Mood实体转换为MoodCheckInResponse
+&nbsp;     */
+&nbsp;    private MoodCheckInResponse convertToResponse(Mood mood) {
+&nbsp;        // 获取心情标签
+<b class="nc">&nbsp;        List&lt;String&gt; moodLabels = moodItemDAO.findByMoodId(mood.getId())</b>
+<b class="nc">&nbsp;                .stream()</b>
+<b class="nc">&nbsp;                .map(MoodItem::getLabel)</b>
+<b class="nc">&nbsp;                .collect(Collectors.toList());</b>
+&nbsp;        
+<b class="nc">&nbsp;        return new MoodCheckInResponse(</b>
+<b class="nc">&nbsp;                mood.getId(),</b>
+<b class="nc">&nbsp;                mood.getUserId(),</b>
+<b class="nc">&nbsp;                mood.getDate(),</b>
+<b class="nc">&nbsp;                mood.getScore(),</b>
+<b class="nc">&nbsp;                mood.getScoreCommitted(),</b>
+<b class="nc">&nbsp;                mood.getDiaryDescription(),</b>
+<b class="nc">&nbsp;                mood.getDiaryCommitted(),</b>
+<b class="nc">&nbsp;                mood.getDiaryTitle(),</b>
+<b class="nc">&nbsp;                mood.getWeather(),</b>
+&nbsp;                moodLabels,
+<b class="nc">&nbsp;                mood.getCreatedAt(),</b>
+<b class="nc">&nbsp;                mood.getUpdatedAt()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 将Mood实体转换为TodayMoodResponse，包含标签权值计算
+&nbsp;     */
+&nbsp;    private TodayMoodResponse convertToTodayMoodResponse(Mood mood) {
+&nbsp;        // 获取心情标签
+<b class="nc">&nbsp;        List&lt;String&gt; moodLabels = moodItemDAO.findByMoodId(mood.getId())</b>
+<b class="nc">&nbsp;                .stream()</b>
+<b class="nc">&nbsp;                .map(MoodItem::getLabel)</b>
+<b class="nc">&nbsp;                .collect(Collectors.toList());</b>
+&nbsp;        
+&nbsp;        // 计算标签权值
+<b class="nc">&nbsp;        int positiveLabelCount = MoodLabel.countPositiveLabels(moodLabels);</b>
+<b class="nc">&nbsp;        int neutralLabelCount = MoodLabel.countNeutralLabels(moodLabels);</b>
+<b class="nc">&nbsp;        int negativeLabelCount = MoodLabel.countNegativeLabels(moodLabels);</b>
+<b class="nc">&nbsp;        int totalMoodWeight = MoodLabel.calculateTotalWeight(moodLabels);</b>
+<b class="nc">&nbsp;        String moodTrend = MoodLabel.getMoodTrend(totalMoodWeight);</b>
+&nbsp;        
+<b class="nc">&nbsp;        return new TodayMoodResponse(</b>
+<b class="nc">&nbsp;                mood.getId(),</b>
+<b class="nc">&nbsp;                mood.getUserId(),</b>
+<b class="nc">&nbsp;                mood.getDate(),</b>
+<b class="nc">&nbsp;                mood.getScore(),</b>
+<b class="nc">&nbsp;                mood.getScoreCommitted(),</b>
+&nbsp;                moodLabels,
+<b class="nc">&nbsp;                positiveLabelCount,</b>
+<b class="nc">&nbsp;                neutralLabelCount,</b>
+<b class="nc">&nbsp;                negativeLabelCount,</b>
+<b class="nc">&nbsp;                totalMoodWeight,</b>
+&nbsp;                moodTrend,
+<b class="nc">&nbsp;                mood.getCreatedAt(),</b>
+<b class="nc">&nbsp;                mood.getUpdatedAt()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:38</div>
+</div>
+</body>
+</html>

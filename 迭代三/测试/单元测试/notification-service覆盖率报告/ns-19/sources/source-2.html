@@ -1,0 +1,123 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > DatabaseConfig</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.moodservice.config</a>
+</div>
+
+<h1>Coverage Summary for Class: DatabaseConfig (com.se2303.moodservice.config)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DatabaseConfig</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.moodservice.config;
+&nbsp;
+&nbsp;import org.springframework.boot.autoconfigure.domain.EntityScan;
+&nbsp;import org.springframework.context.annotation.Configuration;
+&nbsp;import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+&nbsp;import org.springframework.transaction.annotation.EnableTransactionManagement;
+&nbsp;
+&nbsp;/**
+&nbsp; * 数据库配置类
+&nbsp; */
+&nbsp;@Configuration
+&nbsp;@EnableTransactionManagement
+&nbsp;@EnableJpaRepositories(basePackages = &quot;com.se2303.moodservice.repository&quot;)
+&nbsp;@EntityScan(basePackages = &quot;com.se2303.moodservice.model&quot;)
+<b class="nc">&nbsp;public class DatabaseConfig {</b>
+&nbsp;    
+&nbsp;    // 数据库配置已经通过application.yml文件配置
+&nbsp;    // 这里主要是启用JPA和事务管理
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:41</div>
+</div>
+</body>
+</html>

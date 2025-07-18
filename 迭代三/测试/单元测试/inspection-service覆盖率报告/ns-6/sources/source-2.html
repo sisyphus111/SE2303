@@ -1,0 +1,144 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AlertLevel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.alertservice.model</a>
+</div>
+
+<h1>Coverage Summary for Class: AlertLevel (com.se2303.alertservice.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AlertLevel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.alertservice.model;
+&nbsp;
+&nbsp;/**
+&nbsp; * 警报级别枚举
+&nbsp; */
+<b class="nc">&nbsp;public enum AlertLevel {</b>
+&nbsp;    /**
+&nbsp;     * 低级别警报
+&nbsp;     * 需要关注但紧急程度较低
+&nbsp;     */
+<b class="nc">&nbsp;    LOW(&quot;低&quot;),</b>
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 中级别警报
+&nbsp;     * 需要及时处理
+&nbsp;     */
+<b class="nc">&nbsp;    MEDIUM(&quot;中&quot;),</b>
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 高级别警报
+&nbsp;     * 需要立即处理
+&nbsp;     */
+<b class="nc">&nbsp;    HIGH(&quot;高&quot;),</b>
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 紧急警报
+&nbsp;     * 需要立即干预
+&nbsp;     */
+<b class="nc">&nbsp;    URGENT(&quot;紧急&quot;);</b>
+&nbsp;    
+&nbsp;    private final String description;
+&nbsp;    
+<b class="nc">&nbsp;    AlertLevel(String description) {</b>
+<b class="nc">&nbsp;        this.description = description;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getDescription() {
+<b class="nc">&nbsp;        return description;</b>
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:40</div>
+</div>
+</body>
+</html>

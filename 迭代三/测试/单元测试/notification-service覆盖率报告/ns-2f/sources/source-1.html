@@ -1,0 +1,330 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > JaccountServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.userservice.service.impl</a>
+</div>
+
+<h1>Coverage Summary for Class: JaccountServiceImpl (com.se2303.userservice.service.impl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JaccountServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/107)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.userservice.service.impl;
+&nbsp;
+&nbsp;import com.se2303.userservice.config.JaccountConfig;
+&nbsp;import com.se2303.userservice.dto.response.JaccountTokenResponse;
+&nbsp;import com.se2303.userservice.dto.response.JaccountUserInfo;
+&nbsp;import com.se2303.userservice.dto.response.JaccountUserInfoResponse;
+&nbsp;import com.se2303.userservice.service.JaccountService;
+&nbsp;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.*;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.util.LinkedMultiValueMap;
+&nbsp;import org.springframework.util.MultiValueMap;
+&nbsp;import org.springframework.web.client.RestTemplate;
+&nbsp;import java.net.URLEncoder;
+&nbsp;import java.nio.charset.StandardCharsets;
+&nbsp;
+&nbsp;@Service
+<b class="nc">&nbsp;public class JaccountServiceImpl implements JaccountService {</b>
+&nbsp;    
+<b class="nc">&nbsp;    private static final Logger logger = LoggerFactory.getLogger(JaccountService.class);</b>
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private JaccountConfig jaccountConfig;
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private RestTemplate restTemplate;
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 用授权码换取access_token
+&nbsp;     */
+&nbsp;    public String exchangeCodeForToken(String code, String redirectUri) {
+<b class="nc">&nbsp;        logger.info(&quot;开始用授权码换取access_token: code={}&quot;, code.substring(0, Math.min(10, code.length())) + &quot;...&quot;);</b>
+<b class="nc">&nbsp;        logger.debug(&quot;完整授权码: {}&quot;, code);</b>
+<b class="nc">&nbsp;        logger.info(&quot;重定向URI: {}&quot;, redirectUri);</b>
+<b class="nc">&nbsp;        logger.info(&quot;客户端ID: {}&quot;, jaccountConfig.getClientId());</b>
+<b class="nc">&nbsp;        logger.debug(&quot;客户端密钥长度: {}&quot;, jaccountConfig.getClientSecret() != null ? jaccountConfig.getClientSecret().length() : 0);</b>
+&nbsp;        
+<b class="nc">&nbsp;        MultiValueMap&lt;String, String&gt; params = new LinkedMultiValueMap&lt;&gt;();</b>
+<b class="nc">&nbsp;        params.add(&quot;grant_type&quot;, &quot;authorization_code&quot;);</b>
+<b class="nc">&nbsp;        params.add(&quot;code&quot;, code);</b>
+<b class="nc">&nbsp;        params.add(&quot;client_id&quot;, jaccountConfig.getClientId());</b>
+<b class="nc">&nbsp;        params.add(&quot;client_secret&quot;, jaccountConfig.getClientSecret());</b>
+<b class="nc">&nbsp;        params.add(&quot;redirect_uri&quot;, redirectUri);</b>
+&nbsp;        
+<b class="nc">&nbsp;        logger.info(&quot;Token请求参数: grant_type={}, code={}..., client_id={}, redirect_uri={}&quot;, </b>
+<b class="nc">&nbsp;            &quot;authorization_code&quot;, code.substring(0, Math.min(10, code.length())) + &quot;...&quot;, </b>
+<b class="nc">&nbsp;            jaccountConfig.getClientId(), redirectUri);</b>
+&nbsp;        
+<b class="nc">&nbsp;        HttpHeaders headers = new HttpHeaders();</b>
+<b class="nc">&nbsp;        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);</b>
+<b class="nc">&nbsp;        headers.add(&quot;User-Agent&quot;, &quot;SE2303-Frontend/1.0&quot;);</b>
+&nbsp;        
+<b class="nc">&nbsp;        logger.info(&quot;请求头: Content-Type={}, User-Agent={}&quot;, </b>
+<b class="nc">&nbsp;            headers.getContentType(), headers.get(&quot;User-Agent&quot;));</b>
+&nbsp;        
+<b class="nc">&nbsp;        HttpEntity&lt;MultiValueMap&lt;String, String&gt;&gt; request = new HttpEntity&lt;&gt;(params, headers);</b>
+&nbsp;        
+&nbsp;        try {
+<b class="nc">&nbsp;            logger.info(&quot;发送token交换请求到: {}&quot;, jaccountConfig.getTokenUrl());</b>
+<b class="nc">&nbsp;            ResponseEntity&lt;JaccountTokenResponse&gt; response = restTemplate.postForEntity(</b>
+<b class="nc">&nbsp;                jaccountConfig.getTokenUrl(), </b>
+&nbsp;                request, 
+&nbsp;                JaccountTokenResponse.class
+&nbsp;            );
+&nbsp;            
+<b class="nc">&nbsp;            logger.info(&quot;Token响应状态码: {}&quot;, response.getStatusCode());</b>
+<b class="nc">&nbsp;            logger.info(&quot;Token响应头: {}&quot;, response.getHeaders());</b>
+&nbsp;            
+<b class="nc">&nbsp;            if (response.getStatusCode() == HttpStatus.OK) {</b>
+<b class="nc">&nbsp;                JaccountTokenResponse tokenResponse = response.getBody();</b>
+<b class="nc">&nbsp;                if (tokenResponse != null &amp;&amp; tokenResponse.getAccessToken() != null) {</b>
+<b class="nc">&nbsp;                    logger.info(&quot;成功获取Jaccount access_token, expires_in: {}&quot;, tokenResponse.getExpiresIn());</b>
+<b class="nc">&nbsp;                    logger.info(&quot;完整access_token: {}&quot;, tokenResponse.getAccessToken());</b>
+<b class="nc">&nbsp;                    logger.debug(&quot;完整access_token: {}&quot;, tokenResponse.getAccessToken());</b>
+<b class="nc">&nbsp;                    logger.info(&quot;Token类型: {}&quot;, tokenResponse.getTokenType());</b>
+<b class="nc">&nbsp;                    return tokenResponse.getAccessToken();</b>
+&nbsp;                } else {
+<b class="nc">&nbsp;                    logger.error(&quot;Jaccount返回的token响应为空或不包含access_token&quot;);</b>
+<b class="nc">&nbsp;                    logger.error(&quot;Token响应体: {}&quot;, tokenResponse);</b>
+<b class="nc">&nbsp;                    throw new RuntimeException(&quot;获取access_token失败：响应为空&quot;);</b>
+&nbsp;                }
+&nbsp;            } else {
+<b class="nc">&nbsp;                logger.error(&quot;Jaccount token请求失败，状态码: {}&quot;, response.getStatusCode());</b>
+<b class="nc">&nbsp;                logger.error(&quot;错误响应体: {}&quot;, response.getBody());</b>
+<b class="nc">&nbsp;                throw new RuntimeException(&quot;获取access_token失败：HTTP &quot; + response.getStatusCode());</b>
+&nbsp;            }
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;换取access_token时发生异常&quot;, e);</b>
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;换取access_token失败: &quot; + e.getMessage(), e);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 用access_token获取用户信息
+&nbsp;     */
+&nbsp;    public JaccountUserInfo getUserInfo(String accessToken) {
+<b class="nc">&nbsp;        logger.info(&quot;开始获取用户信息&quot;);</b>
+<b class="nc">&nbsp;        logger.debug(&quot;使用的access_token: {}&quot;, accessToken);</b>
+&nbsp;        
+&nbsp;        // 根据SJTU API文档，使用query参数传递access_token
+<b class="nc">&nbsp;        String url = jaccountConfig.getUserInfoUrl() + &quot;?access_token=&quot; + accessToken;</b>
+<b class="nc">&nbsp;        logger.info(&quot;用户信息请求URL: {}&quot;, url);</b>
+&nbsp;        
+<b class="nc">&nbsp;        HttpHeaders headers = new HttpHeaders();</b>
+<b class="nc">&nbsp;        headers.add(&quot;User-Agent&quot;, &quot;SE2303-Frontend/1.0&quot;);</b>
+<b class="nc">&nbsp;        headers.setAccept(java.util.Arrays.asList(MediaType.APPLICATION_JSON));</b>
+&nbsp;        
+<b class="nc">&nbsp;        logger.info(&quot;用户信息请求头: User-Agent={}, Accept={}&quot;, </b>
+<b class="nc">&nbsp;            headers.get(&quot;User-Agent&quot;), headers.getAccept());</b>
+&nbsp;        
+<b class="nc">&nbsp;        HttpEntity&lt;String&gt; request = new HttpEntity&lt;&gt;(headers);</b>
+&nbsp;        
+&nbsp;        try {
+<b class="nc">&nbsp;            logger.info(&quot;发送用户信息请求到: {}&quot;, url);</b>
+<b class="nc">&nbsp;            ResponseEntity&lt;JaccountUserInfoResponse&gt; response = restTemplate.exchange(</b>
+&nbsp;                url,
+&nbsp;                HttpMethod.GET,
+&nbsp;                request,
+&nbsp;                JaccountUserInfoResponse.class
+&nbsp;            );
+&nbsp;            
+<b class="nc">&nbsp;            logger.info(&quot;用户信息响应状态码: {}&quot;, response.getStatusCode());</b>
+<b class="nc">&nbsp;            logger.info(&quot;用户信息响应头: {}&quot;, response.getHeaders());</b>
+&nbsp;            
+<b class="nc">&nbsp;            if (response.getStatusCode() == HttpStatus.OK) {</b>
+<b class="nc">&nbsp;                JaccountUserInfoResponse userInfoResponse = response.getBody();</b>
+<b class="nc">&nbsp;                if (userInfoResponse != null) {</b>
+<b class="nc">&nbsp;                    logger.info(&quot;API响应: errno={}, error={}, total={}&quot;, </b>
+<b class="nc">&nbsp;                        userInfoResponse.getErrno(), userInfoResponse.getError(), userInfoResponse.getTotal());</b>
+&nbsp;                    
+<b class="nc">&nbsp;                    if (userInfoResponse.getErrno() == 0 &amp;&amp; userInfoResponse.getEntities() != null &amp;&amp; !userInfoResponse.getEntities().isEmpty()) {</b>
+<b class="nc">&nbsp;                        JaccountUserInfo userInfo = userInfoResponse.getEntities().get(0);</b>
+<b class="nc">&nbsp;                        logger.info(&quot;成功获取用户信息: id={}, account={}, name={}&quot;, </b>
+<b class="nc">&nbsp;                            userInfo.getId(), userInfo.getAccount(), userInfo.getName());</b>
+<b class="nc">&nbsp;                        logger.info(&quot;用户详细信息: userType={}, code={}, email={}, mobile={}&quot;, </b>
+<b class="nc">&nbsp;                            userInfo.getUserType(), userInfo.getCode(), userInfo.getEmail(), userInfo.getMobile());</b>
+<b class="nc">&nbsp;                        logger.debug(&quot;完整用户信息对象: {}&quot;, userInfo);</b>
+<b class="nc">&nbsp;                        return userInfo;</b>
+&nbsp;                    } else {
+<b class="nc">&nbsp;                        logger.error(&quot;Jaccount返回的用户信息为空或错误: errno={}, error={}&quot;, </b>
+<b class="nc">&nbsp;                            userInfoResponse.getErrno(), userInfoResponse.getError());</b>
+<b class="nc">&nbsp;                        logger.error(&quot;响应体: {}&quot;, userInfoResponse);</b>
+<b class="nc">&nbsp;                        throw new RuntimeException(&quot;获取用户信息失败：API返回错误或数据为空&quot;);</b>
+&nbsp;                    }
+&nbsp;                } else {
+<b class="nc">&nbsp;                    logger.error(&quot;Jaccount返回的响应为空&quot;);</b>
+<b class="nc">&nbsp;                    throw new RuntimeException(&quot;获取用户信息失败：响应为空&quot;);</b>
+&nbsp;                }
+&nbsp;            } else {
+<b class="nc">&nbsp;                logger.error(&quot;Jaccount用户信息请求失败，状态码: {}&quot;, response.getStatusCode());</b>
+<b class="nc">&nbsp;                logger.error(&quot;错误响应体: {}&quot;, response.getBody());</b>
+<b class="nc">&nbsp;                throw new RuntimeException(&quot;获取用户信息失败：HTTP &quot; + response.getStatusCode());</b>
+&nbsp;            }
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;获取用户信息时发生异常&quot;, e);</b>
+<b class="nc">&nbsp;            logger.error(&quot;异常详情: {}&quot;, e.getMessage());</b>
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;获取用户信息失败: &quot; + e.getMessage(), e);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 向jAccount发送登出请求
+&nbsp;     */
+&nbsp;    public void logout(String postLogoutRedirectUri, String state) {
+<b class="nc">&nbsp;        logger.info(&quot;开始向jAccount发送登出请求&quot;);</b>
+<b class="nc">&nbsp;        logger.info(&quot;登出重定向地址: {}&quot;, postLogoutRedirectUri);</b>
+<b class="nc">&nbsp;        logger.info(&quot;状态参数: {}&quot;, state);</b>
+&nbsp;        
+&nbsp;        try {
+&nbsp;            // 构建登出URL
+<b class="nc">&nbsp;            StringBuilder logoutUrlBuilder = new StringBuilder(jaccountConfig.getLogoutUrl());</b>
+<b class="nc">&nbsp;            logoutUrlBuilder.append(&quot;?client_id=&quot;).append(URLEncoder.encode(jaccountConfig.getClientId(), StandardCharsets.UTF_8));</b>
+<b class="nc">&nbsp;            logoutUrlBuilder.append(&quot;&amp;post_logout_redirect_uri=&quot;).append(URLEncoder.encode(postLogoutRedirectUri, StandardCharsets.UTF_8));</b>
+&nbsp;            
+<b class="nc">&nbsp;            if (state != null &amp;&amp; !state.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;                logoutUrlBuilder.append(&quot;&amp;state=&quot;).append(URLEncoder.encode(state, StandardCharsets.UTF_8));</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            String logoutUrl = logoutUrlBuilder.toString();</b>
+<b class="nc">&nbsp;            logger.info(&quot;完整登出URL: {}&quot;, logoutUrl);</b>
+&nbsp;            
+&nbsp;            // 发送GET请求到jAccount登出接口
+<b class="nc">&nbsp;            HttpHeaders headers = new HttpHeaders();</b>
+<b class="nc">&nbsp;            headers.add(&quot;User-Agent&quot;, &quot;SE2303-Frontend/1.0&quot;);</b>
+&nbsp;            
+<b class="nc">&nbsp;            HttpEntity&lt;String&gt; request = new HttpEntity&lt;&gt;(headers);</b>
+&nbsp;            
+<b class="nc">&nbsp;            logger.info(&quot;发送登出请求到: {}&quot;, logoutUrl);</b>
+<b class="nc">&nbsp;            ResponseEntity&lt;String&gt; response = restTemplate.exchange(</b>
+&nbsp;                logoutUrl,
+&nbsp;                HttpMethod.GET,
+&nbsp;                request,
+&nbsp;                String.class
+&nbsp;            );
+&nbsp;            
+<b class="nc">&nbsp;            logger.info(&quot;jAccount登出响应状态码: {}&quot;, response.getStatusCode());</b>
+<b class="nc">&nbsp;            logger.info(&quot;jAccount登出响应头: {}&quot;, response.getHeaders());</b>
+&nbsp;            
+<b class="nc">&nbsp;            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.FOUND) {</b>
+<b class="nc">&nbsp;                logger.info(&quot;jAccount登出请求发送成功&quot;);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                logger.warn(&quot;jAccount登出请求返回非预期状态码: {}&quot;, response.getStatusCode());</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;向jAccount发送登出请求时发生异常&quot;, e);</b>
+&nbsp;            // 不抛出异常，因为本地登出仍然应该成功
+<b class="nc">&nbsp;            logger.warn(&quot;jAccount登出请求失败，但本地登出将继续执行: {}&quot;, e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:41</div>
+</div>
+</body>
+</html>

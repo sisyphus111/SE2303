@@ -1,0 +1,219 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MessageController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.chatservice.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: MessageController (com.se2303.chatservice.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MessageController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (21/21)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.chatservice.controller;
+&nbsp;
+&nbsp;import com.se2303.chatservice.dto.ApiResponse;
+&nbsp;import com.se2303.chatservice.dto.CreateMessageRequest;
+&nbsp;import com.se2303.chatservice.service.MessageService;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;/**
+&nbsp; * 消息控制器
+&nbsp; */
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/chat&quot;)
+<b class="fc">&nbsp;public class MessageController {</b>
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private MessageService messageService;
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 健康检查接口
+&nbsp;     * GET /api/chat/health
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/health&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; health() {
+<b class="fc">&nbsp;        Map&lt;String, Object&gt; health = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        health.put(&quot;status&quot;, &quot;UP&quot;);</b>
+<b class="fc">&nbsp;        health.put(&quot;service&quot;, &quot;Chat Service&quot;);</b>
+<b class="fc">&nbsp;        health.put(&quot;timestamp&quot;, System.currentTimeMillis());</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(health, &quot;服务健康&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 发送消息
+&nbsp;     * POST /api/chat/messages
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/messages&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; createMessage(@Valid @RequestBody CreateMessageRequest request) {
+&nbsp;        try {
+<b class="fc">&nbsp;            ApiResponse response = messageService.createMessage(request);</b>
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.CREATED).body(response);</b>
+<b class="fc">&nbsp;        } catch (Exception e) {</b>
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</b>
+<b class="fc">&nbsp;                    .body(ApiResponse.error(&quot;发送消息失败: &quot; + e.getMessage()));</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 分页获取消息列表
+&nbsp;     * GET /api/chat/messages
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/messages&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getMessages(
+&nbsp;            @RequestParam(defaultValue = &quot;1&quot;) int page,
+&nbsp;            @RequestParam(defaultValue = &quot;20&quot;) int size) {
+<b class="fc">&nbsp;        return ResponseEntity.ok(messageService.getMessages(page, size));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID分页获取消息
+&nbsp;     * GET /api/chat/messages/user/{userId}
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/messages/user/{userId}&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getMessagesByUserId(
+&nbsp;            @PathVariable Long userId,
+&nbsp;            @RequestParam(defaultValue = &quot;1&quot;) int page,
+&nbsp;            @RequestParam(defaultValue = &quot;20&quot;) int size) {
+<b class="fc">&nbsp;        return ResponseEntity.ok(messageService.getMessagesByUserId(userId, page, size));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取所有消息（不分页）
+&nbsp;     * GET /api/chat/messages/all
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/messages/all&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getAllMessages() {
+<b class="fc">&nbsp;        return ResponseEntity.ok(messageService.getAllMessages());</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 删除消息
+&nbsp;     * DELETE /api/chat/messages/{id}
+&nbsp;     */
+&nbsp;    @DeleteMapping(&quot;/messages/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; deleteMessage(@PathVariable Long id) {
+&nbsp;        try {
+<b class="fc">&nbsp;            ApiResponse response = messageService.deleteMessage(id);</b>
+<b class="fc">&nbsp;            if (response.isSuccess()) {</b>
+<b class="fc">&nbsp;                return ResponseEntity.ok(response);</b>
+&nbsp;            } else {
+<b class="fc">&nbsp;                return ResponseEntity.badRequest().body(response);</b>
+&nbsp;            }
+<b class="fc">&nbsp;        } catch (Exception e) {</b>
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</b>
+<b class="fc">&nbsp;                    .body(ApiResponse.error(&quot;删除消息失败: &quot; + e.getMessage()));</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:43</div>
+</div>
+</body>
+</html>

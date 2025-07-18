@@ -1,0 +1,107 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > UserPreferencesService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.userservice.service</a>
+</div>
+
+<h1>Coverage Summary for Class: UserPreferencesService (com.se2303.userservice.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">UserPreferencesService$MockitoMock$4Qs5FJAa</td>
+  </tr>
+  <tr>
+    <td class="name">UserPreferencesService$MockitoMock$4Qs5FJAa$auxiliary$9m2lsyPn</td>
+  </tr>
+  <tr>
+    <td class="name">UserPreferencesService$MockitoMock$4Qs5FJAa$auxiliary$u1E5h4Hu</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.userservice.service;
+&nbsp;
+&nbsp;import com.se2303.userservice.entity.UserPreferences;
+&nbsp;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;public interface UserPreferencesService {
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID获取用户偏好设置
+&nbsp;     * @param userId 用户ID
+&nbsp;     * @return 用户偏好设置
+&nbsp;     */
+&nbsp;    public Optional&lt;UserPreferences&gt; getUserPreferencesByUserId(Long userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 为新用户创建默认偏好设置
+&nbsp;     * @param userId 用户ID
+&nbsp;     * @return 默认偏好设置
+&nbsp;     */
+&nbsp;    public UserPreferences createDefaultPreferences(Long userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 创建或更新用户偏好设置
+&nbsp;     * @param userId 用户ID
+&nbsp;     * @param preferences 偏好设置数据
+&nbsp;     * @return 保存后的偏好设置
+&nbsp;     */
+&nbsp;    public Optional&lt;UserPreferences&gt; saveOrUpdateUserPreferencesByUserId(Long userId, UserPreferences preferences);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:38</div>
+</div>
+</body>
+</html>

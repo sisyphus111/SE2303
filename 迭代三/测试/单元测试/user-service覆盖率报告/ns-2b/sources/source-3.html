@@ -1,0 +1,173 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > UpdateProfileRequest</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.userservice.dto.request</a>
+</div>
+
+<h1>Coverage Summary for Class: UpdateProfileRequest (com.se2303.userservice.dto.request)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UpdateProfileRequest</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    92.9%
+  </span>
+  <span class="absValue">
+    (13/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    92.9%
+  </span>
+  <span class="absValue">
+    (13/14)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.userservice.dto.request;
+&nbsp;
+&nbsp;// 更新用户资料请求体
+&nbsp;public class UpdateProfileRequest {
+&nbsp;    private String username;
+&nbsp;    private String nickname;
+&nbsp;    private String avatar;
+&nbsp;    private String gender;
+&nbsp;    private String birthday; // 接收为字符串，后续转换为LocalDate
+&nbsp;    private String location;
+&nbsp;    private String bio;
+&nbsp;    private String tags;
+&nbsp;    private String profileVisibility;
+&nbsp;
+<b class="fc">&nbsp;    public UpdateProfileRequest() {}</b>
+&nbsp;
+&nbsp;    public String getUsername() {
+<b class="fc">&nbsp;        return username;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getNickname() {
+<b class="fc">&nbsp;        return nickname;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getAvatar() {
+<b class="fc">&nbsp;        return avatar;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getGender() {
+<b class="fc">&nbsp;        return gender;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getBirthday() {
+<b class="fc">&nbsp;        return birthday;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getLocation() {
+<b class="fc">&nbsp;        return location;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getBio() {
+<b class="fc">&nbsp;        return bio;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getTags() {
+<b class="fc">&nbsp;        return tags;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getProfileVisibility() {
+<b class="fc">&nbsp;        return profileVisibility;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setUsername(String username) {
+<b class="fc">&nbsp;        this.username = username;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setNickname(String nickname) {
+<b class="fc">&nbsp;        this.nickname = nickname;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setAvatar(String avatar) {
+<b class="nc">&nbsp;        this.avatar = avatar;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setBirthday(String birthday) {
+<b class="fc">&nbsp;        this.birthday = birthday;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:38</div>
+</div>
+</body>
+</html>

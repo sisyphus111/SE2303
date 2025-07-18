@@ -1,0 +1,168 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > CorsConfig</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.userservice.config</a>
+</div>
+
+<h1>Coverage Summary for Class: CorsConfig (com.se2303.userservice.config)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CorsConfig</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.userservice.config;
+&nbsp;
+&nbsp;import org.springframework.context.annotation.Bean;
+&nbsp;import org.springframework.context.annotation.Configuration;
+&nbsp;import org.springframework.web.cors.CorsConfiguration;
+&nbsp;import org.springframework.web.cors.CorsConfigurationSource;
+&nbsp;import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+&nbsp;
+&nbsp;import java.util.Arrays;
+&nbsp;
+&nbsp;/**
+&nbsp; * CORS配置类
+&nbsp; * 在微服务架构中，user-service不需要CORS配置
+&nbsp; * 由网关统一处理CORS
+&nbsp; */
+&nbsp;// @Configuration
+<b class="nc">&nbsp;public class CorsConfig {</b>
+&nbsp;
+&nbsp;    // @Bean
+&nbsp;    public CorsConfigurationSource corsConfigurationSource() {
+<b class="nc">&nbsp;        CorsConfiguration configuration = new CorsConfiguration();</b>
+&nbsp;        
+&nbsp;        // 使用 allowedOriginPatterns 来替代 allowedOrigins
+&nbsp;        // 这样可以避免与 allowCredentials = true 的冲突
+<b class="nc">&nbsp;        configuration.setAllowedOriginPatterns(Arrays.asList(</b>
+&nbsp;            &quot;http://localhost:*&quot;,  // 允许localhost的任何端口
+&nbsp;            &quot;http://127.0.0.1:*&quot;   // 允许127.0.0.1的任何端口
+&nbsp;        ));
+&nbsp;        
+&nbsp;        // 允许的HTTP方法
+<b class="nc">&nbsp;        configuration.setAllowedMethods(Arrays.asList(</b>
+&nbsp;            &quot;GET&quot;, &quot;POST&quot;, &quot;PUT&quot;, &quot;DELETE&quot;, &quot;OPTIONS&quot;, &quot;PATCH&quot;
+&nbsp;        ));
+&nbsp;        
+&nbsp;        // 允许的请求头
+<b class="nc">&nbsp;        configuration.setAllowedHeaders(Arrays.asList(</b>
+&nbsp;            &quot;Authorization&quot;, 
+&nbsp;            &quot;Content-Type&quot;, 
+&nbsp;            &quot;X-Requested-With&quot;,
+&nbsp;            &quot;Accept&quot;,
+&nbsp;            &quot;Origin&quot;,
+&nbsp;            &quot;Access-Control-Request-Method&quot;,
+&nbsp;            &quot;Access-Control-Request-Headers&quot;
+&nbsp;        ));
+&nbsp;        
+&nbsp;        // 允许暴露的响应头
+<b class="nc">&nbsp;        configuration.setExposedHeaders(Arrays.asList(</b>
+&nbsp;            &quot;Access-Control-Allow-Origin&quot;,
+&nbsp;            &quot;Access-Control-Allow-Credentials&quot;,
+&nbsp;            &quot;Set-Cookie&quot;
+&nbsp;        ));
+&nbsp;        
+&nbsp;        // 重要：允许发送Cookie和认证信息
+<b class="nc">&nbsp;        configuration.setAllowCredentials(true);</b>
+&nbsp;        
+&nbsp;        // 预检请求的缓存时间（秒）
+<b class="nc">&nbsp;        configuration.setMaxAge(3600L);</b>
+&nbsp;        
+<b class="nc">&nbsp;        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();</b>
+<b class="nc">&nbsp;        source.registerCorsConfiguration(&quot;/**&quot;, configuration);</b>
+&nbsp;        
+<b class="nc">&nbsp;        return source;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:38</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,94 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > CarouselImageRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.notificationservice.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: CarouselImageRepository (com.se2303.notificationservice.repository)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">CarouselImageRepository</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.notificationservice.repository;
+&nbsp;
+&nbsp;import com.se2303.notificationservice.model.CarouselImage;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Repository
+&nbsp;public interface CarouselImageRepository extends JpaRepository&lt;CarouselImage, Long&gt; {
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据分类查找轮播图，按排序字段排序
+&nbsp;     */
+&nbsp;    List&lt;CarouselImage&gt; findByCategoryOrderBySortOrderAsc(String category);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 查找所有轮播图，按排序字段排序
+&nbsp;     */
+&nbsp;    List&lt;CarouselImage&gt; findAllByOrderBySortOrderAsc();
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 按id正序分页查询轮播图
+&nbsp;     */
+&nbsp;    org.springframework.data.domain.Page&lt;CarouselImage&gt; findAllByOrderByIdAsc(org.springframework.data.domain.Pageable pageable);
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:42</div>
+</div>
+</body>
+</html>

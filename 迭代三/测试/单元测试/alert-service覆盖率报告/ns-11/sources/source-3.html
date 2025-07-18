@@ -1,0 +1,352 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ReportController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.communityservice.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: ReportController (com.se2303.communityservice.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ReportController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/64)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/89)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.communityservice.controller;
+&nbsp;
+&nbsp;import com.se2303.communityservice.dto.PageDTO;
+&nbsp;import com.se2303.communityservice.entity.Report;
+&nbsp;import com.se2303.communityservice.response.ApiResponse;
+&nbsp;import com.se2303.communityservice.service.IReportService;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.validation.constraints.Min;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.data.domain.PageRequest;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.data.domain.Sort;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/community/reports&quot;)
+<b class="nc">&nbsp;public class ReportController {</b>
+<b class="nc">&nbsp;    private static final Logger logger = LoggerFactory.getLogger(ReportController.class);</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private IReportService reportService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取举报列表（管理员专用）
+&nbsp;     */
+&nbsp;    @GetMapping
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getReports(
+&nbsp;            @RequestParam(required = false) String status,
+&nbsp;            @RequestParam(required = false, defaultValue = &quot;1&quot;) @Min(1) int page,
+&nbsp;            @RequestParam(required = false, defaultValue = &quot;10&quot;) @Min(1) int size,
+&nbsp;            @RequestHeader(&quot;X-User-Id&quot;) String userId,
+&nbsp;            @RequestHeader(&quot;X-Valid&quot;) String valid,
+&nbsp;            @RequestHeader(&quot;X-Identity&quot;) String identity,
+&nbsp;            HttpServletRequest request) {
+<b class="nc">&nbsp;        logger.info(&quot;=== GET /reports 获取举报列表 ===&quot;);</b>
+&nbsp;        try {
+&nbsp;            // 1. 验证请求头
+<b class="nc">&nbsp;            if (userId == null || userId.trim().isEmpty() || valid == null || identity == null) {</b>
+<b class="nc">&nbsp;                logger.warn(&quot;无效的请求头: userId={}, valid={}, identity={}&quot;, userId, valid, identity);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(new ApiResponse(false, null, &quot;未登录或请求头无效&quot;));</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 2. 验证用户状态
+<b class="nc">&nbsp;            boolean isValid = Boolean.parseBoolean(valid);</b>
+<b class="nc">&nbsp;            boolean isIdentity = Boolean.parseBoolean(identity);</b>
+<b class="nc">&nbsp;            logger.debug(&quot;UserId: {}, Valid: {}, Identity: {}&quot;, userId, isValid, isIdentity);</b>
+&nbsp;
+<b class="nc">&nbsp;            if (!isValid) {</b>
+<b class="nc">&nbsp;                logger.warn(&quot;用户状态无效: userId={}&quot;, userId);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(new ApiResponse(false, null, &quot;用户状态无效&quot;));</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 3. 验证管理员权限
+<b class="nc">&nbsp;            if (isIdentity) {</b>
+<b class="nc">&nbsp;                logger.warn(&quot;非管理员尝试访问举报列表: userId={}&quot;, userId);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(403).body(new ApiResponse(false, null, &quot;仅管理员可访问举报列表&quot;));</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 4. 验证分页参数
+<b class="nc">&nbsp;            validatePageParams(page, size);</b>
+<b class="nc">&nbsp;            Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, &quot;createdAt&quot;));</b>
+&nbsp;
+&nbsp;            // 5. 解析状态参数
+<b class="nc">&nbsp;            Report.ReportStatus reportStatus = null;</b>
+<b class="nc">&nbsp;            if (status != null &amp;&amp; !status.trim().isEmpty() &amp;&amp; !status.equals(&quot;all&quot;)) {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    reportStatus = Report.ReportStatus.valueOf(status.toUpperCase());</b>
+&nbsp;                } catch (IllegalArgumentException e) {
+<b class="nc">&nbsp;                    logger.warn(&quot;无效的状态参数: {}&quot;, status);</b>
+<b class="nc">&nbsp;                    return ResponseEntity.badRequest().body(new ApiResponse(false, null, &quot;无效的状态参数&quot;));</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;
+&nbsp;            // 6. 获取举报列表
+<b class="nc">&nbsp;            PageDTO&lt;Report&gt; reports = reportService.getAllReports(reportStatus, pageable);</b>
+<b class="nc">&nbsp;            logger.info(&quot;✅ 举报列表获取成功: page={}, size={}, status={}&quot;, page, size, status);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(new ApiResponse(true, reports, &quot;举报列表获取成功&quot;));</b>
+&nbsp;
+&nbsp;        } catch (IllegalArgumentException e) {
+<b class="nc">&nbsp;            logger.error(&quot;❌ 参数验证失败: {}&quot;, e.getMessage());</b>
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(new ApiResponse(false, null, e.getMessage()));</b>
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            logger.error(&quot;❌ 获取举报列表时发生错误: {}&quot;, e.getMessage(), e);</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(500).body(new ApiResponse(false, null, &quot;服务器内部错误: &quot; + e.getMessage()));</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取举报详情（管理员专用）
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/{reportId}&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getReportDetail(
+&nbsp;            @PathVariable Long reportId,
+&nbsp;            @RequestHeader(&quot;X-User-Id&quot;) String userId,
+&nbsp;            @RequestHeader(&quot;X-Valid&quot;) String valid,
+&nbsp;            @RequestHeader(&quot;X-Identity&quot;) String identity) {
+<b class="nc">&nbsp;        logger.info(&quot;=== GET /reports/{} 获取举报详情 ===&quot;, reportId);</b>
+&nbsp;        try {
+&nbsp;            // 验证请求头
+<b class="nc">&nbsp;            if (userId == null || userId.trim().isEmpty() || valid == null || identity == null) {</b>
+<b class="nc">&nbsp;                logger.warn(&quot;无效的请求头: userId={}, valid={}, identity={}&quot;, userId, valid, identity);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(new ApiResponse(false, null, &quot;未登录或请求头无效&quot;));</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            boolean isValid = Boolean.parseBoolean(valid);</b>
+<b class="nc">&nbsp;            boolean isIdentity = Boolean.parseBoolean(identity);</b>
+&nbsp;
+<b class="nc">&nbsp;            if (!isValid) {</b>
+<b class="nc">&nbsp;                logger.warn(&quot;用户状态无效: userId={}&quot;, userId);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(new ApiResponse(false, null, &quot;用户状态无效&quot;));</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 验证管理员权限
+<b class="nc">&nbsp;            if (isIdentity) {</b>
+<b class="nc">&nbsp;                logger.warn(&quot;非管理员尝试获取举报详情: userId={}&quot;, userId);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(403).body(new ApiResponse(false, null, &quot;仅管理员可获取举报详情&quot;));</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            Map&lt;String, Object&gt; reportDetail = reportService.getReportDetail(reportId);</b>
+<b class="nc">&nbsp;            logger.info(&quot;✅ 举报详情获取成功: reportId={}&quot;, reportId);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(new ApiResponse(true, reportDetail, &quot;举报详情获取成功&quot;));</b>
+&nbsp;
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            logger.error(&quot;❌ 获取举报详情时发生错误: reportId={}, error={}&quot;, reportId, e.getMessage());</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(500).body(new ApiResponse(false, null, &quot;服务器内部错误: &quot; + e.getMessage()));</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取举报统计信息（管理员专用）
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/stats&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getReportStats(
+&nbsp;            @RequestHeader(&quot;X-User-Id&quot;) String userId,
+&nbsp;            @RequestHeader(&quot;X-Valid&quot;) String valid,
+&nbsp;            @RequestHeader(&quot;X-Identity&quot;) String identity) {
+<b class="nc">&nbsp;        logger.info(&quot;=== GET /reports/stats 获取举报统计 ===&quot;);</b>
+&nbsp;        try {
+&nbsp;            // 验证请求头
+<b class="nc">&nbsp;            if (userId == null || userId.trim().isEmpty() || valid == null || identity == null) {</b>
+<b class="nc">&nbsp;                logger.warn(&quot;无效的请求头: userId={}, valid={}, identity={}&quot;, userId, valid, identity);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(new ApiResponse(false, null, &quot;未登录或请求头无效&quot;));</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            boolean isValid = Boolean.parseBoolean(valid);</b>
+<b class="nc">&nbsp;            boolean isIdentity = Boolean.parseBoolean(identity);</b>
+&nbsp;
+<b class="nc">&nbsp;            if (!isValid) {</b>
+<b class="nc">&nbsp;                logger.warn(&quot;用户状态无效: userId={}&quot;, userId);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(new ApiResponse(false, null, &quot;用户状态无效&quot;));</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 验证管理员权限
+<b class="nc">&nbsp;            if (isIdentity) {</b>
+<b class="nc">&nbsp;                logger.warn(&quot;非管理员尝试获取举报统计: userId={}&quot;, userId);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(403).body(new ApiResponse(false, null, &quot;仅管理员可获取举报统计&quot;));</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            Map&lt;String, Object&gt; stats = reportService.getReportStats();</b>
+<b class="nc">&nbsp;            logger.info(&quot;✅ 举报统计获取成功&quot;);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(new ApiResponse(true, stats, &quot;举报统计获取成功&quot;));</b>
+&nbsp;
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            logger.error(&quot;❌ 获取举报统计时发生错误: error={}&quot;, e.getMessage());</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(500).body(new ApiResponse(false, null, &quot;服务器内部错误: &quot; + e.getMessage()));</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 处理举报（管理员专用）
+&nbsp;     */
+&nbsp;    @PutMapping(&quot;/{reportId}/handle&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; handleReport(
+&nbsp;            @PathVariable Long reportId,
+&nbsp;            @RequestBody Map&lt;String, String&gt; request,
+&nbsp;            @RequestHeader(&quot;X-User-Id&quot;) String userId,
+&nbsp;            @RequestHeader(&quot;X-Valid&quot;) String valid,
+&nbsp;            @RequestHeader(&quot;X-Identity&quot;) String identity) {
+<b class="nc">&nbsp;        logger.info(&quot;=== PUT /reports/{}/handle 处理举报 ===&quot;, reportId);</b>
+&nbsp;        try {
+&nbsp;            // 验证请求头
+<b class="nc">&nbsp;            if (userId == null || userId.trim().isEmpty() || valid == null || identity == null) {</b>
+<b class="nc">&nbsp;                logger.warn(&quot;无效的请求头: userId={}, valid={}, identity={}&quot;, userId, valid, identity);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(new ApiResponse(false, null, &quot;未登录或请求头无效&quot;));</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            boolean isValid = Boolean.parseBoolean(valid);</b>
+<b class="nc">&nbsp;            boolean isIdentity = Boolean.parseBoolean(identity);</b>
+&nbsp;
+<b class="nc">&nbsp;            if (!isValid) {</b>
+<b class="nc">&nbsp;                logger.warn(&quot;用户状态无效: userId={}&quot;, userId);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(401).body(new ApiResponse(false, null, &quot;用户状态无效&quot;));</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 验证管理员权限
+<b class="nc">&nbsp;            if (isIdentity) {</b>
+<b class="nc">&nbsp;                logger.warn(&quot;非管理员尝试处理举报: userId={}&quot;, userId);</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(403).body(new ApiResponse(false, null, &quot;仅管理员可处理举报&quot;));</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 获取请求参数
+<b class="nc">&nbsp;            String action = request.get(&quot;action&quot;);</b>
+<b class="nc">&nbsp;            String handleReason = request.get(&quot;reason&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;            if (action == null || action.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;                logger.warn(&quot;处理动作为空: reportId={}&quot;, reportId);</b>
+<b class="nc">&nbsp;                return ResponseEntity.badRequest().body(new ApiResponse(false, null, &quot;处理动作不能为空&quot;));</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            Report handledReport = reportService.handleReport(reportId, action, userId, handleReason);</b>
+<b class="nc">&nbsp;            logger.info(&quot;✅ 举报处理成功: reportId={}, action={}, adminId={}&quot;, reportId, action, userId);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(new ApiResponse(true, handledReport, &quot;举报处理成功&quot;));</b>
+&nbsp;
+&nbsp;        } catch (IllegalStateException e) {
+<b class="nc">&nbsp;            logger.warn(&quot;❌ 举报处理失败: {}&quot;, e.getMessage());</b>
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(new ApiResponse(false, null, e.getMessage()));</b>
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            logger.error(&quot;❌ 处理举报时发生错误: reportId={}, error={}&quot;, reportId, e.getMessage());</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(500).body(new ApiResponse(false, null, &quot;服务器内部错误: &quot; + e.getMessage()));</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 验证分页参数
+&nbsp;     */
+&nbsp;    private void validatePageParams(int page, int size) {
+<b class="nc">&nbsp;        if (page &lt; 1 || size &lt; 1 || size &gt; 100) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;无效的分页参数: page=&quot; + page + &quot;, size=&quot; + size);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:30</div>
+</div>
+</body>
+</html>

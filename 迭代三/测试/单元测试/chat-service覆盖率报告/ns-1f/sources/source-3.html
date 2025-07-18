@@ -1,0 +1,184 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MoodService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.moodservice.service</a>
+</div>
+
+<h1>Coverage Summary for Class: MoodService (com.se2303.moodservice.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">MoodService</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.moodservice.service;
+&nbsp;
+&nbsp;import com.se2303.moodservice.dto.CheckInRequest;
+&nbsp;import com.se2303.moodservice.dto.DiaryRequest;
+&nbsp;import com.se2303.moodservice.dto.MoodCheckInRequest;
+&nbsp;import com.se2303.moodservice.dto.MoodCheckInResponse;
+&nbsp;import com.se2303.moodservice.dto.MoodQueryRequest;
+&nbsp;import com.se2303.moodservice.dto.TodayMoodResponse;
+&nbsp;import com.se2303.moodservice.model.Mood;
+&nbsp;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * 心情服务接口
+&nbsp; */
+&nbsp;public interface MoodService {
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 用户心情打卡（包含日记）
+&nbsp;     */
+&nbsp;    MoodCheckInResponse checkIn(String userId, MoodCheckInRequest request);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 只打卡不写日记
+&nbsp;     */
+&nbsp;    MoodCheckInResponse checkInOnly(String userId, CheckInRequest request);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 只写日记不打卡
+&nbsp;     */
+&nbsp;    MoodCheckInResponse writeDiaryOnly(String userId, DiaryRequest request);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据ID查找心情记录
+&nbsp;     */
+&nbsp;    MoodCheckInResponse findById(Long id);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID和日期查找心情记录
+&nbsp;     */
+&nbsp;    MoodCheckInResponse findByUserIdAndDate(String userId, LocalDate date);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID查找所有心情记录
+&nbsp;     */
+&nbsp;    List&lt;MoodCheckInResponse&gt; findByUserId(String userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID和日期范围查找心情记录
+&nbsp;     */
+&nbsp;    List&lt;MoodCheckInResponse&gt; findByUserIdAndDateBetween(String userId, LocalDate startDate, LocalDate endDate);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 检查用户在某一天是否已经打卡
+&nbsp;     */
+&nbsp;    boolean hasCheckedIn(String userId, LocalDate date);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 检查用户在某一天是否已经写日记
+&nbsp;     */
+&nbsp;    boolean hasWrittenDiary(String userId, LocalDate date);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 更新心情记录
+&nbsp;     */
+&nbsp;    MoodCheckInResponse updateMood(Long id, MoodCheckInRequest request);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 删除心情记录
+&nbsp;     */
+&nbsp;    void deleteMood(Long id);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 删除某一天的日记内容
+&nbsp;     */
+&nbsp;    MoodCheckInResponse deleteDiary(String userId, LocalDate date);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取用户打卡统计
+&nbsp;     */
+&nbsp;    long getCheckInCount(String userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取用户在指定日期范围内的打卡统计
+&nbsp;     */
+&nbsp;    long getCheckInCount(String userId, LocalDate startDate, LocalDate endDate);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取用户写日记统计
+&nbsp;     */
+&nbsp;    long getDiaryCount(String userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取用户在指定日期范围内的写日记统计
+&nbsp;     */
+&nbsp;    long getDiaryCount(String userId, LocalDate startDate, LocalDate endDate);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取今日心情（包含标签权值计算）
+&nbsp;     * 积极标签权值为1，中性标签权值为0，消极标签权值为-1
+&nbsp;     */
+&nbsp;    TodayMoodResponse getTodayMood(String userId, LocalDate date);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取今日心情（使用当前日期）
+&nbsp;     */
+&nbsp;    TodayMoodResponse getTodayMood(String userId);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 灵活查询心情记录
+&nbsp;     * 支持按用户、情绪标签、时间范围进行筛选
+&nbsp;     * 如果不提供任何筛选条件，则返回所有数据
+&nbsp;     */
+&nbsp;    List&lt;MoodCheckInResponse&gt; queryMoods(MoodQueryRequest request);
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:43</div>
+</div>
+</body>
+</html>

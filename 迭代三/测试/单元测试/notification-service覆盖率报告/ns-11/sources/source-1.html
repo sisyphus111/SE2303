@@ -1,0 +1,272 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MessageService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.chatservice.service</a>
+</div>
+
+<h1>Coverage Summary for Class: MessageService (com.se2303.chatservice.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MessageService</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/66)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.chatservice.service;
+&nbsp;
+&nbsp;import com.se2303.chatservice.dto.ApiResponse;
+&nbsp;import com.se2303.chatservice.dto.CreateMessageRequest;
+&nbsp;import com.se2303.chatservice.dto.MessageResponse;
+&nbsp;import com.se2303.chatservice.model.Message;
+&nbsp;import com.se2303.chatservice.repository.MessageRepository;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.PageRequest;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@Service
+<b class="nc">&nbsp;public class MessageService {</b>
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private MessageRepository messageRepository;
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 创建消息
+&nbsp;     */
+&nbsp;    public ApiResponse createMessage(CreateMessageRequest request) {
+&nbsp;        try {
+<b class="nc">&nbsp;            if (request.getUserId() == null) {</b>
+<b class="nc">&nbsp;                return ApiResponse.error(&quot;用户ID不能为空&quot;);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            if (request.getContent() == null || request.getContent().trim().isEmpty()) {</b>
+<b class="nc">&nbsp;                return ApiResponse.error(&quot;消息内容不能为空&quot;);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            Message message = new Message(</b>
+<b class="nc">&nbsp;                request.getUserId(),</b>
+<b class="nc">&nbsp;                request.getContent().trim()</b>
+&nbsp;            );
+&nbsp;            
+<b class="nc">&nbsp;            Message savedMessage = messageRepository.save(message);</b>
+<b class="nc">&nbsp;            MessageResponse response = convertToResponse(savedMessage);</b>
+&nbsp;            
+<b class="nc">&nbsp;            return ApiResponse.success(response, &quot;消息发送成功&quot;);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return ApiResponse.error(&quot;发送消息失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 分页查询消息列表（只返回有效消息）
+&nbsp;     */
+&nbsp;    public ApiResponse getMessages(int page, int size) {
+&nbsp;        try {
+<b class="nc">&nbsp;            Pageable pageable = PageRequest.of(page - 1, size);</b>
+<b class="nc">&nbsp;            Page&lt;Message&gt; messages = messageRepository.findByValidTrueOrderByCreatedAtDesc(pageable);</b>
+&nbsp;
+<b class="nc">&nbsp;            List&lt;MessageResponse&gt; responses = messages.getContent().stream()</b>
+<b class="nc">&nbsp;                    .map(this::convertToResponse)</b>
+<b class="nc">&nbsp;                    .collect(Collectors.toList());</b>
+&nbsp;
+<b class="nc">&nbsp;            Map&lt;String, Object&gt; result = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;            result.put(&quot;list&quot;, responses);</b>
+<b class="nc">&nbsp;            result.put(&quot;total&quot;, messages.getTotalElements());</b>
+<b class="nc">&nbsp;            result.put(&quot;totalPages&quot;, messages.getTotalPages());</b>
+<b class="nc">&nbsp;            result.put(&quot;currentPage&quot;, page);</b>
+<b class="nc">&nbsp;            result.put(&quot;pageSize&quot;, size);</b>
+&nbsp;
+<b class="nc">&nbsp;            return ApiResponse.success(result, &quot;获取消息列表成功&quot;);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return ApiResponse.error(&quot;获取消息列表失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID分页查询消息（只返回有效消息）
+&nbsp;     */
+&nbsp;    public ApiResponse getMessagesByUserId(Long userId, int page, int size) {
+&nbsp;        try {
+<b class="nc">&nbsp;            if (userId == null) {</b>
+<b class="nc">&nbsp;                return ApiResponse.error(&quot;用户ID不能为空&quot;);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            Pageable pageable = PageRequest.of(page - 1, size);</b>
+<b class="nc">&nbsp;            Page&lt;Message&gt; messages = messageRepository.findByUserIdAndValidTrueOrderByCreatedAtDesc(userId, pageable);</b>
+&nbsp;
+<b class="nc">&nbsp;            List&lt;MessageResponse&gt; responses = messages.getContent().stream()</b>
+<b class="nc">&nbsp;                    .map(this::convertToResponse)</b>
+<b class="nc">&nbsp;                    .collect(Collectors.toList());</b>
+&nbsp;
+<b class="nc">&nbsp;            Map&lt;String, Object&gt; result = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;            result.put(&quot;list&quot;, responses);</b>
+<b class="nc">&nbsp;            result.put(&quot;total&quot;, messages.getTotalElements());</b>
+<b class="nc">&nbsp;            result.put(&quot;totalPages&quot;, messages.getTotalPages());</b>
+<b class="nc">&nbsp;            result.put(&quot;currentPage&quot;, page);</b>
+<b class="nc">&nbsp;            result.put(&quot;pageSize&quot;, size);</b>
+&nbsp;
+<b class="nc">&nbsp;            return ApiResponse.success(result, &quot;获取用户消息成功&quot;);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return ApiResponse.error(&quot;获取用户消息失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取所有有效消息（不分页）
+&nbsp;     */
+&nbsp;    public ApiResponse getAllMessages() {
+&nbsp;        try {
+<b class="nc">&nbsp;            List&lt;Message&gt; messages = messageRepository.findByValidTrueOrderByCreatedAtDesc();</b>
+<b class="nc">&nbsp;            List&lt;MessageResponse&gt; responses = messages.stream()</b>
+<b class="nc">&nbsp;                    .map(this::convertToResponse)</b>
+<b class="nc">&nbsp;                    .collect(Collectors.toList());</b>
+&nbsp;            
+<b class="nc">&nbsp;            return ApiResponse.success(responses, &quot;获取所有消息成功&quot;);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return ApiResponse.error(&quot;获取所有消息失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 软删除消息（将valid设置为false）
+&nbsp;     */
+&nbsp;    public ApiResponse deleteMessage(Long messageId) {
+&nbsp;        try {
+<b class="nc">&nbsp;            if (messageId == null) {</b>
+<b class="nc">&nbsp;                return ApiResponse.error(&quot;消息ID不能为空&quot;);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            Message message = messageRepository.findById(messageId).orElse(null);</b>
+<b class="nc">&nbsp;            if (message == null) {</b>
+<b class="nc">&nbsp;                return ApiResponse.error(&quot;消息不存在&quot;);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            message.setValid(false);</b>
+<b class="nc">&nbsp;            messageRepository.save(message);</b>
+<b class="nc">&nbsp;            return ApiResponse.success(null, &quot;消息删除成功&quot;);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return ApiResponse.error(&quot;删除消息失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 将Message实体转换为MessageResponse
+&nbsp;     */
+&nbsp;    private MessageResponse convertToResponse(Message message) {
+<b class="nc">&nbsp;        return new MessageResponse(</b>
+<b class="nc">&nbsp;                message.getId(),</b>
+<b class="nc">&nbsp;                message.getUserId(),</b>
+<b class="nc">&nbsp;                message.getContent(),</b>
+<b class="nc">&nbsp;                message.getCreatedAt(),</b>
+<b class="nc">&nbsp;                message.getValid()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:41</div>
+</div>
+</body>
+</html>

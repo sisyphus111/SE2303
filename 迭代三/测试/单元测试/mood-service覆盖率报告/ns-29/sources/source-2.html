@@ -1,0 +1,149 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > CosConfig</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.userservice.config</a>
+</div>
+
+<h1>Coverage Summary for Class: CosConfig (com.se2303.userservice.config)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CosConfig</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.userservice.config;
+&nbsp;
+&nbsp;import com.qcloud.cos.COSClient;
+&nbsp;import com.qcloud.cos.ClientConfig;
+&nbsp;import com.qcloud.cos.auth.BasicCOSCredentials;
+&nbsp;import com.qcloud.cos.auth.COSCredentials;
+&nbsp;import com.qcloud.cos.region.Region;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.context.annotation.Bean;
+&nbsp;import org.springframework.context.annotation.Configuration;
+&nbsp;
+&nbsp;/**
+&nbsp; * 腾讯云COS对象存储配置类
+&nbsp; * 用于初始化COS客户端，提供文件上传到腾讯云存储桶的功能
+&nbsp; */
+&nbsp;@Configuration
+<b class="nc">&nbsp;public class CosConfig {</b>
+&nbsp;
+&nbsp;    @Value(&quot;${tencent.cos.secret-id}&quot;)
+&nbsp;    private String secretId;
+&nbsp;
+&nbsp;    @Value(&quot;${tencent.cos.secret-key}&quot;)
+&nbsp;    private String secretKey;
+&nbsp;
+&nbsp;    @Value(&quot;${tencent.cos.region}&quot;)
+&nbsp;    private String region;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 创建COS客户端Bean
+&nbsp;     * 使用配置文件中的secretId、secretKey和region信息
+&nbsp;     * @return COSClient 腾讯云COS客户端
+&nbsp;     */
+&nbsp;    @Bean
+&nbsp;    public COSClient cosClient() {
+&nbsp;        // 1. 初始化用户身份信息（secretId, secretKey）
+<b class="nc">&nbsp;        COSCredentials cred = new BasicCOSCredentials(secretId, secretKey);</b>
+&nbsp;        
+&nbsp;        // 2. 设置bucket的地域
+<b class="nc">&nbsp;        Region regionObj = new Region(region);</b>
+<b class="nc">&nbsp;        ClientConfig clientConfig = new ClientConfig(regionObj);</b>
+&nbsp;        
+&nbsp;        // 3. 生成cos客户端
+<b class="nc">&nbsp;        return new COSClient(cred, clientConfig);</b>
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:42</div>
+</div>
+</body>
+</html>

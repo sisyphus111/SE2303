@@ -1,0 +1,233 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AlertResponse</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.alertservice.dto</a>
+</div>
+
+<h1>Coverage Summary for Class: AlertResponse (com.se2303.alertservice.dto)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AlertResponse</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/32)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.alertservice.dto;
+&nbsp;
+&nbsp;import com.se2303.alertservice.model.Alert;
+&nbsp;import com.se2303.alertservice.model.AlertLevel;
+&nbsp;import com.se2303.alertservice.model.AlertStatus;
+&nbsp;import com.se2303.alertservice.model.AlertType;
+&nbsp;import com.fasterxml.jackson.annotation.JsonFormat;
+&nbsp;
+&nbsp;import java.util.Date;
+&nbsp;import java.sql.Timestamp;
+&nbsp;
+&nbsp;/**
+&nbsp; * 警报响应DTO
+&nbsp; */
+&nbsp;public class AlertResponse {
+&nbsp;    private Long id;
+&nbsp;    private String userId;
+&nbsp;
+&nbsp;    private AlertType alertType;
+&nbsp;    private String alertTypeDescription;
+&nbsp;    private AlertLevel alertLevel;
+&nbsp;    private String alertLevelDescription;
+&nbsp;    private AlertStatus status;
+&nbsp;    private String statusDescription;
+&nbsp;    private String description;
+&nbsp;    private String operationDetails;
+&nbsp;    private String aiSessionId;
+&nbsp;    private Integer aiTimeoutDuration;
+&nbsp;    private String assignedCounselorId;
+&nbsp;
+&nbsp;    private String followUpNotes;
+&nbsp;    @JsonFormat(pattern = &quot;yyyy-MM-dd HH:mm:ss&quot;)
+&nbsp;    private Date followUpDate;
+&nbsp;    @JsonFormat(pattern = &quot;yyyy-MM-dd HH:mm:ss&quot;)
+&nbsp;    private Date createdAt;
+&nbsp;    @JsonFormat(pattern = &quot;yyyy-MM-dd HH:mm:ss&quot;)
+&nbsp;    private Date updatedAt;
+&nbsp;    
+&nbsp;    // 构造函数
+<b class="nc">&nbsp;    public AlertResponse() {}</b>
+&nbsp;    
+<b class="nc">&nbsp;    public AlertResponse(Alert alert) {</b>
+<b class="nc">&nbsp;        this.id = alert.getId();</b>
+<b class="nc">&nbsp;        this.userId = alert.getUserId();</b>
+&nbsp;
+<b class="nc">&nbsp;        this.alertType = alert.getAlertType();</b>
+<b class="nc">&nbsp;        this.alertTypeDescription = alert.getAlertType().getDescription();</b>
+<b class="nc">&nbsp;        this.alertLevel = alert.getAlertLevel();</b>
+<b class="nc">&nbsp;        this.alertLevelDescription = alert.getAlertLevel().getDescription();</b>
+<b class="nc">&nbsp;        this.status = alert.getStatus();</b>
+<b class="nc">&nbsp;        this.statusDescription = alert.getStatus().getDescription();</b>
+<b class="nc">&nbsp;        this.description = alert.getDescription();</b>
+<b class="nc">&nbsp;        this.operationDetails = alert.getOperationDetails();</b>
+<b class="nc">&nbsp;        this.aiSessionId = alert.getAiSessionId();</b>
+<b class="nc">&nbsp;        this.aiTimeoutDuration = alert.getAiTimeoutDuration();</b>
+<b class="nc">&nbsp;        this.assignedCounselorId = alert.getAssignedCounselorId();</b>
+&nbsp;
+<b class="nc">&nbsp;        this.followUpNotes = alert.getFollowUpNotes();</b>
+<b class="nc">&nbsp;        this.followUpDate = alert.getFollowUpDate() == null ? null : Timestamp.valueOf(alert.getFollowUpDate());</b>
+<b class="nc">&nbsp;        this.createdAt = alert.getCreatedAt() == null ? null : Timestamp.valueOf(alert.getCreatedAt());</b>
+<b class="nc">&nbsp;        this.updatedAt = alert.getUpdatedAt() == null ? null : Timestamp.valueOf(alert.getUpdatedAt());</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    // Getter和Setter方法
+&nbsp;    public Long getId() {
+<b class="nc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setId(Long id) {
+<b class="nc">&nbsp;        this.id = id;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getUserId() {
+<b class="nc">&nbsp;        return userId;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setUserId(String userId) {
+<b class="nc">&nbsp;        this.userId = userId;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public AlertType getAlertType() {
+<b class="nc">&nbsp;        return alertType;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setAlertType(AlertType alertType) {
+<b class="nc">&nbsp;        this.alertType = alertType;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public AlertLevel getAlertLevel() {
+<b class="nc">&nbsp;        return alertLevel;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setAlertLevel(AlertLevel alertLevel) {
+<b class="nc">&nbsp;        this.alertLevel = alertLevel;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public AlertStatus getStatus() {
+<b class="nc">&nbsp;        return status;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setStatus(AlertStatus status) {
+<b class="nc">&nbsp;        this.status = status;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getDescription() {
+<b class="nc">&nbsp;        return description;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setDescription(String description) {
+<b class="nc">&nbsp;        this.description = description;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setCreatedAt(Date createdAt) {
+<b class="nc">&nbsp;        this.createdAt = createdAt;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:31</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,104 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > IPostService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.communityservice.service</a>
+</div>
+
+<h1>Coverage Summary for Class: IPostService (com.se2303.communityservice.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">IPostService</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.communityservice.service;
+&nbsp;
+&nbsp;
+&nbsp;import com.se2303.communityservice.dto.PageDTO;
+&nbsp;import com.se2303.communityservice.dto.PostDTO;
+&nbsp;import com.se2303.communityservice.dto.response.PostBriefInfo;
+&nbsp;import com.se2303.communityservice.entity.Post;
+&nbsp;import com.se2303.communityservice.entity.Report;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Service
+&nbsp;public interface IPostService {
+&nbsp;    PageDTO&lt;PostBriefInfo&gt; getPosts(String keyword, String category, String reviewStatus, String sortBy, Pageable pageable);
+&nbsp;    PostBriefInfo getPostById(Long postId);
+&nbsp;    List&lt;PostBriefInfo&gt; getMyPosts(String userId);
+&nbsp;    List&lt;String&gt; getAllTags();
+&nbsp;//    List&lt;Post&gt; getTopPosts();
+&nbsp;    Post createPost(PostDTO postDTO, String userId);
+&nbsp;    Post updatePost(Long postId, PostDTO postDTO, String userId);
+&nbsp;    Post deletePost(Long postId, String userId, Boolean identity);
+&nbsp;    void clearCache();
+&nbsp;    PostBriefInfo approvePost(Long postId, String adminId);
+&nbsp;    Post banPost(Long postId, String adminId);
+&nbsp;    Report reportPost(Long postId, String userId, String reason, String detail);
+&nbsp;    
+&nbsp;    // 新增：获取审核队列专用方法
+&nbsp;    PageDTO&lt;PostBriefInfo&gt; getReviewQueue(String keyword, String category, String status, Pageable pageable);
+&nbsp;
+&nbsp;    // 新增：获取审核通过的帖子数量
+&nbsp;    Integer getApprovedPostCount();
+&nbsp;
+&nbsp;    Integer getTodayApprovedPostCount();
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:41</div>
+</div>
+</body>
+</html>

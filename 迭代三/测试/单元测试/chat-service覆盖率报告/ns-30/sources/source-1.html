@@ -1,0 +1,252 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > JwtUtil</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.userservice.util</a>
+</div>
+
+<h1>Coverage Summary for Class: JwtUtil (com.se2303.userservice.util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JwtUtil</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/64)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.userservice.util;
+&nbsp;
+&nbsp;import io.jsonwebtoken.Claims;
+&nbsp;import io.jsonwebtoken.Jwts;
+&nbsp;import io.jsonwebtoken.security.Keys;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;import javax.crypto.SecretKey;
+&nbsp;import java.util.Date;
+&nbsp;
+&nbsp;@Component
+<b class="nc">&nbsp;public class JwtUtil {</b>
+&nbsp;    private static String SECRET_KEY_STRING;
+&nbsp;    private static long EXPIRATION_TIME;
+&nbsp;    private static long REFRESH_EXPIRATION_TIME;
+&nbsp;    
+&nbsp;    @Value(&quot;${jwt.secret}&quot;)
+&nbsp;    public void setSecretKey(String secretKey) {
+<b class="nc">&nbsp;        SECRET_KEY_STRING = secretKey;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Value(&quot;${jwt.expiration}&quot;)
+&nbsp;    public void setExpirationTime(long expirationTime) {
+<b class="nc">&nbsp;        EXPIRATION_TIME = expirationTime;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Value(&quot;${jwt.refresh-expiration}&quot;)
+&nbsp;    public void setRefreshExpirationTime(long refreshExpirationTime) {
+<b class="nc">&nbsp;        REFRESH_EXPIRATION_TIME = refreshExpirationTime;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    private static SecretKey getSecretKey() {
+<b class="nc">&nbsp;        if (SECRET_KEY_STRING == null) {</b>
+<b class="nc">&nbsp;            SECRET_KEY_STRING = &quot;REDACTED&quot;;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return Keys.hmacShaKeyFor(SECRET_KEY_STRING.getBytes());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // 生成access token
+&nbsp;    public static String generateToken(Long userId, boolean valid, boolean identity) {
+<b class="nc">&nbsp;        if (EXPIRATION_TIME == 0) EXPIRATION_TIME = 86400000; // 默认1天</b>
+<b class="nc">&nbsp;        return Jwts.builder()</b>
+<b class="nc">&nbsp;                .claim(&quot;X-User-Id&quot;, userId)</b>
+<b class="nc">&nbsp;                .claim(&quot;X-Valid&quot;, valid)</b>
+<b class="nc">&nbsp;                .claim(&quot;X-Identity&quot;, identity)</b>
+<b class="nc">&nbsp;                .issuedAt(new Date())</b>
+<b class="nc">&nbsp;                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))</b>
+<b class="nc">&nbsp;                .signWith(getSecretKey())</b>
+<b class="nc">&nbsp;                .compact();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // 生成refresh token
+&nbsp;    public static String generateRefreshToken(Long userId, boolean valid, boolean identity) {
+<b class="nc">&nbsp;        if (REFRESH_EXPIRATION_TIME == 0) REFRESH_EXPIRATION_TIME = 7 * 24 * 60 * 60 * 1000; // 默认7天</b>
+<b class="nc">&nbsp;        return Jwts.builder()</b>
+<b class="nc">&nbsp;                .claim(&quot;X-User-Id&quot;, userId)</b>
+<b class="nc">&nbsp;                .claim(&quot;X-Valid&quot;, valid)</b>
+<b class="nc">&nbsp;                .claim(&quot;X-Identity&quot;, identity)</b>
+<b class="nc">&nbsp;                .issuedAt(new Date())</b>
+<b class="nc">&nbsp;                .expiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION_TIME))</b>
+<b class="nc">&nbsp;                .signWith(getSecretKey())</b>
+<b class="nc">&nbsp;                .compact();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // 解析token
+&nbsp;    public static Claims getClaims(String token) {
+<b class="nc">&nbsp;        return Jwts.parser()</b>
+<b class="nc">&nbsp;                .verifyWith(getSecretKey())</b>
+<b class="nc">&nbsp;                .build()</b>
+<b class="nc">&nbsp;                .parseSignedClaims(token)</b>
+<b class="nc">&nbsp;                .getPayload();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // 校验token是否有效
+&nbsp;    public static boolean validateToken(String token) {
+&nbsp;        try {
+<b class="nc">&nbsp;            Claims claims = getClaims(token);</b>
+<b class="nc">&nbsp;            return claims.getExpiration().after(new Date());</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Token validation failed: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    // 调试方法：打印token中的所有claims
+&nbsp;    public static void printTokenClaims(String token) {
+&nbsp;        try {
+<b class="nc">&nbsp;            Claims claims = getClaims(token);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;=== JWT Token Claims ===&quot;);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;X-User-Id: &quot; + claims.get(&quot;X-User-Id&quot;));</b>
+<b class="nc">&nbsp;            System.out.println(&quot;X-Valid: &quot; + claims.get(&quot;X-Valid&quot;));</b>
+<b class="nc">&nbsp;            System.out.println(&quot;X-Identity: &quot; + claims.get(&quot;X-Identity&quot;));</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Issued At: &quot; + claims.getIssuedAt());</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Expiration: &quot; + claims.getExpiration());</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Error printing token claims: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // 从请求头中获取用户ID
+&nbsp;    public static Long getUserId(String userIdHeader) {
+<b class="nc">&nbsp;        if (userIdHeader == null || userIdHeader.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;        try {
+<b class="nc">&nbsp;            return Long.parseLong(userIdHeader.trim());</b>
+<b class="nc">&nbsp;        } catch (NumberFormatException e) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Invalid userId format in header: &quot; + userIdHeader);</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // 从请求头中获取用户有效性状态
+&nbsp;    public static boolean getValid(String validHeader) {
+<b class="nc">&nbsp;        System.out.println(&quot;getValid called with header: &#39;&quot; + validHeader + &quot;&#39;&quot;);</b>
+<b class="nc">&nbsp;        if (validHeader == null || validHeader.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;validHeader is null or empty, returning false&quot;);</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        boolean result = Boolean.parseBoolean(validHeader.trim());</b>
+<b class="nc">&nbsp;        System.out.println(&quot;Parsed valid value: &quot; + result);</b>
+<b class="nc">&nbsp;        return result;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // 从请求头中获取用户身份标识
+&nbsp;    public static boolean getIdentity(String identityHeader) {
+<b class="nc">&nbsp;        System.out.println(&quot;getIdentity called with header: &#39;&quot; + identityHeader + &quot;&#39;&quot;);</b>
+<b class="nc">&nbsp;        if (identityHeader == null || identityHeader.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;identityHeader is null or empty, returning false&quot;);</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        boolean result = Boolean.parseBoolean(identityHeader.trim());</b>
+<b class="nc">&nbsp;        System.out.println(&quot;Parsed identity value: &quot; + result);</b>
+<b class="nc">&nbsp;        return result;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:43</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,146 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > UserService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.userservice.service</a>
+</div>
+
+<h1>Coverage Summary for Class: UserService (com.se2303.userservice.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">UserService$MockitoMock$b9xMHohW</td>
+  </tr>
+  <tr>
+    <td class="name">UserService$MockitoMock$b9xMHohW$auxiliary$ETFtWjG8</td>
+  </tr>
+  <tr>
+    <td class="name">UserService$MockitoMock$b9xMHohW$auxiliary$VB4Uasjh</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.userservice.service;
+&nbsp;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;import com.se2303.userservice.entity.User;
+&nbsp;
+&nbsp;public interface UserService {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据用户ID获取用户信息
+&nbsp;     * @param id 用户ID
+&nbsp;     * @return 用户信息
+&nbsp;     */
+&nbsp;    Optional&lt;User&gt; getUserById(Long id);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 更新用户资料
+&nbsp;     * @param userId 用户ID
+&nbsp;     * @param username 用户名
+&nbsp;     * @param nickname 昵称
+&nbsp;     * @param avatar 头像
+&nbsp;     * @param gender 性别
+&nbsp;     * @param birthday 生日
+&nbsp;     * @param location 位置
+&nbsp;     * @param bio 个人简介
+&nbsp;     * @param tags 标签
+&nbsp;     * @param profileVisibility 资料可见性
+&nbsp;     * @return 是否更新成功
+&nbsp;     */
+&nbsp;    boolean updateProfile(Long userId, String username, String nickname, String avatar, String gender, LocalDate birthday, String location, String bio, String tags, String profileVisibility);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据学工号、姓名、jaccount创建用户
+&nbsp;     * @param sjtuId 学工号
+&nbsp;     * @param name 姓名
+&nbsp;     * @param jaccount jaccount
+&nbsp;     * @param telephone 电话
+&nbsp;     * @return 用户信息
+&nbsp;     */
+&nbsp;    User createUser(String sjtuId, String name, String jaccount, String telephone);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 管理员功能：获取所有用户列表
+&nbsp;     * @return 用户列表
+&nbsp;     */
+&nbsp;    List&lt;User&gt; getAllUsers();
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 管理员功能：获取所有普通用户列表（isUser=true）
+&nbsp;     * @return 普通用户列表
+&nbsp;     */
+&nbsp;    List&lt;User&gt; getAllNormalUsers();
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 管理员功能：启用或禁用用户
+&nbsp;     * @param userId 用户ID
+&nbsp;     * @param valid 是否有效
+&nbsp;     * @return 是否操作成功
+&nbsp;     */
+&nbsp;    boolean updateUserStatus(Long userId, boolean valid);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取普通用户数量
+&nbsp;     * @return 普通用户数量
+&nbsp;     */
+&nbsp;    int getNormalUserCount();
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:38</div>
+</div>
+</body>
+</html>

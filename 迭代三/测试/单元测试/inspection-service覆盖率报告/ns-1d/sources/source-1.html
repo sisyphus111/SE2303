@@ -1,0 +1,322 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Inform</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.informservice.entity</a>
+</div>
+
+<h1>Coverage Summary for Class: Inform (com.se2303.informservice.entity)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Inform</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/44)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/58)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.informservice.entity;
+&nbsp;
+&nbsp;import jakarta.persistence.*;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;@Entity
+&nbsp;@Table(name = &quot;informs&quot;)
+&nbsp;public class Inform {
+&nbsp;    
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private Long id;
+&nbsp;    
+&nbsp;    @Column(name = &quot;user_id&quot;, nullable = false)
+&nbsp;    private Long userId;
+&nbsp;    
+&nbsp;    @Enumerated(EnumType.STRING)
+&nbsp;    @Column(name = &quot;type&quot;, nullable = false)
+&nbsp;    private InformType type;
+&nbsp;    
+&nbsp;    @Column(name = &quot;content&quot;, columnDefinition = &quot;TEXT&quot;)
+&nbsp;    private String content;
+&nbsp;    
+&nbsp;    @Column(name = &quot;related_id&quot;)
+&nbsp;    private String relatedId;
+&nbsp;    
+&nbsp;    @Column(name = &quot;from_user_id&quot;)
+&nbsp;    private Long fromUserId;
+&nbsp;
+<b class="nc">&nbsp;    @Column(name = &quot;is_read&quot;, nullable = false, columnDefinition = &quot;BOOLEAN DEFAULT FALSE&quot;)</b>
+<b class="nc">&nbsp;    private Boolean isRead = false;</b>
+&nbsp;    
+&nbsp;    @Column(name = &quot;created_at&quot;, nullable = false)
+&nbsp;    private LocalDateTime createdAt;
+&nbsp;    
+&nbsp;    @Column(name = &quot;read_at&quot;)
+&nbsp;    private LocalDateTime readAt;
+&nbsp;    
+&nbsp;    // 构造函数
+<b class="nc">&nbsp;    public Inform() {</b>
+<b class="nc">&nbsp;        this.createdAt = LocalDateTime.now();</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public Inform(Long userId, InformType type, String content) {
+<b class="nc">&nbsp;        this();</b>
+<b class="nc">&nbsp;        this.userId = userId;</b>
+<b class="nc">&nbsp;        this.type = type;</b>
+<b class="nc">&nbsp;        this.content = content;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    // Getters and Setters
+&nbsp;    public Long getId() {
+<b class="nc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setId(Long id) {
+<b class="nc">&nbsp;        this.id = id;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public Long getUserId() {
+<b class="nc">&nbsp;        return userId;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setUserId(Long userId) {
+<b class="nc">&nbsp;        this.userId = userId;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public InformType getType() {
+<b class="nc">&nbsp;        return type;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setType(InformType type) {
+<b class="nc">&nbsp;        this.type = type;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getContent() {
+<b class="nc">&nbsp;        return content;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setContent(String content) {
+<b class="nc">&nbsp;        this.content = content;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getRelatedId() {
+<b class="nc">&nbsp;        return relatedId;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setRelatedId(String relatedId) {
+<b class="nc">&nbsp;        this.relatedId = relatedId;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public Long getFromUserId() {
+<b class="nc">&nbsp;        return fromUserId;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setFromUserId(Long fromUserId) {
+<b class="nc">&nbsp;        this.fromUserId = fromUserId;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public Boolean getIsRead() {
+<b class="nc">&nbsp;        return isRead;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setIsRead(Boolean isRead) {
+<b class="nc">&nbsp;        this.isRead = isRead;</b>
+<b class="nc">&nbsp;        if (isRead &amp;&amp; this.readAt == null) {</b>
+<b class="nc">&nbsp;            this.readAt = LocalDateTime.now();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    // 添加兼容的方法
+&nbsp;    public boolean isRead() {
+<b class="nc">&nbsp;        return isRead != null &amp;&amp; isRead;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setRead(boolean read) {
+<b class="nc">&nbsp;        this.isRead = read;</b>
+<b class="nc">&nbsp;        if (read &amp;&amp; this.readAt == null) {</b>
+<b class="nc">&nbsp;            this.readAt = LocalDateTime.now();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    public LocalDateTime getCreatedAt() {
+<b class="nc">&nbsp;        return createdAt;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setCreatedAt(LocalDateTime createdAt) {
+<b class="nc">&nbsp;        this.createdAt = createdAt;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public LocalDateTime getReadAt() {
+<b class="nc">&nbsp;        return readAt;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setReadAt(LocalDateTime readAt) {
+<b class="nc">&nbsp;        this.readAt = readAt;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    // 添加 updatedAt 相关方法
+&nbsp;    public LocalDateTime getUpdatedAt() {
+<b class="nc">&nbsp;        return readAt; // 使用 readAt 作为 updatedAt</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setUpdatedAt(LocalDateTime updatedAt) {
+&nbsp;        // 可以选择性地更新 readAt 或添加新的字段
+<b class="nc">&nbsp;        this.readAt = updatedAt;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 动态生成标题（根据类型）
+&nbsp;     */
+&nbsp;    public String getTitle() {
+<b class="nc">&nbsp;        if (this.type == InformType.COMMENT) {</b>
+<b class="nc">&nbsp;            return &quot;新评论通知&quot;;</b>
+<b class="nc">&nbsp;        } else if (this.type == InformType.LIKE) {</b>
+<b class="nc">&nbsp;            return &quot;新点赞通知&quot;;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return &quot;通知&quot;;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 动态生成显示内容（需要用户名参数）
+&nbsp;     * @param fromUsername 来源用户名
+&nbsp;     * @return 格式化的显示内容
+&nbsp;     */
+&nbsp;    public String getDisplayContent(String fromUsername) {
+<b class="nc">&nbsp;        String username = fromUsername != null ? fromUsername : (&quot;用户&quot; + this.fromUserId);</b>
+&nbsp;        
+<b class="nc">&nbsp;        if (this.type == InformType.COMMENT) {</b>
+<b class="nc">&nbsp;            return username + &quot; 评论了你的帖子：&quot; + (this.content != null ? this.content : &quot;&quot;);</b>
+<b class="nc">&nbsp;        } else if (this.type == InformType.LIKE) {</b>
+<b class="nc">&nbsp;            return username + &quot; 点赞了你的帖子&quot;;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return this.content;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取原始评论内容（仅用于评论类型）
+&nbsp;     * @return 评论内容
+&nbsp;     */
+&nbsp;    public String getRawContent() {
+<b class="nc">&nbsp;        return this.content;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean equals(Object o) {
+<b class="nc">&nbsp;        if (this == o) return true;</b>
+<b class="nc">&nbsp;        if (o == null || getClass() != o.getClass()) return false;</b>
+<b class="nc">&nbsp;        Inform inform = (Inform) o;</b>
+<b class="nc">&nbsp;        return Objects.equals(id, inform.id) &amp;&amp;</b>
+<b class="nc">&nbsp;                Objects.equals(userId, inform.userId) &amp;&amp;</b>
+&nbsp;                type == inform.type &amp;&amp;
+<b class="nc">&nbsp;                Objects.equals(content, inform.content) &amp;&amp;</b>
+<b class="nc">&nbsp;                Objects.equals(relatedId, inform.relatedId) &amp;&amp;</b>
+<b class="nc">&nbsp;                Objects.equals(fromUserId, inform.fromUserId) &amp;&amp;</b>
+<b class="nc">&nbsp;                Objects.equals(isRead, inform.isRead) &amp;&amp;</b>
+<b class="nc">&nbsp;                Objects.equals(createdAt, inform.createdAt) &amp;&amp;</b>
+<b class="nc">&nbsp;                Objects.equals(readAt, inform.readAt);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int hashCode() {
+<b class="nc">&nbsp;        return Objects.hash(id, userId, type, content, relatedId, fromUserId, isRead, createdAt, readAt);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:40</div>
+</div>
+</body>
+</html>

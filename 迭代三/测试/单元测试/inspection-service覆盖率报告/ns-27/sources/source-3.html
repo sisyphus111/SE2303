@@ -1,0 +1,204 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PostRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.communityservice.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: PostRepository (com.se2303.communityservice.repository)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">PostRepository</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.communityservice.repository;
+&nbsp;
+&nbsp;import com.se2303.communityservice.entity.Post;
+&nbsp;import com.se2303.communityservice.entity.Like;
+&nbsp;import com.se2303.communityservice.entity.Comment;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;import org.springframework.data.repository.query.Param;
+&nbsp;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Repository
+&nbsp;public interface PostRepository extends JpaRepository&lt;Post, Long&gt; {
+&nbsp;    // 修复：使用参数化的 reviewStatus
+&nbsp;    // 根据createdAt排序
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE p.reviewStatus = :status ORDER BY p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByReviewStatus(String status, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(&quot;SELECT p FROM Post p  WHERE p.reviewStatus = :status AND (p.title LIKE %:keyword% OR p.content LIKE %:keyword%)&quot;)
+&nbsp;    Page&lt;Post&gt; findByKeywordAndReviewStatus(String keyword, String status, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(&quot;SELECT p FROM Post p  WHERE p.reviewStatus = :status AND :tag MEMBER OF p.tags&quot;)
+&nbsp;    Page&lt;Post&gt; findByTagAndReviewStatus(String tag, String status, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(&quot;SELECT p FROM Post p  WHERE p.userId = :userId AND p.reviewStatus = :status&quot;)
+&nbsp;    List&lt;Post&gt; findByUserIdAndReviewStatus(String userId, String status);
+&nbsp;
+&nbsp;    @Query(&quot;SELECT p FROM Post p  WHERE p.reviewStatus = :status&quot;)
+&nbsp;    List&lt;Post&gt; findAllByReviewStatus(String status);
+&nbsp;
+&nbsp;    // 新增：获取所有状态的帖子（管理员专用）
+&nbsp;    @Query(&quot;SELECT p FROM Post p ORDER BY p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findAllPosts(Pageable pageable);
+&nbsp;    
+&nbsp;    // 新增：获取所有状态的帖子按点赞数排序（管理员专用）
+&nbsp;    @Query(&quot;SELECT p FROM Post p ORDER BY (SELECT COUNT(l) FROM Like l WHERE l.postId = p.id) DESC, p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findAllPostsOrderByLikeCountDesc(Pageable pageable);
+&nbsp;    
+&nbsp;    // 新增：获取所有状态的帖子按评论数排序（管理员专用）
+&nbsp;    @Query(&quot;SELECT p FROM Post p ORDER BY (SELECT COUNT(c) FROM Comment c WHERE c.postId = p.id AND c.reviewStatus = &#39;APPROVED&#39;) DESC, p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findAllPostsOrderByCommentCountDesc(Pageable pageable);
+&nbsp;
+&nbsp;    // 新增：根据关键词获取所有状态的帖子（管理员专用）
+&nbsp;    @Query(&quot;SELECT p FROM Post p  WHERE (p.title LIKE %:keyword% OR p.content LIKE %:keyword%)&quot;)
+&nbsp;    Page&lt;Post&gt; findAllPostsByKeyword(String keyword, Pageable pageable);
+&nbsp;
+&nbsp;    // 新增：根据标签获取所有状态的帖子（管理员专用）
+&nbsp;    @Query(&quot;SELECT p FROM Post p  WHERE :tag MEMBER OF p.tags&quot;)
+&nbsp;    Page&lt;Post&gt; findAllPostsByTag(String tag, Pageable pageable);
+&nbsp;
+&nbsp;    // 新增：支持多个标签搜索的方法
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE p.reviewStatus = :status AND EXISTS (SELECT t FROM p.tags t WHERE t IN :tags)&quot;)
+&nbsp;    Page&lt;Post&gt; findByTagsInAndReviewStatus(@Param(&quot;tags&quot;) List&lt;String&gt; tags, String status, Pageable pageable);
+&nbsp;    
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE p.reviewStatus = :status AND EXISTS (SELECT t FROM p.tags t WHERE t IN :tags) ORDER BY (SELECT COUNT(l) FROM Like l WHERE l.postId = p.id) DESC, p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByTagsInAndReviewStatusOrderByLikeCountDesc(@Param(&quot;tags&quot;) List&lt;String&gt; tags, String status, Pageable pageable);
+&nbsp;    
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE p.reviewStatus = :status AND EXISTS (SELECT t FROM p.tags t WHERE t IN :tags) ORDER BY (SELECT COUNT(c) FROM Comment c WHERE c.postId = p.id AND c.reviewStatus = &#39;APPROVED&#39;) DESC, p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByTagsInAndReviewStatusOrderByCommentCountDesc(@Param(&quot;tags&quot;) List&lt;String&gt; tags, String status, Pageable pageable);
+&nbsp;    
+&nbsp;    // 管理员专用：支持多个标签搜索所有状态的帖子
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE EXISTS (SELECT t FROM p.tags t WHERE t IN :tags)&quot;)
+&nbsp;    Page&lt;Post&gt; findAllPostsByTagsIn(@Param(&quot;tags&quot;) List&lt;String&gt; tags, Pageable pageable);
+&nbsp;
+&nbsp;    // 按点赞数排序的查询方法
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE p.reviewStatus = :status ORDER BY (SELECT COUNT(l) FROM Like l WHERE l.postId = p.id) DESC, p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByReviewStatusOrderByLikeCountDesc(String status, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE p.reviewStatus = :status AND (p.title LIKE %:keyword% OR p.content LIKE %:keyword%) ORDER BY (SELECT COUNT(l) FROM Like l WHERE l.postId = p.id) DESC, p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByKeywordAndReviewStatusOrderByLikeCountDesc(String keyword, String status, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE p.reviewStatus = :status AND :tag MEMBER OF p.tags ORDER BY (SELECT COUNT(l) FROM Like l WHERE l.postId = p.id) DESC, p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByTagAndReviewStatusOrderByLikeCountDesc(String tag, String status, Pageable pageable);
+&nbsp;
+&nbsp;    // 按评论数排序的查询方法
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE p.reviewStatus = :status ORDER BY (SELECT COUNT(c) FROM Comment c WHERE c.postId = p.id AND c.reviewStatus = &#39;APPROVED&#39;) DESC, p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByReviewStatusOrderByCommentCountDesc(String status, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE p.reviewStatus = :status AND (p.title LIKE %:keyword% OR p.content LIKE %:keyword%) ORDER BY (SELECT COUNT(c) FROM Comment c WHERE c.postId = p.id AND c.reviewStatus = &#39;APPROVED&#39;) DESC, p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByKeywordAndReviewStatusOrderByCommentCountDesc(String keyword, String status, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE p.reviewStatus = :status AND :tag MEMBER OF p.tags ORDER BY (SELECT COUNT(c) FROM Comment c WHERE c.postId = p.id AND c.reviewStatus = &#39;APPROVED&#39;) DESC, p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByTagAndReviewStatusOrderByCommentCountDesc(String tag, String status, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(&quot;SELECT COUNT(p) FROM Post p WHERE p.reviewStatus = &#39;APPROVED&#39;&quot;)
+&nbsp;    Integer getApprovedPostCount();
+&nbsp;
+&nbsp;    @Query(&quot;SELECT COUNT(p) FROM Post p WHERE p.reviewStatus = &#39;APPROVED&#39; AND p.createdAt &gt;= :startOfDay AND p.createdAt &lt;= :endOfDay&quot;)
+&nbsp;    Integer getTodayApprovedPostCount(LocalDateTime startOfDay, LocalDateTime endOfDay);
+&nbsp;
+&nbsp;    List&lt;Post&gt; findByUserId(String userId);
+&nbsp;    
+&nbsp;    // 新增：支持&quot;ALL&quot;状态的查询方法
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE (p.title LIKE %:keyword% OR p.content LIKE %:keyword%) ORDER BY (SELECT COUNT(l) FROM Like l WHERE l.postId = p.id) DESC, p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByKeywordOrderByLikeCountDesc(String keyword, Pageable pageable);
+&nbsp;    
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE (p.title LIKE %:keyword% OR p.content LIKE %:keyword%) ORDER BY (SELECT COUNT(c) FROM Comment c WHERE c.postId = p.id AND c.reviewStatus = &#39;APPROVED&#39;) DESC, p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByKeywordOrderByCommentCountDesc(String keyword, Pageable pageable);
+&nbsp;    
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE (p.title LIKE %:keyword% OR p.content LIKE %:keyword%) ORDER BY p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByKeywordOrderByCreatedAtDesc(String keyword, Pageable pageable);
+&nbsp;    
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE p.reviewStatus = :status AND (p.title LIKE %:keyword% OR p.content LIKE %:keyword%) ORDER BY p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByKeywordAndReviewStatusOrderByCreatedAtDesc(String keyword, String status, Pageable pageable);
+&nbsp;    
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE EXISTS (SELECT t FROM p.tags t WHERE t IN :tags) ORDER BY (SELECT COUNT(l) FROM Like l WHERE l.postId = p.id) DESC, p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByTagsInOrderByLikeCountDesc(@Param(&quot;tags&quot;) List&lt;String&gt; tags, Pageable pageable);
+&nbsp;    
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE EXISTS (SELECT t FROM p.tags t WHERE t IN :tags) ORDER BY (SELECT COUNT(c) FROM Comment c WHERE c.postId = p.id AND c.reviewStatus = &#39;APPROVED&#39;) DESC, p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByTagsInOrderByCommentCountDesc(@Param(&quot;tags&quot;) List&lt;String&gt; tags, Pageable pageable);
+&nbsp;    
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE :tag MEMBER OF p.tags ORDER BY (SELECT COUNT(l) FROM Like l WHERE l.postId = p.id) DESC, p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByTagOrderByLikeCountDesc(String tag, Pageable pageable);
+&nbsp;    
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE :tag MEMBER OF p.tags ORDER BY (SELECT COUNT(c) FROM Comment c WHERE c.postId = p.id AND c.reviewStatus = &#39;APPROVED&#39;) DESC, p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByTagOrderByCommentCountDesc(String tag, Pageable pageable);
+&nbsp;    
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE :tag MEMBER OF p.tags ORDER BY p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByTagOrderByCreatedAtDesc(String tag, Pageable pageable);
+&nbsp;    
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE p.reviewStatus = :status AND :tag MEMBER OF p.tags ORDER BY p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByTagAndReviewStatusOrderByCreatedAtDesc(String tag, String status, Pageable pageable);
+&nbsp;    
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE p.reviewStatus = :status ORDER BY p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByReviewStatusOrderByCreatedAtDesc(String status, Pageable pageable);
+&nbsp;    
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE EXISTS (SELECT t FROM p.tags t WHERE t IN :tags) ORDER BY p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByTagsInOrderByCreatedAtDesc(@Param(&quot;tags&quot;) List&lt;String&gt; tags, Pageable pageable);
+&nbsp;    
+&nbsp;    @Query(&quot;SELECT p FROM Post p WHERE p.reviewStatus = :status AND EXISTS (SELECT t FROM p.tags t WHERE t IN :tags) ORDER BY p.createdAt DESC&quot;)
+&nbsp;    Page&lt;Post&gt; findByTagsInAndReviewStatusOrderByCreatedAtDesc(@Param(&quot;tags&quot;) List&lt;String&gt; tags, String status, Pageable pageable);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:40</div>
+</div>
+</body>
+</html>

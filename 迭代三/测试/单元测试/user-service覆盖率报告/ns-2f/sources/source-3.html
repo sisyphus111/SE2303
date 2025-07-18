@@ -1,0 +1,289 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > UserServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.userservice.service.impl</a>
+</div>
+
+<h1>Coverage Summary for Class: UserServiceImpl (com.se2303.userservice.service.impl)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (22/22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (60/60)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">UserServiceImpl$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (22/22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (60/60)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.userservice.service.impl;
+&nbsp;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import com.se2303.userservice.entity.Auth;
+&nbsp;import com.se2303.userservice.entity.User;
+&nbsp;import com.se2303.userservice.entity.UserPreferences;
+&nbsp;import com.se2303.userservice.repository.AuthRepository;
+&nbsp;import com.se2303.userservice.repository.UserPreferencesRepository;
+&nbsp;import com.se2303.userservice.repository.UserRepository;
+&nbsp;import com.se2303.userservice.service.UserService;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class UserServiceImpl implements UserService {</b>
+&nbsp;    @Autowired
+&nbsp;    private UserRepository userRepository;
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private AuthRepository authRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserPreferencesRepository userPreferencesRepository;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Optional&lt;User&gt; getUserById(Long id) {
+<b class="fc">&nbsp;        return userRepository.findById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean updateProfile(Long userId, String username, String nickname, String avatar, String gender, LocalDate birthday, String location, String bio, String tags, String profileVisibility) {
+<b class="fc">&nbsp;        System.out.println(&quot;UserServiceImpl.updateProfile 被调用:&quot;);</b>
+<b class="fc">&nbsp;        System.out.println(&quot;userId: &quot; + userId);</b>
+<b class="fc">&nbsp;        System.out.println(&quot;profileVisibility: &quot; + profileVisibility);</b>
+&nbsp;        
+<b class="fc">&nbsp;        Optional&lt;User&gt; userOpt = userRepository.findById(userId);</b>
+<b class="fc">&nbsp;        if (userOpt.isPresent()) {</b>
+<b class="fc">&nbsp;            User user = userOpt.get();</b>
+<b class="fc">&nbsp;            System.out.println(&quot;找到用户: &quot; + user.getUsername());</b>
+<b class="fc">&nbsp;            System.out.println(&quot;更新前 profileVisibility: &quot; + user.getProfileVisibility());</b>
+&nbsp;            
+&nbsp;            // 更新User表字段
+<b class="fc">&nbsp;            if (username != null) {</b>
+<b class="fc">&nbsp;                user.setUsername(username);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            if (nickname != null) {</b>
+<b class="fc">&nbsp;                user.setNickname(nickname);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            if (avatar != null) {</b>
+<b class="fc">&nbsp;                user.setAvatar(avatar);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            if (gender != null) {</b>
+<b class="fc">&nbsp;                user.setGender(gender);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            if (birthday != null) {</b>
+<b class="fc">&nbsp;                user.setBirthday(birthday);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            if (location != null) {</b>
+<b class="fc">&nbsp;                user.setLocation(location);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            if (bio != null) {</b>
+<b class="fc">&nbsp;                user.setBio(bio);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            if (tags != null) {</b>
+<b class="fc">&nbsp;                user.setTags(tags);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            if (profileVisibility != null) {</b>
+<b class="fc">&nbsp;                System.out.println(&quot;设置 profileVisibility 为: &quot; + profileVisibility);</b>
+<b class="fc">&nbsp;                user.setProfileVisibility(profileVisibility);</b>
+&nbsp;            }
+&nbsp;            
+<b class="fc">&nbsp;            System.out.println(&quot;更新后 profileVisibility: &quot; + user.getProfileVisibility());</b>
+&nbsp;            // 保存User（会级联保存Auth的修改）
+<b class="fc">&nbsp;            userRepository.save(user);</b>
+<b class="fc">&nbsp;            System.out.println(&quot;用户资料已保存&quot;);</b>
+<b class="fc">&nbsp;            return true;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        System.out.println(&quot;未找到用户 ID: &quot; + userId);</b>
+<b class="fc">&nbsp;        return false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    @Transactional
+&nbsp;    public User createUser(String sjtuId, String name, String jaccount, String telephone) {
+<b class="fc">&nbsp;        Boolean isUser = !(sjtuId.equals(&quot;900000000550&quot;)); // 在这里设置管理员</b>
+&nbsp;        
+<b class="fc">&nbsp;        Auth auth = new Auth(jaccount, sjtuId, name, telephone, isUser, true);</b>
+&nbsp;        
+&nbsp;        // 保存Auth实体
+<b class="fc">&nbsp;        Auth savedAuth = authRepository.save(auth);</b>
+&nbsp;    
+&nbsp;        // 创建User实体并设置关联
+<b class="fc">&nbsp;        User user = new User();</b>
+<b class="fc">&nbsp;        user.setAuth(savedAuth);</b>
+&nbsp;        
+&nbsp;        // 设置默认用户名：用户+id
+<b class="fc">&nbsp;        user.setUsername(&quot;用户&quot; + savedAuth.getId());</b>
+&nbsp;        
+&nbsp;        // 设置默认头像
+<b class="fc">&nbsp;        user.setAvatar(&quot;default_avatar.png&quot;);</b>
+&nbsp;        
+&nbsp;        // 设置默认个人资料可见性
+<b class="fc">&nbsp;        user.setProfileVisibility(&quot;public&quot;);</b>
+&nbsp;        
+&nbsp;        // 设置注册时间为当前日期
+<b class="fc">&nbsp;        user.setRegistrationDate(LocalDate.now());</b>
+&nbsp;        
+&nbsp;        // 保存User实体
+<b class="fc">&nbsp;        User savedUser = userRepository.save(user);</b>
+&nbsp;        
+&nbsp;        // 创建UserPreferences实体并设置关联
+<b class="fc">&nbsp;        UserPreferences userPreferences = new UserPreferences();</b>
+<b class="fc">&nbsp;        userPreferences.setAuth(savedAuth);</b>
+&nbsp;        
+&nbsp;        // 保存UserPreferences实体
+<b class="fc">&nbsp;        userPreferencesRepository.save(userPreferences);</b>
+&nbsp;        
+<b class="fc">&nbsp;        return savedUser;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;User&gt; getAllUsers() {
+<b class="fc">&nbsp;        return userRepository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;User&gt; getAllNormalUsers() {
+<b class="fc">&nbsp;        return userRepository.findByAuthIsUserTrue();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    @Transactional
+&nbsp;    public boolean updateUserStatus(Long userId, boolean valid) {
+<b class="fc">&nbsp;        Optional&lt;User&gt; userOpt = userRepository.findById(userId);</b>
+<b class="fc">&nbsp;        if (userOpt.isPresent()) {</b>
+<b class="fc">&nbsp;            User user = userOpt.get();</b>
+<b class="fc">&nbsp;            Auth auth = user.getAuth();</b>
+<b class="fc">&nbsp;            auth.setValid(valid);</b>
+<b class="fc">&nbsp;            authRepository.save(auth);</b>
+<b class="fc">&nbsp;            return true;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int getNormalUserCount() {
+<b class="fc">&nbsp;        return userRepository.findByAuthIsUserTrue().size();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:38</div>
+</div>
+</body>
+</html>

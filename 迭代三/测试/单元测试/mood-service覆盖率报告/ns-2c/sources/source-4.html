@@ -1,0 +1,173 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > JaccountUserInfoResponse</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.userservice.dto.response</a>
+</div>
+
+<h1>Coverage Summary for Class: JaccountUserInfoResponse (com.se2303.userservice.dto.response)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JaccountUserInfoResponse</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.userservice.dto.response;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.annotation.JsonProperty;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Jaccount用户信息API响应DTO
+&nbsp; * 对应实际的API响应格式
+&nbsp; */
+&nbsp;public class JaccountUserInfoResponse {
+&nbsp;    
+&nbsp;    @JsonProperty(&quot;errno&quot;)
+&nbsp;    private Integer errno;
+&nbsp;    
+&nbsp;    @JsonProperty(&quot;error&quot;)
+&nbsp;    private String error;
+&nbsp;    
+&nbsp;    @JsonProperty(&quot;total&quot;)
+&nbsp;    private Integer total;
+&nbsp;    
+&nbsp;    @JsonProperty(&quot;entities&quot;)
+&nbsp;    private List&lt;JaccountUserInfo&gt; entities;
+&nbsp;    
+&nbsp;    // 无参构造函数
+<b class="nc">&nbsp;    public JaccountUserInfoResponse() {}</b>
+&nbsp;    
+&nbsp;    // Getters and Setters
+&nbsp;    public Integer getErrno() {
+<b class="nc">&nbsp;        return errno;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setErrno(Integer errno) {
+<b class="nc">&nbsp;        this.errno = errno;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getError() {
+<b class="nc">&nbsp;        return error;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setError(String error) {
+<b class="nc">&nbsp;        this.error = error;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public Integer getTotal() {
+<b class="nc">&nbsp;        return total;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setTotal(Integer total) {
+<b class="nc">&nbsp;        this.total = total;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public List&lt;JaccountUserInfo&gt; getEntities() {
+<b class="nc">&nbsp;        return entities;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void setEntities(List&lt;JaccountUserInfo&gt; entities) {
+<b class="nc">&nbsp;        this.entities = entities;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;        return &quot;JaccountUserInfoResponse{&quot; +</b>
+&nbsp;                &quot;errno=&quot; + errno +
+&nbsp;                &quot;, error=&#39;&quot; + error + &#39;\&#39;&#39; +
+&nbsp;                &quot;, total=&quot; + total +
+&nbsp;                &quot;, entities=&quot; + entities +
+&nbsp;                &#39;}&#39;;
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:42</div>
+</div>
+</body>
+</html>

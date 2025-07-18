@@ -1,0 +1,337 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > AuthController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.userservice.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: AuthController (com.se2303.userservice.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AuthController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/93)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.userservice.controller;
+&nbsp;
+&nbsp;import com.se2303.userservice.entity.Auth;
+&nbsp;import com.se2303.userservice.entity.User;
+&nbsp;import com.se2303.userservice.repository.AuthRepository;
+&nbsp;import com.se2303.userservice.service.UserService;
+&nbsp;import com.se2303.userservice.service.JaccountService;
+&nbsp;
+&nbsp;import com.se2303.userservice.dto.request.JaccountCallbackRequest;
+&nbsp;import com.se2303.userservice.dto.response.ApiResponse;
+&nbsp;import com.se2303.userservice.dto.response.JaccountUserInfo;
+&nbsp;import com.se2303.userservice.dto.response.UserProfileResponse;
+&nbsp;
+&nbsp;import com.se2303.userservice.util.JwtUtil;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import jakarta.servlet.http.Cookie;
+&nbsp;import jakarta.servlet.http.HttpServletResponse;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/auth&quot;)
+<b class="nc">&nbsp;public class AuthController {</b>
+&nbsp;    @Value(&quot;${app.cookie.domain}&quot;)
+&nbsp;    private String cookieDomain;
+&nbsp;
+&nbsp;    @Value(&quot;${app.cookie.secure}&quot;)
+&nbsp;    private boolean cookieSecure;
+&nbsp;    
+<b class="nc">&nbsp;    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);</b>
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private UserService userService;
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private AuthRepository authRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private JaccountService jaccountService;
+&nbsp;
+&nbsp;
+&nbsp;    @PostMapping(&quot;/logout&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&lt;Void&gt;&gt; logout(HttpServletResponse response, 
+&nbsp;                                                   @RequestParam(required = false) String postLogoutRedirectUri,
+&nbsp;                                                   @RequestParam(required = false) String state) {
+<b class="nc">&nbsp;        ApiResponse&lt;Void&gt; result = new ApiResponse&lt;Void&gt;();</b>
+&nbsp;        
+&nbsp;        try {
+&nbsp;            // 1. 向jAccount发送登出请求
+<b class="nc">&nbsp;            if (postLogoutRedirectUri != null &amp;&amp; !postLogoutRedirectUri.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;                logger.info(&quot;开始向jAccount发送登出请求&quot;);</b>
+<b class="nc">&nbsp;                jaccountService.logout(postLogoutRedirectUri, state);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                logger.info(&quot;未提供post_logout_redirect_uri，跳过jAccount登出请求&quot;);</b>
+&nbsp;            }
+&nbsp;            
+&nbsp;            // 2. 清除httpOnly cookie (手动设置Set-Cookie header以支持SameSite=None)
+<b class="nc">&nbsp;            String accessTokenClearValue = String.format(</b>
+&nbsp;                &quot;accessToken=; Path=/; Domain=%s; HttpOnly; %sMaxAge=0; SameSite=None&quot;,
+&nbsp;                cookieDomain,
+<b class="nc">&nbsp;                cookieSecure ? &quot;Secure; &quot; : &quot;&quot;</b>
+&nbsp;            );
+<b class="nc">&nbsp;            response.addHeader(&quot;Set-Cookie&quot;, accessTokenClearValue);</b>
+&nbsp;            
+<b class="nc">&nbsp;            String refreshTokenClearValue = String.format(</b>
+&nbsp;                &quot;refreshToken=; Path=/; Domain=%s; HttpOnly; %sMaxAge=0; SameSite=None&quot;,
+&nbsp;                cookieDomain,
+<b class="nc">&nbsp;                cookieSecure ? &quot;Secure; &quot; : &quot;&quot;</b>
+&nbsp;            );
+<b class="nc">&nbsp;            response.addHeader(&quot;Set-Cookie&quot;, refreshTokenClearValue);</b>
+&nbsp;            
+<b class="nc">&nbsp;            logger.info(&quot;? Cookie清除完成 - Secure: {}, SameSite: None&quot;, cookieSecure);</b>
+&nbsp;            
+<b class="nc">&nbsp;            result.setSuccess(true);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;登出成功&quot;);</b>
+<b class="nc">&nbsp;            logger.info(&quot;用户登出成功&quot;);</b>
+&nbsp;            
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;登出过程中发生异常&quot;, e);</b>
+<b class="nc">&nbsp;            result.setSuccess(false);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;登出失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;        
+<b class="nc">&nbsp;        return ResponseEntity.ok(result);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @PostMapping(&quot;/jaccount/callback&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&lt;UserProfileResponse&gt;&gt; handleJaccountCallback(
+&nbsp;            @RequestBody JaccountCallbackRequest request, 
+&nbsp;            HttpServletResponse response) {
+&nbsp;        
+<b class="nc">&nbsp;        logger.info(&quot;收到Jaccount回调请求: {}&quot;, request);</b>
+&nbsp;        
+<b class="nc">&nbsp;        ApiResponse&lt;UserProfileResponse&gt; result = new ApiResponse&lt;&gt;();</b>
+&nbsp;        
+&nbsp;        try {
+&nbsp;            // 1. 参数校验
+<b class="nc">&nbsp;            if (request.getCode() == null || request.getCode().trim().isEmpty()) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;授权码不能为空&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.badRequest().body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            if (request.getRedirectUri() == null || request.getRedirectUri().trim().isEmpty()) {</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;回调地址不能为空&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.badRequest().body(result);</b>
+&nbsp;            }
+&nbsp;            
+&nbsp;            // 2. 用code换取access_token
+<b class="nc">&nbsp;            logger.info(&quot;开始用授权码换取access_token&quot;);</b>
+<b class="nc">&nbsp;            String accessToken = jaccountService.exchangeCodeForToken(</b>
+<b class="nc">&nbsp;                request.getCode(), </b>
+<b class="nc">&nbsp;                request.getRedirectUri()</b>
+&nbsp;            );
+&nbsp;            
+&nbsp;            // 3. 用access_token获取用户信息
+<b class="nc">&nbsp;            logger.info(&quot;开始获取用户信息&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;            JaccountUserInfo userInfo = jaccountService.getUserInfo(accessToken);</b>
+<b class="nc">&nbsp;            String jaccount = userInfo.getAccount();</b>
+<b class="nc">&nbsp;            String sjtuId = userInfo.getCode(); // 使用code字段作为sjtuId（学工号）</b>
+<b class="nc">&nbsp;            String name = userInfo.getName();</b>
+<b class="nc">&nbsp;            String phone = userInfo.getMobile();</b>
+&nbsp;
+&nbsp;            // 4. 若该用户不存在，则创建
+<b class="nc">&nbsp;            if(authRepository.findBySjtuId(sjtuId).isEmpty()){</b>
+<b class="nc">&nbsp;                logger.info(&quot;开始创建或更新用户&quot;);</b>
+<b class="nc">&nbsp;                User user = userService.createUser(sjtuId, name, jaccount, phone);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // 5. 生成JWT token
+<b class="nc">&nbsp;            logger.info(&quot;开始生成JWT token&quot;);</b>
+<b class="nc">&nbsp;            Optional&lt;Auth&gt; authOpt = authRepository.findBySjtuId(sjtuId);</b>
+<b class="nc">&nbsp;            if (!authOpt.isPresent()) {</b>
+<b class="nc">&nbsp;                logger.info(&quot;发生错误，没有成功创建用户&quot;);</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;发生错误，没有成功创建用户&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.badRequest().body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            Auth auth = authOpt.get();</b>
+<b class="nc">&nbsp;            Long userId = auth.getId(); // 获取本地用户ID</b>
+&nbsp;            
+<b class="nc">&nbsp;            boolean valid = auth.getValid(); // 获取用户状态</b>
+<b class="nc">&nbsp;            logger.info(&quot;用户状态检查 - userId: {}, valid: {}&quot;, userId, valid);</b>
+&nbsp;            
+<b class="nc">&nbsp;            if(valid == false){</b>
+<b class="nc">&nbsp;                logger.info(&quot;用户被禁用&quot;);</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户被禁用&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.badRequest().body(result);</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            boolean identity = auth.getIsUser(); // 获取用户身份</b>
+<b class="nc">&nbsp;            logger.info(&quot;用户身份信息 - userId: {}, valid: {}, identity: {}&quot;, userId, valid, identity);</b>
+&nbsp;            
+<b class="nc">&nbsp;            String jwtAccessToken = JwtUtil.generateToken(userId, valid, identity);</b>
+<b class="nc">&nbsp;            String jwtRefreshToken = JwtUtil.generateRefreshToken(userId, valid, identity);</b>
+&nbsp;            
+<b class="nc">&nbsp;            logger.info(&quot;JWT Token生成完成 - userId: {}, valid: {}, identity: {}&quot;, userId, valid, identity);</b>
+&nbsp;            
+&nbsp;            // 调试：验证生成的token内容
+<b class="nc">&nbsp;            logger.info(&quot;=== 验证生成的JWT Token内容 ===&quot;);</b>
+<b class="nc">&nbsp;            JwtUtil.printTokenClaims(jwtAccessToken);</b>
+&nbsp;            
+&nbsp;            // 6. 设置httpOnly Cookie (手动设置Set-Cookie header以支持SameSite=None)
+<b class="nc">&nbsp;            String accessTokenCookieValue = String.format(</b>
+&nbsp;                &quot;accessToken=%s; Path=/; Domain=%s; HttpOnly; %sMaxAge=%d; SameSite=None&quot;,
+&nbsp;                jwtAccessToken,
+&nbsp;                cookieDomain,
+<b class="nc">&nbsp;                cookieSecure ? &quot;Secure; &quot; : &quot;&quot;,</b>
+<b class="nc">&nbsp;                24 * 60 * 60 // 1天</b>
+&nbsp;            );
+<b class="nc">&nbsp;            response.addHeader(&quot;Set-Cookie&quot;, accessTokenCookieValue);</b>
+&nbsp;            
+<b class="nc">&nbsp;            String refreshTokenCookieValue = String.format(</b>
+&nbsp;                &quot;refreshToken=%s; Path=/; Domain=%s; HttpOnly; %sMaxAge=%d; SameSite=None&quot;,
+&nbsp;                jwtRefreshToken,
+&nbsp;                cookieDomain,
+<b class="nc">&nbsp;                cookieSecure ? &quot;Secure; &quot; : &quot;&quot;,</b>
+<b class="nc">&nbsp;                7 * 24 * 60 * 60 // 7天</b>
+&nbsp;            );
+<b class="nc">&nbsp;            response.addHeader(&quot;Set-Cookie&quot;, refreshTokenCookieValue);</b>
+&nbsp;            
+<b class="nc">&nbsp;            logger.info(&quot;? Cookie设置完成 - Secure: {}, SameSite: None&quot;, cookieSecure);</b>
+&nbsp;            
+&nbsp;            // 7. 返回成功响应
+<b class="nc">&nbsp;            result.setSuccess(true);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;登录成功&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;            Optional&lt;User&gt; userOpt = userService.getUserById(auth.getId());</b>
+<b class="nc">&nbsp;            if (userOpt.isPresent()) {</b>
+<b class="nc">&nbsp;                result.setData(UserProfileResponse.convertToUserProfileResponse(userOpt.get()));</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                logger.error(&quot;无法找到用户信息，authId={}&quot;, auth.getId());</b>
+<b class="nc">&nbsp;                result.setSuccess(false);</b>
+<b class="nc">&nbsp;                result.setMessage(&quot;用户信息获取失败&quot;);</b>
+<b class="nc">&nbsp;                return ResponseEntity.badRequest().body(result);</b>
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            logger.info(&quot;Jaccount登录成功: SJTUId={}, name={}, jaccount={}&quot;, sjtuId, name, jaccount);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(result);</b>
+&nbsp;            
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;Jaccount登录失败&quot;, e);</b>
+&nbsp;            
+<b class="nc">&nbsp;            result.setSuccess(false);</b>
+<b class="nc">&nbsp;            result.setMessage(&quot;登录失败: &quot; + e.getMessage());</b>
+&nbsp;            
+<b class="nc">&nbsp;            return ResponseEntity.ok(result);</b>
+&nbsp;        }
+&nbsp;    }    
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:43</div>
+</div>
+</body>
+</html>

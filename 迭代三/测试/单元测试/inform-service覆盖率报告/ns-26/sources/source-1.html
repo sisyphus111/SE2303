@@ -1,0 +1,138 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CommentRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.communityservice.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: CommentRepository (com.se2303.communityservice.repository)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">CommentRepository</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.communityservice.repository;
+&nbsp;
+&nbsp;import com.se2303.communityservice.entity.Comment;
+&nbsp;import com.se2303.communityservice.entity.Post;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;import org.springframework.data.repository.query.Param;
+&nbsp;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Repository
+&nbsp;public interface CommentRepository extends JpaRepository&lt;Comment, Long&gt; {
+&nbsp;    @Query(&quot;SELECT c FROM Comment c WHERE c.postId = :postId AND c.reviewStatus = &#39;APPROVED&#39;&quot;)
+&nbsp;    Page&lt;Comment&gt; findByPostId(Long postId, Pageable pageable);
+&nbsp;
+&nbsp;    // 根据审核状态查询评论
+&nbsp;    @Query(&quot;SELECT c FROM Comment c WHERE c.reviewStatus = :status&quot;)
+&nbsp;    Page&lt;Comment&gt; findByReviewStatus(String status, Pageable pageable);
+&nbsp;    
+&nbsp;    // 根据关键词和审核状态查询评论
+&nbsp;    @Query(&quot;SELECT c FROM Comment c WHERE c.reviewStatus = :status AND c.content LIKE %:keyword%&quot;)
+&nbsp;    Page&lt;Comment&gt; findByKeywordAndReviewStatus(String keyword, String status, Pageable pageable);
+&nbsp;    
+&nbsp;    // 根据用户ID和审核状态查询评论
+&nbsp;    @Query(&quot;SELECT c FROM Comment c WHERE c.userId = :userId AND c.reviewStatus = :status&quot;)
+&nbsp;    List&lt;Comment&gt; findByUserIdAndReviewStatus(String userId, String status);
+&nbsp;    
+&nbsp;    // 统计指定审核状态的评论数量
+&nbsp;    @Query(&quot;SELECT COUNT(c) FROM Comment c WHERE c.reviewStatus = :status&quot;)
+&nbsp;    Long countByReviewStatus(String status);
+&nbsp;    
+&nbsp;    // 获取所有评论（管理员用）
+&nbsp;    @Query(&quot;SELECT c FROM Comment c&quot;)
+&nbsp;    Page&lt;Comment&gt; findAllComments(Pageable pageable);
+&nbsp;
+&nbsp;    @Query(&quot;SELECT COUNT(c) FROM Comment c WHERE c.postId = :postId&quot;)
+&nbsp;    Long countByPostId(Long postId);
+&nbsp;    
+&nbsp;    // 统计指定帖子已审核通过的评论数量
+&nbsp;    @Query(&quot;SELECT COUNT(c) FROM Comment c WHERE c.postId = :postId AND c.reviewStatus = &#39;APPROVED&#39;&quot;)
+&nbsp;    Long countApprovedCommentsByPostId(Long postId);
+&nbsp;    
+&nbsp;    // 按内容搜索评论（管理员用）
+&nbsp;    @Query(&quot;SELECT c FROM Comment c WHERE LOWER(c.content) LIKE LOWER(CONCAT(&#39;%&#39;, :keyword, &#39;%&#39;))&quot;)
+&nbsp;    Page&lt;Comment&gt; findByContentContainingIgnoreCase(String keyword, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(&quot;SELECT COUNT(c) FROM Comment c WHERE c.reviewStatus = &#39;APPROVED&#39; AND c.createdAt &gt;= :startOfDay AND c.createdAt &lt;= :endOfDay&quot;)
+&nbsp;    Integer getTodayApprovedCommentCount(LocalDateTime startOfDay, LocalDateTime endOfDay);
+&nbsp;
+&nbsp;    
+&nbsp;    // 根据多个标签筛选评论 - 通过关联的帖子标签来筛选
+&nbsp;    @Query(&quot;SELECT c FROM Comment c JOIN Post p ON c.postId = p.id WHERE c.reviewStatus = :status AND EXISTS (SELECT t FROM p.tags t WHERE t IN :tags)&quot;)
+&nbsp;    Page&lt;Comment&gt; findByTagsInAndReviewStatus(@Param(&quot;tags&quot;) List&lt;String&gt; tags, String status, Pageable pageable);
+&nbsp;    
+&nbsp;    // 根据多个标签筛选评论并按创建时间排序
+&nbsp;    @Query(&quot;SELECT c FROM Comment c JOIN Post p ON c.postId = p.id WHERE c.reviewStatus = :status AND EXISTS (SELECT t FROM p.tags t WHERE t IN :tags) ORDER BY c.createdAt DESC&quot;)
+&nbsp;    Page&lt;Comment&gt; findByTagsInAndReviewStatusOrderByCreatedAtDesc(@Param(&quot;tags&quot;) List&lt;String&gt; tags, String status, Pageable pageable);
+&nbsp;    
+&nbsp;    // 管理员专用：根据多个标签筛选所有状态的评论
+&nbsp;    @Query(&quot;SELECT c FROM Comment c JOIN Post p ON c.postId = p.id WHERE EXISTS (SELECT t FROM p.tags t WHERE t IN :tags)&quot;)
+&nbsp;    Page&lt;Comment&gt; findAllCommentsByTagsIn(@Param(&quot;tags&quot;) List&lt;String&gt; tags, Pageable pageable);
+&nbsp;
+&nbsp;
+&nbsp;    Long countByUserId(String userId);
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:41</div>
+</div>
+</body>
+</html>

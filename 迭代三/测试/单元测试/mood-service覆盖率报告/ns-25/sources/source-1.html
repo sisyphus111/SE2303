@@ -1,0 +1,165 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > UserBanInterceptor</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.notificationservice.interceptor</a>
+</div>
+
+<h1>Coverage Summary for Class: UserBanInterceptor (com.se2303.notificationservice.interceptor)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserBanInterceptor</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/13)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.notificationservice.interceptor;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import com.se2303.notificationservice.dto.ApiResponse;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.servlet.http.HttpServletResponse;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;import org.springframework.web.servlet.HandlerInterceptor;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.PrintWriter;
+&nbsp;
+&nbsp;/**
+&nbsp; * 用户封禁拦截器
+&nbsp; * 检查请求头中的X-Valid字段，如果为false则表示用户已被封禁
+&nbsp; */
+&nbsp;@Component
+<b class="nc">&nbsp;public class UserBanInterceptor implements HandlerInterceptor {</b>
+&nbsp;
+<b class="nc">&nbsp;    private final ObjectMapper objectMapper = new ObjectMapper();</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+&nbsp;        // 获取X-Valid请求头
+<b class="nc">&nbsp;        String validHeader = request.getHeader(&quot;X-Valid&quot;);</b>
+&nbsp;        
+&nbsp;        // 如果X-Valid为false，表示用户已被封禁
+<b class="nc">&nbsp;        if (validHeader != null &amp;&amp; &quot;false&quot;.equalsIgnoreCase(validHeader)) {</b>
+&nbsp;            // 设置响应状态码
+<b class="nc">&nbsp;            response.setStatus(HttpServletResponse.SC_FORBIDDEN);</b>
+<b class="nc">&nbsp;            response.setContentType(&quot;application/json;charset=UTF-8&quot;);</b>
+&nbsp;            
+&nbsp;            // 创建封禁响应
+<b class="nc">&nbsp;            ApiResponse banResponse = ApiResponse.error(&quot;已封禁&quot;);</b>
+&nbsp;            
+&nbsp;            // 将响应写入输出流
+<b class="nc">&nbsp;            try (PrintWriter writer = response.getWriter()) {</b>
+<b class="nc">&nbsp;                writer.write(objectMapper.writeValueAsString(banResponse));</b>
+<b class="nc">&nbsp;                writer.flush();</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;            
+&nbsp;            // 返回false，阻止请求继续处理
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;        
+&nbsp;        // 如果X-Valid为true或不存在，允许请求继续处理
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:42</div>
+</div>
+</body>
+</html>

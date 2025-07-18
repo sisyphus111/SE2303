@@ -1,0 +1,314 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > InformStreamConsumer</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.informservice.service</a>
+</div>
+
+<h1>Coverage Summary for Class: InformStreamConsumer (com.se2303.informservice.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">InformStreamConsumer</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    77.8%
+  </span>
+  <span class="absValue">
+    (7/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    80%
+  </span>
+  <span class="absValue">
+    (16/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75.9%
+  </span>
+  <span class="absValue">
+    (44/58)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.informservice.service;
+&nbsp;
+&nbsp;import com.se2303.informservice.entity.Inform;
+&nbsp;import com.se2303.informservice.entity.InformType;
+&nbsp;import com.se2303.informservice.repository.InformRepository;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.data.redis.connection.stream.*;
+&nbsp;import org.springframework.data.redis.core.RedisTemplate;
+&nbsp;import org.springframework.scheduling.annotation.Scheduled;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.time.Duration;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.time.format.DateTimeParseException;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class InformStreamConsumer {</b>
+&nbsp;    
+<b class="fc">&nbsp;    private static final Logger logger = LoggerFactory.getLogger(InformStreamConsumer.class);</b>
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private RedisTemplate&lt;String, Object&gt; redisTemplate;
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private InformRepository informRepository;
+&nbsp;    
+&nbsp;    @Value(&quot;${inform.stream.key:user_inform_stream}&quot;)
+&nbsp;    private String informStreamKey;
+&nbsp;    
+&nbsp;    @Value(&quot;${inform.consumer.group:inform_consumer_group}&quot;)
+&nbsp;    private String consumerGroup;
+&nbsp;    
+&nbsp;    @Value(&quot;${inform.consumer.name:inform_consumer}&quot;)
+&nbsp;    private String consumerName;
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 定时轮询Redis Stream消费通知消息
+&nbsp;     * 每30秒执行一次
+&nbsp;     */
+&nbsp;    @Scheduled(fixedRate = 30000)
+&nbsp;    @Transactional
+&nbsp;    public void consumeInforms() {
+&nbsp;        try {
+&nbsp;            // 获取所有用户的Stream keys
+<b class="fc">&nbsp;            String pattern = informStreamKey + &quot;:*&quot;;</b>
+<b class="fc">&nbsp;            Set&lt;String&gt; keys = redisTemplate.keys(pattern);</b>
+&nbsp;            
+<b class="pc">&nbsp;            if (keys == null || keys.isEmpty()) {</b>
+<b class="fc">&nbsp;                logger.debug(&quot;没有找到用户Stream队列&quot;);</b>
+&nbsp;                return;
+&nbsp;            }
+&nbsp;            
+<b class="fc">&nbsp;            logger.debug(&quot;找到{}个用户Stream队列&quot;, keys.size());</b>
+<b class="fc">&nbsp;            for (String streamKey : keys) {</b>
+<b class="fc">&nbsp;                processUserStream(streamKey);</b>
+&nbsp;            }
+&nbsp;            
+&nbsp;        } catch (Exception e) {
+<b class="fc">&nbsp;            logger.error(&quot;❌ 消费通知消息时发生错误: {}&quot;, e.getMessage(), e);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 处理单个用户Stream
+&nbsp;     */
+&nbsp;    private void processUserStream(String streamKey) {
+&nbsp;        try {
+&nbsp;            // 创建消费者组（如果不存在）
+<b class="fc">&nbsp;            createConsumerGroupIfNotExists(streamKey);</b>
+&nbsp;            
+&nbsp;            // 从Stream中读取消息
+<b class="fc">&nbsp;            List&lt;MapRecord&lt;String, Object, Object&gt;&gt; records = redisTemplate.opsForStream()</b>
+<b class="fc">&nbsp;                .read(Consumer.from(consumerGroup, consumerName),</b>
+<b class="fc">&nbsp;                      StreamReadOptions.empty().count(10).block(Duration.ofSeconds(1)),</b>
+<b class="fc">&nbsp;                      StreamOffset.create(streamKey, ReadOffset.lastConsumed()));</b>
+&nbsp;            
+<b class="pc">&nbsp;            if (records != null &amp;&amp; !records.isEmpty()) {</b>
+<b class="fc">&nbsp;                logger.debug(&quot;从Stream {}读取到{}条消息&quot;, streamKey, records.size());</b>
+<b class="fc">&nbsp;                for (MapRecord&lt;String, Object, Object&gt; record : records) {</b>
+<b class="fc">&nbsp;                    processInformMessage(record, streamKey);</b>
+&nbsp;                    // 确认消息已处理
+<b class="fc">&nbsp;                    redisTemplate.opsForStream().acknowledge(streamKey, consumerGroup, record.getId());</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;            
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            logger.error(&quot;❌ 处理用户Stream失败: streamKey={}, error={}&quot;, streamKey, e.getMessage(), e);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 创建消费者组
+&nbsp;     */
+&nbsp;    public void createConsumerGroupIfNotExists(String streamKey) {
+&nbsp;        try {
+&nbsp;            // 尝试创建消费者组，从最新消息开始消费
+<b class="fc">&nbsp;            redisTemplate.opsForStream().createGroup(streamKey, ReadOffset.latest(), consumerGroup);</b>
+<b class="fc">&nbsp;            logger.debug(&quot;创建消费者组成功: {}&quot;, consumerGroup);</b>
+&nbsp;        } catch (Exception e) {
+&nbsp;            // 消费者组可能已存在，忽略错误
+<b class="nc">&nbsp;            logger.debug(&quot;消费者组可能已存在: {}&quot;, e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 处理单条通知消息
+&nbsp;     */
+&nbsp;    public void processInformMessage(MapRecord&lt;String, Object, Object&gt; record, String streamKey) {
+&nbsp;        try {
+<b class="fc">&nbsp;            Map&lt;Object, Object&gt; messageMap = record.getValue();</b>
+&nbsp;            
+<b class="fc">&nbsp;            String type = messageMap.get(&quot;type&quot;).toString();</b>
+&nbsp;            
+&nbsp;            // 只处理评论和点赞类型
+<b class="fc">&nbsp;            if (!&quot;COMMENT&quot;.equals(type) &amp;&amp; !&quot;LIKE&quot;.equals(type)) {</b>
+<b class="fc">&nbsp;                logger.warn(&quot;忽略不支持的通知类型: {}&quot;, type);</b>
+&nbsp;                return;
+&nbsp;            }
+&nbsp;            
+&nbsp;            // 创建Inform实体
+<b class="fc">&nbsp;            Inform inform = new Inform();</b>
+<b class="fc">&nbsp;            inform.setUserId(Long.valueOf(messageMap.get(&quot;userId&quot;).toString()));</b>
+<b class="fc">&nbsp;            inform.setType(InformType.valueOf(type));</b>
+<b class="fc">&nbsp;            inform.setRelatedId(messageMap.get(&quot;relatedId&quot;).toString());</b>
+<b class="fc">&nbsp;            inform.setFromUserId(Long.valueOf(messageMap.get(&quot;fromUserId&quot;).toString()));</b>
+&nbsp;            
+&nbsp;            // 根据类型设置内容
+<b class="fc">&nbsp;            if (&quot;COMMENT&quot;.equals(type)) {</b>
+<b class="fc">&nbsp;                inform.setContent(messageMap.get(&quot;content&quot;).toString()); // 存储评论内容</b>
+<b class="pc">&nbsp;            } else if (&quot;LIKE&quot;.equals(type)) {</b>
+<b class="fc">&nbsp;                inform.setContent(&quot;&quot;); // 点赞通知content为空</b>
+&nbsp;            }
+&nbsp;            
+<b class="fc">&nbsp;            inform.setIsRead(false);</b>
+&nbsp;            
+&nbsp;            // 解析创建时间
+&nbsp;            try {
+<b class="fc">&nbsp;                String createdAtStr = messageMap.get(&quot;createdAt&quot;).toString();</b>
+<b class="fc">&nbsp;                inform.setCreatedAt(LocalDateTime.parse(createdAtStr));</b>
+&nbsp;            } catch (DateTimeParseException e) {
+<b class="fc">&nbsp;                inform.setCreatedAt(LocalDateTime.now());</b>
+&nbsp;            }
+&nbsp;            
+&nbsp;            // 保存到数据库
+<b class="fc">&nbsp;            informRepository.save(inform);</b>
+&nbsp;            
+<b class="fc">&nbsp;            logger.info(&quot;✅ 通知消息已保存: userId={}, type={}, fromUserId={}, recordId={}&quot;, </b>
+<b class="fc">&nbsp;                       inform.getUserId(), inform.getType(), inform.getFromUserId(), record.getId());</b>
+&nbsp;            
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            logger.error(&quot;❌ 处理通知消息失败: recordId={}, streamKey={}, error={}&quot;, </b>
+<b class="nc">&nbsp;                        record.getId(), streamKey, e.getMessage(), e);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 手动触发消费指定用户的通知（用于立即处理）
+&nbsp;     */
+&nbsp;    public void consumeUserInforms(Long userId) {
+<b class="fc">&nbsp;        String streamKey = informStreamKey + &quot;:&quot; + userId;</b>
+<b class="fc">&nbsp;        processUserStream(streamKey);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取待处理的消息数量
+&nbsp;     */
+&nbsp;    public Long getPendingMessageCount(String streamKey) {
+&nbsp;        try {
+<b class="nc">&nbsp;            PendingMessagesSummary summary = redisTemplate.opsForStream()</b>
+<b class="nc">&nbsp;                .pending(streamKey, consumerGroup);</b>
+<b class="nc">&nbsp;            return summary.getTotalPendingMessages();</b>
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            logger.error(&quot;❌ 获取待处理消息数量失败: {}&quot;, e.getMessage());</b>
+<b class="nc">&nbsp;            return 0L;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取Stream信息（用于监控）
+&nbsp;     */
+&nbsp;    public String getStreamInfo(Long userId) {
+<b class="nc">&nbsp;        String streamKey = informStreamKey + &quot;:&quot; + userId;</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            StreamInfo.XInfoStream info = redisTemplate.opsForStream().info(streamKey);</b>
+<b class="nc">&nbsp;            return String.format(&quot;Stream: %s, Length: %d, Groups: %d&quot;, </b>
+<b class="nc">&nbsp;                                streamKey, info.streamLength(), info.groupCount());</b>
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            return &quot;Stream不存在或获取信息失败: &quot; + e.getMessage();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:41</div>
+</div>
+</body>
+</html>

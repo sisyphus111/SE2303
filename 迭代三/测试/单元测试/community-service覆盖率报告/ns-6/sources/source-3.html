@@ -1,0 +1,156 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AlertStatus</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.alertservice.model</a>
+</div>
+
+<h1>Coverage Summary for Class: AlertStatus (com.se2303.alertservice.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AlertStatus</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.alertservice.model;
+&nbsp;
+&nbsp;/**
+&nbsp; * 警报状态枚举
+&nbsp; */
+<b class="nc">&nbsp;public enum AlertStatus {</b>
+&nbsp;    /**
+&nbsp;     * 待处理
+&nbsp;     * 警报已创建，等待心理咨询师处理
+&nbsp;     */
+<b class="nc">&nbsp;    PENDING(&quot;待处理&quot;),</b>
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 已分配
+&nbsp;     * 警报已分配给心理咨询师
+&nbsp;     */
+<b class="nc">&nbsp;    ASSIGNED(&quot;已分配&quot;),</b>
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 处理中
+&nbsp;     * 心理咨询师正在处理
+&nbsp;     */
+<b class="nc">&nbsp;    IN_PROGRESS(&quot;处理中&quot;),</b>
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 已完成
+&nbsp;     * 警报已处理完成
+&nbsp;     */
+<b class="nc">&nbsp;    COMPLETED(&quot;已完成&quot;),</b>
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 已关闭
+&nbsp;     * 警报已关闭
+&nbsp;     */
+<b class="nc">&nbsp;    CLOSED(&quot;已关闭&quot;),</b>
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 已取消
+&nbsp;     * 警报已取消
+&nbsp;     */
+<b class="nc">&nbsp;    CANCELLED(&quot;已取消&quot;);</b>
+&nbsp;    
+&nbsp;    private final String description;
+&nbsp;    
+<b class="nc">&nbsp;    AlertStatus(String description) {</b>
+<b class="nc">&nbsp;        this.description = description;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public String getDescription() {
+<b class="nc">&nbsp;        return description;</b>
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:33</div>
+</div>
+</body>
+</html>

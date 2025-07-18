@@ -1,0 +1,304 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > CarouselService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.notificationservice.service</a>
+</div>
+
+<h1>Coverage Summary for Class: CarouselService (com.se2303.notificationservice.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CarouselService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (16/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    92.9%
+  </span>
+  <span class="absValue">
+    (79/85)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.notificationservice.service;
+&nbsp;
+&nbsp;import com.se2303.notificationservice.dto.ApiResponse;
+&nbsp;import com.se2303.notificationservice.dto.CarouselImageResponse;
+&nbsp;import com.se2303.notificationservice.dto.CreateCarouselImageRequest;
+&nbsp;import com.se2303.notificationservice.dto.UpdateCarouselImageRequest;
+&nbsp;import com.se2303.notificationservice.model.CarouselImage;
+&nbsp;import com.se2303.notificationservice.repository.CarouselImageRepository;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class CarouselService {</b>
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private CarouselImageRepository carouselImageRepository;
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 创建轮播图
+&nbsp;     */
+&nbsp;    public ApiResponse createCarouselImage(CreateCarouselImageRequest request) {
+&nbsp;        try {
+<b class="fc">&nbsp;            CarouselImage carouselImage = new CarouselImage(</b>
+<b class="fc">&nbsp;                request.getImageUrl(),</b>
+<b class="fc">&nbsp;                request.getTitle(),</b>
+<b class="fc">&nbsp;                request.getDescription(),</b>
+<b class="fc">&nbsp;                request.getCategory(),</b>
+<b class="fc">&nbsp;                request.getSortOrder()</b>
+&nbsp;            );
+&nbsp;            
+<b class="fc">&nbsp;            CarouselImage savedImage = carouselImageRepository.save(carouselImage);</b>
+<b class="fc">&nbsp;            CarouselImageResponse response = convertToResponse(savedImage);</b>
+&nbsp;            
+<b class="fc">&nbsp;            return ApiResponse.success(response, &quot;轮播图创建成功&quot;);</b>
+<b class="fc">&nbsp;        } catch (Exception e) {</b>
+<b class="fc">&nbsp;            return ApiResponse.error(&quot;创建轮播图失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取轮播图列表
+&nbsp;     */
+&nbsp;    public ApiResponse getCarouselList() {
+&nbsp;        try {
+<b class="fc">&nbsp;            List&lt;CarouselImage&gt; images = carouselImageRepository.findAllByOrderBySortOrderAsc();</b>
+<b class="fc">&nbsp;            List&lt;CarouselImageResponse&gt; responses = images.stream()</b>
+<b class="fc">&nbsp;                    .map(this::convertToResponse)</b>
+<b class="fc">&nbsp;                    .collect(Collectors.toList());</b>
+&nbsp;            
+<b class="fc">&nbsp;            return ApiResponse.success(responses, &quot;获取轮播图成功&quot;);</b>
+<b class="fc">&nbsp;        } catch (Exception e) {</b>
+<b class="fc">&nbsp;            return ApiResponse.error(&quot;获取轮播图失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取轮播图列表（按分类）
+&nbsp;     */
+&nbsp;    public ApiResponse getCarouselImages(String category) {
+&nbsp;        try {
+&nbsp;            List&lt;CarouselImage&gt; images;
+&nbsp;            
+<b class="pc">&nbsp;            if (category != null &amp;&amp; !category.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;                images = carouselImageRepository.findByCategoryOrderBySortOrderAsc(category.trim());</b>
+&nbsp;            } else {
+<b class="fc">&nbsp;                images = carouselImageRepository.findAllByOrderBySortOrderAsc();</b>
+&nbsp;            }
+&nbsp;            
+<b class="fc">&nbsp;            List&lt;CarouselImageResponse&gt; responses = images.stream()</b>
+<b class="fc">&nbsp;                    .map(this::convertToResponse)</b>
+<b class="fc">&nbsp;                    .collect(Collectors.toList());</b>
+&nbsp;            
+<b class="fc">&nbsp;            return ApiResponse.success(responses, &quot;获取轮播图成功&quot;);</b>
+<b class="fc">&nbsp;        } catch (Exception e) {</b>
+<b class="fc">&nbsp;            return ApiResponse.error(&quot;获取轮播图失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取所有轮播图
+&nbsp;     */
+&nbsp;    public ApiResponse getAllCarouselImages() {
+&nbsp;        try {
+<b class="fc">&nbsp;            List&lt;CarouselImage&gt; images = carouselImageRepository.findAllByOrderBySortOrderAsc();</b>
+<b class="fc">&nbsp;            List&lt;CarouselImageResponse&gt; responses = images.stream()</b>
+<b class="fc">&nbsp;                    .map(this::convertToResponse)</b>
+<b class="fc">&nbsp;                    .collect(Collectors.toList());</b>
+&nbsp;            
+<b class="fc">&nbsp;            return ApiResponse.success(responses, &quot;获取所有轮播图成功&quot;);</b>
+<b class="fc">&nbsp;        } catch (Exception e) {</b>
+<b class="fc">&nbsp;            return ApiResponse.error(&quot;获取所有轮播图失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 按id正序分页获取轮播图
+&nbsp;     */
+&nbsp;    public ApiResponse getCarouselListByIdAsc(int page, int size) {
+&nbsp;        try {
+<b class="fc">&nbsp;            org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page - 1, size);</b>
+<b class="fc">&nbsp;            org.springframework.data.domain.Page&lt;CarouselImage&gt; carouselPage = carouselImageRepository.findAllByOrderByIdAsc(pageable);</b>
+<b class="fc">&nbsp;            List&lt;CarouselImageResponse&gt; responses = carouselPage.getContent().stream()</b>
+<b class="fc">&nbsp;                    .map(this::convertToResponse)</b>
+<b class="fc">&nbsp;                    .collect(java.util.stream.Collectors.toList());</b>
+<b class="fc">&nbsp;            long total = carouselPage.getTotalElements();</b>
+<b class="fc">&nbsp;            java.util.Map&lt;String, Object&gt; result = new java.util.HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;            result.put(&quot;list&quot;, responses);</b>
+<b class="fc">&nbsp;            result.put(&quot;total&quot;, total);</b>
+<b class="fc">&nbsp;            return ApiResponse.success(result, &quot;按id正序分页获取轮播图成功&quot;);</b>
+<b class="fc">&nbsp;        } catch (Exception e) {</b>
+<b class="fc">&nbsp;            return ApiResponse.error(&quot;按id正序分页获取轮播图失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除轮播图
+&nbsp;     */
+&nbsp;    public ApiResponse deleteCarouselImage(Long id) {
+&nbsp;        try {
+<b class="fc">&nbsp;            if (id == null) {</b>
+<b class="fc">&nbsp;                return ApiResponse.error(&quot;轮播图ID不能为空&quot;);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            if (!carouselImageRepository.existsById(id)) {</b>
+<b class="fc">&nbsp;                return ApiResponse.error(&quot;轮播图不存在&quot;);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            carouselImageRepository.deleteById(id);</b>
+<b class="fc">&nbsp;            return ApiResponse.success(null, &quot;轮播图删除成功&quot;);</b>
+<b class="fc">&nbsp;        } catch (Exception e) {</b>
+<b class="fc">&nbsp;            return ApiResponse.error(&quot;删除轮播图失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 更新轮播图
+&nbsp;     */
+&nbsp;    public ApiResponse updateCarouselImage(Long id, com.se2303.notificationservice.dto.UpdateCarouselImageRequest request) {
+&nbsp;        try {
+<b class="fc">&nbsp;            if (id == null) {</b>
+<b class="fc">&nbsp;                return ApiResponse.error(&quot;轮播图ID不能为空&quot;);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            if (!carouselImageRepository.existsById(id)) {</b>
+<b class="fc">&nbsp;                return ApiResponse.error(&quot;轮播图不存在&quot;);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            CarouselImage image = carouselImageRepository.findById(id).orElse(null);</b>
+<b class="fc">&nbsp;            if (image == null) {</b>
+<b class="fc">&nbsp;                return ApiResponse.error(&quot;轮播图不存在&quot;);</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (request.getImageUrl() != null) {</b>
+<b class="nc">&nbsp;                image.setImageUrl(request.getImageUrl());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (request.getTitle() != null) {</b>
+<b class="nc">&nbsp;                image.setTitle(request.getTitle());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (request.getDescription() != null) {</b>
+<b class="nc">&nbsp;                image.setDescription(request.getDescription());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (request.getCategory() != null) {</b>
+<b class="nc">&nbsp;                image.setCategory(request.getCategory());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (request.getSortOrder() != null) {</b>
+<b class="nc">&nbsp;                image.setSortOrder(request.getSortOrder());</b>
+&nbsp;            }
+<b class="fc">&nbsp;            CarouselImage updated = carouselImageRepository.save(image);</b>
+<b class="fc">&nbsp;            CarouselImageResponse response = convertToResponse(updated);</b>
+<b class="fc">&nbsp;            return ApiResponse.success(response, &quot;轮播图更新成功&quot;);</b>
+<b class="fc">&nbsp;        } catch (Exception e) {</b>
+<b class="fc">&nbsp;            return ApiResponse.error(&quot;更新轮播图失败: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 将CarouselImage实体转换为CarouselImageResponse
+&nbsp;     */
+&nbsp;    private CarouselImageResponse convertToResponse(CarouselImage image) {
+<b class="fc">&nbsp;        return new CarouselImageResponse(</b>
+<b class="fc">&nbsp;                image.getId(),</b>
+<b class="fc">&nbsp;                image.getImageUrl(),</b>
+<b class="fc">&nbsp;                image.getTitle(),</b>
+<b class="fc">&nbsp;                image.getDescription(),</b>
+<b class="fc">&nbsp;                image.getCategory(),</b>
+<b class="fc">&nbsp;                image.getSortOrder(),</b>
+<b class="fc">&nbsp;                image.getCreatedAt()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:41</div>
+</div>
+</body>
+</html>

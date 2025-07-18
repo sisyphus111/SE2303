@@ -1,0 +1,320 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > ChatWebSocketHandler</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.botservice.handler</a>
+</div>
+
+<h1>Coverage Summary for Class: ChatWebSocketHandler (com.se2303.botservice.handler)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ChatWebSocketHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/48)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.botservice.handler;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import com.se2303.botservice.model.ChatMessage;
+&nbsp;import com.se2303.botservice.service.AIService;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;import org.springframework.web.socket.CloseStatus;
+&nbsp;import org.springframework.web.socket.TextMessage;
+&nbsp;import org.springframework.web.socket.WebSocketSession;
+&nbsp;import org.springframework.web.socket.handler.TextWebSocketHandler;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.UUID;
+<b class="nc">&nbsp;import java.util.concurrent.ConcurrentHashMap;</b>
+&nbsp;
+&nbsp;@Component
+&nbsp;public class ChatWebSocketHandler extends TextWebSocketHandler {
+&nbsp;
+<b class="nc">&nbsp;    @Autowired</b>
+<b class="nc">&nbsp;    private AIService aiService;</b>
+&nbsp;
+&nbsp;    private final ObjectMapper objectMapper = new ObjectMapper();
+&nbsp;    private final ConcurrentHashMap&lt;String, WebSocketSession&gt; sessions = new ConcurrentHashMap&lt;&gt;();
+<b class="nc">&nbsp;    private final ConcurrentHashMap&lt;String, List&lt;ChatMessage&gt;&gt; sessionHistory = new ConcurrentHashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;    private final int MAX_HISTORY_SIZE = 20; // 最大历史消息数量</b>
+&nbsp;
+&nbsp;    @Override
+<b class="nc">&nbsp;    public void afterConnectionEstablished(WebSocketSession session) throws Exception {</b>
+<b class="nc">&nbsp;        sessions.put(session.getId(), session);</b>
+<b class="nc">&nbsp;        sessionHistory.put(session.getId(), new ArrayList&lt;&gt;());</b>
+<b class="nc">&nbsp;        System.out.println(&quot;WebSocket连接建立: &quot; + session.getId());</b>
+&nbsp;        
+<b class="nc">&nbsp;        // 从URL参数中获取用户ID</b>
+&nbsp;        String userId = extractUserIdFromSession(session);
+&nbsp;        
+&nbsp;        // 设置用户信息到AI服务
+&nbsp;        aiService.setCurrentUser(userId, session.getId());
+&nbsp;        System.out.println(&quot;已设置用户信息 - 用户ID: &quot; + userId + &quot;, 会话ID: &quot; + session.getId());
+<b class="nc">&nbsp;        </b>
+<b class="nc">&nbsp;        // 发送欢迎消息</b>
+&nbsp;        ChatMessage welcomeMessage = new ChatMessage(
+&nbsp;            UUID.randomUUID().toString(),
+<b class="nc">&nbsp;            &quot;ai&quot;, </b>
+&nbsp;            &quot;assistant&quot;,
+&nbsp;            &quot;你好！我是小暖，你的心理健康陪伴助手。很高兴认识你！无论是开心的事还是困扰，我都很愿意倾听和陪伴。有什么想和我分享的吗？&quot;,
+<b class="nc">&nbsp;            System.currentTimeMillis()</b>
+&nbsp;        );
+<b class="nc">&nbsp;        </b>
+<b class="nc">&nbsp;        // 将欢迎消息添加到历史记录</b>
+<b class="nc">&nbsp;        addToHistory(session.getId(), welcomeMessage);</b>
+<b class="nc">&nbsp;        sendMessage(session, welcomeMessage);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;</b>
+<b class="nc">&nbsp;    @Override</b>
+&nbsp;    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+&nbsp;        try {
+&nbsp;            ChatMessage chatMessage = objectMapper.readValue(message.getPayload(), ChatMessage.class);
+<b class="nc">&nbsp;            System.out.println(&quot;收到消息: &quot; + chatMessage.getContent());</b>
+<b class="nc">&nbsp;</b>
+&nbsp;            // 设置消息ID和角色
+<b class="nc">&nbsp;            if (chatMessage.getId() == null) {</b>
+<b class="nc">&nbsp;                chatMessage.setId(UUID.randomUUID().toString());</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            chatMessage.setRole(&quot;user&quot;);</b>
+<b class="nc">&nbsp;            chatMessage.setTimestamp(System.currentTimeMillis());</b>
+<b class="nc">&nbsp;</b>
+<b class="nc">&nbsp;            // 将用户消息添加到历史记录</b>
+<b class="nc">&nbsp;            addToHistory(session.getId(), chatMessage);</b>
+<b class="nc">&nbsp;</b>
+&nbsp;            // 获取当前会话的历史记录
+&nbsp;            List&lt;ChatMessage&gt; history = sessionHistory.get(session.getId());
+<b class="nc">&nbsp;            if (history == null) {</b>
+&nbsp;                history = new ArrayList&lt;&gt;();
+<b class="nc">&nbsp;                sessionHistory.put(session.getId(), history);</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            // 使用原子引用确保结束消息只发送一次</b>
+<b class="nc">&nbsp;            final boolean[] endMessageSent = {false};</b>
+&nbsp;
+<b class="nc">&nbsp;            // 调用AI服务获取流式回复，传递历史消息</b>
+<b class="nc">&nbsp;            aiService.getStreamingResponse(chatMessage.getContent(), history, (chunk) -&gt; {</b>
+<b class="nc">&nbsp;                try {</b>
+<b class="nc">&nbsp;                    ChatMessage aiMessage = new ChatMessage();</b>
+<b class="nc">&nbsp;                    aiMessage.setType(&quot;ai_chunk&quot;);</b>
+&nbsp;                    aiMessage.setContent(chunk);
+&nbsp;                    aiMessage.setTimestamp(System.currentTimeMillis());
+&nbsp;                    sendMessage(session, aiMessage);
+&nbsp;                } catch (Exception e) {
+&nbsp;                    e.printStackTrace();
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;            }, (fullResponse) -&gt; {</b>
+&nbsp;                // 将完整的AI回复添加到历史记录
+&nbsp;                ChatMessage aiCompleteMessage = new ChatMessage(
+&nbsp;                    UUID.randomUUID().toString(),
+&nbsp;                    &quot;ai&quot;,
+<b class="nc">&nbsp;                    &quot;assistant&quot;, </b>
+<b class="nc">&nbsp;                    fullResponse,</b>
+&nbsp;                    System.currentTimeMillis()
+&nbsp;                );
+&nbsp;                addToHistory(session.getId(), aiCompleteMessage);
+<b class="nc">&nbsp;            }, () -&gt; {</b>
+<b class="nc">&nbsp;                // 流式响应结束，发送结束消息（确保只发送一次）</b>
+<b class="nc">&nbsp;                synchronized (endMessageSent) {</b>
+&nbsp;                    if (!endMessageSent[0]) {
+&nbsp;                        try {
+&nbsp;                            System.out.println(&quot;流式响应结束，发送ai_end消息&quot;);
+&nbsp;                            ChatMessage endMessage = new ChatMessage();
+&nbsp;                            endMessage.setType(&quot;ai_end&quot;);
+&nbsp;                            endMessage.setContent(&quot;&quot;);
+&nbsp;                            endMessage.setTimestamp(System.currentTimeMillis());
+&nbsp;                            sendMessage(session, endMessage);
+&nbsp;                            endMessageSent[0] = true;
+&nbsp;                        } catch (Exception e) {
+&nbsp;                            e.printStackTrace();
+&nbsp;                        }
+&nbsp;                    } else {
+&nbsp;                        System.out.println(&quot;ai_end消息已发送，跳过重复发送&quot;);
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            });
+&nbsp;
+&nbsp;        } catch (Exception e) {
+&nbsp;            e.printStackTrace();
+&nbsp;            // 发送错误消息
+&nbsp;            ChatMessage errorMessage = new ChatMessage();
+&nbsp;            errorMessage.setType(&quot;error&quot;);
+&nbsp;            errorMessage.setContent(&quot;抱歉，处理您的消息时出现了错误，请稍后重试。&quot;);
+&nbsp;            errorMessage.setTimestamp(System.currentTimeMillis());
+&nbsp;            sendMessage(session, errorMessage);
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+&nbsp;        sessions.remove(session.getId());
+&nbsp;        sessionHistory.remove(session.getId());
+&nbsp;        System.out.println(&quot;WebSocket连接关闭: &quot; + session.getId());
+&nbsp;        aiService.resetConversationTimer();
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
+&nbsp;        System.err.println(&quot;WebSocket传输错误: &quot; + exception.getMessage());
+&nbsp;        sessions.remove(session.getId());
+&nbsp;        sessionHistory.remove(session.getId());
+&nbsp;    }
+&nbsp;
+&nbsp;    private void addToHistory(String sessionId, ChatMessage message) {
+&nbsp;        List&lt;ChatMessage&gt; history = sessionHistory.get(sessionId);
+&nbsp;        if (history != null) {
+&nbsp;            history.add(message);
+&nbsp;            // 限制历史记录大小
+&nbsp;            if (history.size() &gt; MAX_HISTORY_SIZE) {
+&nbsp;                history.remove(0); // 移除最旧的消息
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void sendMessage(WebSocketSession session, ChatMessage message) throws IOException {
+&nbsp;        if (session.isOpen()) {
+&nbsp;            String jsonMessage = objectMapper.writeValueAsString(message);
+&nbsp;            session.sendMessage(new TextMessage(jsonMessage));
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 从WebSocket会话中提取用户ID
+&nbsp;     * @param session WebSocket会话
+&nbsp;     * @return 用户ID，如果没有则返回默认值
+&nbsp;     */
+&nbsp;    private String extractUserIdFromSession(WebSocketSession session) {
+&nbsp;        try {
+&nbsp;            // 获取URL查询参数
+&nbsp;            String query = session.getUri().getQuery();
+&nbsp;            if (query != null &amp;&amp; query.contains(&quot;userId=&quot;)) {
+&nbsp;                // 解析userId参数
+&nbsp;                String[] params = query.split(&quot;&amp;&quot;);
+&nbsp;                for (String param : params) {
+&nbsp;                    if (param.startsWith(&quot;userId=&quot;)) {
+&nbsp;                        String userId = param.substring(&quot;userId=&quot;.length());
+&nbsp;                        // URL解码
+&nbsp;                        try {
+&nbsp;                            userId = java.net.URLDecoder.decode(userId, &quot;UTF-8&quot;);
+&nbsp;                        } catch (Exception e) {
+&nbsp;                            System.err.println(&quot;URL解码失败: &quot; + e.getMessage());
+&nbsp;                        }
+&nbsp;                        System.out.println(&quot;从URL参数中获取到用户ID: &quot; + userId);
+&nbsp;                        return userId;
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+&nbsp;        } catch (Exception e) {
+&nbsp;            System.err.println(&quot;提取用户ID时出错: &quot; + e.getMessage());
+&nbsp;        }
+&nbsp;        
+&nbsp;        // 如果没有获取到用户ID，使用默认值
+&nbsp;        String defaultUserId = &quot;user_&quot; + session.getId();
+&nbsp;        System.out.println(&quot;使用默认用户ID: &quot; + defaultUserId);
+&nbsp;        return defaultUserId;
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:42</div>
+</div>
+</body>
+</html>

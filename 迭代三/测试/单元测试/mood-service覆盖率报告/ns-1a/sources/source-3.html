@@ -1,0 +1,533 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MoodController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.moodservice.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: MoodController (com.se2303.moodservice.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MoodController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    96.2%
+  </span>
+  <span class="absValue">
+    (25/26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.4%
+  </span>
+  <span class="absValue">
+    (114/122)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.moodservice.controller;
+&nbsp;
+&nbsp;import com.se2303.moodservice.dto.ApiResponse;
+&nbsp;import com.se2303.moodservice.dto.CheckInRequest;
+&nbsp;import com.se2303.moodservice.dto.DiaryRequest;
+&nbsp;import com.se2303.moodservice.dto.MoodCheckInRequest;
+&nbsp;import com.se2303.moodservice.dto.MoodCheckInResponse;
+&nbsp;import com.se2303.moodservice.dto.MoodQueryRequest;
+&nbsp;import com.se2303.moodservice.dto.TodayMoodResponse;
+&nbsp;import com.se2303.moodservice.model.MoodLabel;
+&nbsp;import com.se2303.moodservice.service.DatabaseInitService;
+&nbsp;import com.se2303.moodservice.service.MoodService;
+&nbsp;import com.se2303.moodservice.service.MoodAnalysisService;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.format.annotation.DateTimeFormat;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;/**
+&nbsp; * 心情打卡控制器
+&nbsp; * 注意：已删除@CrossOrigin注解，因为网关统一处理CORS
+&nbsp; */
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/mood&quot;)
+<b class="fc">&nbsp;public class MoodController {</b>
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private MoodService moodService;
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private DatabaseInitService databaseInitService;
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private MoodAnalysisService moodAnalysisService;
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 用户心情打卡（包含日记）
+&nbsp;     * POST /api/mood/check-in
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/check-in&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; checkIn(
+&nbsp;            @RequestHeader(&quot;X-User-Id&quot;) String userId,
+&nbsp;            @RequestHeader(&quot;X-Identity&quot;) boolean identity,
+&nbsp;            @Valid @RequestBody MoodCheckInRequest request) {
+<b class="fc">&nbsp;        MoodCheckInResponse response = moodService.checkIn(userId, request);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(response, &quot;心情打卡成功&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 只打卡不写日记
+&nbsp;     * POST /api/mood/check-in-only
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/check-in-only&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; checkInOnly(
+&nbsp;            @RequestHeader(&quot;X-User-Id&quot;) String userId,
+&nbsp;            @RequestHeader(&quot;X-Identity&quot;) boolean identity,
+&nbsp;            @Valid @RequestBody CheckInRequest request) {
+<b class="fc">&nbsp;        MoodCheckInResponse response = moodService.checkInOnly(userId, request);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(response, &quot;心情打卡成功&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 只写日记不打卡
+&nbsp;     * POST /api/mood/diary-only
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/diary-only&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; writeDiaryOnly(
+&nbsp;            @RequestHeader(&quot;X-User-Id&quot;) String userId,
+&nbsp;            @RequestHeader(&quot;X-Identity&quot;) boolean identity,
+&nbsp;            @Valid @RequestBody DiaryRequest request) {
+<b class="fc">&nbsp;        MoodCheckInResponse response = moodService.writeDiaryOnly(userId, request);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(response, &quot;日记保存成功&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据ID获取心情记录
+&nbsp;     * GET /api/mood/{id}
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getMoodById(@PathVariable Long id) {
+<b class="fc">&nbsp;        MoodCheckInResponse response = moodService.findById(id);</b>
+<b class="fc">&nbsp;        if (response != null) {</b>
+<b class="fc">&nbsp;            return ResponseEntity.ok(ApiResponse.success(response, &quot;获取心情记录成功&quot;));</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="fc">&nbsp;                    .body(ApiResponse.error(&quot;心情记录不存在&quot;));</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID和日期获取心情记录
+&nbsp;     * GET /api/mood/user/{userId}/date/{date}
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/user/{userId}/date/{date}&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getMoodByUserIdAndDate(
+&nbsp;            @PathVariable String userId,
+&nbsp;            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+<b class="fc">&nbsp;        MoodCheckInResponse response = moodService.findByUserIdAndDate(userId, date);</b>
+<b class="fc">&nbsp;        if (response != null) {</b>
+<b class="fc">&nbsp;            return ResponseEntity.ok(ApiResponse.success(response, &quot;获取心情记录成功&quot;));</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="fc">&nbsp;                    .body(ApiResponse.error(&quot;该日期的心情记录不存在&quot;));</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID获取所有心情记录
+&nbsp;     * GET /api/mood/user/{userId}
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/user/{userId}&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getMoodsByUserId(@PathVariable String userId) {
+<b class="fc">&nbsp;        List&lt;MoodCheckInResponse&gt; responses = moodService.findByUserId(userId);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(responses, &quot;获取用户心情记录成功&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据用户ID和日期范围获取心情记录
+&nbsp;     * GET /api/mood/user/{userId}/range?startDate=2024-01-01&amp;endDate=2024-01-31
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/user/{userId}/range&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getMoodsByUserIdAndDateRange(
+&nbsp;            @PathVariable String userId,
+&nbsp;            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+&nbsp;            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+<b class="fc">&nbsp;        List&lt;MoodCheckInResponse&gt; responses = moodService.findByUserIdAndDateBetween(userId, startDate, endDate);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(responses, &quot;获取日期范围心情记录成功&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 检查用户是否已打卡
+&nbsp;     * GET /api/mood/user/{userId}/check-status/{date}
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/user/{userId}/check-status/{date}&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; checkStatus(
+&nbsp;            @PathVariable String userId,
+&nbsp;            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+<b class="fc">&nbsp;        boolean hasCheckedIn = moodService.hasCheckedIn(userId, date);</b>
+<b class="fc">&nbsp;        Map&lt;String, Object&gt; data = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        data.put(&quot;userId&quot;, userId);</b>
+<b class="fc">&nbsp;        data.put(&quot;date&quot;, date);</b>
+<b class="fc">&nbsp;        data.put(&quot;hasCheckedIn&quot;, hasCheckedIn);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(data, &quot;获取打卡状态成功&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 检查用户是否已写日记
+&nbsp;     * GET /api/mood/user/{userId}/diary-status/{date}
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/user/{userId}/diary-status/{date}&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; checkDiaryStatus(
+&nbsp;            @PathVariable String userId,
+&nbsp;            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+<b class="fc">&nbsp;        boolean hasWrittenDiary = moodService.hasWrittenDiary(userId, date);</b>
+<b class="fc">&nbsp;        Map&lt;String, Object&gt; data = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        data.put(&quot;userId&quot;, userId);</b>
+<b class="fc">&nbsp;        data.put(&quot;date&quot;, date);</b>
+<b class="fc">&nbsp;        data.put(&quot;hasWrittenDiary&quot;, hasWrittenDiary);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(data, &quot;获取日记状态成功&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 更新心情记录
+&nbsp;     * PUT /api/mood/{id}
+&nbsp;     */
+&nbsp;    @PutMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; updateMood(
+&nbsp;            @PathVariable Long id,
+&nbsp;            @Valid @RequestBody MoodCheckInRequest request) {
+<b class="fc">&nbsp;        MoodCheckInResponse response = moodService.updateMood(id, request);</b>
+<b class="fc">&nbsp;        if (response != null) {</b>
+<b class="fc">&nbsp;            return ResponseEntity.ok(ApiResponse.success(response, &quot;心情记录更新成功&quot;));</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="fc">&nbsp;                    .body(ApiResponse.error(&quot;心情记录不存在&quot;));</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 删除心情记录
+&nbsp;     * DELETE /api/mood/{id}
+&nbsp;     */
+&nbsp;    @DeleteMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; deleteMood(@PathVariable Long id) {
+<b class="fc">&nbsp;        moodService.deleteMood(id);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(&quot;心情记录删除成功&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 删除某一天的日记内容
+&nbsp;     * DELETE /api/mood/user/{userId}/diary/{date}
+&nbsp;     */
+&nbsp;    @DeleteMapping(&quot;/user/{userId}/diary/{date}&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; deleteDiary(
+&nbsp;            @PathVariable String userId,
+&nbsp;            @PathVariable @DateTimeFormat(pattern = &quot;yyyy-MM-dd&quot;) LocalDate date) {
+<b class="fc">&nbsp;        MoodCheckInResponse response = moodService.deleteDiary(userId, date);</b>
+<b class="fc">&nbsp;        if (response != null) {</b>
+<b class="fc">&nbsp;            return ResponseEntity.ok(ApiResponse.success(response, &quot;日记删除成功&quot;));</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="fc">&nbsp;                    .body(ApiResponse.error(&quot;日记不存在&quot;));</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取用户打卡统计
+&nbsp;     * GET /api/mood/user/{userId}/stats
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/user/{userId}/stats&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getUserStats(@PathVariable String userId) {
+<b class="fc">&nbsp;        long totalCheckIns = moodService.getCheckInCount(userId);</b>
+<b class="fc">&nbsp;        long totalDiaries = moodService.getDiaryCount(userId);</b>
+<b class="fc">&nbsp;        Map&lt;String, Object&gt; data = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        data.put(&quot;userId&quot;, userId);</b>
+<b class="fc">&nbsp;        data.put(&quot;totalCheckIns&quot;, totalCheckIns);</b>
+<b class="fc">&nbsp;        data.put(&quot;totalDiaries&quot;, totalDiaries);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(data, &quot;获取用户统计成功&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取用户在指定日期范围内的打卡统计
+&nbsp;     * GET /api/mood/user/{userId}/stats/range?startDate=2024-01-01&amp;endDate=2024-01-31
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/user/{userId}/stats/range&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getUserStatsByRange(
+&nbsp;            @PathVariable String userId,
+&nbsp;            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+&nbsp;            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+<b class="fc">&nbsp;        long checkInCount = moodService.getCheckInCount(userId, startDate, endDate);</b>
+<b class="fc">&nbsp;        long diaryCount = moodService.getDiaryCount(userId, startDate, endDate);</b>
+<b class="fc">&nbsp;        Map&lt;String, Object&gt; data = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        data.put(&quot;userId&quot;, userId);</b>
+<b class="fc">&nbsp;        data.put(&quot;startDate&quot;, startDate);</b>
+<b class="fc">&nbsp;        data.put(&quot;endDate&quot;, endDate);</b>
+<b class="fc">&nbsp;        data.put(&quot;checkInCount&quot;, checkInCount);</b>
+<b class="fc">&nbsp;        data.put(&quot;diaryCount&quot;, diaryCount);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(data, &quot;获取日期范围统计成功&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取所有可用的心情标签
+&nbsp;     * GET /api/mood/labels
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/labels&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getAvailableLabels() {
+<b class="fc">&nbsp;        Map&lt;String, Object&gt; data = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        data.put(&quot;positive&quot;, Arrays.stream(MoodLabel.getPositiveMoods()).map(MoodLabel::getLabel).toArray(String[]::new));</b>
+<b class="fc">&nbsp;        data.put(&quot;neutral&quot;, Arrays.stream(MoodLabel.getNeutralMoods()).map(MoodLabel::getLabel).toArray(String[]::new));</b>
+<b class="fc">&nbsp;        data.put(&quot;negative&quot;, Arrays.stream(MoodLabel.getNegativeMoods()).map(MoodLabel::getLabel).toArray(String[]::new));</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(data, &quot;获取心情标签成功&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 健康检查接口
+&nbsp;     * GET /api/mood/health
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/health&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; health() {
+<b class="fc">&nbsp;        Map&lt;String, String&gt; data = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        data.put(&quot;status&quot;, &quot;UP&quot;);</b>
+<b class="fc">&nbsp;        data.put(&quot;service&quot;, &quot;mood-service&quot;);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(data, &quot;服务运行正常&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取数据统计
+&nbsp;     * GET /api/mood/data-stats
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/data-stats&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getDataStats() {
+<b class="fc">&nbsp;        Map&lt;String, Object&gt; data = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        data.put(&quot;stats&quot;, databaseInitService.getDataStats());</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(data, &quot;获取数据统计成功&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 手动初始化示例数据
+&nbsp;     * POST /api/mood/init-data
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/init-data&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; initSampleData() {
+<b class="fc">&nbsp;        databaseInitService.manualInit();</b>
+<b class="fc">&nbsp;        Map&lt;String, Object&gt; data = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        data.put(&quot;stats&quot;, databaseInitService.getDataStats());</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(data, &quot;示例数据初始化成功&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 清空所有数据
+&nbsp;     * DELETE /api/mood/clear-data
+&nbsp;     */
+&nbsp;    @DeleteMapping(&quot;/clear-data&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; clearAllData() {
+<b class="nc">&nbsp;        databaseInitService.clearAllData();</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(&quot;所有数据已清空&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取今日心情（包含标签权值计算）
+&nbsp;     * GET /api/mood/today/{userId}
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/today/{userId}&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getTodayMood(@PathVariable String userId) {
+<b class="fc">&nbsp;        TodayMoodResponse response = moodService.getTodayMood(userId);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(response, &quot;获取今日心情成功&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取指定日期的今日心情（包含标签权值计算）
+&nbsp;     * GET /api/mood/today/{userId}/{date}
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/today/{userId}/{date}&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getTodayMoodByDate(
+&nbsp;            @PathVariable String userId,
+&nbsp;            @PathVariable @DateTimeFormat(pattern = &quot;yyyy-MM-dd&quot;) LocalDate date) {
+<b class="fc">&nbsp;        TodayMoodResponse response = moodService.getTodayMood(userId, date);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(response, &quot;获取指定日期心情成功&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 灵活查询心情记录
+&nbsp;     * 支持按用户、情绪标签、时间范围进行筛选
+&nbsp;     * 如果不提供任何筛选条件，则返回所有数据
+&nbsp;     * POST /api/mood/query
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/query&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; queryMoods(@RequestBody MoodQueryRequest request) {
+&nbsp;        try {
+<b class="fc">&nbsp;            List&lt;MoodCheckInResponse&gt; responses = moodService.queryMoods(request);</b>
+<b class="fc">&nbsp;            Map&lt;String, Object&gt; data = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;            data.put(&quot;moods&quot;, responses);</b>
+<b class="fc">&nbsp;            data.put(&quot;total&quot;, responses.size());</b>
+<b class="fc">&nbsp;            data.put(&quot;page&quot;, request.getPage());</b>
+<b class="fc">&nbsp;            data.put(&quot;size&quot;, request.getSize());</b>
+<b class="fc">&nbsp;            return ResponseEntity.ok(ApiResponse.success(data, &quot;查询心情记录成功&quot;));</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</b>
+<b class="nc">&nbsp;                    .body(ApiResponse.error(&quot;查询失败: &quot; + e.getMessage()));</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 灵活查询心情记录（GET方式）
+&nbsp;     * 支持按用户、情绪标签、时间范围进行筛选
+&nbsp;     * 如果不提供任何筛选条件，则返回所有数据
+&nbsp;     * GET /api/mood/query?userId=xxx&amp;moodLabels=happy,sad&amp;startDate=2024-01-01&amp;endDate=2024-01-31&amp;page=0&amp;size=20
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/query&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; queryMoodsGet(
+&nbsp;            @RequestParam(required = false) String userId,
+&nbsp;            @RequestParam(required = false) List&lt;String&gt; moodLabels,
+&nbsp;            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+&nbsp;            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+&nbsp;            @RequestParam(defaultValue = &quot;0&quot;) Integer page,
+&nbsp;            @RequestParam(defaultValue = &quot;20&quot;) Integer size) {
+&nbsp;        try {
+<b class="fc">&nbsp;            MoodQueryRequest request = new MoodQueryRequest();</b>
+<b class="fc">&nbsp;            request.setUserId(userId);</b>
+<b class="fc">&nbsp;            request.setMoodLabels(moodLabels);</b>
+<b class="fc">&nbsp;            request.setStartDate(startDate);</b>
+<b class="fc">&nbsp;            request.setEndDate(endDate);</b>
+<b class="fc">&nbsp;            request.setPage(page);</b>
+<b class="fc">&nbsp;            request.setSize(size);</b>
+&nbsp;            
+<b class="fc">&nbsp;            List&lt;MoodCheckInResponse&gt; responses = moodService.queryMoods(request);</b>
+<b class="fc">&nbsp;            Map&lt;String, Object&gt; data = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;            data.put(&quot;moods&quot;, responses);</b>
+<b class="fc">&nbsp;            data.put(&quot;total&quot;, responses.size());</b>
+<b class="fc">&nbsp;            data.put(&quot;page&quot;, page);</b>
+<b class="fc">&nbsp;            data.put(&quot;size&quot;, size);</b>
+<b class="fc">&nbsp;            return ResponseEntity.ok(ApiResponse.success(data, &quot;查询心情记录成功&quot;));</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</b>
+<b class="nc">&nbsp;                    .body(ApiResponse.error(&quot;查询失败: &quot; + e.getMessage()));</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取用户心情分析报告
+&nbsp;     * GET /api/mood/analysis/{userId}
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/analysis/{userId}&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getAnalysisReport(@PathVariable String userId) {
+<b class="fc">&nbsp;        String analysisReport = moodAnalysisService.generateAnalysisReport(userId);</b>
+<b class="fc">&nbsp;        Map&lt;String, Object&gt; data = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        data.put(&quot;userId&quot;, userId);</b>
+<b class="fc">&nbsp;        data.put(&quot;analysis&quot;, analysisReport);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(data, &quot;获取分析报告成功&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 根据日期范围获取用户心情分析报告
+&nbsp;     * GET /api/mood/analysis/{userId}/range?startDate=2024-01-01&amp;endDate=2024-01-31
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/analysis/{userId}/range&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&gt; getAnalysisReportByRange(
+&nbsp;            @PathVariable String userId,
+&nbsp;            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+&nbsp;            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+<b class="fc">&nbsp;        String analysisReport = moodAnalysisService.generateAnalysisReport(userId, startDate.toString(), endDate.toString());</b>
+<b class="fc">&nbsp;        Map&lt;String, Object&gt; data = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        data.put(&quot;userId&quot;, userId);</b>
+<b class="fc">&nbsp;        data.put(&quot;startDate&quot;, startDate);</b>
+<b class="fc">&nbsp;        data.put(&quot;endDate&quot;, endDate);</b>
+<b class="fc">&nbsp;        data.put(&quot;analysis&quot;, analysisReport);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(ApiResponse.success(data, &quot;获取分析报告成功&quot;));</b>
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:42</div>
+</div>
+</body>
+</html>

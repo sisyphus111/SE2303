@@ -1,0 +1,252 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > DatabaseInitService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.se2303.moodservice.service</a>
+</div>
+
+<h1>Coverage Summary for Class: DatabaseInitService (com.se2303.moodservice.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DatabaseInitService</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/48)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.se2303.moodservice.service;
+&nbsp;
+&nbsp;import com.se2303.moodservice.dao.MoodDAO;
+&nbsp;import com.se2303.moodservice.dao.MoodItemDAO;
+&nbsp;import com.se2303.moodservice.model.Mood;
+&nbsp;import com.se2303.moodservice.model.MoodItem;
+&nbsp;import com.se2303.moodservice.model.MoodLabel;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.boot.CommandLineRunner;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * 数据库初始化服务
+&nbsp; * 使用DAO层进行数据访问
+&nbsp; */
+&nbsp;@Service
+<b class="nc">&nbsp;public class DatabaseInitService implements CommandLineRunner {</b>
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private MoodDAO moodDAO;
+&nbsp;    
+&nbsp;    @Autowired
+&nbsp;    private MoodItemDAO moodItemDAO;
+&nbsp;    
+&nbsp;    @Override
+&nbsp;    @Transactional
+&nbsp;    public void run(String... args) throws Exception {
+&nbsp;        // 检查是否需要初始化数据
+<b class="nc">&nbsp;        if (moodDAO.countByUserId(&quot;1&quot;) == 0) {</b>
+<b class="nc">&nbsp;            initializeSampleData();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 初始化示例数据
+&nbsp;     */
+&nbsp;    private void initializeSampleData() {
+<b class="nc">&nbsp;        System.out.println(&quot;正在初始化示例数据...&quot;);</b>
+&nbsp;        
+&nbsp;        // 创建示例心情记录 - 用户1的最近7天数据
+<b class="nc">&nbsp;        for (int i = 0; i &lt; 7; i++) {</b>
+<b class="nc">&nbsp;            Mood mood = new Mood();</b>
+<b class="nc">&nbsp;            mood.setUserId(&quot;1&quot;);</b>
+<b class="nc">&nbsp;            mood.setDate(LocalDate.now().minusDays(i));</b>
+&nbsp;            
+&nbsp;            // 根据天数设置不同的心情评分
+<b class="nc">&nbsp;            int score = 3 + (i % 3); // 3-5分之间循环</b>
+<b class="nc">&nbsp;            mood.setScore(score);</b>
+<b class="nc">&nbsp;            mood.setScoreCommitted(true);</b>
+&nbsp;            
+&nbsp;            // 根据评分设置不同的日记内容
+&nbsp;            String diaryContent;
+&nbsp;            List&lt;String&gt; labels;
+<b class="nc">&nbsp;            switch (score) {</b>
+&nbsp;                case 5:
+<b class="nc">&nbsp;                    diaryContent = &quot;今天心情非常好，工作顺利，和朋友聊天很开心&quot;;</b>
+<b class="nc">&nbsp;                    labels = Arrays.asList(&quot;开心&quot;, &quot;满足&quot;, &quot;充满活力&quot;);</b>
+&nbsp;                    break;
+&nbsp;                case 4:
+<b class="nc">&nbsp;                    diaryContent = &quot;今天心情不错，完成了大部分工作，感觉有成就感&quot;;</b>
+<b class="nc">&nbsp;                    labels = Arrays.asList(&quot;满足&quot;, &quot;专注&quot;, &quot;平静&quot;);</b>
+&nbsp;                    break;
+&nbsp;                default:
+<b class="nc">&nbsp;                    diaryContent = &quot;今天心情一般，工作有些压力，需要调整心态&quot;;</b>
+<b class="nc">&nbsp;                    labels = Arrays.asList(&quot;平静&quot;, &quot;专注&quot;, &quot;压力&quot;);</b>
+&nbsp;                    break;
+&nbsp;            }
+&nbsp;            
+<b class="nc">&nbsp;            mood.setDiaryDescription(diaryContent);</b>
+<b class="nc">&nbsp;            mood.setDiaryCommitted(true);</b>
+<b class="nc">&nbsp;            mood.setDiaryTitle(&quot;第&quot; + (i + 1) + &quot;天的心情记录&quot;);</b>
+<b class="nc">&nbsp;            mood = moodDAO.save(mood);</b>
+&nbsp;            
+&nbsp;            // 添加心情标签
+<b class="nc">&nbsp;            for (String label : labels) {</b>
+<b class="nc">&nbsp;                MoodItem moodItem = new MoodItem(label, mood);</b>
+<b class="nc">&nbsp;                moodItemDAO.save(moodItem);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;        
+&nbsp;        // 创建用户2的示例记录
+<b class="nc">&nbsp;        Mood mood2 = new Mood();</b>
+<b class="nc">&nbsp;        mood2.setUserId(&quot;2&quot;);</b>
+<b class="nc">&nbsp;        mood2.setDate(LocalDate.now().minusDays(1));</b>
+<b class="nc">&nbsp;        mood2.setScore(2);</b>
+<b class="nc">&nbsp;        mood2.setScoreCommitted(true);</b>
+<b class="nc">&nbsp;        mood2.setDiaryDescription(&quot;今天心情不太好，工作压力很大，需要放松一下&quot;);</b>
+<b class="nc">&nbsp;        mood2.setDiaryCommitted(true);</b>
+<b class="nc">&nbsp;        mood2.setDiaryTitle(&quot;压力的一天&quot;);</b>
+<b class="nc">&nbsp;        mood2 = moodDAO.save(mood2);</b>
+&nbsp;        
+&nbsp;        // 添加心情标签
+<b class="nc">&nbsp;        List&lt;String&gt; labels2 = Arrays.asList(&quot;焦虑&quot;, &quot;压力&quot;, &quot;疲惫&quot;);</b>
+<b class="nc">&nbsp;        for (String label : labels2) {</b>
+<b class="nc">&nbsp;            MoodItem moodItem = new MoodItem(label, mood2);</b>
+<b class="nc">&nbsp;            moodItemDAO.save(moodItem);</b>
+&nbsp;        }
+&nbsp;        
+<b class="nc">&nbsp;        System.out.println(&quot;示例数据初始化完成！&quot;);</b>
+<b class="nc">&nbsp;        System.out.println(&quot;创建了 &quot; + moodDAO.countByUserId(&quot;1&quot;) + &quot; 条用户1的心情记录&quot;);</b>
+<b class="nc">&nbsp;        System.out.println(&quot;创建了 &quot; + moodDAO.countByUserId(&quot;2&quot;) + &quot; 条用户2的心情记录&quot;);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 手动初始化数据
+&nbsp;     */
+&nbsp;    @Transactional
+&nbsp;    public void manualInit() {
+<b class="nc">&nbsp;        initializeSampleData();</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 清空所有数据
+&nbsp;     */
+&nbsp;    @Transactional
+&nbsp;    public void clearAllData() {
+<b class="nc">&nbsp;        moodItemDAO.deleteAll();</b>
+<b class="nc">&nbsp;        moodDAO.deleteAll();</b>
+<b class="nc">&nbsp;        System.out.println(&quot;所有数据已清空&quot;);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * 获取数据统计
+&nbsp;     */
+&nbsp;    public String getDataStats() {
+<b class="nc">&nbsp;        long moodCount = moodDAO.countByUserId(&quot;1&quot;);</b>
+<b class="nc">&nbsp;        long moodItemCount = moodItemDAO.countByLabel(&quot;开心&quot;);</b>
+&nbsp;        
+<b class="nc">&nbsp;        return String.format(&quot;数据统计: 心情记录 %d 条, 心情标签 %d 条&quot;, moodCount, moodItemCount);</b>
+&nbsp;    }
+&nbsp;} 
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-07-17 16:43</div>
+</div>
+</body>
+</html>

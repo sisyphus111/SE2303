@@ -17,6 +17,22 @@ public class UserManagementResponse {
 
     public UserManagementResponse() {}
 
+    public UserManagementResponse(Long id, String username, String nickname, String avatar, 
+                                 String sjtuId, String jaccount, String registrationDate, 
+                                 Boolean valid, Boolean isUser, String phone, String realname) {
+        this.id = id;
+        this.username = username;
+        this.nickname = nickname;
+        this.avatar = avatar;
+        this.sjtuId = sjtuId;
+        this.jaccount = jaccount;
+        this.registrationDate = registrationDate;
+        this.valid = valid;
+        this.isUser = isUser;
+        this.phone = phone;
+        this.realname = realname;
+    }
+
     // Getters and Setters
     public Long getId() {
         return id;

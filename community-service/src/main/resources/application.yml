@@ -4,7 +4,7 @@ spring:
   profiles:
     active: dev  # 默认激活开发环境
   datasource:
-    url: jdbc:mysql://localhost:3306/community?serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/community?createDatabaseIfNotExist=true&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: ${DB_PASSWORD}
@@ -14,7 +14,7 @@ spring:
       idle-timeout: 30000
       connection-timeout: 30000
   jpa:
-#    database-platform: org.hibernate.dialect.MySQL8Dialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: update
     show-sql: true
@@ -35,6 +35,14 @@ spring:
           max-idle: 100
           min-idle: 10
           max-wait: 200ms
+
+# ElasticSearch配置（匹配start-elasticsearch.sh脚本）
+elasticsearch:
+  host: localhost
+  port: 9201
+  username: elastic
+  password: ${DB_PASSWORD}
+  cluster-name: docker-cluster
 
 # 通知服务配置
 inform:

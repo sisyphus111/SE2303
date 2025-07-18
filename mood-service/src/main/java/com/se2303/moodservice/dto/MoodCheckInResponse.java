@@ -80,7 +80,11 @@ public class MoodCheckInResponse {
     public Boolean getScoreCommitted() {
         return scoreCommitted;
     }
-
+    
+    public void setScoreCommitted(Boolean scoreCommitted) {
+        this.scoreCommitted = scoreCommitted;
+    }
+    
     public String getDiaryDescription() {
         return diaryDescription;
     }
@@ -92,7 +96,11 @@ public class MoodCheckInResponse {
     public Boolean getDiaryCommitted() {
         return diaryCommitted;
     }
-
+    
+    public void setDiaryCommitted(Boolean diaryCommitted) {
+        this.diaryCommitted = diaryCommitted;
+    }
+    
     public String getDiaryTitle() {
         return diaryTitle;
     }
@@ -104,7 +112,11 @@ public class MoodCheckInResponse {
     public WeatherType getWeather() {
         return weather;
     }
-
+    
+    public void setWeather(WeatherType weather) {
+        this.weather = weather;
+    }
+    
     public List<String> getMoodLabels() {
         return moodLabels;
     }
@@ -116,11 +128,19 @@ public class MoodCheckInResponse {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-
+    
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+    
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-
+    
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+    
     @Override
     public String toString() {
         return "MoodCheckInResponse{" +

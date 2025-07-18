@@ -27,7 +27,15 @@ public class CreateCarouselImageRequest {
     
     // 构造函数
     public CreateCarouselImageRequest() {}
-
+    
+    public CreateCarouselImageRequest(String imageUrl, String title, String description, String category, Integer sortOrder) {
+        this.imageUrl = imageUrl;
+        this.title = title;
+        this.description = description;
+        this.category = category;
+        this.sortOrder = sortOrder;
+    }
+    
     // Getter和Setter方法
     public String getImageUrl() {
         return imageUrl;

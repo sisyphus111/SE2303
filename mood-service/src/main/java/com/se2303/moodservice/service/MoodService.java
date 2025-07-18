@@ -113,4 +113,15 @@ public interface MoodService {
      * 如果不提供任何筛选条件，则返回所有数据
      */
     List<MoodCheckInResponse> queryMoods(MoodQueryRequest request);
+
+    /**
+     * 检查用户心情分析是否有效
+     */
+    Boolean validateAnalysis(String userId);
+
+    /**
+     * 获取用户心情分析
+     */
+    String getValidAnalysis(String userId);
+
 } 

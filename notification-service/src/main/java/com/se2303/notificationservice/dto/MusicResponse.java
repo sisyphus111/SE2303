@@ -10,7 +10,9 @@ public class MusicResponse {
     private String url;
     private Integer duration;
     private LocalDateTime createdAt;
-
+    
+    public MusicResponse() {}
+    
     public MusicResponse(Long id, String title, String category, String cover, String url, Integer duration, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;

@@ -16,6 +16,20 @@ public class UserProfileResponse {
     private String registrationDate;
 
 
+    public UserProfileResponse(Long userId, String username, String nickname, String avatar, String gender, String birthday, String tags, String location, String bio, String profileVisibility, String registrationDate) {
+        this.userId = userId;
+        this.username = username;
+        this.nickname = nickname;
+        this.avatar = avatar;
+        this.gender = gender;
+        this.birthday = birthday;
+        this.tags = tags;
+        this.location = location;
+        this.bio = bio;
+        this.profileVisibility = profileVisibility;
+        this.registrationDate = registrationDate;
+    }
+
     public UserProfileResponse() {}
 
     public Long getUserId() {

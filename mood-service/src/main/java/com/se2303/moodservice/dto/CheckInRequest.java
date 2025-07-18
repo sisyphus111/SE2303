@@ -23,7 +23,13 @@ public class CheckInRequest {
     
     // 构造函数
     public CheckInRequest() {}
-
+    
+    public CheckInRequest(LocalDate date, Integer score, List<String> moodLabels) {
+        this.date = date;
+        this.score = score;
+        this.moodLabels = moodLabels;
+    }
+    
     // Getter和Setter方法
     public LocalDate getDate() {
         return date;

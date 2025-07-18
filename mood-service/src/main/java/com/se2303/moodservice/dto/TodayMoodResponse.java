@@ -90,7 +90,55 @@ public class TodayMoodResponse {
     public void setScore(Integer score) {
         this.score = score;
     }
-
+    
+    public Boolean getScoreCommitted() {
+        return scoreCommitted;
+    }
+    
+    public void setScoreCommitted(Boolean scoreCommitted) {
+        this.scoreCommitted = scoreCommitted;
+    }
+    
+    public List<String> getMoodLabels() {
+        return moodLabels;
+    }
+    
+    public void setMoodLabels(List<String> moodLabels) {
+        this.moodLabels = moodLabels;
+    }
+    
+    public Integer getPositiveLabelCount() {
+        return positiveLabelCount;
+    }
+    
+    public void setPositiveLabelCount(Integer positiveLabelCount) {
+        this.positiveLabelCount = positiveLabelCount;
+    }
+    
+    public Integer getNeutralLabelCount() {
+        return neutralLabelCount;
+    }
+    
+    public void setNeutralLabelCount(Integer neutralLabelCount) {
+        this.neutralLabelCount = neutralLabelCount;
+    }
+    
+    public Integer getNegativeLabelCount() {
+        return negativeLabelCount;
+    }
+    
+    public void setNegativeLabelCount(Integer negativeLabelCount) {
+        this.negativeLabelCount = negativeLabelCount;
+    }
+    
+    public Integer getTotalMoodWeight() {
+        return totalMoodWeight;
+    }
+    
+    public void setTotalMoodWeight(Integer totalMoodWeight) {
+        this.totalMoodWeight = totalMoodWeight;
+    }
+    
     public String getMoodTrend() {
         return moodTrend;
     }
@@ -98,7 +146,23 @@ public class TodayMoodResponse {
     public void setMoodTrend(String moodTrend) {
         this.moodTrend = moodTrend;
     }
-
+    
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+    
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+    
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+    
     @Override
     public String toString() {
         return "TodayMoodResponse{" +

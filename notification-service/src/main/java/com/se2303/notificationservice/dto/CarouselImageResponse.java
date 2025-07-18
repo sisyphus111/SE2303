@@ -10,7 +10,9 @@ public class CarouselImageResponse {
     private String category;
     private Integer sortOrder;
     private LocalDateTime createdAt;
-
+    
+    public CarouselImageResponse() {}
+    
     public CarouselImageResponse(Long id, String imageUrl, String title, String description, String category, Integer sortOrder, LocalDateTime createdAt) {
         this.id = id;
         this.imageUrl = imageUrl;

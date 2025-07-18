@@ -31,6 +31,10 @@ public class ApiResponse {
         return new ApiResponse(true, object, message);
     }
 
+    public static ApiResponse success(Object object) {
+        return new ApiResponse(true, object, "操作成功");
+    }
+
     // 失败响应静态方法
     public static ApiResponse error(String message) {
         return new ApiResponse(false, null, message);
@@ -45,6 +49,10 @@ public class ApiResponse {
         return success;
     }
 
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
     public Object getObject() {
         return object;
     }
@@ -55,6 +63,10 @@ public class ApiResponse {
 
     public String getMessage() {
         return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     @Override

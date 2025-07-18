@@ -14,7 +14,7 @@ import java.util.Map;
 public class PromptController {
 
     @Autowired
-    public AIPromptConfig promptConfig;
+    private AIPromptConfig promptConfig;
 
     /**
      * 获取所有可用的场景类型

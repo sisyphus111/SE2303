@@ -21,7 +21,25 @@ public class DiaryRequest {
     
     // 构造函数
     public DiaryRequest() {}
-
+    
+    public DiaryRequest(LocalDate date, String diaryDescription) {
+        this.date = date;
+        this.diaryDescription = diaryDescription;
+    }
+    
+    public DiaryRequest(LocalDate date, String diaryDescription, WeatherType weather) {
+        this.date = date;
+        this.diaryDescription = diaryDescription;
+        this.weather = weather;
+    }
+    
+    public DiaryRequest(LocalDate date, String diaryTitle, String diaryDescription, WeatherType weather) {
+        this.date = date;
+        this.diaryTitle = diaryTitle;
+        this.diaryDescription = diaryDescription;
+        this.weather = weather;
+    }
+    
     // Getter和Setter方法
     public LocalDate getDate() {
         return date;
@@ -50,7 +68,11 @@ public class DiaryRequest {
     public WeatherType getWeather() {
         return weather;
     }
-
+    
+    public void setWeather(WeatherType weather) {
+        this.weather = weather;
+    }
+    
     @Override
     public String toString() {
         return "DiaryRequest{" +

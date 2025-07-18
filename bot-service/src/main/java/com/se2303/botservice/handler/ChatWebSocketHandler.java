@@ -20,11 +20,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Autowired
-    public AIService aiService;
+    private AIService aiService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    public final ConcurrentHashMap<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, List<ChatMessage>> sessionHistory = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, List<ChatMessage>> sessionHistory = new ConcurrentHashMap<>();
     private final int MAX_HISTORY_SIZE = 20; // 最大历史消息数量
 
     @Override
@@ -32,23 +32,23 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         sessions.put(session.getId(), session);
         sessionHistory.put(session.getId(), new ArrayList<>());
         System.out.println("WebSocket连接建立: " + session.getId());
-
+        
         // 从URL参数中获取用户ID
         String userId = extractUserIdFromSession(session);
-
+        
         // 设置用户信息到AI服务
         aiService.setCurrentUser(userId, session.getId());
         System.out.println("已设置用户信息 - 用户ID: " + userId + ", 会话ID: " + session.getId());
-
+        
         // 发送欢迎消息
         ChatMessage welcomeMessage = new ChatMessage(
-                UUID.randomUUID().toString(),
-                "ai",
-                "assistant",
-                "你好！我是小暖，你的心理健康陪伴助手。很高兴认识你！无论是开心的事还是困扰，我都很愿意倾听和陪伴。有什么想和我分享的吗？",
-                System.currentTimeMillis()
+            UUID.randomUUID().toString(),
+            "ai", 
+            "assistant",
+            "你好！我是小暖，你的心理健康陪伴助手。很高兴认识你！无论是开心的事还是困扰，我都很愿意倾听和陪伴。有什么想和我分享的吗？",
+            System.currentTimeMillis()
         );
-
+        
         // 将欢迎消息添加到历史记录
         addToHistory(session.getId(), welcomeMessage);
         sendMessage(session, welcomeMessage);
@@ -94,11 +94,11 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             }, (fullResponse) -> {
                 // 将完整的AI回复添加到历史记录
                 ChatMessage aiCompleteMessage = new ChatMessage(
-                        UUID.randomUUID().toString(),
-                        "ai",
-                        "assistant",
-                        fullResponse,
-                        System.currentTimeMillis()
+                    UUID.randomUUID().toString(),
+                    "ai",
+                    "assistant", 
+                    fullResponse,
+                    System.currentTimeMillis()
                 );
                 addToHistory(session.getId(), aiCompleteMessage);
             }, () -> {
@@ -129,8 +129,6 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             errorMessage.setType("error");
             errorMessage.setContent("抱歉，处理您的消息时出现了错误，请稍后重试。");
             errorMessage.setTimestamp(System.currentTimeMillis());
-            // 添加错误消息到历史记录
-            addToHistory(session.getId(), errorMessage);
             sendMessage(session, errorMessage);
         }
     }
@@ -150,7 +148,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         sessionHistory.remove(session.getId());
     }
 
-    public void addToHistory(String sessionId, ChatMessage message) {
+    private void addToHistory(String sessionId, ChatMessage message) {
         List<ChatMessage> history = sessionHistory.get(sessionId);
         if (history != null) {
             history.add(message);
@@ -173,7 +171,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
      * @param session WebSocket会话
      * @return 用户ID，如果没有则返回默认值
      */
-    public String extractUserIdFromSession(WebSocketSession session) {
+    private String extractUserIdFromSession(WebSocketSession session) {
         try {
             // 获取URL查询参数
             String query = session.getUri().getQuery();
@@ -197,10 +195,10 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         } catch (Exception e) {
             System.err.println("提取用户ID时出错: " + e.getMessage());
         }
-
+        
         // 如果没有获取到用户ID，使用默认值
         String defaultUserId = "user_" + session.getId();
         System.out.println("使用默认用户ID: " + defaultUserId);
         return defaultUserId;
     }
-}
+} 

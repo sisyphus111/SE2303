@@ -18,7 +18,7 @@ import java.util.Map;
 public class TestController {
     
     @Autowired
-    public AIService aiService;
+    private AIService aiService;
     
     /**
      * 测试 Alert Service 连接

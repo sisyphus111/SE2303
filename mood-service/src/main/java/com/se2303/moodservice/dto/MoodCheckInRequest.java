@@ -30,7 +30,30 @@ public class MoodCheckInRequest {
     
     // 构造函数
     public MoodCheckInRequest() {}
-
+    
+    public MoodCheckInRequest(LocalDate date, Integer score, List<String> moodLabels) {
+        this.date = date;
+        this.score = score;
+        this.moodLabels = moodLabels;
+    }
+    
+    public MoodCheckInRequest(LocalDate date, Integer score, List<String> moodLabels, String diaryDescription, WeatherType weather) {
+        this.date = date;
+        this.score = score;
+        this.moodLabels = moodLabels;
+        this.diaryDescription = diaryDescription;
+        this.weather = weather;
+    }
+    
+    public MoodCheckInRequest(LocalDate date, Integer score, List<String> moodLabels, String diaryTitle, String diaryDescription, WeatherType weather) {
+        this.date = date;
+        this.score = score;
+        this.moodLabels = moodLabels;
+        this.diaryTitle = diaryTitle;
+        this.diaryDescription = diaryDescription;
+        this.weather = weather;
+    }
+    
     // Getter和Setter方法
     public LocalDate getDate() {
         return date;

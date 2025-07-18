@@ -3,6 +3,8 @@ package com.se2303.moodservice.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.se2303.moodservice.dto.MoodCheckInResponse;
+import com.se2303.moodservice.model.MoodAnalysis;
+import com.se2303.moodservice.repository.MoodAnalysisRepository;
 import com.se2303.moodservice.service.MoodAnalysisService;
 import com.se2303.moodservice.service.MoodService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +16,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 心情分析服务实现类
@@ -29,6 +34,9 @@ public class MoodAnalysisServiceImpl implements MoodAnalysisService {
     
     @Autowired
     private MoodService moodService;
+
+    @Autowired
+    private MoodAnalysisRepository moodAnalysisRepository;
     
     @Autowired
     private RestTemplate restTemplate;
@@ -41,10 +49,42 @@ public class MoodAnalysisServiceImpl implements MoodAnalysisService {
     
     @Override
     public String generateAnalysisReport(String userId) {
+
+        if(moodService.validateAnalysis(userId)) return moodService.getValidAnalysis(userId);
+        
         // 获取最近7天的数据
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(6);
-        return generateAnalysisReport(userId, startDate.toString(), endDate.toString());
+        String analysisData = generateAnalysisReport(userId, startDate.toString(), endDate.toString());
+
+        // 安全检查：确保分析数据不会超过MEDIUMTEXT限制（16MB = 16,777,215字节）
+        // 为了安全起见，我们限制在10MB以内
+        final int MAX_ANALYSIS_LENGTH = 10 * 1024 * 1024; // 10MB
+        if (analysisData.getBytes(StandardCharsets.UTF_8).length > MAX_ANALYSIS_LENGTH) {
+            // 截断过长的文本，并添加提示
+            byte[] bytes = analysisData.getBytes(StandardCharsets.UTF_8);
+            analysisData = new String(bytes, 0, Math.min(bytes.length, MAX_ANALYSIS_LENGTH - 100), StandardCharsets.UTF_8);
+            analysisData += "\n\n[注：分析报告因过长已被截断]";
+        }
+
+        // 查找是否已存在该用户的分析记录
+        Optional<MoodAnalysis> existingAnalysis = moodAnalysisRepository.findByUserId(userId);
+        MoodAnalysis analysis;
+        
+        if (existingAnalysis.isPresent()) {
+            // 更新现有记录
+            analysis = existingAnalysis.get();
+            analysis.setAnalysis(analysisData);
+            analysis.setValid(true);
+            analysis.setUpdatedAt(LocalDateTime.now());
+        } else {
+            // 创建新记录
+            analysis = new MoodAnalysis(userId, analysisData, true, LocalDateTime.now());
+        }
+        
+        moodAnalysisRepository.save(analysis);
+
+        return analysisData;
     }
     
     @Override

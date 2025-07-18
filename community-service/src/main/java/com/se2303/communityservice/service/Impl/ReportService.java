@@ -8,6 +8,7 @@ import com.se2303.communityservice.repository.ReportRepository;
 import com.se2303.communityservice.repository.PostRepository;
 import com.se2303.communityservice.repository.CommentRepository;
 import com.se2303.communityservice.service.IReportService;
+import com.se2303.communityservice.service.IElasticSearchService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -34,6 +35,9 @@ public class ReportService implements IReportService {
 
     @Autowired
     private CommentRepository commentRepository;
+
+    @Autowired
+    private IElasticSearchService elasticSearchService;
 
     @Override
     public PageDTO<Report> getAllReports(Report.ReportStatus status, Pageable pageable) {
@@ -101,12 +105,32 @@ public class ReportService implements IReportService {
                         logger.warn("帖子未找到: {}", report.getPostId());
                         return new EntityNotFoundException("帖子未找到: " + report.getPostId());
                     });
+            String oldStatus = post.getReviewStatus();
             if (action.equals("resolved")) {
                 post.setReviewStatus("BANNED");
             } else if (action.equals("rejected")) {
                 post.setReviewStatus("APPROVED");
             }
-            postRepository.save(post);
+            Post savedPost = postRepository.save(post);
+            
+            // 同步帖子状态变更到ElasticSearch
+            try {
+                elasticSearchService.syncPostStatus(savedPost);
+                logger.info("同步举报处理后的帖子状态到ElasticSearch成功: {} -> {}", oldStatus, savedPost.getReviewStatus());
+            } catch (Exception e) {
+                logger.warn("同步举报处理后的帖子状态到ElasticSearch失败: {}", savedPost.getId(), e);
+            }
+            
+            // 清理标签缓存，因为帖子状态发生变化，标签列表可能受影响
+            if (!oldStatus.equals(savedPost.getReviewStatus())) {
+                try {
+                    // 这里需要注入RedisTemplate，先用简单的日志记录
+                    logger.info("📋 帖子状态变更需要清理标签缓存: {} -> {}", oldStatus, savedPost.getReviewStatus());
+                    // TODO: 需要添加RedisTemplate依赖来清理缓存
+                } catch (Exception e) {
+                    logger.warn("⚠️ 记录标签缓存清理需求失败: {}", e.getMessage());
+                }
+            }
         }
         else if (report.getType().equals("comment")) {
             Comment comment = commentRepository.findById(report.getCommentId())

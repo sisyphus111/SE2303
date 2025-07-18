@@ -11,7 +11,9 @@ public class ArticleResponse {
     private String link;
     private String category;
     private LocalDateTime createdAt;
-
+    
+    public ArticleResponse() {}
+    
     public ArticleResponse(Long id, String title, String introduction, String description, String cover, String link, String category, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;

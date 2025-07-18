@@ -12,6 +12,18 @@ public class UpdateProfileRequest {
     private String tags;
     private String profileVisibility;
 
+    public UpdateProfileRequest(String username, String nickname, String avatar, String gender, String birthday, String location, String bio, String tags, String profileVisibility) {
+        this.username = username;
+        this.nickname = nickname;
+        this.avatar = avatar;
+        this.gender = gender;
+        this.birthday = birthday;
+        this.location = location;
+        this.bio = bio;
+        this.tags = tags;
+        this.profileVisibility = profileVisibility;
+    }
+
     public UpdateProfileRequest() {}
 
     public String getUsername() {
@@ -62,8 +74,27 @@ public class UpdateProfileRequest {
         this.avatar = avatar;
     }
 
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
     public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
 
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public void setProfileVisibility(String profileVisibility) {
+        this.profileVisibility = profileVisibility;
+    }
 }

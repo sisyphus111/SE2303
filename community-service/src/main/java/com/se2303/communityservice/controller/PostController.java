@@ -10,6 +10,7 @@ import com.se2303.communityservice.dto.PostDTO;
 import com.se2303.communityservice.entity.Comment;
 import com.se2303.communityservice.entity.Post;
 import com.se2303.communityservice.entity.Report;
+import com.se2303.communityservice.service.IElasticSearchService;
 import com.se2303.communityservice.service.ICommentService;
 import com.se2303.communityservice.service.ILikeService;
 import com.se2303.communityservice.service.IPostService;
@@ -24,9 +25,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Sort;
+
+import java.util.List;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,6 +50,8 @@ public class PostController {
     private ICommentService commentService;
     @Autowired
     private ILikeService likeService;
+    @Autowired
+    private IElasticSearchService elasticSearchService;
  
     // TODO: 添加InformProducer注入用于发送通知消息
     @Autowired
@@ -106,7 +112,15 @@ public class PostController {
             if(reviewStatus == null || reviewStatus.isEmpty()) reviewStatus = "APPROVED";
             
             // 4. 调用服务层获取帖子
-            PageDTO<PostBriefInfo> posts = postService.getPosts(keyword, category, reviewStatus, sortBy, pageable);
+            PageDTO<PostBriefInfo> posts = null;
+            if(!isIdentity) {
+                // 管理员使用PostService（数据库查询）
+                posts = postService.getPosts(keyword, category, reviewStatus, sortBy, pageable);
+            } else {
+                // 普通用户使用ElasticSearch智能搜索
+                List<String> tags = StringUtils.hasText(category) ? List.of(category.split(",")) : null;
+                posts = elasticSearchService.smartSearch(keyword, tags, reviewStatus, sortBy, pageable);
+            }
             logger.info("✅ 帖子分页查询成功: page={}, size={}, keyword={}, category={}, sortBy={}", page, size, keyword, category, sortBy);
             return ResponseEntity.ok(new ApiResponse(true, posts, "帖子分页查询成功"));
         } catch (IllegalArgumentException e) {
@@ -191,7 +205,7 @@ public class PostController {
             // 3. 获取帖子
             PostBriefInfo post = postService.getPostById(post_id);
 
-//            logger.info("被获取的帖子的isLiked: {}", likeService.isLiked(post_id, userId));
+            logger.info("被获取的帖子的isLiked: {}", likeService.isLiked(post_id, userId));
             post.setLiked(likeService.isLiked(post_id, userId));
 
             if (!"APPROVED".equals(post.getReviewStatus())) {
@@ -275,6 +289,47 @@ public class PostController {
             return ResponseEntity.ok(new ApiResponse(true, tags, "标签查询成功"));
         } catch (Exception e) {
             logger.error("❌ 获取标签时发生错误: error={}", e.getMessage());
+            return ResponseEntity.status(500).body(new ApiResponse(false, null, "服务器内部错误: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * 清理标签缓存（调试用）
+     *
+     * @param userId   用户ID（从请求头获取）
+     * @param valid    用户验证状态（从请求头获取）
+     * @param identity 用户身份（从请求头获取）
+     * @return 操作结果
+     */
+    @PostMapping("/clear_tags_cache")
+    public ResponseEntity<ApiResponse> clearTagsCache(@RequestHeader("X-User-Id") String userId,
+                                                      @RequestHeader("X-Valid") String valid,
+                                                      @RequestHeader("X-Identity") String identity) {
+        logger.info("=== POST /posts/clear_tags_cache 请求开始 ===");
+        try {
+            if (userId == null || userId.trim().isEmpty() || valid == null || identity == null) {
+                logger.info("无效的请求头: userId={}, valid={}, identity={}", userId, valid, identity);
+                return ResponseEntity.status(401).body(new ApiResponse(false, null, "未登录或请求头无效"));
+            }
+
+            boolean isValid = Boolean.parseBoolean(valid);
+            logger.info("UserId: {}, Valid: {}, Identity: {}", userId, isValid, identity);
+
+            if (!isValid) {
+                logger.info("用户状态无效: userId={}", userId);
+                return ResponseEntity.status(401).body(new ApiResponse(false, null, "用户状态无效"));
+            }
+
+            // 清理缓存
+            postService.clearCache();
+            
+            // 重新获取标签
+            List<String> tags = postService.getAllTags();
+            
+            logger.info("✅ 标签缓存已清理并重新加载，当前有 {} 个标签: {}", tags.size(), tags);
+            return ResponseEntity.ok(new ApiResponse(true, tags, "标签缓存已清理并重新加载"));
+        } catch (Exception e) {
+            logger.error("❌ 清理标签缓存时发生错误: error={}", e.getMessage(), e);
             return ResponseEntity.status(500).body(new ApiResponse(false, null, "服务器内部错误: " + e.getMessage()));
         }
     }
@@ -697,35 +752,20 @@ public class PostController {
         if (postDTO == null || postDTO.getTitle() == null || postDTO.getTitle().trim().isEmpty()) {
             throw new IllegalArgumentException("帖子标题不能为空");
         }
+        validateContentAsync(postDTO.getTitle());
         if (postDTO.getContent() == null || postDTO.getContent().trim().isEmpty()) {
             throw new IllegalArgumentException("帖子内容不能为空");
         }
-        try {
-            CompletableFuture<Boolean> titleCheck = validateContentAsync(postDTO.getTitle());
-            CompletableFuture<Boolean> contentCheck = validateContentAsync(postDTO.getContent());
-            CompletableFuture.allOf(titleCheck, contentCheck).join();
-            if (!titleCheck.get() || !contentCheck.get()) {
-                throw new IllegalArgumentException("内容未通过安全检查");
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("内容验证失败: " + e.getMessage());
-        }
+        validateContentAsync(postDTO.getContent());
     }
 
     private void validateCommentDTO(CommentDTO commentDTO) {
         if (commentDTO == null || commentDTO.getContent() == null || commentDTO.getContent().trim().isEmpty()) {
             throw new IllegalArgumentException("评论内容不能为空");
         }
-        try {
-            CompletableFuture<Boolean> contentCheck = validateContentAsync(commentDTO.getContent());
-            contentCheck.join();
-            if (!contentCheck.get()) {
-                throw new IllegalArgumentException("评论内容未通过安全检查");
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("评论内容验证失败: " + e.getMessage());
-        }
+        validateContentAsync(commentDTO.getContent());
     }
+
     @Async
     public CompletableFuture<Boolean> validateContentAsync(String content) {
         return CompletableFuture.supplyAsync(() -> inspectionClient.isContentSafe(content));

@@ -18,6 +18,23 @@ public class UserPreferenceResponse {
     private Boolean anonymousPosting;
     private Boolean mentalHealthDataSharing;
 
+    public UserPreferenceResponse(Long userId, Boolean pushNotifications, Boolean emailNotifications, Boolean commentNotifications, Boolean likeNotifications, Boolean systemNotifications, Boolean soundEnabled, Boolean showPostStats, Boolean enablePostRecommendation, Boolean blockSensitiveContent, Boolean crisisInterventionEnabled, Boolean moodTrackingEnabled, Boolean anonymousPosting, Boolean mentalHealthDataSharing) {
+        this.userId = userId;
+        this.pushNotifications = pushNotifications;
+        this.emailNotifications = emailNotifications;
+        this.commentNotifications = commentNotifications;
+        this.likeNotifications = likeNotifications;
+        this.systemNotifications = systemNotifications;
+        this.soundEnabled = soundEnabled;
+        this.showPostStats = showPostStats;
+        this.enablePostRecommendation = enablePostRecommendation;
+        this.blockSensitiveContent = blockSensitiveContent;
+        this.crisisInterventionEnabled = crisisInterventionEnabled;
+        this.moodTrackingEnabled = moodTrackingEnabled;
+        this.anonymousPosting = anonymousPosting;
+        this.mentalHealthDataSharing = mentalHealthDataSharing;
+    }
+
     public UserPreferenceResponse() {}
 
     public Long getUserId() {

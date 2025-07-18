@@ -1,0 +1,60 @@
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: se2303-infrastructure
+  labels:
+    app.kubernetes.io/name: se2303-infrastructure
+    app.kubernetes.io/component: infrastructure
+    app.kubernetes.io/part-of: se2303-backend
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: se2303-gateway
+  labels:
+    app.kubernetes.io/name: se2303-gateway
+    app.kubernetes.io/component: gateway
+    app.kubernetes.io/part-of: se2303-backend
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: se2303-core-business
+  labels:
+    app.kubernetes.io/name: se2303-core-business
+    app.kubernetes.io/component: core-business
+    app.kubernetes.io/part-of: se2303-backend
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: se2303-feature-enhancement
+  labels:
+    app.kubernetes.io/name: se2303-feature-enhancement
+    app.kubernetes.io/component: feature-enhancement
+    app.kubernetes.io/part-of: se2303-backend
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: se2303-realtime-communication
+  labels:
+    app.kubernetes.io/name: se2303-realtime-communication
+    app.kubernetes.io/component: realtime-communication
+    app.kubernetes.io/part-of: se2303-backend
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: se2303-monitoring
+  labels:
+    app.kubernetes.io/name: se2303-monitoring
+    app.kubernetes.io/component: monitoring
+    app.kubernetes.io/part-of: se2303-backend 

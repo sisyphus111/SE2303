@@ -57,7 +57,11 @@ public class MoodItem {
     public String getLabel() {
         return label;
     }
-
+    
+    public void setLabel(String label) {
+        this.label = label;
+    }
+    
     public Mood getMood() {
         return mood;
     }
@@ -65,7 +69,15 @@ public class MoodItem {
     public void setMood(Mood mood) {
         this.mood = mood;
     }
-
+    
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+    
     @Override
     public String toString() {
         return "MoodItem{" +

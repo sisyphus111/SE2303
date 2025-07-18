@@ -21,4 +21,5 @@ public interface MoodAnalysisService {
      * @return AI生成的分析报告
      */
     String generateAnalysisReport(String userId, String startDate, String endDate);
+
 } 

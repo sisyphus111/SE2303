@@ -11,6 +11,8 @@ import com.se2303.moodservice.dto.TodayMoodResponse;
 import com.se2303.moodservice.model.Mood;
 import com.se2303.moodservice.model.MoodItem;
 import com.se2303.moodservice.model.MoodLabel;
+import com.se2303.moodservice.model.MoodAnalysis;
+import com.se2303.moodservice.repository.MoodAnalysisRepository;
 import com.se2303.moodservice.service.MoodService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,9 @@ public class MoodServiceImpl implements MoodService {
     @Autowired
     private MoodItemDAO moodItemDAO;
     
+    @Autowired
+    private MoodAnalysisRepository moodAnalysisRepository;
+
     @Override
     public MoodCheckInResponse checkIn(String userId, MoodCheckInRequest request) {
         // 检查是否已经打卡
@@ -80,6 +85,9 @@ public class MoodServiceImpl implements MoodService {
             }
         }
         
+        // 使该用户的分析记录失效
+        invalidateUserAnalysis(userId);
+        
         return convertToResponse(mood);
     }
     
@@ -122,6 +130,9 @@ public class MoodServiceImpl implements MoodService {
             }
         }
         
+        // 使该用户的分析记录失效
+        invalidateUserAnalysis(userId);
+        
         return convertToResponse(mood);
     }
     
@@ -153,6 +164,9 @@ public class MoodServiceImpl implements MoodService {
         
         // 保存心情记录
         mood = moodDAO.save(mood);
+        
+        // 使该用户的分析记录失效
+        invalidateUserAnalysis(userId);
         
         return convertToResponse(mood);
     }
@@ -448,5 +462,50 @@ public class MoodServiceImpl implements MoodService {
                 mood.getCreatedAt(),
                 mood.getUpdatedAt()
         );
+    }
+
+    @Override
+    public Boolean validateAnalysis(String userId) {
+        Optional<MoodAnalysis> moodAnalysis = moodAnalysisRepository.findByUserId(userId);
+        if(moodAnalysis.isEmpty()) return false;
+        
+        MoodAnalysis analysis = moodAnalysis.get();
+        
+        // 如果分析记录已被标记为无效，则返回false
+        if(!analysis.getValid()) return false;
+        
+        // 如果分析时间不是今天，则认为分析无效
+        if(analysis.getUpdatedAt().toLocalDate().isBefore(LocalDate.now())) return false;
+        
+        return true;
+    }
+
+    @Override
+    public String getValidAnalysis(String userId) {
+        Optional<MoodAnalysis> moodAnalysis = moodAnalysisRepository.findByUserId(userId);
+        if(moodAnalysis.isEmpty()) return null;
+        
+        MoodAnalysis analysis = moodAnalysis.get();
+        
+        // 如果分析记录已被标记为无效，则返回null
+        if(!analysis.getValid()) return null;
+        
+        // 如果分析时间不是今天，则认为分析无效
+        if(analysis.getUpdatedAt().toLocalDate().isBefore(LocalDate.now())) return null;
+        
+        return analysis.getAnalysis();
+    }
+    
+    /**
+     * 使用户的心情分析记录失效
+     * 当用户进行新的打卡或写日记操作时调用
+     */
+    private void invalidateUserAnalysis(String userId) {
+        Optional<MoodAnalysis> existingAnalysis = moodAnalysisRepository.findByUserId(userId);
+        if (existingAnalysis.isPresent()) {
+            MoodAnalysis analysis = existingAnalysis.get();
+            analysis.setValid(false);
+            moodAnalysisRepository.save(analysis);
+        }
     }
 } 

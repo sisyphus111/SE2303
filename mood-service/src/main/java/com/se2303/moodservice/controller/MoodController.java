@@ -50,8 +50,13 @@ public class MoodController {
             @RequestHeader("X-User-Id") String userId,
             @RequestHeader("X-Identity") boolean identity,
             @Valid @RequestBody MoodCheckInRequest request) {
-        MoodCheckInResponse response = moodService.checkIn(userId, request);
-        return ResponseEntity.ok(ApiResponse.success(response, "心情打卡成功"));
+        try {
+            MoodCheckInResponse response = moodService.checkIn(userId, request);
+            return ResponseEntity.ok(ApiResponse.success(response, "心情打卡成功"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("心情打卡失败: " + e.getMessage()));
+        }
     }
     
     /**
@@ -63,8 +68,13 @@ public class MoodController {
             @RequestHeader("X-User-Id") String userId,
             @RequestHeader("X-Identity") boolean identity,
             @Valid @RequestBody CheckInRequest request) {
-        MoodCheckInResponse response = moodService.checkInOnly(userId, request);
-        return ResponseEntity.ok(ApiResponse.success(response, "心情打卡成功"));
+        try {
+            MoodCheckInResponse response = moodService.checkInOnly(userId, request);
+            return ResponseEntity.ok(ApiResponse.success(response, "心情打卡成功"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("心情打卡失败: " + e.getMessage()));
+        }
     }
     
     /**
@@ -76,8 +86,13 @@ public class MoodController {
             @RequestHeader("X-User-Id") String userId,
             @RequestHeader("X-Identity") boolean identity,
             @Valid @RequestBody DiaryRequest request) {
-        MoodCheckInResponse response = moodService.writeDiaryOnly(userId, request);
-        return ResponseEntity.ok(ApiResponse.success(response, "日记保存成功"));
+        try {
+            MoodCheckInResponse response = moodService.writeDiaryOnly(userId, request);
+            return ResponseEntity.ok(ApiResponse.success(response, "日记保存成功"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("日记保存失败: " + e.getMessage()));
+        }
     }
     
     /**
@@ -175,12 +190,17 @@ public class MoodController {
     public ResponseEntity<ApiResponse> updateMood(
             @PathVariable Long id,
             @Valid @RequestBody MoodCheckInRequest request) {
-        MoodCheckInResponse response = moodService.updateMood(id, request);
-        if (response != null) {
-            return ResponseEntity.ok(ApiResponse.success(response, "心情记录更新成功"));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error("心情记录不存在"));
+        try {
+            MoodCheckInResponse response = moodService.updateMood(id, request);
+            if (response != null) {
+                return ResponseEntity.ok(ApiResponse.success(response, "心情记录更新成功"));
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiResponse.error("心情记录不存在"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("更新失败: " + e.getMessage()));
         }
     }
     
@@ -190,8 +210,13 @@ public class MoodController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteMood(@PathVariable Long id) {
-        moodService.deleteMood(id);
-        return ResponseEntity.ok(ApiResponse.success("心情记录删除成功"));
+        try {
+            moodService.deleteMood(id);
+            return ResponseEntity.ok(ApiResponse.success("心情记录删除成功"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("删除失败: " + e.getMessage()));
+        }
     }
     
     /**
@@ -288,10 +313,15 @@ public class MoodController {
      */
     @PostMapping("/init-data")
     public ResponseEntity<ApiResponse> initSampleData() {
-        databaseInitService.manualInit();
-        Map<String, Object> data = new HashMap<>();
-        data.put("stats", databaseInitService.getDataStats());
-        return ResponseEntity.ok(ApiResponse.success(data, "示例数据初始化成功"));
+        try {
+            databaseInitService.manualInit();
+            Map<String, Object> data = new HashMap<>();
+            data.put("stats", databaseInitService.getDataStats());
+            return ResponseEntity.ok(ApiResponse.success(data, "示例数据初始化成功"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("初始化失败: " + e.getMessage()));
+        }
     }
     
     /**
@@ -300,8 +330,13 @@ public class MoodController {
      */
     @DeleteMapping("/clear-data")
     public ResponseEntity<ApiResponse> clearAllData() {
-        databaseInitService.clearAllData();
-        return ResponseEntity.ok(ApiResponse.success("所有数据已清空"));
+        try {
+            databaseInitService.clearAllData();
+            return ResponseEntity.ok(ApiResponse.success("所有数据已清空"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("清空数据失败: " + e.getMessage()));
+        }
     }
     
     /**
@@ -390,11 +425,14 @@ public class MoodController {
      */
     @GetMapping("/analysis/{userId}")
     public ResponseEntity<ApiResponse> getAnalysisReport(@PathVariable String userId) {
-        String analysisReport = moodAnalysisService.generateAnalysisReport(userId);
-        Map<String, Object> data = new HashMap<>();
-        data.put("userId", userId);
-        data.put("analysis", analysisReport);
-        return ResponseEntity.ok(ApiResponse.success(data, "获取分析报告成功"));
+        try {
+            String analysisReport = moodAnalysisService.generateAnalysisReport(userId);
+            // 直接返回分析报告字符串，不包装在Map中
+            return ResponseEntity.ok(ApiResponse.success(analysisReport, "获取分析报告成功"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("获取分析报告失败: " + e.getMessage()));
+        }
     }
     
     /**
@@ -406,12 +444,13 @@ public class MoodController {
             @PathVariable String userId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        String analysisReport = moodAnalysisService.generateAnalysisReport(userId, startDate.toString(), endDate.toString());
-        Map<String, Object> data = new HashMap<>();
-        data.put("userId", userId);
-        data.put("startDate", startDate);
-        data.put("endDate", endDate);
-        data.put("analysis", analysisReport);
-        return ResponseEntity.ok(ApiResponse.success(data, "获取分析报告成功"));
+        try {
+            String analysisReport = moodAnalysisService.generateAnalysisReport(userId, startDate.toString(), endDate.toString());
+            // 直接返回分析报告字符串，不包装在Map中
+            return ResponseEntity.ok(ApiResponse.success(analysisReport, "获取分析报告成功"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("获取分析报告失败: " + e.getMessage()));
+        }
     }
 } 

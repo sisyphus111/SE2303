@@ -38,3 +38,11 @@ CREATE TABLE IF NOT EXISTS mood_item (
     INDEX idx_label (label),
     INDEX idx_mood_id (mood_id)
 ) COMMENT '心情标签表'; 
+
+CREATE TABLE IF NOT EXISTS mood_analysis(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(20) NOT NULL,
+    analysis TEXT NOT NULL,
+    valid BOOLEAN NOT NULL DEFAULT FALSE,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) COMMENT '心情分析表';

@@ -1,0 +1,97 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: talk-service
+    
+  # 数据库配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/talk_service?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: root
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    
+  # JPA配置
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    defer-datasource-initialization: true
+    
+  # SQL初始化配置
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      continue-on-error: true
+    
+  # Redis配置 (用于缓存和消息队列)
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      timeout: 10000
+      lettuce:
+        pool:
+          max-active: 1000
+          max-idle: 100
+          min-idle: 10
+          max-wait: 200ms
+          
+  # CORS配置 - 支持前端访问
+  mvc:
+    cors:
+      allowed-origins: 
+        - http://localhost:3000
+        - http://localhost:8080
+      allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+      allowed-headers: "*"
+      allow-credentials: true
+      max-age: 3600
+
+# 日志配置
+logging:
+  level:
+    com.se2303.talkservice: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# 监控配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# WebSocket配置
+websocket:
+  # 心跳间隔（秒）
+  heartbeat-interval: 30
+  # 连接超时时间（秒）
+  connection-timeout: 300
+  # 消息最大长度
+  max-message-size: 8192
+  # 最大连接数
+  max-connections: 10000
+
+# 消息配置
+message:
+  # 消息历史保留天数
+  history-retention-days: 90
+  # 每次查询的最大消息数
+  max-query-size: 100
+  # 是否开启消息审核
+  content-moderation: true 

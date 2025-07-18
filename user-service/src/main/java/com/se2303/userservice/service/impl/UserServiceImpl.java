@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User createUser(String sjtuId, String name, String jaccount, String telephone) {
-        Boolean isUser = !(sjtuId.equals("900000000438")); // 在这里设置管理员
+        Boolean isUser = !(sjtuId.equals("900000000436")); // 在这里设置管理员
         
         Auth auth = new Auth(jaccount, sjtuId, name, telephone, isUser, true);
         

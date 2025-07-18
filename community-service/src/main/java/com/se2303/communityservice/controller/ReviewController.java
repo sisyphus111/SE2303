@@ -2,6 +2,7 @@ package com.se2303.communityservice.controller;
 
 import com.se2303.communityservice.dto.PageDTO;
 import com.se2303.communityservice.entity.Comment;
+import com.se2303.communityservice.entity.Post;
 import com.se2303.communityservice.dto.response.PostBriefInfo;
 import com.se2303.communityservice.response.ApiResponse;
 import com.se2303.communityservice.service.ICommentService;

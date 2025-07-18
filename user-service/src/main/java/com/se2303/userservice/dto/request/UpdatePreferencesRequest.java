@@ -25,6 +25,18 @@ public class UpdatePreferencesRequest {
     private Boolean anonymousPosting;
     private Boolean mentalHealthDataSharing;
 
+    public UpdatePreferencesRequest(Boolean pushNotifications, Boolean emailNotifications, Boolean commentNotifications, Boolean likeNotifications, Boolean systemNotifications, Boolean soundEnabled, Boolean showPostStats, Boolean enablePostRecommendation, Boolean blockSensitiveContent, Boolean crisisInterventionEnabled, Boolean moodTrackingEnabled, Boolean anonymousPosting, Boolean mentalHealthDataSharing) {
+        this.pushNotifications = pushNotifications;
+        this.emailNotifications = emailNotifications;
+        this.commentNotifications = commentNotifications;
+        this.likeNotifications = likeNotifications;
+        this.systemNotifications = systemNotifications;
+        this.soundEnabled = soundEnabled;
+        this.showPostStats = showPostStats;
+        this.enablePostRecommendation = enablePostRecommendation;
+        this.blockSensitiveContent = blockSensitiveContent;
+    }
+
     public UpdatePreferencesRequest() {}
 
     public Boolean getPushNotifications() {
@@ -79,4 +91,55 @@ public class UpdatePreferencesRequest {
         return mentalHealthDataSharing;
     }
 
+    public void setPushNotifications(Boolean pushNotifications) {
+        this.pushNotifications = pushNotifications;
+    }
+
+    public void setEmailNotifications(Boolean emailNotifications) {
+        this.emailNotifications = emailNotifications;
+    }
+
+    public void setCommentNotifications(Boolean commentNotifications) {
+        this.commentNotifications = commentNotifications;
+    }
+
+    public void setLikeNotifications(Boolean likeNotifications) {
+        this.likeNotifications = likeNotifications;
+    }
+
+    public void setSystemNotifications(Boolean systemNotifications) {
+        this.systemNotifications = systemNotifications;
+    }
+
+    public void setSoundEnabled(Boolean soundEnabled) {
+        this.soundEnabled = soundEnabled;
+    }
+
+    public void setShowPostStats(Boolean showPostStats) {
+        this.showPostStats = showPostStats;
+    }
+
+    public void setEnablePostRecommendation(Boolean enablePostRecommendation) {
+        this.enablePostRecommendation = enablePostRecommendation;
+    }
+
+    public void setBlockSensitiveContent(Boolean blockSensitiveContent) {
+        this.blockSensitiveContent = blockSensitiveContent;
+    }
+
+    public void setCrisisInterventionEnabled(Boolean crisisInterventionEnabled) {
+        this.crisisInterventionEnabled = crisisInterventionEnabled;
+    }
+
+    public void setMoodTrackingEnabled(Boolean moodTrackingEnabled) {
+        this.moodTrackingEnabled = moodTrackingEnabled;
+    }
+
+    public void setAnonymousPosting(Boolean anonymousPosting) {
+        this.anonymousPosting = anonymousPosting;
+    }
+
+    public void setMentalHealthDataSharing(Boolean mentalHealthDataSharing) {
+        this.mentalHealthDataSharing = mentalHealthDataSharing;
+    }
 }

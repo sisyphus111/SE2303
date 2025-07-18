@@ -16,6 +16,10 @@ public class ApiResponse {
         return success;
     }
 
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
     public Object getObject() {
         return object;
     }
@@ -28,4 +32,7 @@ public class ApiResponse {
         return message;
     }
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

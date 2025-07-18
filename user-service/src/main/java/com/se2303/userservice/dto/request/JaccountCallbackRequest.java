@@ -7,7 +7,14 @@ public class JaccountCallbackRequest {
     
     // 无参构造函数
     public JaccountCallbackRequest() {}
-
+    
+    // 全参构造函数
+    public JaccountCallbackRequest(String code, String redirectUri, String state) {
+        this.code = code;
+        this.redirectUri = redirectUri;
+        this.state = state;
+    }
+    
     // Getters and Setters
     public String getCode() {
         return code;
@@ -24,7 +31,15 @@ public class JaccountCallbackRequest {
     public void setRedirectUri(String redirectUri) {
         this.redirectUri = redirectUri;
     }
-
+    
+    public String getState() {
+        return state;
+    }
+    
+    public void setState(String state) {
+        this.state = state;
+    }
+    
     @Override
     public String toString() {
         return "JaccountCallbackRequest{" +

@@ -4,6 +4,9 @@
 ```make bot```
 启动bot-service
 
+```make es```
+运行脚本，部署ElasticSearch容器
+
 ```make community```
 启动community-service
 
@@ -22,8 +25,8 @@
 ```make inspection```
 启动inspection-service
 
-```make inform```
-启动inform-service
+```make talk```
+启动talk-service
 
 ### 设置管理员用户
 在user-service中搜索"90000000"的代码，填入自己的学号即可

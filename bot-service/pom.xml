@@ -45,14 +45,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
-			<version>3.5.0</version>
 		</dependency>
 		
 		<!-- 添加HTTP客户端依赖，用于调用大模型API -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
-			<version>3.5.0</version>
 		</dependency>
 		
 		<!-- JSON处理 -->
@@ -70,16 +68,6 @@
 			<groupId>com.openai</groupId>
 			<artifactId>openai-java</artifactId>
 			<version>0.32.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

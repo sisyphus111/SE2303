@@ -78,6 +78,8 @@ public class AlertResponse {
         this.userId = userId;
     }
     
+
+    
     public AlertType getAlertType() {
         return alertType;
     }
@@ -85,7 +87,15 @@ public class AlertResponse {
     public void setAlertType(AlertType alertType) {
         this.alertType = alertType;
     }
-
+    
+    public String getAlertTypeDescription() {
+        return alertTypeDescription;
+    }
+    
+    public void setAlertTypeDescription(String alertTypeDescription) {
+        this.alertTypeDescription = alertTypeDescription;
+    }
+    
     public AlertLevel getAlertLevel() {
         return alertLevel;
     }
@@ -93,7 +103,15 @@ public class AlertResponse {
     public void setAlertLevel(AlertLevel alertLevel) {
         this.alertLevel = alertLevel;
     }
-
+    
+    public String getAlertLevelDescription() {
+        return alertLevelDescription;
+    }
+    
+    public void setAlertLevelDescription(String alertLevelDescription) {
+        this.alertLevelDescription = alertLevelDescription;
+    }
+    
     public AlertStatus getStatus() {
         return status;
     }
@@ -101,7 +119,15 @@ public class AlertResponse {
     public void setStatus(AlertStatus status) {
         this.status = status;
     }
-
+    
+    public String getStatusDescription() {
+        return statusDescription;
+    }
+    
+    public void setStatusDescription(String statusDescription) {
+        this.statusDescription = statusDescription;
+    }
+    
     public String getDescription() {
         return description;
     }
@@ -109,9 +135,70 @@ public class AlertResponse {
     public void setDescription(String description) {
         this.description = description;
     }
+    
+    public String getOperationDetails() {
+        return operationDetails;
+    }
+    
+    public void setOperationDetails(String operationDetails) {
+        this.operationDetails = operationDetails;
+    }
+    
+    public String getAiSessionId() {
+        return aiSessionId;
+    }
+    
+    public void setAiSessionId(String aiSessionId) {
+        this.aiSessionId = aiSessionId;
+    }
+    
+    public Integer getAiTimeoutDuration() {
+        return aiTimeoutDuration;
+    }
+    
+    public void setAiTimeoutDuration(Integer aiTimeoutDuration) {
+        this.aiTimeoutDuration = aiTimeoutDuration;
+    }
+    
+    public String getAssignedCounselorId() {
+        return assignedCounselorId;
+    }
+    
+    public void setAssignedCounselorId(String assignedCounselorId) {
+        this.assignedCounselorId = assignedCounselorId;
+    }
+    
 
+    
+    public String getFollowUpNotes() {
+        return followUpNotes;
+    }
+    
+    public void setFollowUpNotes(String followUpNotes) {
+        this.followUpNotes = followUpNotes;
+    }
+    
+    public Date getFollowUpDate() {
+        return followUpDate;
+    }
+    
+    public void setFollowUpDate(Date followUpDate) {
+        this.followUpDate = followUpDate;
+    }
+    
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+    
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
-
-}
+    
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+    
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+} 

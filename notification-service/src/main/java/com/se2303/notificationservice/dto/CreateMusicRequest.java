@@ -30,7 +30,15 @@ public class CreateMusicRequest {
     
     // 构造函数
     public CreateMusicRequest() {}
-
+    
+    public CreateMusicRequest(String title, String category, String cover, String url, Integer duration) {
+        this.title = title;
+        this.category = category;
+        this.cover = cover;
+        this.url = url;
+        this.duration = duration;
+    }
+    
     // Getter和Setter方法
     public String getTitle() {
         return title;

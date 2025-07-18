@@ -24,13 +24,18 @@ public class RedisConfig {
         return new RestTemplate();
     }
 
-    public ObjectMapper createObjectMapper() {
+    private ObjectMapper createObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
+        // 注册 Hibernate6Module
         Hibernate6Module hibernateModule = new Hibernate6Module();
-        hibernateModule.configure(Hibernate6Module.Feature.FORCE_LAZY_LOADING, false);
-        hibernateModule.configure(Hibernate6Module.Feature.REPLACE_PERSISTENT_COLLECTIONS, true);
+        hibernateModule.configure(Hibernate6Module.Feature.FORCE_LAZY_LOADING, false); // 忽略未初始化的代理
+        hibernateModule.configure(Hibernate6Module.Feature.REPLACE_PERSISTENT_COLLECTIONS, true); // 替换 Hibernate 集合为标准集合
         objectMapper.registerModule(hibernateModule);
+        objectMapper.activateDefaultTyping(
+                objectMapper.getPolymorphicTypeValidator(),
+                ObjectMapper.DefaultTyping.NON_FINAL
+        );
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
         return objectMapper;
     }
@@ -55,7 +60,6 @@ public class RedisConfig {
         template.setKeySerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
         Jackson2JsonRedisSerializer<Post> serializer = new Jackson2JsonRedisSerializer<>(createObjectMapper(), Post.class);
-        System.out.println("Post serializer target type: " + serializer.getTargetType()); // 调试日志
         template.setValueSerializer(serializer);
         template.setHashValueSerializer(serializer);
         template.afterPropertiesSet();
@@ -69,7 +73,6 @@ public class RedisConfig {
         template.setKeySerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
         Jackson2JsonRedisSerializer<Comment> serializer = new Jackson2JsonRedisSerializer<>(createObjectMapper(), Comment.class);
-        System.out.println("Comment serializer target type: " + serializer.getTargetType()); // 调试日志
         template.setValueSerializer(serializer);
         template.setHashValueSerializer(serializer);
         template.afterPropertiesSet();

@@ -246,44 +246,15 @@ public class CommentController {
         }
     }
 
-    /**
-     * 获取今日通过审核的评论数量
-     * @param userId 用户ID，通过请求头传递
-     * @param valid 用户状态，通过请求头传递
-     * @param identity 用户身份，通过请求头传递
-     * @return 今日通过审核的评论数量
-     */
     @GetMapping("/today_count")
     public ResponseEntity<ApiResponse> getTodayCount(
             @RequestHeader("X-User-Id") String userId,
             @RequestHeader("X-Valid") String valid,
             @RequestHeader("X-Identity") String identity) {
-        logger.info("=== GET /comments/today_count 请求开始 ===");
-        try {
-            // 1. 验证请求头
-            if (userId == null || userId.trim().isEmpty() || valid == null || identity == null) {
-                logger.warn("无效的请求头: userId={}, valid={}, identity={}", userId, valid, identity);
-                return ResponseEntity.status(401).body(new ApiResponse(false, null, "未登录或请求头无效"));
-            }
-
-            // 2. 验证用户状态
-            boolean isValid = Boolean.parseBoolean(valid);
-            logger.debug("UserId: {}, Valid: {}, Identity: {}", userId, isValid, identity);
-
-            if (!isValid) {
-                logger.warn("用户状态无效: userId={}", userId);
-                return ResponseEntity.status(401).body(new ApiResponse(false, null, "用户状态无效"));
-            }
-
-            // 3. 调用服务层获取今日评论数量
-            Integer todayCount = commentService.getTodayApprovedCommentCount();
-            logger.info("✅ 今日评论数量查询成功: count={}", todayCount);
-            return ResponseEntity.ok(new ApiResponse(true, todayCount, "今日评论数量查询成功"));
-        } catch (Exception e) {
-            logger.error("❌ 查询今日评论数量时发生错误: error={}", e.getMessage());
-            return ResponseEntity.status(500).body(new ApiResponse(false, null, "服务器内部错误: " + e.getMessage()));
-        }
+        Integer todayCount = commentService.getTodayApprovedCommentCount();
+        return ResponseEntity.ok(new ApiResponse(true, todayCount, "今日评论数量查询成功"));
     }
+
     /**
      * 根据多个标签筛选评论
      * @param tags 标签列表，用逗号分隔

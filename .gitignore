@@ -32,3 +32,7 @@ notification-service/.vscode/
 user-service/target/
 user-service/.idea/
 user-service/.vscode/
+
+talk-service/target/
+talk-service/.idea/
+talk-service/.vscode/

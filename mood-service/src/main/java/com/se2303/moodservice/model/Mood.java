@@ -147,11 +147,33 @@ public class Mood {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-
+    
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+    
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-
+    
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+    
+    public List<MoodItem> getMoodItems() {
+        return moodItems;
+    }
+    
+    public void setMoodItems(List<MoodItem> moodItems) {
+        this.moodItems = moodItems;
+    }
+    
+    // 添加心情标签的便捷方法
+    public void addMoodItem(MoodItem moodItem) {
+        moodItems.add(moodItem);
+        moodItem.setMood(this);
+    }
+    
     public void removeMoodItem(MoodItem moodItem) {
         moodItems.remove(moodItem);
         moodItem.setMood(null);

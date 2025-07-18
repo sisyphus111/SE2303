@@ -30,34 +30,34 @@ import org.springframework.web.client.RestTemplate;
 public class AIService {
 
     @Value("${ai.api.url:https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions}")
-    public String apiUrl;
+    private String apiUrl;
 
     @Value("${ai.api.key}")
-    public String apiKey;
+    private String apiKey;
 
     @Value("${ai.api.model:qwen-turbo}")
-    public String model;
+    private String model;
 
     @Value("${ai.api.timeout:30}")
-    public int timeoutSeconds;
+    private int timeoutSeconds;
 
     @Value("${alert.service.url:http://localhost:8086}")
-    public String alertServiceUrl;
+    private String alertServiceUrl;
 
     @Autowired
-    public AIPromptConfig promptConfig;
+    private AIPromptConfig promptConfig;
 
-    public final WebClient webClient;
-    public final ObjectMapper objectMapper;
+    private final WebClient webClient;
+    private final ObjectMapper objectMapper;
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-
+    
     // 对话开始时间记录
-    public LocalDateTime conversationStartTime;
+    private LocalDateTime conversationStartTime;
     private static final long MAX_CONVERSATION_DURATION_MINUTES =1;
-
+    
     // 记录是否已经发送过超时警告，避免重复发送
-    public boolean timeoutAlertSent = false;
-
+    private boolean timeoutAlertSent = false;
+    
     // 当前用户信息
     private String currentUserId = "unknown";
     private String currentSessionId = "unknown";
@@ -77,7 +77,7 @@ public class AIService {
     public void getStreamingResponse(String userMessage, List<ChatMessage> history, String scenario, String personality, Consumer<String> onChunk, Consumer<String> onComplete, Runnable onFinish) {
         // 检查对话持续时间
         checkConversationDuration();
-
+        
         logInfo("=== AI服务调用开始 ===");
         logInfo("时间: " + LocalDateTime.now().format(timeFormatter));
         logInfo("API URL: " + apiUrl);
@@ -87,34 +87,34 @@ public class AIService {
         logInfo("历史消息数量: " + (history != null ? history.size() : 0));
         logInfo("场景: " + (scenario != null ? scenario : "默认"));
         logInfo("性格: " + (personality != null ? personality : "默认"));
-
+        
         // 初始化对话开始时间（如果是第一次对话）
         if (conversationStartTime == null) {
             conversationStartTime = LocalDateTime.now();
             logInfo("对话开始时间已记录: " + conversationStartTime.format(timeFormatter));
         }
-
+        
         // 检查API密钥
         if (apiKey == null || apiKey.trim().isEmpty()) {
             logInfo("API密钥未配置，使用模拟响应");
             simulateStreamingResponse(userMessage, onChunk, onComplete, onFinish);
             return;
         }
-
+        
         logInfo("API密钥已配置，前缀: " + apiKey.substring(0, Math.min(10, apiKey.length())) + "...");
-
+        
         try {
             // 构建请求体
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("model", model);
             requestBody.put("stream", true);
-
+            
             // 构建消息列表，包含系统提示词、历史对话和当前用户消息
             List<Map<String, Object>> messages = new ArrayList<>();
-
+            
             // 获取系统提示词
             String systemPrompt = promptConfig.getFullPrompt(scenario, personality);
-
+            
             // 添加系统提示词（只在没有历史消息时添加，避免重复）
             if (history == null || history.isEmpty()) {
                 Map<String, Object> systemMessage = new HashMap<>();
@@ -123,7 +123,7 @@ public class AIService {
                 messages.add(systemMessage);
                 logInfo("添加系统提示词: " + systemPrompt.substring(0, Math.min(100, systemPrompt.length())) + "...");
             }
-
+            
             // 添加历史消息
             if (history != null && !history.isEmpty()) {
                 for (ChatMessage msg : history) {
@@ -137,13 +137,13 @@ public class AIService {
                     }
                 }
             }
-
+            
             // 添加当前用户消息
             Map<String, Object> currentMessage = new HashMap<>();
             currentMessage.put("role", "user");
             currentMessage.put("content", userMessage);
             messages.add(currentMessage);
-
+            
             requestBody.put("messages", messages);
             requestBody.put("max_tokens", 1000);
             requestBody.put("temperature", 0.7);
@@ -186,14 +186,14 @@ public class AIService {
                         },
                         error -> {
                             logError("=== API调用错误详情 ===", error);
-
+                            
                             if (error instanceof WebClientResponseException) {
                                 WebClientResponseException webError = (WebClientResponseException) error;
                                 logError("HTTP状态码: " + webError.getStatusCode());
                                 logError("响应头: " + webError.getHeaders());
                                 logError("响应体: " + webError.getResponseBodyAsString());
                             }
-
+                            
                             logError("错误堆栈:", error);
                             onChunk.accept("抱歉，AI服务调用失败: " + error.getMessage());
                             onFinish.run();
@@ -203,7 +203,7 @@ public class AIService {
                             onFinish.run();
                         }
                     );
-
+                    
         } catch (Exception e) {
             logError("构建请求时出错", e);
             onChunk.accept("抱歉，构建API请求时出错: " + e.getMessage());
@@ -223,25 +223,25 @@ public class AIService {
                 logInfo("收到流式响应结束标志");
                 return null;
             }
-
+            
             // 阿里云百炼直接返回JSON，不是SSE格式
             JsonNode jsonNode = objectMapper.readTree(chunk);
-
+            
             JsonNode choices = jsonNode.get("choices");
             if (choices != null && choices.isArray() && choices.size() > 0) {
                 JsonNode choice = choices.get(0);
                 JsonNode delta = choice.get("delta");
-
+                
                 if (delta != null) {
                     if (delta.has("content")) {
                         String content = delta.get("content").asText();
-
+                        
                         // 检查是否是结束标志
                         JsonNode finishReason = choice.get("finish_reason");
                         if (finishReason != null && !"null".equals(finishReason.asText()) && !finishReason.isNull()) {
                             logInfo("检测到结束标志: " + finishReason.asText());
                         }
-
+                        
                         return content;
                     } else {
                         // 检查是否是结束信号
@@ -253,7 +253,7 @@ public class AIService {
                     }
                 }
             }
-
+            
         } catch (Exception e) {
             logError("解析JSON时出错，原始数据: " + chunk, e);
         }
@@ -264,19 +264,19 @@ public class AIService {
     private void simulateStreamingResponse(String userMessage, Consumer<String> onChunk, Consumer<String> onComplete, Runnable onFinish) {
         // 检查对话持续时间
         checkConversationDuration();
-
+        
         logInfo("=== 开始模拟流式响应 ===");
         new Thread(() -> {
             try {
                 String response = generateMockResponse(userMessage);
                 String[] words = response.split("(?<=\\s)"); // 按空格分割但保留空格
-
+                
                 for (int i = 0; i < words.length; i++) {
                     String word = words[i];
                     onChunk.accept(word);
                     Thread.sleep(50 + (int)(Math.random() * 100)); // 模拟网络延迟
                 }
-
+                
                 Thread.sleep(500); // 最后暂停一下
                 logInfo("模拟响应发送完成");
                 onComplete.accept(response); // 传递完整响应
@@ -294,7 +294,7 @@ public class AIService {
     public String generateMockResponse(String userMessage) {
         // 根据用户消息生成相应的模拟回复，符合心理健康陪伴助手的角色
         String lowerMessage = userMessage.toLowerCase();
-
+        
         if (lowerMessage.contains("难过") || lowerMessage.contains("伤心") || lowerMessage.contains("不开心") || lowerMessage.contains("抑郁")) {
             return "小暖感受到你现在的心情不太好。记住，每个人都会有情绪低落的时候，这是完全正常的。你想聊聊具体发生了什么吗？我在这里倾听，不会评判你。如果这种情绪持续很久，建议你也可以考虑寻求专业的心理咨询师帮助。";
         } else if (lowerMessage.contains("开心") || lowerMessage.contains("高兴") || lowerMessage.contains("快乐")) {
@@ -325,42 +325,42 @@ public class AIService {
             return responses[(int)(Math.random() * responses.length)];
         }
     }
-
+    
     private void logInfo(String message) {
         System.out.println("[AIService-INFO] " + LocalDateTime.now().format(timeFormatter) + " - " + message);
     }
-
+    
     private void logError(String message, Throwable error) {
         System.err.println("[AIService-ERROR] " + LocalDateTime.now().format(timeFormatter) + " - " + message);
         if (error != null) {
             error.printStackTrace();
         }
     }
-
+    
     private void logError(String message) {
         logError(message, null);
     }
-
+    
     /**
      * 检查对话持续时间，如果超过限制则输出警告信息并发送警报
      */
-    public void checkConversationDuration() {
+    private void checkConversationDuration() {
         logInfo("=== 检查对话持续时间 ===");
         logInfo("conversationStartTime: " + (conversationStartTime != null ? conversationStartTime.format(timeFormatter) : "null"));
         logInfo("timeoutAlertSent: " + timeoutAlertSent);
         logInfo("currentUserId: " + currentUserId);
         logInfo("currentSessionId: " + currentSessionId);
-
+        
         if (conversationStartTime != null) {
             LocalDateTime now = LocalDateTime.now();
             long durationMinutes = java.time.Duration.between(conversationStartTime, now).toMinutes();
-
+            
             logInfo("当前对话持续时间: " + durationMinutes + " 分钟");
             logInfo("最大允许时间: " + MAX_CONVERSATION_DURATION_MINUTES + " 分钟");
-
+            
             if (durationMinutes >= MAX_CONVERSATION_DURATION_MINUTES) {
                 logInfo("超过时间限制，准备发送警报");
-
+                
                 String warningMessage = String.format(
                     "⚠️ 对话持续时间警告 ⚠️\n" +
                     "当前对话已持续 %d 分钟，超过了建议的 %d 分钟限制。\n" +
@@ -369,15 +369,15 @@ public class AIService {
                     "2. 如果感到疲劳，请暂停对话\n" +
                     "3. 如果需要继续，建议稍后重新开始对话\n" +
                     "对话开始时间: %s",
-                    durationMinutes, MAX_CONVERSATION_DURATION_MINUTES,
+                    durationMinutes, MAX_CONVERSATION_DURATION_MINUTES, 
                     conversationStartTime.format(timeFormatter)
                 );
-
+                
                 logInfo("=== 对话超时警告 ===");
                 logInfo(warningMessage);
                 System.err.println("[AIService-WARNING] " + LocalDateTime.now().format(timeFormatter) + " - " + warningMessage);
                 System.err.println("[AIService-WARNING] " + LocalDateTime.now().format(timeFormatter) + " - 用户ID: " + currentUserId + ", 会话ID: " + currentSessionId + ", 持续时间: " + durationMinutes + " 分钟");
-
+                
                 // 发送AI超时警报到alert-service
                 if (!timeoutAlertSent) {
                     logInfo("开始发送超时警报...");
@@ -392,7 +392,7 @@ public class AIService {
             }
         }
     }
-
+    
     /**
      * 重置对话开始时间（可用于新对话开始时调用）
      */
@@ -401,7 +401,7 @@ public class AIService {
         timeoutAlertSent = false; // 重置警报发送状态
         logInfo("对话计时器已重置，新对话开始时间: " + conversationStartTime.format(timeFormatter));
     }
-
+    
     /**
      * 获取当前对话持续时间（分钟）
      */
@@ -411,7 +411,7 @@ public class AIService {
         }
         return java.time.Duration.between(conversationStartTime, LocalDateTime.now()).toMinutes();
     }
-
+    
     /**
      * 发送AI超时警报到alert-service
      */
@@ -422,7 +422,7 @@ public class AIService {
             logInfo("当前用户ID: " + currentUserId);
             logInfo("当前会话ID: " + currentSessionId);
             logInfo("超时持续时间: " + durationMinutes + " 分钟");
-
+            
             // 构建警报请求 - 按照curl示例格式
             Map<String, Object> alertRequest = new HashMap<>();
             alertRequest.put("userId", currentUserId);
@@ -435,10 +435,10 @@ public class AIService {
                 durationMinutes,
                 MAX_CONVERSATION_DURATION_MINUTES
             ));
-
+            
             String requestJson = objectMapper.writeValueAsString(alertRequest);
             logInfo("警报请求内容: " + requestJson);
-
+            
             // 使用同步调用确保请求发送完成
             try {
                 logInfo("尝试使用WebClient发送警报到: " + alertServiceUrl + "/api/alert/create");
@@ -450,14 +450,14 @@ public class AIService {
                         .bodyToMono(String.class)
                         .timeout(Duration.ofSeconds(10))  // 设置超时时间
                         .block();  // 同步等待响应
-
+                
                 logInfo("AI超时警报发送成功: " + response);
                 System.out.println("[AIService-SUCCESS] " + LocalDateTime.now().format(timeFormatter) + " - AI超时警报发送成功");
-
+                
             } catch (Exception httpError) {
                 logError("发送AI超时警报HTTP请求失败", httpError);
                 System.err.println("[AIService-ERROR] " + LocalDateTime.now().format(timeFormatter) + " - WebClient发送警报失败: " + httpError.getMessage());
-
+                
                 // 尝试使用 RestTemplate 作为备选方案
                 try {
                     logInfo("尝试使用RestTemplate作为备选方案发送警报");
@@ -465,21 +465,21 @@ public class AIService {
                     HttpHeaders headers = new HttpHeaders();
                     headers.setContentType(MediaType.APPLICATION_JSON);
                     HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
-
+                    
                     ResponseEntity<String> restResponse = restTemplate.postForEntity(
-                        alertServiceUrl + "/api/alert/create",
-                        entity,
+                        alertServiceUrl + "/api/alert/create", 
+                        entity, 
                         String.class
                     );
-
+                    
                     logInfo("使用RestTemplate发送警报成功: " + restResponse.getBody());
                     System.out.println("[AIService-SUCCESS] " + LocalDateTime.now().format(timeFormatter) + " - RestTemplate发送警报成功");
-
+                    
                 } catch (Exception restError) {
                     logError("RestTemplate发送警报也失败", restError);
                     System.err.println("[AIService-ERROR] " + LocalDateTime.now().format(timeFormatter) + " - RestTemplate发送警报也失败: " + restError.getMessage());
                     System.err.println("[AIService-ERROR] " + LocalDateTime.now().format(timeFormatter) + " - 所有发送警报的方法都失败了，请检查alert-service是否正常运行");
-
+                    
                     // 输出详细的错误堆栈信息
                     System.err.println("[AIService-ERROR] WebClient错误详情:");
                     httpError.printStackTrace();
@@ -487,14 +487,14 @@ public class AIService {
                     restError.printStackTrace();
                 }
             }
-
+                    
         } catch (Exception e) {
             logError("构建AI超时警报请求时出错", e);
             System.err.println("[AIService-ERROR] " + LocalDateTime.now().format(timeFormatter) + " - 构建警报请求时出错: " + e.getMessage());
             e.printStackTrace();
         }
     }
-
+    
     /**
      * 检查alert-service健康状态
      */
@@ -505,7 +505,7 @@ public class AIService {
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
-
+            
             logInfo("Alert Service 健康检查响应: " + response);
             return response != null && response.contains("UP");
         } catch (Exception e) {
@@ -513,7 +513,7 @@ public class AIService {
             return false;
         }
     }
-
+    
     /**
      * 设置当前用户信息
      */
@@ -522,14 +522,14 @@ public class AIService {
         this.currentSessionId = sessionId;
         logInfo("设置当前用户 - 用户ID: " + userId + ", 会话ID: " + sessionId);
     }
-
+    
     /**
      * 获取当前用户ID
      */
     public String getCurrentUserId() {
         return currentUserId;
     }
-
+    
     /**
      * 获取当前会话ID
      */
@@ -557,11 +557,11 @@ public class AIService {
             testData.put("alertLevel", "MEDIUM");
             testData.put("description", "测试AI超时警报");
             testData.put("operationDetails", "这是一个测试警报");
-
+            
             return objectMapper.writeValueAsString(testData);
         } catch (Exception e) {
             logError("生成测试JSON时出错", e);
             return "{\"error\": \"生成JSON失败: " + e.getMessage() + "\"}";
         }
     }
-}
+} 

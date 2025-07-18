@@ -41,6 +41,68 @@ public class LikeService implements ILikeService {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    private static final String LIKE_COUNT_PREFIX = "like_count:";
+
+    // @Override
+    // @Transactional(isolation = Isolation.READ_COMMITTED)
+    // public void likePost(Long postId, String userId) {
+    //     validateInputs(postId, userId);
+    //     String lockKey = "post:like:" + postId + ":" + userId;
+    //     Object lock = lockMap.computeIfAbsent(lockKey, k -> new Object());
+        
+    //     synchronized (lock) {
+    //         try {
+    //             if (likeRepository.existsByPostIdAndUserId(postId, userId)) {
+    //                 logger.info("User {} already liked post {}", userId, postId);
+    //                 throw new IllegalStateException("User has already liked this post");
+    //             }
+
+    //             Like like = new Like();
+    //             like.setPostId(postId);
+    //             like.setUserId(userId);
+    //             likeRepository.save(like);
+    //             logger.info("User {} liked post {}", userId, postId);
+
+    //             String redisKey = LIKE_COUNT_PREFIX + postId;
+    //             redisTemplate.opsForValue().increment(redisKey, 1L);
+              
+    //         } finally {
+    //             // 清理锁对象，避免内存泄漏
+    //             lockMap.remove(lockKey);
+    //         }
+    //     }
+    // }
+
+    // @Override
+    // @Transactional(isolation = Isolation.READ_COMMITTED)
+    // public void unlikePost(Long postId, String userId) {
+    //     validateInputs(postId, userId);
+    //     String lockKey = "post:like:" + postId + ":" + userId;
+    //     Object lock = lockMap.computeIfAbsent(lockKey, k -> new Object());
+        
+    //     synchronized (lock) {
+    //         try {
+    //             Like like = (Like) likeRepository.findByPostIdAndUserId(postId, userId)
+    //                     .orElseThrow(() -> {
+    //                         logger.info("User {} has not liked post {}", userId, postId);
+    //                         return new IllegalStateException("User has not liked this post");
+    //                     });
+
+    //             likeRepository.delete(like);
+    //             logger.info("User {} unliked post {}", userId, postId);
+
+    //             String redisKey = LIKE_COUNT_PREFIX + postId;
+    //             redisTemplate.opsForValue().decrement(redisKey, 1L);
+                
+    //         } finally {
+    //             // 清理锁对象，避免内存泄漏
+    //             lockMap.remove(lockKey);
+    //         }
+    //     }
+    // }
 
     @Override
     @Transactional
@@ -102,7 +164,6 @@ public class LikeService implements ILikeService {
                     postBriefInfo.setReviewStatus(post.getReviewStatus());
                     postBriefInfo.setLikeCount(likeRepository.countByPostId(post.getId()));
                     postBriefInfo.setCommentCount(commentRepository.countApprovedCommentsByPostId(post.getId()));
-                    postBriefInfo.setLiked(true);
                     return postBriefInfo;
                 })
                 .collect(Collectors.toList());

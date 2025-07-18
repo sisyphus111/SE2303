@@ -13,6 +13,8 @@ public class CreateAlertRequest {
     @NotBlank(message = "用户ID不能为空")
     private String userId;
     
+
+    
     @NotNull(message = "警报类型不能为空")
     private AlertType alertType;
     
@@ -28,7 +30,12 @@ public class CreateAlertRequest {
     
     // 构造函数
     public CreateAlertRequest() {}
-
+    
+    public CreateAlertRequest(String userId, AlertType alertType) {
+        this.userId = userId;
+        this.alertType = alertType;
+    }
+    
     // Getter和Setter方法
     public String getUserId() {
         return userId;
@@ -37,6 +44,8 @@ public class CreateAlertRequest {
     public void setUserId(String userId) {
         this.userId = userId;
     }
+    
+
     
     public AlertType getAlertType() {
         return alertType;

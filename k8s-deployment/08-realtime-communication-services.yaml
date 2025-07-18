@@ -1,0 +1,154 @@
+---
+
+# Bot Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bot-service
+  namespace: se2303-realtime-communication
+  labels:
+    app: bot-service
+    app.kubernetes.io/name: bot-service
+    app.kubernetes.io/component: realtime-communication
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bot-service
+  template:
+    metadata:
+      labels:
+        app: bot-service
+    spec:
+      containers:
+      - name: bot-service
+        image: se2303/bot-service:latest  # 需要构建并推送到容器仓库
+        ports:
+        - containerPort: 8081
+          name: http
+        env:
+        - name: SERVER_PORT
+          value: "8081"
+        envFrom:
+        - configMapRef:
+            name: database-config
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8081
+          initialDelaySeconds: 90
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8081
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 512Mi
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: bot-service
+  namespace: se2303-realtime-communication
+  labels:
+    app: bot-service
+spec:
+  ports:
+  - port: 8081
+    targetPort: 8081
+    name: http
+  selector:
+    app: bot-service
+  type: ClusterIP
+---
+
+# Talk Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: talk-service
+  namespace: se2303-realtime-communication
+  labels:
+    app: talk-service
+    app.kubernetes.io/name: talk-service
+    app.kubernetes.io/component: realtime-communication
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: talk-service
+  template:
+    metadata:
+      labels:
+        app: talk-service
+    spec:
+      containers:
+      - name: talk-service
+        image: se2303/talk-service:latest  # 需要构建并推送到容器仓库
+        ports:
+        - containerPort: 8090
+          name: http
+        env:
+        - name: SERVER_PORT
+          value: "8090"
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://$(MYSQL_HOST):$(MYSQL_PORT)/talk_service?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "root"
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-root-password
+              optional: false
+        envFrom:
+        - configMapRef:
+            name: database-config
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8090
+          initialDelaySeconds: 90
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8090
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 512Mi
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: talk-service
+  namespace: se2303-realtime-communication
+  labels:
+    app: talk-service
+spec:
+  ports:
+  - port: 8090
+    targetPort: 8090
+    name: http
+  selector:
+    app: talk-service
+  type: ClusterIP 

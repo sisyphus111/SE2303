@@ -21,6 +21,14 @@ public class UpdateCarouselImageRequest {
 
     public UpdateCarouselImageRequest() {}
 
+    public UpdateCarouselImageRequest(String imageUrl, String title, String description, String category, Integer sortOrder) {
+        this.imageUrl = imageUrl;
+        this.title = title;
+        this.description = description;
+        this.category = category;
+        this.sortOrder = sortOrder;
+    }
+
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
     public String getTitle() { return title; }

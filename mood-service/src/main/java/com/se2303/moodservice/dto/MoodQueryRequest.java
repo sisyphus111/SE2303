@@ -45,7 +45,14 @@ public class MoodQueryRequest {
     
     // 构造函数
     public MoodQueryRequest() {}
-
+    
+    public MoodQueryRequest(String userId, List<String> moodLabels, LocalDate startDate, LocalDate endDate) {
+        this.userId = userId;
+        this.moodLabels = moodLabels;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+    
     // Getter和Setter方法
     public String getUserId() {
         return userId;

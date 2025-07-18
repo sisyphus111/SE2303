@@ -27,7 +27,16 @@ public class UpdateArticleRequest {
     
     // 构造函数
     public UpdateArticleRequest() {}
-
+    
+    public UpdateArticleRequest(String title, String introduction, String description, String cover, String link, String category) {
+        this.title = title;
+        this.introduction = introduction;
+        this.description = description;
+        this.cover = cover;
+        this.link = link;
+        this.category = category;
+    }
+    
     // Getter和Setter方法
     public String getTitle() {
         return title;

@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +45,8 @@ public class CommentService implements ICommentService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
+    @Autowired
+    private RedisTemplate<String, Comment> commentRedisTemplate;
 
     private static final String COMMENT_CACHE_PREFIX = "comments:";
     private static final String POST_CACHE_PREFIX = "post:";
@@ -133,7 +135,6 @@ public class CommentService implements ICommentService {
         validateCommentId(commentId);
         validateUserId(adminId);
         Comment comment = commentRepository.findById(commentId)
-                //TODO 未命中
                 .orElseThrow(() -> {
                     logger.warn("Comment not found with id: {}", commentId);
                     return new EntityNotFoundException("Comment not found with id: " + commentId);
@@ -171,7 +172,6 @@ public class CommentService implements ICommentService {
         validateCommentId(commentId);
         
         Comment comment = commentRepository.findById(commentId)
-                //TODO 未命中
                 .orElseThrow(() -> {
                     logger.warn("评论记录未找到: {}", commentId);
                     return new EntityNotFoundException("评论记录未找到: " + commentId);
@@ -241,7 +241,6 @@ public class CommentService implements ICommentService {
         
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> {
-                    //TODO 未命中
                     logger.warn("Comment not found with id: {}", commentId);
                     return new EntityNotFoundException("Comment not found with id: " + commentId);
                 });
@@ -379,5 +378,6 @@ public class CommentService implements ICommentService {
     }
     public Long getCommentCountByUserId(Long userId) {
         return commentRepository.countByUserId(String.valueOf(userId));
+
     }
 }

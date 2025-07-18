@@ -17,6 +17,10 @@ public class ApiResponse {
         return new ApiResponse(true, object, message);
     }
 
+    public static ApiResponse success(Object object) {
+        return new ApiResponse(true, object, "操作成功");
+    }
+
     public static ApiResponse success(String message) {
         return new ApiResponse(true, null, message);
     }

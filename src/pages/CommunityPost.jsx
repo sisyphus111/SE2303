@@ -85,7 +85,7 @@ const CommunityPostPage = () => {
         }
         const response = await sendCommentToPost(id, content, auth);
         if (response.success) {
-            setComments(prev => [...prev, response.data]);
+            // setComments(prev => [...prev, response.data]);
             message.success('评论发表成功');
         } else {
             message.error(response.error);

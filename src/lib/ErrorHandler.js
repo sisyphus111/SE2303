@@ -69,6 +69,10 @@ export const handleApiResponse = (response) => {
   console.log('🔍 API响应处理:', response);
   
   if (response.success) {
+    // 如果有message字段，弹出成功提示
+    if (response.message) {
+      message.success(response.message);
+    }
     // 优先返回 data 字段，如果没有则返回 object 字段
     return response.data || response.object || response;
   }

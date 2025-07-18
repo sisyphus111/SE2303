@@ -115,15 +115,13 @@ const AdminCrisis = () => {
         try {
             setOperatingAlertId(alertId);
             const response = await updateAlertStatus(alertId, status);
-            if (response.success) {
-                setAlerts(alerts.map(alert => 
-                    alert.id === alertId 
-                        ? { ...alert, status: status }
-                        : alert
-                ));
-            } else {
-                setError(response.message || '更新状态失败');
-            }
+            
+            setAlerts(alerts.map(alert => 
+                alert.id === alertId 
+                    ? { ...alert, status: status }
+                    : alert
+            ));
+            
         } catch (err) {
             console.error('更新状态失败:', err);
             setError('更新状态失败');

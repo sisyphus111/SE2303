@@ -1,34 +1,26 @@
-.vscode/
-.idea/
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-admin-service/target/
-admin-service/.idea/
-admin-service/.vscode/
+# IDE settings
+/.idea
+/.cursor
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
 
-alert-service/target/
-alert-service/.idea/
-alert-service/.vscode/
+# testing
+/coverage
 
-bot-service/target/
-bot-service/.idea/
-bot-service/.vscode/
+# production
+/build
 
-community-service/target/
-community-service/.idea/
-community-service/.vscode/
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-inspection-service/target/
-inspection-service/.idea/
-inspection-service/.vscode/
-
-mood-service/target/
-mood-service/.idea/
-mood-service/.vscode/
-
-notification-service/target/
-notification-service/.idea/
-notification-service/.vscode/
-
-user-service/target/
-user-service/.idea/
-user-service/.vscode/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

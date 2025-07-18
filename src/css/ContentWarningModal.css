@@ -1,0 +1,234 @@
+/* ContentWarningModal 样式 */
+.content-warning-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(45, 80, 22, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.content-warning-modal {
+  background: var(--white);
+  border-radius: var(--radius-large);
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-heavy);
+  color: var(--text-dark);
+  text-align: center;
+  animation: modalSlideIn 0.3s ease-out;
+  border: 1px solid var(--border-color);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.warning-header {
+  margin-bottom: 25px;
+}
+
+.warning-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.warning-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--primary-green);
+  letter-spacing: 1px;
+}
+
+.warning-content {
+  text-align: left;
+  margin-bottom: 25px;
+}
+
+.warning-message {
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  color: var(--text-gray);
+  text-align: center;
+  font-weight: 500;
+}
+
+.support-message {
+  background: var(--background-green);
+  border-radius: var(--radius-medium);
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.support-message h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  color: var(--primary-green);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.support-message ul {
+  margin: 0;
+  padding-left: 20px;
+  list-style: none;
+}
+
+.support-message li {
+  margin-bottom: 10px;
+  position: relative;
+  padding-left: 25px;
+  line-height: 1.5;
+  color: var(--text-gray);
+}
+
+.support-message li:before {
+  content: "💚";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 14px;
+}
+
+.contact-info {
+  background: var(--light-gray);
+  border-radius: var(--radius-medium);
+  padding: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.contact-info h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  color: var(--primary-green);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.phone-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+  padding: 12px;
+  background: var(--white);
+  border-radius: var(--radius-small);
+  border: 2px solid var(--primary-green);
+}
+
+.phone-icon {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.phone-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-green);
+}
+
+.contact-note {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-gray);
+  margin: 0;
+  text-align: center;
+}
+
+.warning-actions {
+  text-align: center;
+}
+
+.close-btn {
+  background: var(--primary-green);
+  color: var(--white);
+  border: none;
+  padding: 12px 30px;
+  border-radius: var(--radius-medium);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-light);
+  min-width: 120px;
+}
+
+.close-btn:hover {
+  background: var(--primary-green-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
+
+.close-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-light);
+}
+
+/* 响应式设计 */
+@media (max-width: 600px) {
+  .content-warning-modal {
+    padding: 20px;
+    margin: 20px;
+    width: calc(100% - 40px);
+  }
+  
+  .warning-header h2 {
+    font-size: 20px;
+  }
+  
+  .warning-message {
+    font-size: 14px;
+  }
+  
+  .support-message,
+  .contact-info {
+    padding: 15px;
+  }
+  
+  .phone-text {
+    font-size: 14px;
+  }
+  
+  .close-btn {
+    padding: 10px 25px;
+    font-size: 14px;
+  }
+}
+
+/* 滚动条样式 */
+.content-warning-modal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content-warning-modal::-webkit-scrollbar-track {
+  background: var(--light-gray);
+  border-radius: 3px;
+}
+
+.content-warning-modal::-webkit-scrollbar-thumb {
+  background: var(--accent-green);
+  border-radius: 3px;
+}
+
+.content-warning-modal::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-green-light);
+} 

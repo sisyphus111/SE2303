@@ -1,0 +1,592 @@
+/* 导入Inter字体 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* 自定义CSS变量 - 校园心理社区配色方案 */
+:root {
+  /* 主色调 - 暗绿色系 */
+  --primary-green: #2d5016;
+  --primary-green-light: #4a7c59;
+  --primary-green-lighter: #689061;
+  --accent-green: #8fbc8f;
+  --soft-green: #a8d8a8;
+  --background-green: #f0f8f0;
+  
+  /* 中性色 */
+  --white: #ffffff;
+  --off-white: #fefefe;
+  --light-gray: #f5f7f5;
+  --medium-gray: #e8ede8;
+  --text-gray: #5a6c57;
+  --text-dark: #2c3e2c;
+  --border-color: #d4e5d4;
+  
+  /* 深色变体 */
+  --primary-green-dark: #1a3009;
+  
+  /* 功能色 */
+  --success: #52c41a;
+  --warning: #faad14;
+  --error: #ff4d4f;
+  --info: var(--primary-green); /* 将信息色改为绿色 */
+  
+  /* 阴影和圆角 */
+  --shadow-light: 0 2px 8px rgba(45, 80, 22, 0.05);
+  --shadow-medium: 0 4px 16px rgba(45, 80, 22, 0.08);
+  --shadow-heavy: 0 8px 24px rgba(45, 80, 22, 0.12);
+  --radius-small: 8px;
+  --radius-medium: 12px;
+  --radius-large: 16px;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--background-green);
+  color: var(--text-gray);
+  position: relative;
+}
+
+/* 添加自然装饰背景 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-opacity='0.02'%3E%3Cpath d='M20 20c0-16.569 13.431-30 30-30s30 13.431 30 30-13.431 30-30 30-30-13.431-30-30z' fill='%234a7c59'/%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: -1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* 防止水平滚动 */
+}
+
+/* 为AIChat页面特别防止垂直滚动 */
+body.ai-chat-page {
+  overflow: hidden;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* 链接样式 */
+a {
+  color: var(--primary-green);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--primary-green-light);
+}
+
+/* 按钮样式重设计 */
+button {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* 输入框样式重设计 */
+input, textarea {
+  border: none;
+  outline: none;
+  font-family: inherit;
+}
+
+/* Ant Design 组件自定义样式 */
+.ant-btn-primary {
+  background: var(--primary-green) !important;
+  border-color: var(--primary-green) !important;
+  color: var(--white) !important;
+  font-weight: 500;
+  border-radius: var(--radius-small) !important;
+  box-shadow: var(--shadow-light);
+  transition: all 0.3s ease;
+}
+
+.ant-btn-primary:hover, 
+.ant-btn-primary:focus {
+  background: var(--primary-green-light) !important;
+  border-color: var(--primary-green-light) !important;
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-1px);
+}
+
+.ant-btn {
+  border-radius: var(--radius-small) !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.ant-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* 输入组件样式 */
+input, textarea, .ant-input, .ant-select-selector {
+  background: var(--white) !important;
+  border-radius: var(--radius-small) !important;
+  border: 1px solid var(--border-color) !important;
+  transition: all 0.2s ease;
+  color: var(--text-gray) !important;
+}
+
+input:focus, 
+textarea:focus, 
+.ant-input:focus, 
+.ant-input:hover,
+.ant-select-focused .ant-select-selector,
+.ant-select:hover .ant-select-selector {
+  border-color: var(--primary-green) !important;
+  box-shadow: 0 0 0 2px rgba(45, 80, 22, 0.1) !important;
+}
+
+/* 卡片样式 */
+.ant-card {
+  background: var(--white) !important;
+  border-radius: var(--radius-large) !important;
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--border-color) !important;
+  transition: all 0.3s ease;
+}
+
+.ant-card:hover {
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-2px);
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  background: var(--light-gray);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-green);
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-green-light);
+}
+
+/* 选择器样式 */
+.ant-select-selector {
+  background: var(--white) !important;
+}
+
+.ant-select-dropdown {
+  border-radius: var(--radius-medium) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-medium);
+}
+
+.ant-select-item-option-selected {
+  background-color: var(--primary-green) !important;
+  color: var(--white) !important;
+}
+
+.ant-select-item-option:hover {
+  background-color: var(--background-green) !important;
+}
+
+/* Radio 单选按钮样式 - 绿色主题 */
+.ant-radio-checked .ant-radio-inner {
+  background-color: var(--primary-green) !important;
+  border-color: var(--primary-green) !important;
+}
+
+.ant-radio:hover .ant-radio-inner {
+  border-color: var(--primary-green) !important;
+}
+
+.ant-radio-checked::after {
+  border-color: var(--primary-green) !important;
+}
+
+.ant-radio-wrapper:hover .ant-radio,
+.ant-radio:hover .ant-radio-inner,
+.ant-radio-input:focus + .ant-radio-inner {
+  border-color: var(--primary-green) !important;
+}
+
+/* Checkbox 复选框样式 - 绿色主题 */
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: var(--primary-green) !important;
+  border-color: var(--primary-green) !important;
+}
+
+.ant-checkbox:hover .ant-checkbox-inner {
+  border-color: var(--primary-green) !important;
+}
+
+.ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.ant-checkbox-input:focus + .ant-checkbox-inner {
+  border-color: var(--primary-green) !important;
+}
+
+/* Switch 开关样式 - 绿色主题 */
+.ant-switch-checked {
+  background-color: var(--primary-green) !important;
+}
+
+.ant-switch:hover:not(.ant-switch-disabled) {
+  background-color: var(--accent-green) !important;
+}
+
+.ant-switch-checked:hover:not(.ant-switch-disabled) {
+  background-color: var(--primary-green-light) !important;
+}
+
+/* Tabs 标签页样式 - 绿色主题 */
+.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--primary-green) !important;
+}
+
+.ant-tabs-ink-bar {
+  background: var(--primary-green) !important;
+}
+
+.ant-tabs-tab:hover .ant-tabs-tab-btn {
+  color: var(--primary-green) !important;
+}
+
+/* DatePicker 日期选择器样式 - 绿色主题 */
+.ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
+  background: var(--primary-green) !important;
+  color: var(--white) !important;
+}
+
+.ant-picker-cell:hover:not(.ant-picker-cell-in-view) .ant-picker-cell-inner,
+.ant-picker-cell:hover:not(.ant-picker-cell-selected) .ant-picker-cell-inner {
+  background: var(--background-green) !important;
+}
+
+.ant-picker-today .ant-picker-cell-inner {
+  border-color: var(--primary-green) !important;
+}
+
+/* Upload 上传组件样式 - 绿色主题 */
+.ant-upload.ant-upload-drag:hover {
+  border-color: var(--primary-green) !important;
+}
+
+.ant-upload-drag.ant-upload-drag-hover {
+  border-color: var(--primary-green) !important;
+}
+
+/* Progress 进度条样式 - 绿色主题 */
+.ant-progress-bg {
+  background-color: var(--primary-green) !important;
+}
+
+.ant-progress-success-bg {
+  background-color: var(--success) !important;
+}
+
+/* Slider 滑块样式 - 绿色主题 */
+.ant-slider-track {
+  background-color: var(--primary-green) !important;
+}
+
+.ant-slider-handle {
+  border-color: var(--primary-green) !important;
+}
+
+.ant-slider:hover .ant-slider-track {
+  background-color: var(--primary-green-light) !important;
+}
+
+.ant-slider:hover .ant-slider-handle:not(.ant-tooltip-open) {
+  border-color: var(--primary-green-light) !important;
+}
+
+/* Rate 评分样式 - 绿色主题 */
+.ant-rate-star-full .ant-rate-star-second {
+  color: var(--primary-green) !important;
+}
+
+.ant-rate-star-half .ant-rate-star-first {
+  color: var(--primary-green) !important;
+}
+
+/* Tree 树形控件样式 - 绿色主题 */
+.ant-tree-node-selected {
+  background-color: var(--background-green) !important;
+}
+
+.ant-tree-treenode:hover {
+  background-color: var(--light-gray) !important;
+}
+
+/* Table 表格样式 - 绿色主题 */
+.ant-table-tbody > tr.ant-table-row-selected > td {
+  background: var(--background-green) !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: var(--light-gray) !important;
+}
+
+/* Menu 菜单样式 - 绿色主题 */
+.ant-menu-item-selected {
+  background-color: var(--background-green) !important;
+  color: var(--primary-green) !important;
+}
+
+.ant-menu-item:hover {
+  color: var(--primary-green) !important;
+}
+
+/* Steps 步骤条样式 - 绿色主题 */
+.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-icon {
+  background-color: var(--primary-green) !important;
+  border-color: var(--primary-green) !important;
+}
+
+.ant-steps-item-process > .ant-steps-item-container > .ant-steps-item-icon {
+  background-color: var(--primary-green) !important;
+  border-color: var(--primary-green) !important;
+}
+
+/* Badge 徽标样式 - 绿色主题 */
+.ant-badge-count {
+  background-color: var(--primary-green) !important;
+}
+
+/* Tag 标签样式 - 绿色主题 */
+.ant-tag-green {
+  background-color: var(--background-green) !important;
+  border-color: var(--accent-green) !important;
+  color: var(--primary-green) !important;
+}
+
+/* Alert 警告提示样式 - 绿色主题 */
+.ant-alert-info {
+  background-color: var(--background-green) !important;
+  border-color: var(--accent-green) !important;
+}
+
+.ant-alert-info .ant-alert-icon {
+  color: var(--primary-green) !important;
+}
+
+/* Spin 加载中样式 - 绿色主题 */
+.ant-spin-dot-item {
+  background-color: var(--primary-green) !important;
+}
+
+/* Anchor 锚点样式 - 绿色主题 */
+.ant-anchor-link-active > .ant-anchor-link-title {
+  color: var(--primary-green) !important;
+}
+
+.ant-anchor-ink::before {
+  background-color: var(--primary-green) !important;
+}
+
+/* BackTop 回到顶部样式 - 绿色主题 */
+.ant-back-top {
+  background-color: var(--primary-green) !important;
+}
+
+/* Pagination 分页样式 - 绿色主题 */
+.ant-pagination-item-active {
+  background-color: var(--primary-green) !important;
+  border-color: var(--primary-green) !important;
+}
+
+.ant-pagination-item-active a {
+  color: var(--white) !important;
+}
+
+.ant-pagination-item:hover {
+  border-color: var(--primary-green) !important;
+}
+
+.ant-pagination-item:hover a {
+  color: var(--primary-green) !important;
+}
+
+/* Cascader 级联选择样式 - 绿色主题 */
+.ant-cascader-menu-item:hover {
+  background: var(--background-green) !important;
+}
+
+.ant-cascader-menu-item-active {
+  background: var(--background-green) !important;
+  color: var(--primary-green) !important;
+}
+
+/* Modal 模态框样式 - 绿色主题 */
+.ant-modal-header {
+  border-bottom-color: var(--border-color) !important;
+}
+
+.ant-modal-footer {
+  border-top-color: var(--border-color) !important;
+}
+
+/* Message 消息提示样式 - 绿色主题 */
+.ant-message-info .ant-message-icon {
+  color: var(--primary-green) !important;
+}
+
+.ant-message-success .ant-message-icon {
+  color: var(--success) !important;
+}
+
+/* Notification 通知提示样式 - 绿色主题 */
+.ant-notification-notice-info {
+  border-left-color: var(--primary-green) !important;
+}
+
+.ant-notification-notice-info .ant-notification-notice-icon {
+  color: var(--primary-green) !important;
+}
+
+/* Tooltip 工具提示样式 - 绿色主题 */
+.ant-tooltip-inner {
+  background-color: var(--text-dark) !important;
+}
+
+.ant-tooltip-arrow::before {
+  background-color: var(--text-dark) !important;
+}
+
+/* Popover 气泡卡片样式 - 绿色主题 */
+.ant-popover-inner {
+  border-radius: var(--radius-medium) !important;
+}
+
+/* Drawer 抽屉样式 - 绿色主题 */
+.ant-drawer-header {
+  border-bottom-color: var(--border-color) !important;
+}
+
+/* AutoComplete 自动完成样式 - 绿色主题 */
+.ant-select-auto-complete.ant-select .ant-select-selection-item {
+  color: var(--text-dark) !important;
+}
+
+/* TimePicker 时间选择器样式 - 绿色主题 */
+.ant-picker-time-panel-column > li.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner {
+  background: var(--primary-green) !important;
+  color: var(--white) !important;
+}
+
+/* Transfer 穿梭框样式 - 绿色主题 */
+.ant-transfer-list-header-selected {
+  background: var(--background-green) !important;
+}
+
+.ant-transfer-list-item:hover {
+  background: var(--light-gray) !important;
+}
+
+.ant-transfer-list-item-checked {
+  background: var(--background-green) !important;
+}
+
+/* Calendar 日历样式 - 绿色主题 */
+.ant-picker-calendar-date-selected {
+  background: var(--primary-green) !important;
+}
+
+.ant-picker-calendar-date-today {
+  border-color: var(--primary-green) !important;
+}
+
+/* Mentions 提及样式 - 绿色主题 */
+.ant-mentions-focused {
+  border-color: var(--primary-green) !important;
+  box-shadow: 0 0 0 2px rgba(45, 80, 22, 0.1) !important;
+}
+
+/* Typography 排版样式 - 绿色主题 */
+.ant-typography a {
+  color: var(--primary-green) !important;
+}
+
+.ant-typography a:hover {
+  color: var(--primary-green-light) !important;
+}
+
+/* Breadcrumb 面包屑样式 - 绿色主题 */
+.ant-breadcrumb a {
+  color: var(--primary-green) !important;
+}
+
+.ant-breadcrumb a:hover {
+  color: var(--primary-green-light) !important;
+}
+
+/* Dropdown 下拉菜单样式 - 绿色主题 */
+.ant-dropdown-menu-item:hover {
+  background-color: var(--background-green) !important;
+}
+
+.ant-dropdown-menu-item-selected {
+  background-color: var(--background-green) !important;
+  color: var(--primary-green) !important;
+}
+
+/* 自然元素装饰类 */
+.leaf-decoration {
+  position: relative;
+}
+
+.leaf-decoration::before {
+  content: '🌿';
+  position: absolute;
+  opacity: 0.1;
+  font-size: 24px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.flower-decoration {
+  position: relative;
+}
+
+.flower-decoration::after {
+  content: '🌸';
+  position: absolute;
+  opacity: 0.1;
+  font-size: 20px;
+  animation: float 4s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+  
+  .ant-btn {
+    padding: 8px 16px !important;
+  }
+}

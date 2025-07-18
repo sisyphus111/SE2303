@@ -1,0 +1,407 @@
+import React, {useState, useEffect, useMemo} from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Pagination, message } from 'antd';
+import {
+    EditOutlined,
+    SearchOutlined,
+    UserOutlined,
+    FireOutlined,
+    ClockCircleOutlined,
+    TrophyOutlined,
+    HeartOutlined,
+    TeamOutlined,
+    TagOutlined,
+    ArrowRightOutlined,
+    PlusOutlined,
+    EyeOutlined,
+    CommentOutlined
+} from '@ant-design/icons';
+import { getPostList, getAllTags, getTodayCommentsCount, getTodayPostsCount, getTotalPostsCount } from '../service/communityService';
+import { getTotalUserCount } from '../service/userService';
+import { useUser } from '../lib/UserContext';
+import UserDisplayName from '../components/UserDisplayName';
+import UserInfoCard from '../components/UserInfoCard';
+import CommunitySidebar from '../components/CommunitySidebar';
+import '../css/CommunityHomepage.css';
+
+const CommunityHomepage = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { userProfile, valid, identity, loading: contextLoading, getUserDisplayName, getUserAvatar} = useUser();
+    const [selectedTag, setSelectedTag] = useState('全部');
+    const [searchValue, setSearchValue] = useState('');
+    const [searchKeyword, setSearchKeyword] = useState(''); 
+    const [posts, setPosts] = useState({ content: [], totalElements: 0 });
+    const [sortBy, setSortBy] = useState('latest');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [tags, setTags] = useState(['全部']);
+    const [loading, setLoading] = useState(false);
+    const [communityStats, setCommunityStats] = useState({
+        totalPosts: 0,
+        totalUsers: 0,
+        todayPosts: 0,
+        todayComments: 0
+    });
+
+    const auth = useMemo(() => ({
+        userId: userProfile?.userId,
+        valid,
+        identity,
+    }), [userProfile, valid, identity]);
+
+    useEffect(() => {
+        const fetchTags = async () => {
+            if (!userProfile || !valid || identity === null) {
+                console.log('Waiting for user context to initialize');
+                return;
+            }
+
+            setLoading(true);
+            const response = await getAllTags(auth);
+            if (response.success) {
+                console.log('tags返回数据：', response.data);
+                setTags(['全部', ...response.data]);
+            } else {
+                message.error('获取标签失败');
+            }
+            setLoading(false);
+        };
+
+        // 只有在UserContext加载完成后才进行认证检查
+        if (contextLoading) {
+            console.log('🔄 UserContext正在加载，等待初始化完成...');
+            return;
+        }
+
+        if (valid && userProfile) {
+            fetchTags();
+        } else if (!valid || !userProfile) {
+            console.log('❌ 用户未认证，重定向到登录页面');
+            navigate('/login');
+        }
+    }, [valid, userProfile, identity, contextLoading, navigate]);
+
+    useEffect(() => {
+        const fetchPosts = async () => {
+            if (!userProfile || !valid || identity === null) {
+                console.log('Waiting for user context to initialize');
+                return;
+            }
+            setLoading(true);
+            const params = {
+                page: currentPage,
+                size: pageSize,
+                sortBy,
+                category: selectedTag !== '全部' ? selectedTag : undefined,
+                keyword: searchKeyword || undefined, // 修改：使用防抖后的关键词
+            };
+            console.log('🚀 发送请求参数:', JSON.stringify(params, null, 2));
+            const response = await getPostList(params, auth);
+            console.log('📥 帖子响应:', JSON.stringify(response, null, 2));
+            if (response.success) {
+                console.log('posts返回数据：', response.data);
+                setPosts(response.data);
+            } else {
+                message.error(response.error);
+            }
+            setLoading(false);
+        };
+
+        // 只有在UserContext加载完成且用户已认证时才获取帖子
+        if (!contextLoading && valid && userProfile) {
+            fetchPosts();
+        }
+    }, [currentPage, pageSize, sortBy, selectedTag, searchKeyword, valid, userProfile, identity, contextLoading, navigate]); // 修改：依赖searchKeyword而不是searchValue
+
+    useEffect(() => {
+        // 只有在UserContext加载完成且用户已认证时才获取社区统计数据
+        const fetchCommunityStats = async () => {
+            if (!userProfile || !valid || identity === null) return;
+            try {
+                const [totalPostsRes, todayPostsRes, todayCommentsRes, totalUsersRes] = await Promise.all([
+                    getTotalPostsCount(auth),
+                    getTodayPostsCount(auth),
+                    getTodayCommentsCount(auth),
+                    getTotalUserCount()
+                ]);
+                setCommunityStats({
+                    totalPosts: totalPostsRes.success ? (totalPostsRes.data?.totalPosts || totalPostsRes.data || 0) : 0,
+                    todayPosts: todayPostsRes.success ? (todayPostsRes.data?.todayPosts || todayPostsRes.data || 0) : 0,
+                    todayComments: todayCommentsRes.success ? (todayCommentsRes.data?.todayComments || todayCommentsRes.data || 0) : 0,
+                    totalUsers: typeof totalUsersRes === 'number' ? totalUsersRes : (totalUsersRes?.totalUsers || totalUsersRes?.data || 0)
+                });
+            } catch (err) {
+                message.error('获取社区统计数据失败');
+            }
+        };
+        if (!contextLoading && valid && userProfile) {
+            fetchCommunityStats();
+        }
+    }, [valid, userProfile, identity, contextLoading, auth]);
+
+
+    const handleSearch = (e) => {
+        setSearchValue(e.target.value); // 只更新输入框的值，不触发搜索
+    };
+
+    // 处理回车键搜索
+    const handleSearchKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            setSearchKeyword(searchValue.trim());
+            setCurrentPage(1);
+        }
+    };
+
+    const handleTagClick = (tag) => {
+        setSelectedTag(tag);
+        setCurrentPage(1);
+        if (tag === '全部') {
+            navigate('/community');
+        } else {
+            navigate(`/community?tag=${encodeURIComponent(tag)}`);
+        }
+    };
+
+    const handleSortChange = (sort) => {
+        setSortBy(sort);
+        setCurrentPage(1);
+    };
+
+    const handlePageChange = (page, size) => {
+        setCurrentPage(page);
+        if (size !== pageSize) {
+            setPageSize(size);
+        }
+        document.querySelector('.posts-section')?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    const formatTime = (timeStr) => {
+        const now = new Date();
+        const postTime = new Date(timeStr);
+        const diffInHours = Math.floor((now - postTime) / (1000 * 60 * 60));
+
+        if (diffInHours < 1) return '刚刚';
+        if (diffInHours < 24) return `${diffInHours}小时前`;
+        return `${Math.floor(diffInHours / 24)}天前`;
+    };
+
+    // 在UserContext加载期间显示加载状态
+    if (contextLoading) {
+        return (
+            <div className="loading" style={{
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                height: '100vh',
+                fontSize: '16px',
+                color: '#666'
+            }}>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ marginBottom: '16px', fontSize: '24px' }}>⏳</div>
+                    正在初始化用户信息...
+                </div>
+            </div>
+        );
+    }
+
+    
+
+    return (
+        <div className="community-homepage">
+            <div className="welcome-section">
+                <div className="welcome-content">
+                    <div className="welcome-text">
+                        <h1>心晴社区</h1>
+                        <p>分享心情，互相支持，一起成长</p>
+                    </div>
+                    <div className="quick-actions">
+                        {userProfile &&  identity && valid ? (
+                            <button
+                                className="action-btn primary"
+                                onClick={() => navigate('/send_community_post')}
+                            >
+                                <PlusOutlined /> 发布帖子
+                            </button>
+                        ) : (
+                            <button
+                                className="action-btn secondary"
+                                onClick={() => navigate('/login')}
+                            >
+                                <UserOutlined /> 登录参与
+                            </button>
+                        )}
+                        <div className="search-container">
+                            <SearchOutlined className="search-icon" />
+                            <input
+                                type="text"
+                                placeholder="搜索感兴趣的话题..."
+                                value={searchValue}
+                                onChange={handleSearch}
+                                onKeyPress={handleSearchKeyPress}
+                                className="search-input"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="main-content">
+                <div className="content-main">
+                    <div className="section-card filter-section">
+                        <div className="filter-header">
+                            <div className="filter-left">
+                                <TagOutlined className="section-icon" />
+                                <h3>话题筛选</h3>
+                            </div>
+                            <div className="sort-controls">
+                                <button
+                                    className={`sort-btn ${sortBy === 'latest' ? 'active' : ''}`}
+                                    onClick={() => handleSortChange('latest')}
+                                >
+                                    <ClockCircleOutlined /> 最新
+                                </button>
+                                <button
+                                    className={`sort-btn ${sortBy === 'mostLiked' ? 'active' : ''}`}
+                                    onClick={() => handleSortChange('mostLiked')}
+                                >
+                                    <FireOutlined /> 最多点赞
+                                </button>
+                                <button
+                                    className={`sort-btn ${sortBy === 'mostCommented' ? 'active' : ''}`}
+                                    onClick={() => handleSortChange('mostCommented')}
+                                >
+                                    <CommentOutlined /> 最多评论
+                                </button>
+                            </div>
+                        </div>
+                        <div className="tags-grid">
+                            {tags.map(tag => (
+                                <button
+                                    key={tag}
+                                    className={`tag-btn ${selectedTag === tag ? 'active' : ''}`}
+                                    onClick={() => handleTagClick(tag)}
+                                >
+                                    {tag}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    <div className="posts-section">
+                        <div className="posts-header">
+                            <h3>
+                                {selectedTag === '全部' ? '所有帖子' : `${selectedTag} 相关帖子`}
+                                <span className="posts-count">（{posts.totalElements}条）</span>
+                            </h3>
+                            {/* 显示当前搜索状态 */}
+                            {searchKeyword && (
+                                <div className="search-status" style={{ marginTop: '8px', fontSize: '14px', color: '#666' }}>
+                                    正在搜索: "{searchKeyword}" 
+                                    <button 
+                                        className="clear-search-btn"
+                                        onClick={() => {
+                                            setSearchValue('');
+                                            setSearchKeyword('');
+                                        }}
+                                        style={{ 
+                                            marginLeft: '8px', 
+                                            padding: '2px 8px', 
+                                            border: 'none', 
+                                            background: '#f0f0f0', 
+                                            borderRadius: '4px',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        清除
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        {loading && <div className="loading">加载中...</div>}
+                        {!loading && <div className="posts-list-main">
+                            {posts.content.length === 0 ? (
+                                <div className="no-posts">
+                                    <p>暂无匹配的帖子</p>
+                                    <p>试试调整筛选条件或搜索关键词</p>
+                                </div>
+                            ) : (
+                                posts.content.map(post => (
+                                    <div key={post.id} className="post-card" onClick={() => navigate(`/post/${post.id}`)}>
+                                        <div className="post-header">
+                                            <div className="post-author-info">
+                                                <UserInfoCard 
+                                                    userId={post.userId} 
+                                                    showStats={false}
+                                                    className="post-author-card"
+                                                />
+                                                <div className="post-time">{formatTime(post.createdAt)}</div>
+                                            </div>
+                                            <div className="post-stats">
+                                                <span className="stat-item">                                
+                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                        <HeartOutlined className={post.isLiked ? 'liked' : ''} />
+                                                        {post.likeCount || 0}
+                                                    </span>
+                                                </span>
+                                                <span className="stat-item">
+                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                        <CommentOutlined />
+                                                        {post.commentCount || 0}
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="post-content">
+                                            <h4 className="post-title">{post.title}</h4>
+                                            {post.content && (
+                                                <div className="post-excerpt">
+                                                    {post.content.length > 100 ? `${post.content.substring(0, 100)}...` : post.content}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="post-footer">
+                                            <div className="post-tags">
+                                                {post.tags && post.tags.map(tag => (
+                                                    <span key={tag} className="post-tag">#{tag}</span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>}
+
+                        {posts.totalElements > 0 && (
+                            <div className="pagination-container">
+                                <Pagination
+                                    current={currentPage}
+                                    total={posts.totalElements}
+                                    pageSize={pageSize}
+                                    showSizeChanger
+                                    showQuickJumper
+                                    showTotal={(total, range) =>
+                                        `第 ${range[0]}-${range[1]} 条 / 共 ${total} 条`
+                                    }
+                                    pageSizeOptions={['5', '10', '15', '20']}
+                                    onChange={handlePageChange}
+                                    onShowSizeChange={handlePageChange}
+                                />
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <CommunitySidebar 
+                    posts={posts}
+                    communityStats={communityStats}
+                    userProfile={userProfile}
+                    valid={valid}
+                    loading={loading}
+                />
+            </div>
+        </div>
+    );
+};
+
+export default CommunityHomepage;

@@ -21,9 +21,11 @@ const AdminCrisisList = ({ alerts, loading, error, onUpdateStatus, onAddFollowUp
   const getStatusBadge = (status) => {
     const statusMap = {
       'PENDING': { class: 'warning', text: '待处理' },
+      'ASSIGNED': { class: 'info', text: '已分配' },
       'IN_PROGRESS': { class: 'info', text: '处理中' },
-      'RESOLVED': { class: 'success', text: '已解决' },
-      'CLOSED': { class: 'default', text: '已关闭' }
+      'COMPLETED': { class: 'success', text: '已完成' },
+      'CLOSED': { class: 'default', text: '已关闭' },
+      'CANCELLED': { class: 'default', text: '已取消' }
     };
     const statusInfo = statusMap[status] || { class: 'default', text: status };
     return <span className={`status-badge ${statusInfo.class}`}>{statusInfo.text}</span>;
@@ -149,11 +151,11 @@ const AdminCrisisList = ({ alerts, loading, error, onUpdateStatus, onAddFollowUp
                 </button>
                 <button
                   className="admin-btn admin-btn-success"
-                  onClick={() => onUpdateStatus(alert.id, 'RESOLVED')}
+                  onClick={() => onUpdateStatus(alert.id, 'COMPLETED')}
                   disabled={operatingAlertId === alert.id}
                 >
                   <CheckCircleOutlined />
-                  标记解决
+                  标记完成
                 </button>
                 <button
                   className="admin-btn admin-btn-warning"
@@ -163,19 +165,7 @@ const AdminCrisisList = ({ alerts, loading, error, onUpdateStatus, onAddFollowUp
                   <CloseCircleOutlined />
                   关闭警报
                 </button>
-                <button
-                  className="admin-btn admin-btn-secondary"
-                  onClick={() => {
-                    const notes = prompt('请输入跟进备注:');
-                    if (notes !== null) {
-                      onAddFollowUpNotes(alert.id, notes);
-                    }
-                  }}
-                  disabled={operatingAlertId === alert.id}
-                >
-                  <MessageOutlined />
-                  添加备注
-                </button>
+                
               </div>
             </div>
           </div>

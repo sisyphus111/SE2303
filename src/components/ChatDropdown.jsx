@@ -15,107 +15,6 @@ function ChatBubble({ message, currentUserId }) {
     avatar: message.avatar
   };
 
-  // 头像组件 - 增强的头像显示逻辑
-  const Avatar = ({ userInfo, size = 40 }) => {
-    const [imageError, setImageError] = useState(false);
-    const [imageLoading, setImageLoading] = useState(true);
-    
-    // 检查头像URL是否有效
-    const hasValidAvatar = userInfo.avatar && 
-                          typeof userInfo.avatar === 'string' && 
-                          userInfo.avatar.trim() !== '' &&
-                          !imageError;
-
-    // 根据用户ID生成不同的背景色
-    const getAvatarBgColor = (userId) => {
-      const colors = [
-        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-        'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-        'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
-        'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)'
-      ];
-      const index = parseInt(userId || '0') % colors.length;
-      return colors[index];
-    };
-
-    // 图片加载错误处理
-    const handleImageError = () => {
-      setImageError(true);
-      setImageLoading(false);
-    };
-
-    // 图片加载成功处理
-    const handleImageLoad = () => {
-      setImageLoading(false);
-      setImageError(false);
-    };
-
-    // 如果有有效头像且未出错，显示图片
-    if (hasValidAvatar) {
-      return (
-        <div style={{ position: 'relative' }}>
-          <img 
-            src={userInfo.avatar} 
-            alt="头像" 
-            style={{
-              width: `${size}px`,
-              height: `${size}px`,
-              borderRadius: '50%',
-              objectFit: 'cover',
-              background: '#f0f0f0',
-              display: imageLoading ? 'none' : 'block',
-              border: '2px solid #fff',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-            }}
-            onError={handleImageError}
-            onLoad={handleImageLoad}
-          />
-          {imageLoading && (
-            <div style={{
-              width: `${size}px`,
-              height: `${size}px`,
-              borderRadius: '50%',
-              background: '#f0f0f0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '12px',
-              color: '#999',
-              border: '2px solid #fff',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-            }}>
-              <LoadingOutlined />
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    // 默认头像：显示用户名首字母，根据用户ID使用不同颜色
-    return (
-      <div style={{
-        width: `${size}px`,
-        height: `${size}px`,
-        borderRadius: '50%',
-        background: getAvatarBgColor(userInfo.id),
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'white',
-        fontSize: `${size * 0.4}px`,
-        fontWeight: 'bold',
-        border: '2px solid #fff',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-      }}>
-        {(userInfo.username || '?').charAt(0).toUpperCase()}
-      </div>
-    );
-  };
-
   // 消息状态指示器
   const getMessageStatusIcon = () => {
     if (!isCurrentUser) return null;
@@ -267,6 +166,107 @@ const MessageList = ({ messages, currentUserId }) => (
     </>
 );
 
+// 头像组件 - 增强的头像显示逻辑
+const Avatar = ({ userInfo, size = 40 }) => {
+  const [imageError, setImageError] = React.useState(false);
+  const [imageLoading, setImageLoading] = React.useState(true);
+
+  // 检查头像URL是否有效
+  const hasValidAvatar = userInfo.avatar &&
+    typeof userInfo.avatar === 'string' &&
+    userInfo.avatar.trim() !== '' &&
+    !imageError;
+
+  // 根据用户ID生成不同的背景色
+  const getAvatarBgColor = (userId) => {
+    const colors = [
+      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+      'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+      'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+      'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+      'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)'
+    ];
+    const index = parseInt(userId || '0') % colors.length;
+    return colors[index];
+  };
+
+  // 图片加载错误处理
+  const handleImageError = () => {
+    setImageError(true);
+    setImageLoading(false);
+  };
+
+  // 图片加载成功处理
+  const handleImageLoad = () => {
+    setImageLoading(false);
+    setImageError(false);
+  };
+
+  // 如果有有效头像且未出错，显示图片
+  if (hasValidAvatar) {
+    return (
+      <div style={{ position: 'relative' }}>
+        <img
+          src={userInfo.avatar}
+          alt="头像"
+          style={{
+            width: `${size}px`,
+            height: `${size}px`,
+            borderRadius: '50%',
+            objectFit: 'cover',
+            background: '#f0f0f0',
+            display: imageLoading ? 'none' : 'block',
+            border: '2px solid #fff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          }}
+          onError={handleImageError}
+          onLoad={handleImageLoad}
+        />
+        {imageLoading && (
+          <div style={{
+            width: `${size}px`,
+            height: `${size}px`,
+            borderRadius: '50%',
+            background: '#f0f0f0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '12px',
+            color: '#999',
+            border: '2px solid #fff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          }}>
+            <LoadingOutlined />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // 默认头像：显示用户名首字母，根据用户ID使用不同颜色
+  return (
+    <div style={{
+      width: `${size}px`,
+      height: `${size}px`,
+      borderRadius: '50%',
+      background: getAvatarBgColor(userInfo.id),
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'white',
+      fontSize: `${size * 0.4}px`,
+      fontWeight: 'bold',
+      border: '2px solid #fff',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+    }}>
+      {(userInfo.username || '?').charAt(0).toUpperCase()}
+    </div>
+  );
+};
+
 const ChatDropdown = () => {
   const { userProfile, getUserCommunityInfoById } = useUser();
   const [isOpen, setIsOpen] = useState(false);
@@ -283,6 +283,7 @@ const ChatDropdown = () => {
   const messagesContainerRef = useRef(null);
   const inputRef = useRef(null); // 输入框引用，用于保持焦点
   const [page, setPage] = useState(1); // 修复：页码从1开始，符合后端期望
+  const shouldScrollToBottom = useRef(true); // 新增ref
 
   // 使用WebSocket Hook
   const { sendMessage, fetchPastMessages, setOnMessage, setOnError, setOnConnect, setOnDisconnect } = useWebSocket(
@@ -290,17 +291,32 @@ const ChatDropdown = () => {
       getUserCommunityInfoById
   );
 
-  // 滚动到底部
-  const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  // 升级版安全滚动到底部，先 auto 再 smooth，多次 requestAnimationFrame 检查
+  function safeScrollToBottom(retry = 20) {
+    if (!messagesEndRef.current) return;
+    // 先 auto 滚动
+    messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
+    // 再 smooth 滚动
+    messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    // 检查是否到底部
+    const container = messagesContainerRef.current;
+    if (container && Math.abs(container.scrollHeight - container.scrollTop - container.clientHeight) < 5) {
+      return;
     }
-  };
+    if (retry > 0) {
+      requestAnimationFrame(() => safeScrollToBottom(retry - 1));
+    }
+  }
 
   // 新消息或打开聊天室时滚动到底部
   useEffect(() => {
-    if (isOpen) scrollToBottom();
-  }, [messages, isOpen]);
+    if (isOpen && !isInitializing && shouldScrollToBottom.current) {
+      setTimeout(() => {
+        safeScrollToBottom();
+        shouldScrollToBottom.current = false;
+      }, 50);
+    }
+  }, [messages, isOpen, isInitializing, loadingMore]);
 
   // 初始化聊天室和WebSocket回调
   useEffect(() => {
@@ -341,12 +357,10 @@ const ChatDropdown = () => {
         setMessages(sortedMessages);
         setPage(1); // 当前已加载的页数
         setHasMore(sortedMessages.length === 10);
+        shouldScrollToBottom.current = true; // 初始化时应滚到底部
         console.log('✅ 聊天室初始化成功，显示最新消息，加载了', sortedMessages.length, '条消息，当前页:', 1);
         
-        // 滚动到底部显示最新消息
-        setTimeout(() => {
-          scrollToBottom();
-        }, 100);
+        // 移除这里的 setTimeout(scrollToBottom)，统一交给 useEffect 控制
       } catch (err) {
         console.error('❌ 聊天室初始化失败:', err);
         setError('加载聊天记录失败');
@@ -379,6 +393,7 @@ const ChatDropdown = () => {
           }
           return [...prev, newMessage];
         });
+        shouldScrollToBottom.current = true; // 收到新消息应滚到底部
         console.log('✅ 收到新消息:', newMessage);
       }
     });
@@ -404,6 +419,17 @@ const ChatDropdown = () => {
       isInitialized = false;
     };
   }, [isOpen, userProfile?.userId]); // 移除fetchPastMessages等函数依赖，避免无限循环
+
+  // 初始化完成后强制滚到底部（只针对初始化）
+  useEffect(() => {
+    if (isOpen && !isInitializing && messages.length > 0) {
+      setTimeout(() => {
+        safeScrollToBottom();
+      }, 50);
+    }
+    // 只在 isInitializing 变化时触发
+    // eslint-disable-next-line
+  }, [isInitializing]);
 
   // 加载更多历史消息
   const loadMoreMessages = useCallback(async () => {
@@ -533,6 +559,7 @@ const ChatDropdown = () => {
           inputRef.current.focus();
         }
       }, 100);
+      shouldScrollToBottom.current = true; // 发送消息后应滚到底部
     }
   };
 

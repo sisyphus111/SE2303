@@ -332,8 +332,10 @@
 }
 
 .user-message .message-content {
-  background: var(--primary-green);
-  color: var(--white);
+  /* background: var(--primary-green);
+  color: var(--white); */
+  background: var(--white);
+  color: var(--text-dark);
   border-bottom-right-radius: 6px;
 }
 
